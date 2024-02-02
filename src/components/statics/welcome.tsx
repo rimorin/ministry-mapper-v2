@@ -1,0 +1,25 @@
+import { memo } from "react";
+import { Container, Card } from "react-bootstrap";
+import imgUrl from "/logo.png";
+import { WelcomeProps } from "../../utils/interface";
+
+const Welcome = memo(({ name }: WelcomeProps) => {
+  return (
+    <Container className="container-main" style={{ height: "80vh" }}>
+      <Card className="card-main" style={{ width: "100%" }}>
+        <Card.Img
+          alt="Ministry Mapper main logo"
+          className="mm-main-image"
+          src={imgUrl}
+        />
+        <Card.Body>
+          <Card.Title className="text-center">
+            Welcome {name || "To Ministry Mapper"}
+          </Card.Title>
+        </Card.Body>
+      </Card>
+    </Container>
+  );
+});
+
+export default Welcome;

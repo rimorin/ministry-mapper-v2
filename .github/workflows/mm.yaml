@@ -1,0 +1,302 @@
+name: Ministry Mapper
+env:
+  VITE_FIREBASE_API_KEY: ${{ secrets.VITE_FIREBASE_API_KEY }}
+  VITE_FIREBASE_AUTH_DOMAIN: ${{ secrets.VITE_FIREBASE_AUTH_DOMAIN }}
+  VITE_FIREBASE_DB_URL: ${{ secrets.VITE_FIREBASE_DB_URL }}
+  VITE_FIREBASE_PROJECT_ID: ${{ secrets.VITE_FIREBASE_PROJECT_ID }}
+  VITE_FIREBASE_BUCKET: ${{ secrets.VITE_FIREBASE_BUCKET }}
+  VITE_FIREBASE_SENDER_ID: ${{ secrets.VITE_FIREBASE_SENDER_ID }}
+  VITE_FIREBASE_APP_ID: ${{ secrets.VITE_FIREBASE_APP_ID }}
+  SLACK_BOT_TOKEN: ${{ secrets.SLACK_API_TOKEN}}
+on:
+  pull_request:
+    branches:
+      - staging
+      - master
+  push:
+    branches:
+      - staging
+      - master
+
+jobs:
+  verify:
+    name: Verify Pull Request
+    if: github.event_name  == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify pull request
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ secrets.SLACK_API_CHANNEL_ID }}
+          payload: |
+            {
+              "blocks" : [{
+                "type": "section",
+                "text": {
+                  "type": "mrkdwn",
+                  "text": "*Initiating pull request verification*"
+                }
+              },{
+                "type": "divider"
+              }],
+              "attachments": [
+                {
+                  "color": "good",
+                  "fields": [
+                    {
+                      "title": "${{ github.event.pull_request.title }}",
+                      "value": "https://github.com/rimorin/ministry-mapper/pull/${{ github.event.number }}"
+                    }
+                  ]
+                }
+              ]
+            }
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Cache node modules
+        id: cache-npm
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        if: steps.cache-npm.outputs.cache-hit != 'true'
+        # 👆 check if cache-hit happened then do not execute npm ci
+        run: npm ci
+      - name: Check code formatting
+        run: npm run prettier
+      - name: passed formatting check
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ secrets.SLACK_API_CHANNEL_ID }}
+          update-ts: ${{ steps.slack.outputs.ts }}
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "good",
+                  "fields": [
+                    {
+                      "title": "Code formatting",
+                      "value": "Passed"
+                    }
+                  ]
+                }
+              ]
+            }
+      - name: Run application test cases
+        run: npm run test
+      - name: passed app test
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ secrets.SLACK_API_CHANNEL_ID }}
+          update-ts: ${{ steps.slack.outputs.ts }}
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "good",
+                  "fields": [
+                    {
+                      "title": "Application tests",
+                      "value": "Passed"
+                    }
+                  ]
+                }
+              ]
+            }
+      - name: Run application build
+        run: npm run build
+      - name: passed app build
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ secrets.SLACK_API_CHANNEL_ID }}
+          update-ts: ${{ steps.slack.outputs.ts }}
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "good",
+                  "fields": [
+                    {
+                      "title": "Build test",
+                      "value": "Passed"
+                    }
+                  ]
+                }
+              ]
+            }
+      - name: Notify passed verification
+        if: success()
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ secrets.SLACK_API_CHANNEL_ID }}
+          update-ts: ${{ steps.slack.outputs.ts }}
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "good",
+                  "fields": [
+                    {
+                      "title": "*Passed Verification*",
+                      "value": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }
+      - name: Notify failed verification
+        if: failure()
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ secrets.SLACK_API_CHANNEL_ID }}
+          update-ts: ${{ steps.slack.outputs.ts }}
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "danger",
+                  "fields": [
+                    {
+                      "title": "*Failed Verification*",
+                      "value": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }
+  publish_chromatic:
+    name: Publish to chromatic
+    if: github.event_name  == 'pull_request' && github.base_ref == 'master'
+    needs: verify
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+      - name: Publish to Chromatic
+        uses: chromaui/action@v1
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          exitZeroOnChanges: true
+  staging_deployment:
+    name: Deploy to Staging
+    if: contains(github.event_name, 'push') && contains(github.ref, 'refs/heads/staging')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy on staging
+        id: cloudflareRequest
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.STAGING_DEPLOY_HOOK }}
+          method: "POST"
+      - name: Failed staging deployment notification
+        if: failure()
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ secrets.SLACK_API_CHANNEL_ID }}
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "danger",
+                  "fields": [
+                    {
+                      "title": "*Failed to trigger staging cloudflare deployment job*",
+                      "value": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }
+      - name: Success staging deployment notification
+        if: success()
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ secrets.SLACK_API_CHANNEL_ID }}
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "good",
+                  "fields": [
+                    {
+                      "title": "*Triggered staging cloudflare deployment job*"
+                    }
+                  ]
+                }
+              ]
+            }
+  production_deployment:
+    name: Deploy to Production
+    if: contains(github.event_name, 'push') && contains(github.ref, 'refs/heads/master')
+    runs-on: ubuntu-latest
+    env:
+      HUSKY: 0
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - name: Install dependencies
+        run: npm ci
+      - name: Semantic release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
+        run: npx semantic-release
+      - name: Deploy on production
+        id: cloudflareRequest
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.PRODUCTION_DEPLOY_HOOK }}
+          method: "POST"
+      - name: Failed deployment notification
+        if: failure()
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ secrets.SLACK_API_CHANNEL_ID }}
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "danger",
+                  "fields": [
+                    {
+                      "title": "*Failed to trigger production cloudflare deployment job*",
+                      "value": "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+                    }
+                  ]
+                }
+              ]
+            }
+      - name: Success deployment notification
+        if: success()
+        uses: slackapi/slack-github-action@v1.23.0
+        with:
+          channel-id: ${{ secrets.SLACK_API_CHANNEL_ID }}
+          payload: |
+            {
+              "attachments": [
+                {
+                  "color": "good",
+                  "fields": [
+                    {
+                      "title": "*Triggered production cloudflare deployment job*"
+                    }
+                  ]
+                }
+              ]
+            }
