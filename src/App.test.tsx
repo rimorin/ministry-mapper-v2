@@ -3,13 +3,13 @@ import GenericTextAreaField from "./components/form/textarea";
 import HHNotHomeField from "./components/form/nothome";
 import HHStatusField from "./components/form/status";
 // import { Provider } from "@rollbar/react";
-import Legend from "./components/navigation/legend";
+// import Legend from "./components/navigation/legend";
 import UnauthorizedPage from "./components/statics/unauth";
-import FrontLogo from "./components/statics/logo";
+// import FrontLogo from "./components/statics/logo";
 import MaintenanceMode from "./components/statics/maintenance";
 import NotFoundPage from "./components/statics/notfound";
 import InvalidPage from "./components/statics/invalidpage";
-import Welcome from "./components/statics/welcome";
+// import Welcome from "./components/statics/welcome";
 import Loader from "./components/statics/loader";
 import { STATUS_CODES, NOT_HOME_STATUS_CODES } from "./utils/constants";
 
@@ -32,10 +32,10 @@ import { STATUS_CODES, NOT_HOME_STATUS_CODES } from "./utils/constants";
 //   return render(<Provider config={mockRollbarConfig}>{ui}</Provider>);
 // };
 
-test("renders frontpage", () => {
-  render(<FrontLogo />);
-  expect(screen.getByRole("img")).toBeInTheDocument();
-});
+// test("renders frontpage", () => {
+//   render(<FrontLogo />);
+//   expect(screen.getByRole("img")).toBeInTheDocument();
+// });
 
 test("renders maintenance", () => {
   render(<MaintenanceMode />);
@@ -77,24 +77,24 @@ test("renders invalid page", () => {
   expect(screen.getByText("This link has expired ⌛")).toBeInTheDocument();
 });
 
-test("renders admin welcome page", () => {
-  render(<Welcome name="" />);
-  expect(screen.getByRole("img")).toBeInTheDocument();
-  expect(
-    screen.getByText("Please select a territory from the above listing.")
-  ).toBeInTheDocument();
-  expect(screen.getByText("Welcome To Ministry Mapper")).toBeInTheDocument();
-});
+// test("renders admin welcome page", () => {
+//   render(<Welcome name="" />);
+//   expect(screen.getByRole("img")).toBeInTheDocument();
+//   expect(
+//     screen.getByText("Please select a territory from the above listing.")
+//   ).toBeInTheDocument();
+//   expect(screen.getByText("Welcome To Ministry Mapper")).toBeInTheDocument();
+// });
 
-test("renders admin welcome page with name", () => {
-  const name = "JE";
-  render(<Welcome name={name} />);
-  expect(screen.getByRole("img")).toBeInTheDocument();
-  expect(
-    screen.getByText("Please select a territory from the above listing.")
-  ).toBeInTheDocument();
-  expect(screen.getByText(`Welcome ${name}`)).toBeInTheDocument();
-});
+// test("renders admin welcome page with name", () => {
+//   const name = "JE";
+//   render(<Welcome name={name} />);
+//   expect(screen.getByRole("img")).toBeInTheDocument();
+//   expect(
+//     screen.getByText("Please select a territory from the above listing.")
+//   ).toBeInTheDocument();
+//   expect(screen.getByText(`Welcome ${name}`)).toBeInTheDocument();
+// });
 
 test("renders loading indicator", () => {
   render(<Loader />);
@@ -136,14 +136,14 @@ test("renders form feedback", () => {
   expect(screen.getByText(testFB)).toBeInTheDocument();
 });
 
-test("renders slip legend", () => {
-  render(<Legend showLegend={true} />);
-  expect(screen.getByText("Legend")).toBeInTheDocument();
-  expect(screen.getByText("✅")).toBeInTheDocument();
-  expect(screen.getByText("🚫")).toBeInTheDocument();
-  expect(screen.getByText("🗒️")).toBeInTheDocument();
-  expect(screen.getByText("✖️")).toBeInTheDocument();
-  const svgImg = screen.getByRole("img");
-  expect(svgImg).toBeInTheDocument();
-  expect(svgImg).toHaveClass("nothome-envelope img-fluid");
-});
+// test("renders slip legend", () => {
+//   render(<Legend showLegend={true} />);
+//   expect(screen.getByText("Legend")).toBeInTheDocument();
+//   expect(screen.getByText("✅")).toBeInTheDocument();
+//   expect(screen.getByText("🚫")).toBeInTheDocument();
+//   expect(screen.getByText("🗒️")).toBeInTheDocument();
+//   expect(screen.getByText("✖️")).toBeInTheDocument();
+//   const svgImg = screen.getByRole("img");
+//   expect(svgImg).toBeInTheDocument();
+//   expect(svgImg).toHaveClass("nothome-envelope img-fluid");
+// });

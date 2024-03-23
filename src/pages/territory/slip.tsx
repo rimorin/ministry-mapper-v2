@@ -28,7 +28,6 @@ import UpdateAddressFeedback from "../../components/modal/updateaddfeedback";
 import UpdateUnitStatus from "../../components/modal/updatestatus";
 import GetDirection from "../../utils/helpers/directiongenerator";
 import DirectionsIcon from "@mui/icons-material/Directions";
-import AssignmentIcon from "@mui/icons-material/Assignment";
 import TimerIcon from "@mui/icons-material/Timer";
 import FeedbackIcon from "@mui/icons-material/Feedback";
 import {
@@ -39,39 +38,58 @@ import {
   query,
   doc
 } from "firebase/firestore";
+// import {
+//   Badge,
+//   Box,
+//   Card,
+//   CardContent,
+//   IconButton,
+//   List,
+//   ListItem,
+//   ListItemButton,
+//   ListItemContent,
+//   ListItemDecorator,
+//   Container,
+//   Typography,
+//   listItemButtonClasses
+// } from "@mui/joy";
+import ColorSchemeToggle from "../../components/ColorSchemeToggle";
+import { toggleSidebar, closeSidebar } from "../../components/utils/sidebar";
 import {
   Badge,
   Box,
   Card,
   CardContent,
+  Container,
   IconButton,
   List,
   ListItem,
   ListItemButton,
-  ListItemContent,
-  ListItemDecorator,
-  Sheet,
+  ListItemIcon,
+  ListItemText,
   Typography,
   listItemButtonClasses
-} from "@mui/joy";
-import ColorSchemeToggle from "../../components/ColorSchemeToggle";
-import { toggleSidebar, closeSidebar } from "../../components/utils/sidebar";
+} from "@mui/material";
 const Slip = ({
   tokenEndtime = 0,
   mapId = "",
   congregationcode = "",
   maxTries = 0,
   pubName = "",
-  floorFilter = [-10, 100],
-  seqFilter = [0, 1000]
+  lowestFloor = 0,
+  highestFloor = 0,
+  lowestSequence = 0,
+  highestSequence = 0
 }: {
   tokenEndtime?: number;
   mapId?: string;
   congregationcode?: string;
   maxTries?: number;
   pubName?: string;
-  floorFilter?: Array<number>;
-  seqFilter?: Array<number>;
+  lowestFloor?: number;
+  highestFloor?: number;
+  lowestSequence?: number;
+  highestSequence?: number;
 }) => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [floors, setFloors] = useState<Array<floorDetails>>([]);
@@ -144,20 +162,7 @@ const Slip = ({
     });
 
     const whereConditions = [where("map", "==", mapId)];
-    let orderByConditions = [orderBy("floor", "desc"), orderBy("sequence")];
-
-    if (territoryType === TERRITORY_TYPES.PUBLIC) {
-      whereConditions.push(where("floor", ">=", floorFilter[0]));
-      whereConditions.push(where("floor", "<=", floorFilter[1]));
-    }
-
-    if (territoryType === TERRITORY_TYPES.PRIVATE) {
-      whereConditions.push(where("sequence", ">=", seqFilter[0]));
-      whereConditions.push(where("sequence", "<=", seqFilter[1]));
-      orderByConditions = [orderBy("sequence"), orderBy("floor", "desc")];
-    }
-
-    console.log(whereConditions);
+    const orderByConditions = [orderBy("floor", "desc"), orderBy("sequence")];
 
     onSnapshot(
       query(
@@ -177,6 +182,10 @@ const Slip = ({
           const nhcount = addressData.nhcount;
           const sequence = addressData.sequence;
           const dnctime = addressData.dnctime;
+
+          // check against lowest and highest floor and sequence
+          if (floor < lowestFloor || floor > highestFloor) return;
+          if (sequence < lowestSequence || sequence > highestSequence) return;
 
           const unitData = {
             addressId: address.id,
@@ -230,7 +239,7 @@ const Slip = ({
     what to do`;
   return (
     <Box sx={{ display: "flex", minHeight: "100vh" }}>
-      <Sheet
+      <Container
         sx={{
           display: { xs: "flex", md: "flex" },
           alignItems: "center",
@@ -249,9 +258,10 @@ const Slip = ({
       >
         <IconButton
           onClick={() => toggleSidebar()}
-          variant="outlined"
-          color="neutral"
-          size="sm"
+          // variant="outlined"
+          // color="neutral"
+
+          size="small"
         >
           <Badge color="warning" badgeContent={instructions ? "" : 0}>
             <MenuIcon />
@@ -267,15 +277,15 @@ const Slip = ({
           >
             <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
               <Box sx={{ minWidth: 0, flex: 1 }}>
-                <Typography level="title-sm">{postalName}</Typography>
-                <Typography level="body-xs">{postalZip}</Typography>
+                <Typography variant="subtitle1">{postalName}</Typography>
+                <Typography variant="body1">{postalZip}</Typography>
               </Box>
             </Box>
           </Box>
           <ColorSchemeToggle sx={{ alignSelf: "center" }} />
         </Box>
-      </Sheet>
-      <Sheet
+      </Container>
+      <Container
         className="Sidebar"
         sx={{
           position: { xs: "fixed", md: "sticky" },
@@ -307,7 +317,7 @@ const Slip = ({
             width: "100vw",
             height: "100vh",
             opacity: "var(--SideNavigation-slideIn)",
-            backgroundColor: "var(--joy-palette-background-backdrop)",
+            // backgroundColor: "var(--joy-palette-background-backdrop)",
             transition: "opacity 0.4s",
             transform: {
               xs: "translateX(calc(100% * (var(--SideNavigation-slideIn, 0) - 1) + var(--SideNavigation-slideIn, 0) * var(--Sidebar-width, 0px)))",
@@ -317,10 +327,10 @@ const Slip = ({
           onClick={() => closeSidebar()}
         />
         <Box sx={{ display: "flex", gap: 1, alignItems: "center" }}>
-          <IconButton disabled variant="plain">
+          <IconButton disabled>
             <img src="/favicon-32x32.png" alt="Ministry Mapper Icon" />
           </IconButton>
-          <Typography level="title-sm">{pubName}</Typography>
+          <Typography variant="subtitle1">{pubName}</Typography>
         </Box>
         <Box
           sx={{
@@ -335,31 +345,30 @@ const Slip = ({
           }}
         >
           <Card
-            invertedColors
-            variant="soft"
+            // orientation="horizontal"
+            // invertedColors
+            // variant="soft"
             color="warning"
-            size="sm"
+            // size="small"
             sx={{ boxShadow: "none" }}
           >
-            <Typography level="title-sm" startDecorator={<AssignmentIcon />}>
-              Instructions
-            </Typography>
-            <CardContent orientation="horizontal">
-              <Typography level="body-xs">{instructions}</Typography>
+            <Typography variant="subtitle1">Instructions</Typography>
+            <CardContent>
+              <Typography variant="body1">{instructions}</Typography>
             </CardContent>
           </Card>
           <List
-            size="sm"
+            // size="small"
             sx={{
               gap: 1,
-              "--List-nestedInsetStart": "30px",
-              "--ListItem-radius": (theme) => theme.vars.radius.sm
+              "--List-nestedInsetStart": "30px"
+              // "--ListItem-radius": (theme) => theme.vars.radius.sm
             }}
           >
             <ListItem>
-              <ListItemDecorator>
+              <ListItemIcon>
                 <TimerIcon />
-              </ListItemDecorator>
+              </ListItemIcon>
               <Countdown
                 // className="m-1"
                 date={tokenEndtime}
@@ -372,7 +381,7 @@ const Slip = ({
                   const minsDisplay =
                     props.minutes !== 0 ? <>{props.minutes}m </> : <></>;
                   return (
-                    <Typography level="title-sm">
+                    <Typography variant="subtitle1">
                       {daysDisplay}
                       {hoursDisplay}
                       {minsDisplay}
@@ -389,9 +398,9 @@ const Slip = ({
                 }
               >
                 <DirectionsIcon />
-                <ListItemContent>
-                  <Typography level="title-sm">Direction</Typography>
-                </ListItemContent>
+                <ListItemText>
+                  <Typography variant="subtitle1">Direction</Typography>
+                </ListItemText>
               </ListItemButton>
             </ListItem>
             <ListItem>
@@ -414,15 +423,15 @@ const Slip = ({
                   <FeedbackIcon />
                 </Badge>
 
-                <ListItemContent>
-                  <Typography level="title-sm">Feedback</Typography>
-                </ListItemContent>
+                <ListItemText>
+                  <Typography variant="subtitle1">Feedback</Typography>
+                </ListItemText>
               </ListItemButton>
             </ListItem>
           </List>
         </Box>
-      </Sheet>
-      <Sheet
+      </Container>
+      <Container
         sx={{
           pt: "var(--Header-height)",
           // display",
@@ -460,7 +469,7 @@ const Slip = ({
             );
           }}
         />
-      </Sheet>
+      </Container>
     </Box>
   );
 };

@@ -1,18 +1,14 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { useRollbar } from "@rollbar/react";
 import { useState, FormEvent, ChangeEvent } from "react";
-import {
-  USER_ACCESS_LEVELS,
-  TERRITORY_TYPES,
-  WIKI_CATEGORIES
-} from "../../utils/constants";
+import { USER_ACCESS_LEVELS, TERRITORY_TYPES } from "../../utils/constants";
 import processPostalUnitNumber from "../../utils/helpers/processpostalno";
 import errorHandler from "../../utils/helpers/errorhandler";
 import { NewUnitModalProps } from "../../utils/interface";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
-import HelpButton from "../navigation/help";
-import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+// import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
 
 const NewUnit = NiceModal.create(
   ({
@@ -48,39 +44,37 @@ const NewUnit = NiceModal.create(
       }
     };
     return (
-      <Modal open={modal.visible} onClose={() => modal.hide()}>
-        <ModalDialog>
-          <DialogTitle>
-            {`Add ${
-              addressData.type === TERRITORY_TYPES.PRIVATE ? "property" : "unit"
-            } to ${addressName}`}
-          </DialogTitle>
-          <form onSubmit={handleCreateNewUnit}>
-            <DialogContent>
-              <GenericInputField
-                label={`${
-                  addressData.type === TERRITORY_TYPES.PRIVATE
-                    ? "Property"
-                    : "Unit"
-                } number`}
-                name="unit"
-                handleChange={(e: ChangeEvent<HTMLElement>) => {
-                  const { value } = e.target as HTMLInputElement;
-                  setUnit(value);
-                }}
-                changeValue={unit}
-                required={true}
-              />
-            </DialogContent>
-            <ModalFooter
-              handleClick={modal.hide}
-              userAccessLevel={footerSaveAcl}
-              isSaving={isSaving}
-              submitLabel="Add"
+      <Dialog open={modal.visible} onClose={() => modal.hide()}>
+        <DialogTitle>
+          {`Add ${
+            addressData.type === TERRITORY_TYPES.PRIVATE ? "property" : "unit"
+          } to ${addressName}`}
+        </DialogTitle>
+        <form onSubmit={handleCreateNewUnit}>
+          <DialogContent>
+            <GenericInputField
+              label={`${
+                addressData.type === TERRITORY_TYPES.PRIVATE
+                  ? "Property"
+                  : "Unit"
+              } number`}
+              name="unit"
+              handleChange={(e: ChangeEvent<HTMLElement>) => {
+                const { value } = e.target as HTMLInputElement;
+                setUnit(value);
+              }}
+              changeValue={unit}
+              required={true}
             />
-          </form>
-        </ModalDialog>
-      </Modal>
+          </DialogContent>
+          <ModalFooter
+            handleClick={modal.hide}
+            userAccessLevel={footerSaveAcl}
+            isSaving={isSaving}
+            submitLabel="Add"
+          />
+        </form>
+      </Dialog>
     );
   }
 );

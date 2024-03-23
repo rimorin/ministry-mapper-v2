@@ -1,9 +1,10 @@
-import { Button } from "react-bootstrap";
+// import { Button, Typography } from "@mui/joy";
+import { Button, Typography } from "@mui/material";
 import { SignInDifferentProps } from "../../utils/interface";
 
 const UseAnotherButton = ({ handleClick }: SignInDifferentProps) => (
-  <Button variant="secondary" onClick={handleClick}>
-    Use Another Account
+  <Button onClick={handleClick}>
+    <Typography>Use another email</Typography>
   </Button>
 );
 

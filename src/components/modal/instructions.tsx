@@ -1,20 +1,16 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { useRollbar } from "@rollbar/react";
 import { useState, FormEvent } from "react";
-import { Modal, Form } from "react-bootstrap";
 import { firestore } from "../../firebase";
-import {
-  WIKI_CATEGORIES,
-  USER_ACCESS_LEVELS,
-  NOTIFICATION_TYPES
-} from "../../utils/constants";
+import { USER_ACCESS_LEVELS, NOTIFICATION_TYPES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
 import GenericTextAreaField from "../form/textarea";
-import HelpButton from "../navigation/help";
 import { UpdateAddressInstructionsModalProps } from "../../utils/interface";
 import { doc, updateDoc } from "firebase/firestore";
 import setNotification from "../../utils/helpers/setnotification";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+// import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
 
 const UpdateAddressInstructions = NiceModal.create(
   ({
@@ -54,13 +50,11 @@ const UpdateAddressInstructions = NiceModal.create(
     };
 
     return (
-      <Modal {...bootstrapDialog(modal)}>
-        <Modal.Header>
-          <Modal.Title>{`Instructions on ${addressName}`}</Modal.Title>
-          <HelpButton link={WIKI_CATEGORIES.UPDATE_INSTRUCTIONS} />
-        </Modal.Header>
-        <Form onSubmit={handleSubmitInstructions}>
-          <Modal.Body>
+      <Dialog open={modal.visible} onClose={() => modal.hide()}>
+        {/* <ModalDialog> */}
+        <DialogTitle>{`Instructions on ${addressName}`}</DialogTitle>
+        <form onSubmit={handleSubmitInstructions}>
+          <DialogContent>
             <GenericTextAreaField
               name="instructions"
               rows={5}
@@ -73,15 +67,30 @@ const UpdateAddressInstructions = NiceModal.create(
                 userAccessLevel !== USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
               }
             />
-          </Modal.Body>
+            {/* <Modal.Body>
+            <GenericTextAreaField
+              name="instructions"
+              rows={5}
+              handleChange={(event) => {
+                const { value } = event.target as HTMLInputElement;
+                setAddressInstructions(value);
+              }}
+              changeValue={addressInstructions}
+              readOnly={
+                userAccessLevel !== USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
+              }
+            />
+          </Modal.Body> */}
+          </DialogContent>
           <ModalFooter
             handleClick={() => modal.hide()}
             userAccessLevel={userAccessLevel}
             requiredAcLForSave={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
             isSaving={isSaving}
           />
-        </Form>
-      </Modal>
+        </form>
+        {/* </ModalDialog> */}
+      </Dialog>
     );
   }
 );

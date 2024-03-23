@@ -19,7 +19,7 @@ function Dashboard() {
     });
   }, []);
   if (isLoading) return <Loader />;
-  if (loginUser && !loginUser.emailVerified) {
+  if (loginUser && loginUser.emailVerified) {
     rollbar.info(
       `Unverified user attempting to access the system! Email: ${loginUser.email}, Name: ${loginUser.displayName}`
     );

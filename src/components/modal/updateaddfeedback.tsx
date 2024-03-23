@@ -1,17 +1,16 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { useRollbar } from "@rollbar/react";
 import { useState, FormEvent } from "react";
-// import { Modal, Form } from "react-bootstrap";
 import { firestore } from "../../firebase";
 import { USER_ACCESS_LEVELS, NOTIFICATION_TYPES } from "../../utils/constants";
 import ModalFooter from "../form/footer";
 import GenericTextAreaField from "../form/textarea";
-import HelpButton from "../navigation/help";
 import { UpdateAddressFeedbackModalProps } from "../../utils/interface";
 import { updateDoc, doc } from "firebase/firestore";
 import errorHandler from "../../utils/helpers/errorhandler";
 import setNotification from "../../utils/helpers/setnotification";
-import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+// import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
 
 const UpdateAddressFeedback = NiceModal.create(
   ({
@@ -19,7 +18,6 @@ const UpdateAddressFeedback = NiceModal.create(
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE,
     mapId,
     congregation,
-    helpLink,
     currentFeedback = "",
     currentName = ""
   }: UpdateAddressFeedbackModalProps) => {
@@ -52,29 +50,29 @@ const UpdateAddressFeedback = NiceModal.create(
       }
     };
     return (
-      <Modal open={modal.visible} onClose={() => modal.remove()}>
-        <ModalDialog>
-          <DialogTitle>{`Feedback on ${name}`}</DialogTitle>
-          <DialogContent>
-            <GenericTextAreaField
-              name="feedback"
-              rows={5}
-              handleChange={(event) => {
-                const { value } = event.target as HTMLInputElement;
-                setFeedback(value);
-              }}
-              changeValue={feedback}
-            />
-          </DialogContent>
-          <form onSubmit={handleSubmitFeedback}>
-            <ModalFooter
-              handleClick={modal.hide}
-              userAccessLevel={footerSaveAcl}
-              isSaving={isSaving}
-            />
-          </form>
-        </ModalDialog>
-      </Modal>
+      // <Modal open={modal.visible} onClose={() => modal.remove()}>
+      <Dialog open={modal.visible} onClose={() => modal.remove()}>
+        <DialogTitle>{`Feedback on ${name}`}</DialogTitle>
+        <DialogContent>
+          <GenericTextAreaField
+            name="feedback"
+            rows={5}
+            handleChange={(event) => {
+              const { value } = event.target as HTMLInputElement;
+              setFeedback(value);
+            }}
+            changeValue={feedback}
+          />
+        </DialogContent>
+        <form onSubmit={handleSubmitFeedback}>
+          <ModalFooter
+            handleClick={modal.hide}
+            userAccessLevel={footerSaveAcl}
+            isSaving={isSaving}
+          />
+        </form>
+      </Dialog>
+      // </Modal>
     );
   }
 );

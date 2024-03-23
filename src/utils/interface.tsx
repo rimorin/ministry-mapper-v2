@@ -1,12 +1,16 @@
 import { User } from "firebase/auth";
 import { LinkSession, Policy } from "./policies";
-import { ColorPaletteProp } from "@mui/joy";
+// import { ColorPaletteProp } from "@mui/joy";
 
 interface territoryInterface {
   territoryId: string;
 }
 interface mapInterface {
   mapId: string;
+  location?: {
+    latitude: number;
+    longitude: number;
+  };
 }
 interface userInterface {
   user: User;
@@ -257,7 +261,6 @@ export interface territoryTableProps extends postalInterface {
     completedValue: number;
     completedDisplay: string;
   };
-  adminUnitHeaderStyle?: string;
   userAccessLevel?: number;
   territoryType?: number;
   handleUnitStatusUpdate: (event: React.MouseEvent<HTMLElement>) => void;
@@ -364,6 +367,8 @@ export interface UserRoleBadgeProps {
   role: number | undefined;
 }
 
+export type CongUsersProps = congregationInterface;
+
 export type WelcomeProps = nameInterface;
 export interface AssignmentModalProps extends congregationInterface {
   assignments: LinkSession[];
@@ -393,6 +398,13 @@ export interface ChangeAddressPostalCodeModalProps
     congregationInterface,
     footerInterface {}
 
+export interface ChangeMapLocationModalProps
+  extends mapInterface,
+    congregationInterface,
+    footerInterface {
+  name: string;
+}
+
 export interface ChangeTerritoryCodeModalProps
   extends congregationInterface,
     footerInterface,
@@ -409,6 +421,13 @@ export interface ChangeTerritoryNameModalProps
 
 export interface UpdateCongregationOptionsModalProps {
   currentCongregation: string;
+}
+
+export interface UpdateMapTerritoryModalProps
+  extends mapInterface,
+    congregationInterface,
+    territoryInterface {
+  territories: Array<territoryDetails>;
 }
 
 export interface UpdateCongregationSettingsModalProps {
@@ -457,7 +476,8 @@ export interface ConfirmSlipDetailsModalProps {
   addressName: string;
   userAccessLevel: number | undefined;
   defaultExpiryHrs: number;
-  marks: Array<SliderMark>;
+  maxSequence: number;
+  maxFloor: number;
   type: number;
 }
 
@@ -521,5 +541,5 @@ export interface AlertSnackbarProps {
 export interface SnackbarAlertType {
   open: boolean;
   message: string;
-  color: ColorPaletteProp;
+  color: string;
 }

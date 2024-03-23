@@ -22,7 +22,6 @@ function Territory() {
 
   const [lowestFloor, setLowestFloor] = useState<number>(0);
   const [highestFloor, setHighestFloor] = useState<number>(0);
-
   const [lowestSequence, setLowestSequence] = useState<number>(0);
   const [highestSequence, setHighestSequence] = useState<number>(0);
 
@@ -37,19 +36,24 @@ function Territory() {
 
       const linkrec = new LinkSession(linkSnapshot.data());
 
-      setPublisherName(linkrec.publisherName);
-      setCongregationMaxTries(linkrec.maxTries);
+      setPublisherName(linkrec.publisher_name);
+      setCongregationMaxTries(linkrec.max_tries);
       setMap(linkrec.map);
       setCongregation(linkrec.congregation);
-      const tokenEndtime = linkrec.endDate;
-      const currentTimestamp = new Date(linkrec.createDate).getTime();
+      const tokenEndtime = linkrec.end_date;
+      const currentTimestamp = new Date().getTime();
       const endTimestamp = new Date(tokenEndtime).getTime();
+      console.log(
+        `start: ${new Date(linkrec.create_date)}, end: ${new Date(
+          tokenEndtime
+        )}`
+      );
       setTokenEndTime(tokenEndtime);
       setIsLinkExpired(currentTimestamp > endTimestamp);
-      setLowestFloor(linkrec.lowestFloor);
-      setHighestFloor(linkrec.highestFloor);
-      setLowestSequence(linkrec.lowestSequence);
-      setHighestSequence(linkrec.highestSequence);
+      setLowestFloor(linkrec.lowest_floor);
+      setHighestFloor(linkrec.highest_floor);
+      setLowestSequence(linkrec.lowest_sequence);
+      setHighestSequence(linkrec.highest_sequence);
     } catch (error) {
       console.error(error);
     } finally {
@@ -65,6 +69,7 @@ function Territory() {
     document.title = "Ministry Mapper";
     return <InvalidPage />;
   }
+  console.log(`tokenEndTime: ${tokenEndTime}, is expired: ${isLinkExpired}`);
   return (
     <Slip
       tokenEndtime={tokenEndTime}
@@ -72,14 +77,10 @@ function Territory() {
       congregationcode={congregation}
       maxTries={congregationMaxTries}
       pubName={publisherName}
-      floorFilter={
-        lowestFloor !== highestFloor ? [lowestFloor, highestFloor] : undefined
-      }
-      seqFilter={
-        lowestSequence !== highestSequence
-          ? [lowestSequence, highestSequence]
-          : undefined
-      }
+      lowestFloor={lowestFloor}
+      highestFloor={highestFloor}
+      lowestSequence={lowestSequence}
+      highestSequence={highestSequence}
     ></Slip>
   );
 }

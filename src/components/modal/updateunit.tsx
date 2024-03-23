@@ -1,18 +1,29 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import ModalManager from "@ebay/nice-modal-react";
 import { useRollbar } from "@rollbar/react";
-import { useState, FormEvent, ChangeEvent } from "react";
-import { Modal, Form, Button, Container, Card } from "react-bootstrap";
-import { confirmAlert } from "react-confirm-alert";
+import { useState, FormEvent, ChangeEvent, useContext } from "react";
 import { firestore } from "../../firebase";
-import { MULTI_BATCH_ACTIONS, WIKI_CATEGORIES } from "../../utils/constants";
+import { MULTI_BATCH_ACTIONS } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
-import processPostalUnitNumber from "../../utils/helpers/processpostalno";
-import { UpdateUnitModalProps } from "../../utils/interface";
+import {
+  AlertSnackbarProps,
+  UpdateUnitModalProps
+} from "../../utils/interface";
 import GenericInputField from "../form/input";
-import ModalSubmitButton from "../form/submit";
-import HelpButton from "../navigation/help";
 import { collection, where, query } from "firebase/firestore";
 import MultiBatchHandler from "../../utils/helpers/multibatchupdate";
+// import {
+//   Button,
+//   DialogContent,
+//   DialogTitle,
+//   Modal,
+//   ModalDialog
+// } from "@mui/joy";
+import ModalFooter from "../form/footer";
+import { AlertContext } from "../utils/context";
+import processPostalUnitNumber from "../../utils/helpers/processpostalno";
+import ConfirmationDialog from "./confirmation";
+import { Button, Dialog, DialogContent, DialogTitle } from "@mui/material";
 
 const UpdateUnit = NiceModal.create(
   ({
@@ -29,6 +40,7 @@ const UpdateUnit = NiceModal.create(
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
     const rollbar = useRollbar();
+    const { setSnackbarAlert } = useContext(AlertContext) as AlertSnackbarProps;
 
     const processPostalUnitSequence = async (
       mapId: string,
@@ -61,15 +73,15 @@ const UpdateUnit = NiceModal.create(
       event.preventDefault();
       processPostalUnitSequence(mapId, unitNo, unitSeq);
     };
+    console.log(
+      `UpdateUnit: unitNo: ${unitNo}, unitDisplay: ${unitDisplay}, unitSequence: ${unitSequence}, unitLength: ${unitLength}`
+    );
 
     return (
-      <Modal {...bootstrapDialog(modal)}>
-        <Modal.Header>
-          <Modal.Title>Unit {unitDisplay}</Modal.Title>
-          <HelpButton link={WIKI_CATEGORIES.UPDATE_UNIT_NUMBER} />
-        </Modal.Header>
-        <Form onSubmit={handleUpdateUnit}>
-          <Modal.Body>
+      <Dialog open={modal.visible} onClose={() => modal.hide()}>
+        <form onSubmit={handleUpdateUnit}>
+          <DialogTitle>Unit {unitDisplay}</DialogTitle>
+          <DialogContent>
             <GenericInputField
               inputType="number"
               label="Sequence Number"
@@ -84,77 +96,41 @@ const UpdateUnit = NiceModal.create(
                 unitSeq === undefined ? undefined : unitSeq.toString()
               }
             />
-          </Modal.Body>
-          <Modal.Footer className="justify-content-around">
-            <Button variant="secondary" onClick={() => modal.hide()}>
-              Close
-            </Button>
+          </DialogContent>
+          <ModalFooter isSaving={isSaving} handleClick={modal.remove}>
             <Button
-              variant="secondary"
               onClick={() => {
                 const hasOnlyOneUnitNumber = unitLength === 1;
                 if (hasOnlyOneUnitNumber) {
-                  alert(`Territory requires at least 1 unit number.`);
+                  // alert(`Territory requires at least 1 unit number.`);
+                  setSnackbarAlert({
+                    message: "Territory requires at least 1 unit number.",
+                    color: "warning",
+                    open: true
+                  });
                   return;
                 }
-                modal.hide();
-                confirmAlert({
-                  customUI: ({ onClose }) => {
-                    return (
-                      <Container>
-                        <Card bg="warning" className="text-center">
-                          <Card.Header>
-                            Warning ⚠️
-                            <HelpButton
-                              link={WIKI_CATEGORIES.ADD_DELETE_PRIVATE_PROPERTY}
-                              isWarningButton={true}
-                            />
-                          </Card.Header>
-                          <Card.Body>
-                            <Card.Title>Are You Very Sure ?</Card.Title>
-                            <Card.Text>
-                              This action will delete unit number {unitNo} of{" "}
-                              {name}.
-                            </Card.Text>
-                            <Button
-                              className="m-1"
-                              variant="primary"
-                              onClick={() => {
-                                processPostalUnitNumber(
-                                  congregation,
-                                  mapId,
-                                  unitNo,
-                                  addressData,
-                                  true
-                                );
-                                onClose();
-                              }}
-                            >
-                              Yes, Delete It.
-                            </Button>
-                            <Button
-                              className="no-confirm-btn"
-                              variant="primary"
-                              onClick={() => {
-                                onClose();
-                              }}
-                            >
-                              No
-                            </Button>
-                          </Card.Body>
-                        </Card>
-                      </Container>
+                ModalManager.show(ConfirmationDialog, {
+                  message: `This action will delete unit number ${unitNo} of ${name}.`
+                }).then((result) => {
+                  if (result) {
+                    processPostalUnitNumber(
+                      congregation,
+                      mapId,
+                      unitNo,
+                      addressData,
+                      true
                     );
+                    modal.hide();
                   }
                 });
               }}
             >
-              Delete Unit
+              Delete
             </Button>
-            <ModalSubmitButton isSaving={isSaving} />
-          </Modal.Footer>
-        </Form>
-      </Modal>
+          </ModalFooter>
+        </form>
+      </Dialog>
     );
   }
 );

@@ -1,25 +1,47 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { Modal, ListGroup, Button } from "react-bootstrap";
-import {
-  WIKI_CATEGORIES,
-  LINK_SELECTOR_VIEWPORT_HEIGHT,
-  USER_ACCESS_LEVELS
-} from "../../utils/constants";
-import LinkTypeDescription from "../../utils/helpers/linkdesc";
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
+import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import LinkDateFormatter from "../../utils/helpers/linkdateformatter";
 import { LinkSession } from "../../utils/policies";
 import ModalFooter from "../form/footer";
-import HelpButton from "../navigation/help";
 import { firestore } from "../../firebase";
 import { useEffect, useState } from "react";
 import { AssignmentModalProps } from "../../utils/interface";
 import { deleteDoc, doc } from "firebase/firestore";
+import DeleteIcon from "@mui/icons-material/Delete";
 import buildLink from "../../utils/helpers/buildlink";
+import LaunchIcon from "@mui/icons-material/Launch";
+import {
+  Box,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  Divider,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Typography
+} from "@mui/material";
+import React from "react";
+// import {
+//   Box,
+//   DialogContent,
+//   DialogTitle,
+//   IconButton,
+//   List,
+//   ListDivider,
+//   ListItem,
+//   ListItemContent,
+//   ListItemDecorator,
+//   Modal,
+//   ModalDialog,
+//   Typography
+// } from "@mui/joy";
 
 const GetAssignments = NiceModal.create(
   ({
     assignments,
-    assignmentType,
     assignmentTerritory,
     congregation
   }: AssignmentModalProps) => {
@@ -34,11 +56,108 @@ const GetAssignments = NiceModal.create(
       }
     }, [currentAssignments]);
 
-    const isAssignOrPersonalAssignments = assignmentType && assignmentTerritory;
-
     return (
-      <Modal {...bootstrapDialog(modal)}>
-        <Modal.Header>
+      <Dialog open={modal.visible} onClose={() => modal.hide()}>
+        {/* <ModalDialog> */}
+        <DialogTitle>{`${assignmentTerritory} Assignments`}</DialogTitle>
+        <DialogContent>
+          <Box
+            sx={{
+              maxHeight: 350,
+              overflow: "auto",
+              borderRadius: "sm"
+            }}
+          >
+            <List>
+              {currentAssignments.map((assignment) => {
+                const linkId = assignment.key;
+                return (
+                  <>
+                    <ListItem
+                      key={`assignment-${assignment.key}`}
+                      secondaryAction={
+                        <IconButton
+                          onClick={() => {
+                            deleteDoc(
+                              doc(
+                                firestore,
+                                `congregations/${congregation}/links`,
+                                linkId
+                              )
+                            );
+                            setCurrentAssignments((currentAssignments) =>
+                              currentAssignments.filter(
+                                (assignment) => assignment.key !== linkId
+                              )
+                            );
+                          }}
+                        >
+                          <DeleteIcon />
+                        </IconButton>
+                      }
+                    >
+                      <ListItemButton
+                        role={undefined}
+                        onClick={() => {
+                          window.open(
+                            buildLink(assignment.key),
+                            "_blank",
+                            "noopener"
+                          );
+                        }}
+                        dense
+                      >
+                        <LaunchIcon />
+                      </ListItemButton>
+                      {/* <ListItemDecorator>
+                        <IconButton
+                          onClick={() => {
+                            window.open(
+                              buildLink(assignment.key),
+                              "_blank",
+                              "noopener"
+                            );
+                          }}
+                        ></IconButton>
+                      </ListItemDecorator> */}
+                      <ListItemText
+                        primary={assignment.publisher_name}
+                        secondary={
+                          <React.Fragment>
+                            {/* {assignment.publisher_name && (
+                              <Typography variant="body2">
+                                Publisher : {assignment.publisher_name}
+                              </Typography>
+                            )} */}
+                            <Typography variant="body2">
+                              Created Dt :{" "}
+                              {LinkDateFormatter.format(
+                                new Date(assignment.create_date)
+                              )}
+                            </Typography>
+                            <Typography variant="body2">
+                              Expiry Dt :{" "}
+                              {LinkDateFormatter.format(
+                                new Date(assignment.end_date)
+                              )}
+                            </Typography>
+                          </React.Fragment>
+                        }
+                      />
+                    </ListItem>
+                    <Divider />
+                  </>
+                );
+              })}
+            </List>
+          </Box>
+        </DialogContent>
+        <ModalFooter
+          handleClick={() => modal.hide()}
+          userAccessLevel={USER_ACCESS_LEVELS.READ_ONLY.CODE}
+        />
+        {/* </ModalDialog> */}
+        {/* <Modal.Header>
           <Modal.Title>
             {isAssignOrPersonalAssignments
               ? `${assignmentTerritory} ${LinkTypeDescription(
@@ -47,8 +166,8 @@ const GetAssignments = NiceModal.create(
               : "Assignments"}
           </Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.GET_ASSIGNMENTS} />
-        </Modal.Header>
-        <Modal.Body>
+        </Modal.Header> */}
+        {/* <Modal.Body>
           <ListGroup
             style={{
               height: LINK_SELECTOR_VIEWPORT_HEIGHT,
@@ -121,12 +240,8 @@ const GetAssignments = NiceModal.create(
               );
             })}
           </ListGroup>
-        </Modal.Body>
-        <ModalFooter
-          handleClick={() => modal.hide()}
-          userAccessLevel={USER_ACCESS_LEVELS.READ_ONLY.CODE}
-        />
-      </Modal>
+        </Modal.Body> */}
+      </Dialog>
     );
   }
 );

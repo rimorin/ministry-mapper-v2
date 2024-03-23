@@ -1,12 +1,12 @@
 import * as React from "react";
-import Box from "@mui/joy/Box";
-import Button from "@mui/joy/Button";
-import FormControl from "@mui/joy/FormControl";
-import FormLabel, { formLabelClasses } from "@mui/joy/FormLabel";
-import IconButton from "@mui/joy/IconButton";
-import Input from "@mui/joy/Input";
-import Typography from "@mui/joy/Typography";
-import Stack from "@mui/joy/Stack";
+// import Box from "@mui/joy/Box";
+// import Button from "@mui/joy/Button";
+// import FormControl from "@mui/joy/FormControl";
+// import FormLabel, { formLabelClasses } from "@mui/joy/FormLabel";
+// import IconButton from "@mui/joy/IconButton";
+// import Input from "@mui/joy/Input";
+// import Typography from "@mui/joy/Typography";
+// import Stack from "@mui/joy/Stack";
 import ColorSchemeToggle from "../components/ColorSchemeToggle";
 import {
   createUserWithEmailAndPassword,
@@ -21,6 +21,17 @@ import { AlertContext } from "../components/utils/context";
 import { AlertSnackbarProps } from "../utils/interface";
 import { FirebaseError } from "firebase/app";
 import { useRollbar } from "@rollbar/react";
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  IconButton,
+  Input,
+  Stack,
+  Typography,
+  formLabelClasses
+} from "@mui/material";
 
 interface FormElements extends HTMLFormControlsCollection {
   email: HTMLInputElement;
@@ -62,10 +73,10 @@ export default function JoySignInSideTemplate() {
         }}
       >
         <Box sx={{ gap: 2, display: "flex", alignItems: "center" }}>
-          <IconButton disabled variant="plain" size="sm">
+          <IconButton disabled size="small">
             <img src="favicon-32x32.png" alt="Ministry Mapper Icon" />
           </IconButton>
-          <Typography level="title-lg">Ministry Mapper</Typography>
+          <Typography variant="h6">Ministry Mapper</Typography>
         </Box>
         <ColorSchemeToggle />
       </Box>
@@ -94,8 +105,8 @@ export default function JoySignInSideTemplate() {
       >
         <Stack gap={4}>
           <Stack gap={1}>
-            <Typography level="h3">Create Your Account</Typography>
-            <Typography level="body-sm">
+            <Typography variant="h6">Create Your Account</Typography>
+            <Typography variant="body1">
               Please approach your respective congregation administrators for
               further instructions after you have created and verified your
               account.
@@ -183,7 +194,7 @@ export default function JoySignInSideTemplate() {
         </Stack>
       </Box>
       <Box component="footer" sx={{ py: 3 }}>
-        <Typography level="body-xs" textAlign="center">
+        <Typography variant="body2" textAlign="center">
           © Ministry Mapper {new Date().getFullYear()}
         </Typography>
       </Box>

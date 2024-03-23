@@ -1,16 +1,16 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { useRollbar } from "@rollbar/react";
 import { useState, FormEvent, ChangeEvent } from "react";
 import { firestore } from "../../firebase";
-import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
+import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
-import HelpButton from "../navigation/help";
 import IsValidTerritoryCode from "../../utils/helpers/checkterritorycd";
 import { NewTerritoryCodeModalProps } from "../../utils/interface";
 import { getDocs, collection, where, query, addDoc } from "firebase/firestore";
-import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+// import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
 
 const NewTerritoryCode = NiceModal.create(
   ({
@@ -56,47 +56,45 @@ const NewTerritoryCode = NiceModal.create(
       }
     };
     return (
-      <Modal open={modal.visible} onClose={() => modal.hide()}>
-        <ModalDialog>
-          <DialogTitle>Create New Territory</DialogTitle>
-          <form onSubmit={handleCreateTerritory}>
-            <DialogContent>
-              <GenericInputField
-                label="Territory Code"
-                name="code"
-                handleChange={(e: ChangeEvent<HTMLElement>) => {
-                  const { value } = e.target as HTMLInputElement;
-                  if (!IsValidTerritoryCode(value)) {
-                    return;
-                  }
-                  setCode(value);
-                }}
-                changeValue={code}
-                required={true}
-                placeholder={"Territory code. For eg, M01, W12, etc."}
-              />
-              <GenericInputField
-                label="Name"
-                name="name"
-                handleChange={(e: ChangeEvent<HTMLElement>) => {
-                  const { value } = e.target as HTMLInputElement;
-                  setName(value);
-                }}
-                changeValue={name}
-                required={true}
-                placeholder={
-                  "Name of the territory. For eg, 801-810, Woodlands Drive."
+      <Dialog open={modal.visible} onClose={() => modal.hide()}>
+        <DialogTitle>Create New Territory</DialogTitle>
+        <form onSubmit={handleCreateTerritory}>
+          <DialogContent>
+            <GenericInputField
+              label="Territory Code"
+              name="code"
+              handleChange={(e: ChangeEvent<HTMLElement>) => {
+                const { value } = e.target as HTMLInputElement;
+                if (!IsValidTerritoryCode(value)) {
+                  return;
                 }
-              />
-            </DialogContent>
-            <ModalFooter
-              handleClick={modal.hide}
-              userAccessLevel={footerSaveAcl}
-              isSaving={isSaving}
+                setCode(value);
+              }}
+              changeValue={code}
+              required={true}
+              placeholder={"Territory code. For eg, M01, W12, etc."}
             />
-          </form>
-        </ModalDialog>
-      </Modal>
+            <GenericInputField
+              label="Name"
+              name="name"
+              handleChange={(e: ChangeEvent<HTMLElement>) => {
+                const { value } = e.target as HTMLInputElement;
+                setName(value);
+              }}
+              changeValue={name}
+              required={true}
+              placeholder={
+                "Name of the territory. For eg, 801-810, Woodlands Drive."
+              }
+            />
+          </DialogContent>
+          <ModalFooter
+            handleClick={modal.hide}
+            userAccessLevel={footerSaveAcl}
+            isSaving={isSaving}
+          />
+        </form>
+      </Dialog>
     );
   }
 );

@@ -1,48 +1,57 @@
 import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { ConfirmationModalProps } from "../../utils/interface";
+// import {
+//   Button,
+//   DialogActions,
+//   DialogContent,
+//   DialogTitle,
+//   Modal,
+//   ModalDialog,
+//   Typography
+// } from "@mui/joy";
 import {
-  Box,
   Button,
+  Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
-  Modal,
-  ModalDialog,
   Typography
-} from "@mui/joy";
+} from "@mui/material";
 const ConfirmationDialog = NiceModal.create(
   ({ title, message }: ConfirmationModalProps) => {
     const modal = useModal();
 
     return (
-      <Modal open={modal.visible} onClose={() => modal.hide()}>
-        <ModalDialog>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogContent>{message}</DialogContent>
-          <DialogActions
-            buttonFlex="0 1 200px"
-            sx={{ width: "100%", justifyContent: "center" }}
+      <Dialog open={modal.visible} onClose={() => modal.hide()}>
+        <DialogTitle>{title}</DialogTitle>
+        <DialogContent>
+          <Typography>{message}</Typography>
+        </DialogContent>
+        <DialogActions
+          sx={{
+            width: "100%",
+            justifyContent: "center",
+            flex: "0 1 200px" // this is equivalent to buttonFlex
+          }}
+        >
+          <Button
+            color="primary"
+            onClick={() => {
+              modal.resolve(true);
+              modal.hide();
+            }}
           >
-            <Button
-              variant="solid"
-              color="primary"
-              onClick={() => {
-                modal.resolve(true);
-                modal.hide();
-              }}
-            >
-              Ok
-            </Button>
-            <Button
-              variant="outlined"
-              color="neutral"
-              onClick={() => modal.hide()}
-            >
-              Cancel
-            </Button>
-          </DialogActions>
-        </ModalDialog>
-      </Modal>
+            Ok
+          </Button>
+          <Button
+            variant="outlined"
+            // color="neutral"
+            onClick={() => modal.hide()}
+          >
+            Cancel
+          </Button>
+        </DialogActions>
+      </Dialog>
     );
   }
 );

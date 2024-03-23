@@ -1,6 +1,8 @@
-import Calendar from "react-calendar";
 import { FormProps } from "../../utils/interface";
-import { Stack, Typography } from "@mui/joy";
+import { Stack, Typography } from "@mui/material";
+import dayjs from "dayjs";
+import { DateCalendar } from "@mui/x-date-pickers";
+// import { Stack, Typography } from "@mui/joy";
 
 const DncDateField = ({ handleDateChange, changeDate }: FormProps) => {
   const dateValue = changeDate ? new Date(changeDate) : new Date();
@@ -14,8 +16,13 @@ const DncDateField = ({ handleDateChange, changeDate }: FormProps) => {
       }}
       spacing={1}
     >
-      <Typography level="title-sm">Date</Typography>
-      <Calendar onChange={handleDateChange} value={dateValue} />
+      <Typography variant="subtitle1">Date</Typography>
+      <DateCalendar
+        value={dayjs(dateValue)}
+        onChange={(value) =>
+          handleDateChange && handleDateChange(value as Date)
+        }
+      />
     </Stack>
   );
 };

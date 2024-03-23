@@ -1,6 +1,6 @@
-import { Form } from "react-bootstrap";
+import { FormControl, FormLabel, TextField } from "@mui/material";
 import { FormProps } from "../../utils/interface";
-import { FormControl, FormLabel, Textarea } from "@mui/joy";
+// import { FormControl, FormLabel, Textarea } from "@mui/joy";
 
 const GenericTextAreaField = ({
   handleChange,
@@ -15,19 +15,8 @@ const GenericTextAreaField = ({
   return (
     <FormControl>
       <FormLabel>{label}</FormLabel>
-      {/* <Form.Group className="mb-3" controlId={`formBasic${name}TextAreaField`}>
-      {label && <Form.Label>{label}</Form.Label>} */}
-      {/* <Form.Control
-        onChange={handleChange}
-        name={name}
-        as="textarea"
-        rows={rows}
-        placeholder={placeholder}
-        value={changeValue}
-        required={required}
-        readOnly={readOnly}
-      /> */}
-      <Textarea
+      <TextField
+        multiline
         onChange={handleChange}
         name={name}
         minRows={rows}
@@ -35,7 +24,16 @@ const GenericTextAreaField = ({
         placeholder={placeholder}
         value={changeValue}
         required={required}
-        readOnly={readOnly}
+        // readOnly={readOnly}
+        sx={
+          readOnly
+            ? {
+                backgroundColor: "background.default",
+                color: "text.primary",
+                cursor: "not-allowed"
+              }
+            : {}
+        }
       />
     </FormControl>
   );

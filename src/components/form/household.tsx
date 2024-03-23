@@ -1,10 +1,17 @@
-import { Option, Select } from "@mui/joy";
+// import { Option, Select } from "@mui/joy";
+import {
+  FormControl,
+  FormLabel,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  InputLabel,
+  MenuItem,
+  Select
+} from "@mui/material";
 import {
   DEFAULT_CONGREGATION_OPTION_IS_MULTIPLE,
   DEFAULT_MULTPLE_OPTION_DELIMITER
 } from "../../utils/constants";
-import { HouseholdProps, SelectProps } from "../../utils/interface";
-// import Select from "react-select";
+import { HouseholdProps } from "../../utils/interface";
 
 const HouseholdField = ({
   handleChange,
@@ -37,12 +44,9 @@ const HouseholdField = ({
     changeValue,
     isMultiselect
   );
-  console.log(`isMultiselectValue: ${isMultiselectValue}`);
-  console.log(selectedOptions);
-
   return (
-    <div className="mb-3">
-      <div className="mb-2 inline-block">Household</div>
+    <FormControl sx={{ m: 1 }}>
+      <FormLabel>Household</FormLabel>
       <Select
         // options={options}
         // onChange={handleChange}
@@ -65,12 +69,12 @@ const HouseholdField = ({
         // )}
       >
         {options.map((option) => (
-          <Option key={option.value} value={option.value}>
+          <MenuItem key={option.value} value={option.value}>
             {option.label}
-          </Option>
+          </MenuItem>
         ))}
       </Select>
-    </div>
+    </FormControl>
   );
 };
 

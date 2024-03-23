@@ -1,15 +1,15 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { useRollbar } from "@rollbar/react";
 import { useState, FormEvent, ChangeEvent } from "react";
-import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
+import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
-import HelpButton from "../navigation/help";
 import { firestore } from "../../firebase";
 import { ChangeAddressPostalCodeModalProps } from "../../utils/interface";
 import { doc, updateDoc } from "firebase/firestore";
-import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
+import { Dialog, DialogContent, DialogTitle, Stack } from "@mui/material";
+// import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
 
 const ChangeAddressPostalCode = NiceModal.create(
   ({
@@ -39,11 +39,11 @@ const ChangeAddressPostalCode = NiceModal.create(
       }
     };
     return (
-      <Modal open={modal.visible} onClose={() => modal.hide()}>
-        <ModalDialog>
-          <DialogTitle>Change Address Postal Code</DialogTitle>
-          <form onSubmit={handleUpdatePostalcode}>
-            <DialogContent>
+      <Dialog open={modal.visible} onClose={() => modal.hide()} fullScreen>
+        <DialogTitle align="center">Change Location</DialogTitle>
+        <form onSubmit={handleUpdatePostalcode}>
+          <DialogContent dividers>
+            <Stack direction="column" spacing={1}>
               <GenericInputField
                 inputType="number"
                 label="Existing Postal Code"
@@ -66,16 +66,17 @@ const ChangeAddressPostalCode = NiceModal.create(
                   "Block/Building postal code. Eg, 730801, 752367, etc"
                 }
               />
-            </DialogContent>
-            <ModalFooter
-              handleClick={modal.hide}
-              userAccessLevel={footerSaveAcl}
-              isSaving={isSaving}
-              submitLabel="Change"
-            />
-          </form>
-        </ModalDialog>
-      </Modal>
+            </Stack>
+          </DialogContent>
+          <ModalFooter
+            handleClick={modal.hide}
+            userAccessLevel={footerSaveAcl}
+            isSaving={isSaving}
+            submitLabel="Change"
+          />
+        </form>
+        {/* </ModalDialog> */}
+      </Dialog>
     );
   }
 );

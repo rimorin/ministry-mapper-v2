@@ -1,12 +1,11 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { useRollbar } from "@rollbar/react";
 import { useState, FormEvent, ChangeEvent } from "react";
 import {
   USER_ACCESS_LEVELS,
   TERRITORY_TYPES,
   STATUS_CODES,
-  NOT_HOME_STATUS_CODES,
-  WIKI_CATEGORIES
+  NOT_HOME_STATUS_CODES
 } from "../../utils/constants";
 import isValidPostal from "../../utils/helpers/checkvalidpostal";
 import isValidPostalSequence from "../../utils/helpers/checkvalidseq";
@@ -16,11 +15,11 @@ import { NewPrivateAddressModalProps } from "../../utils/interface";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import GenericTextAreaField from "../form/textarea";
-import HelpButton from "../navigation/help";
 import { firestore } from "../../firebase";
 import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import MultiBatchSetter from "../../utils/helpers/multibatchcreate";
-import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+// import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
 
 const NewPrivateAddress = NiceModal.create(
   ({
@@ -113,64 +112,63 @@ const NewPrivateAddress = NiceModal.create(
       }
     };
     return (
-      <Modal open={modal.visible} onClose={() => modal.hide()}>
+      <Dialog open={modal.visible} onClose={() => modal.hide()}>
         {/* <Modal.Header>
           <Modal.Title>Create Private Address</Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.CREATE_PRIVATE_ADDRESS} />
         </Modal.Header> */}
-        <ModalDialog>
-          <DialogTitle>Create Private Address</DialogTitle>
-          <form onSubmit={handleCreateTerritoryAddress}>
-            <DialogContent>
-              <p>
-                These are non-governmental owned residential properties such as
-                terrace houses, semi-detached houses, bungalows or cluster
-                houses.
-              </p>
-              <GenericInputField
-                inputType="number"
-                label="Postal Code"
-                name="postalcode"
-                handleChange={(e: ChangeEvent<HTMLElement>) => {
-                  const { value } = e.target as HTMLInputElement;
-                  setPostalCode(value);
-                }}
-                changeValue={postalCode}
-                required={true}
-                placeholder={"Estate postal code"}
-                information="A postal code within the private estate. This code will be used for locating the estate."
-              />
-              <GenericInputField
-                label="Address Name"
-                name="name"
-                handleChange={(e: ChangeEvent<HTMLElement>) => {
-                  const { value } = e.target as HTMLInputElement;
-                  setName(value);
-                }}
-                changeValue={name}
-                required={true}
-                placeholder={"For eg, Sembawang Boulevard Crescent"}
-              />
-              <GenericTextAreaField
-                label="House Sequence"
-                name="units"
-                placeholder="House sequence with comma seperator. For eg, 1A,1B,2A ..."
-                handleChange={(e: ChangeEvent<HTMLElement>) => {
-                  const { value } = e.target as HTMLInputElement;
-                  setSequence(value);
-                }}
-                changeValue={sequence}
-                required={true}
-              />
-            </DialogContent>
-            <ModalFooter
-              handleClick={modal.hide}
-              userAccessLevel={footerSaveAcl}
-              isSaving={isSaving}
+        {/* <ModalDialog> */}
+        <DialogTitle>Create Private Address</DialogTitle>
+        <form onSubmit={handleCreateTerritoryAddress}>
+          <DialogContent>
+            <p>
+              These are non-governmental owned residential properties such as
+              terrace houses, semi-detached houses, bungalows or cluster houses.
+            </p>
+            <GenericInputField
+              inputType="number"
+              label="Postal Code"
+              name="postalcode"
+              handleChange={(e: ChangeEvent<HTMLElement>) => {
+                const { value } = e.target as HTMLInputElement;
+                setPostalCode(value);
+              }}
+              changeValue={postalCode}
+              required={true}
+              placeholder={"Estate postal code"}
+              information="A postal code within the private estate. This code will be used for locating the estate."
             />
-          </form>
-        </ModalDialog>
-      </Modal>
+            <GenericInputField
+              label="Address Name"
+              name="name"
+              handleChange={(e: ChangeEvent<HTMLElement>) => {
+                const { value } = e.target as HTMLInputElement;
+                setName(value);
+              }}
+              changeValue={name}
+              required={true}
+              placeholder={"For eg, Sembawang Boulevard Crescent"}
+            />
+            <GenericTextAreaField
+              label="House Sequence"
+              name="units"
+              placeholder="House sequence with comma seperator. For eg, 1A,1B,2A ..."
+              handleChange={(e: ChangeEvent<HTMLElement>) => {
+                const { value } = e.target as HTMLInputElement;
+                setSequence(value);
+              }}
+              changeValue={sequence}
+              required={true}
+            />
+          </DialogContent>
+          <ModalFooter
+            handleClick={modal.hide}
+            userAccessLevel={footerSaveAcl}
+            isSaving={isSaving}
+          />
+        </form>
+        {/* </ModalDialog> */}
+      </Dialog>
     );
   }
 );

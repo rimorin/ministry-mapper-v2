@@ -1,8 +1,9 @@
+import { Button, DialogActions } from "@mui/material";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import { FooterProps } from "../../utils/interface";
 import ModalSubmitButton from "../form/submit";
 import ComponentAuthorizer from "../navigation/authorizer";
-import { Button, DialogActions } from "@mui/joy";
+// import { Button, DialogActions } from "@mui/joy";
 
 const ModalFooter = ({
   handleClick,
@@ -16,8 +17,11 @@ const ModalFooter = ({
 }: FooterProps) => {
   return (
     <DialogActions
-      buttonFlex="0 1 200px"
-      sx={{ width: "100%", justifyContent: "center" }}
+      sx={{
+        width: "100%",
+        justifyContent: "center",
+        flex: "0 1 200px"
+      }}
     >
       {children && children}
       <ComponentAuthorizer
@@ -34,9 +38,7 @@ const ModalFooter = ({
           disabled={disableSubmitBtn}
         />
       </ComponentAuthorizer>
-      <Button color="neutral" onClick={handleClick}>
-        Close
-      </Button>
+      <Button onClick={handleClick}>Close</Button>
     </DialogActions>
   );
 };

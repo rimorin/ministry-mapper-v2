@@ -1,34 +1,16 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { useRollbar } from "@rollbar/react";
-import {
-  useState,
-  FormEvent,
-  useEffect,
-  ChangeEvent,
-  useCallback
-} from "react";
-import {
-  Form,
-  Modal,
-  Table,
-  Button,
-  Card,
-  Container,
-  Badge,
-  OverlayTrigger,
-  Tooltip
-} from "react-bootstrap";
-import { WIKI_CATEGORIES } from "../../utils/constants";
+import { useState, FormEvent, useEffect, ChangeEvent, useRef } from "react";
+import ModalManager from "@ebay/nice-modal-react";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
-import HelpButton from "../navigation/help";
 import { firestore } from "../../firebase";
 import {
   HHOptionProps,
   UpdateCongregationOptionsModalProps
 } from "../../utils/interface";
 import GenericInputField from "../form/input";
-import ModalSubmitButton from "../form/submit";
-import { confirmAlert } from "react-confirm-alert";
 import { flushSync } from "react-dom";
 import {
   collection,
@@ -38,6 +20,33 @@ import {
   query,
   writeBatch
 } from "firebase/firestore";
+// import {
+//   Badge,
+//   Button,
+//   Checkbox,
+//   DialogContent,
+//   DialogTitle,
+//   IconButton,
+//   Modal,
+//   ModalDialog,
+//   Radio,
+//   Table,
+//   Typography
+// } from "@mui/joy";
+import ModalFooter from "../form/footer";
+import ConfirmationDialog from "./confirmation";
+import {
+  Badge,
+  Button,
+  Checkbox,
+  Dialog,
+  DialogContent,
+  DialogTitle,
+  IconButton,
+  Radio,
+  Table,
+  Typography
+} from "@mui/material";
 
 const UpdateCongregationOptions = NiceModal.create(
   ({ currentCongregation }: UpdateCongregationOptionsModalProps) => {
@@ -46,85 +55,8 @@ const UpdateCongregationOptions = NiceModal.create(
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [deletedOptions, setDeletedOptions] = useState<Array<string>>([]);
     const [options, setOptions] = useState<Array<HHOptionProps>>([]);
-    const handleSubmitCongOptions = async (
-      event: FormEvent<HTMLFormElement>
-    ) => {
-      event.preventDefault();
 
-      // check if there are any duplicate codes
-      const codes = options.map((option) => option.code);
-      const uniqueCodes = [...new Set(codes)];
-      if (codes.length !== uniqueCodes.length) {
-        alert("Duplicate option codes found. Please check your input.");
-        return;
-      }
-
-      // check if there are any duplicate sequences
-      const sequences = options.map((option) => option.sequence);
-      const uniqueSequences = [...new Set(sequences)];
-      if (sequences.length !== uniqueSequences.length) {
-        alert("Duplicate option sequences found. Please check your input.");
-        return;
-      }
-
-      modal.hide();
-      if (deletedOptions.length === 0) {
-        updateOptions();
-        return;
-      }
-
-      confirmAlert({
-        customUI: ({ onClose }) => {
-          return (
-            <Container>
-              <Card bg="warning" className="text-center">
-                <Card.Header>
-                  Warning ⚠️
-                  <HelpButton
-                    link={WIKI_CATEGORIES.DELETE_TERRITORIES}
-                    isWarningButton={true}
-                  />
-                </Card.Header>
-                <Card.Body>
-                  <Card.Title>
-                    Do you wish to proceed with the update ?
-                  </Card.Title>
-                  <Card.Text>
-                    You have removed [{deletedOptions.join(", ")}] from the
-                    household dropdown list.
-                    <br />
-                    Existing household records with these options will be
-                    unaffected.
-                    <br />
-                    These existing options will not be counted in the territory
-                    completion percentage.
-                  </Card.Text>
-                  <Button
-                    className="m-1"
-                    variant="primary"
-                    onClick={() => {
-                      updateOptions();
-                      onClose();
-                    }}
-                  >
-                    Yes
-                  </Button>
-                  <Button
-                    className="no-confirm-btn"
-                    variant="primary"
-                    onClick={() => {
-                      onClose();
-                    }}
-                  >
-                    No
-                  </Button>
-                </Card.Body>
-              </Card>
-            </Container>
-          );
-        }
-      });
-    };
+    const tableRef = useRef<HTMLTableElement>(null);
 
     const updateOptions = async () => {
       try {
@@ -172,28 +104,119 @@ const UpdateCongregationOptions = NiceModal.create(
         setIsSaving(false);
       }
     };
+    const handleSubmitCongOptions = async (
+      event: FormEvent<HTMLFormElement>
+    ) => {
+      event.preventDefault();
 
-    const Link = useCallback(
-      ({
-        id,
-        children,
-        title
-      }: {
-        id: string;
-        children: React.ReactNode;
-        title: string;
-      }) => {
-        return (
-          <OverlayTrigger
-            overlay={<Tooltip id={id}>{title}</Tooltip>}
-            placement="bottom"
-          >
-            <u>{children}</u>
-          </OverlayTrigger>
-        );
-      },
-      [currentCongregation]
-    );
+      // check if there are any duplicate codes
+      const codes = options.map((option) => option.code);
+      const uniqueCodes = [...new Set(codes)];
+      if (codes.length !== uniqueCodes.length) {
+        alert("Duplicate option codes found. Please check your input.");
+        return;
+      }
+
+      // check if there are any duplicate sequences
+      const sequences = options.map((option) => option.sequence);
+      const uniqueSequences = [...new Set(sequences)];
+      if (sequences.length !== uniqueSequences.length) {
+        alert("Duplicate option sequences found. Please check your input.");
+        return;
+      }
+
+      if (deletedOptions.length === 0) {
+        updateOptions();
+        modal.hide();
+        return;
+      }
+
+      ModalManager.show(ConfirmationDialog, {
+        message: `You have removed [${deletedOptions.join(
+          ", "
+        )}] from the household dropdown list.\n\nExisting household records with these options will be unaffected.\n\nThese existing options will not be counted in the territory completion percentage.\n\nDo you wish to proceed with the update?`
+      }).then((result) => {
+        if (result) {
+          updateOptions();
+          modal.hide();
+        }
+      });
+
+      //   confirmAlert({
+      //     customUI: ({ onClose }) => {
+      //       return (
+      //         <Container>
+      //           <Card bg="warning" className="text-center">
+      //             <Card.Header>
+      //               Warning ⚠️
+      //               <HelpButton
+      //                 link={WIKI_CATEGORIES.DELETE_TERRITORIES}
+      //                 isWarningButton={true}
+      //               />
+      //             </Card.Header>
+      //             <Card.Body>
+      //               <Card.Title>
+      //                 Do you wish to proceed with the update ?
+      //               </Card.Title>
+      //               <Card.Text>
+      //                 You have removed [{deletedOptions.join(", ")}] from the
+      //                 household dropdown list.
+      //                 <br />
+      //                 Existing household records with these options will be
+      //                 unaffected.
+      //                 <br />
+      //                 These existing options will not be counted in the territory
+      //                 completion percentage.
+      //               </Card.Text>
+      //               <Button
+      //                 className="m-1"
+      //                 variant="primary"
+      //                 onClick={() => {
+      //                   updateOptions();
+      //                   onClose();
+      //                 }}
+      //               >
+      //                 Yes
+      //               </Button>
+      //               <Button
+      //                 className="no-confirm-btn"
+      //                 variant="primary"
+      //                 onClick={() => {
+      //                   onClose();
+      //                 }}
+      //               >
+      //                 No
+      //               </Button>
+      //             </Card.Body>
+      //           </Card>
+      //         </Container>
+      //       );
+      //     }
+      //   });
+      // };
+
+      // const Link = useCallback(
+      //   ({
+      //     id,
+      //     children,
+      //     title
+      //   }: {
+      //     id: string;
+      //     children: React.ReactNode;
+      //     title: string;
+      //   }) => {
+      //     return (
+      //       <OverlayTrigger
+      //         overlay={<Tooltip id={id}>{title}</Tooltip>}
+      //         placement="bottom"
+      //       >
+      //         <u>{children}</u>
+      //       </OverlayTrigger>
+      //     );
+      //   },
+      //   [currentCongregation]
+      // );
+    };
 
     useEffect(() => {
       const getOptions = async () => {
@@ -213,7 +236,7 @@ const UpdateCongregationOptions = NiceModal.create(
             const option = {
               id: element.id,
               code: optionDetails.code,
-              description: optionDetails.name,
+              description: optionDetails.description,
               isCountable: optionDetails.is_countable || false,
               isDefault: optionDetails.is_default || false,
               sequence: optionDetails.sequence
@@ -229,8 +252,138 @@ const UpdateCongregationOptions = NiceModal.create(
     }, [currentCongregation]);
 
     return (
-      <Modal {...bootstrapDialog(modal)} dialogClassName="modal-lg">
-        <Form onSubmit={handleSubmitCongOptions}>
+      <Dialog open={modal.visible} onClose={() => modal.hide()} fullScreen>
+        {/* <ModalDialog layout="fullscreen"> */}
+        <DialogTitle>Household Options</DialogTitle>
+        <DialogContent>
+          <Table stickyHeader ref={tableRef}>
+            <thead>
+              <tr>
+                <th style={{ width: "15%" }}>Code</th>
+                <th style={{ width: "30%" }}>Description</th>
+                <th style={{ width: "15%" }}>Sequence</th>
+                <th style={{ width: "15%" }}>Countable</th>
+                <th style={{ width: "15%" }}>Default</th>
+                <th style={{ width: "10%" }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {options &&
+                options.map((option, index) => (
+                  <tr key={index}>
+                    <td>
+                      {option.isNew ? (
+                        <GenericInputField
+                          name="code"
+                          required
+                          changeValue={option.code}
+                          handleChange={(event: ChangeEvent<HTMLElement>) => {
+                            const { value } = event.target as HTMLInputElement;
+                            const newOptions = [...options];
+                            const optionCode = value
+                              .toLowerCase()
+                              .replace(/[^a-z]/g, "")
+                              .substring(0, 2);
+                            newOptions[index].code = optionCode;
+                            setOptions(newOptions);
+                          }}
+                        />
+                      ) : (
+                        <Badge badgeContent={0}>
+                          <Typography variant="caption">
+                            {option.code}
+                          </Typography>
+                        </Badge>
+                      )}
+                    </td>
+                    <td valign="middle">
+                      <GenericInputField
+                        name="description"
+                        required
+                        changeValue={option.description}
+                        handleChange={(e: ChangeEvent<HTMLElement>) => {
+                          const { value } = e.target as HTMLInputElement;
+                          const newOptions = [...options];
+                          newOptions[index].description = value;
+                          setOptions(newOptions);
+                        }}
+                      />
+                    </td>
+                    <td valign="middle">
+                      <GenericInputField
+                        name="sequence"
+                        inputType="number"
+                        required
+                        changeValue={option.sequence.toString()}
+                        handleChange={(event: ChangeEvent<HTMLElement>) => {
+                          const { value } = event.target as HTMLInputElement;
+                          const sequence = parseInt(value);
+                          if (sequence < 0 || sequence > 99) {
+                            return;
+                          }
+                          const newOptions = [...options];
+                          newOptions[index].sequence = sequence;
+                          setOptions(newOptions);
+                        }}
+                      />
+                    </td>
+                    <td valign="middle">
+                      <Checkbox
+                        checked={option.isCountable}
+                        onChange={(event) => {
+                          const newOptions = [...options];
+                          newOptions[index].isCountable = event.target.checked;
+                          setOptions(newOptions);
+                        }}
+                      />
+                    </td>
+                    <td valign="middle">
+                      <Radio
+                        checked={option.isDefault}
+                        onChange={(event) => {
+                          const newOptions = [...options];
+                          newOptions.forEach((option) => {
+                            option.isDefault = false;
+                          });
+                          newOptions[index].isDefault = event.target.checked;
+                          setOptions(newOptions);
+                        }}
+                      ></Radio>
+                    </td>
+                    <td valign="middle">
+                      <IconButton
+                        onClick={() => {
+                          const newOptions = [...options];
+                          // check if there is only one option left
+                          if (newOptions.length === 1) {
+                            alert(
+                              "There must be at least one option in the dropdown list."
+                            );
+                            return;
+                          }
+                          newOptions.splice(index, 1);
+
+                          if (option.isDefault) {
+                            // if current deleted option is default, set first option as default
+                            newOptions[0].isDefault = true;
+                          }
+
+                          if (option.code) {
+                            // if deleting existing, set code for confirmation alert trigger.
+                            setDeletedOptions([...deletedOptions, option.code]);
+                          }
+                          setOptions(newOptions);
+                        }}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </Table>
+        </DialogContent>
+        {/* <Form onSubmit={handleSubmitCongOptions}>
           <Modal.Header>
             <Modal.Title>Household Options</Modal.Title>
             <HelpButton link={WIKI_CATEGORIES.MANAGE_CONG_OPTIONS} />
@@ -415,8 +568,8 @@ const UpdateCongregationOptions = NiceModal.create(
                   ))}
               </tbody>
             </Table>
-          </Modal.Body>
-          <Modal.Footer className="justify-content-around">
+          </Modal.Body> */}
+        {/* <Modal.Footer className="justify-content-around">
             <Button variant="secondary" onClick={modal.hide}>
               Close
             </Button>
@@ -452,9 +605,54 @@ const UpdateCongregationOptions = NiceModal.create(
               New Option
             </Button>
             <ModalSubmitButton isSaving={isSaving} />
-          </Modal.Footer>
-        </Form>
-      </Modal>
+          </Modal.Footer> */}
+        {/* </Form> */}
+        <form onSubmit={handleSubmitCongOptions}>
+          <ModalFooter
+            handleClick={modal.hide}
+            isSaving={isSaving}
+            userAccessLevel={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
+          >
+            <Button
+              onClick={() => {
+                const newOptions = [...options];
+                // get highest sequence number
+                const nextSequence =
+                  Math.max(...newOptions.map((option) => option.sequence)) + 1;
+                newOptions.push({
+                  id: "",
+                  code: "",
+                  description: "",
+                  isCountable: true,
+                  isDefault: false,
+                  sequence: nextSequence,
+                  isNew: true
+                });
+
+                // rerender table before scrolling to bottom
+                flushSync(() => {
+                  setOptions(newOptions);
+                });
+
+                // scroll to bottom of table
+                // const table = document.getElementById("optionTable");
+                // if (table) {
+                //   table.scrollIntoView({ behavior: "smooth", block: "end" });
+                // }
+                if (tableRef.current) {
+                  tableRef.current.scrollIntoView({
+                    behavior: "smooth",
+                    block: "end"
+                  });
+                }
+              }}
+            >
+              New
+            </Button>
+          </ModalFooter>
+        </form>
+        {/* </ModalDialog> */}
+      </Dialog>
     );
   }
 );

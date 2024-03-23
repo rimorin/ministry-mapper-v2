@@ -1,11 +1,12 @@
 import { memo } from "react";
 import { STATUS_CODES } from "../../utils/constants";
 import { unitProps } from "../../utils/interface";
-import { Badge, Box, Typography } from "@mui/joy";
+// import { Badge, Box, Typography } from "@mui/joy";
 import NightShelterIcon from "@mui/icons-material/NightShelter";
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import DoNotDisturbIcon from "@mui/icons-material/DoNotDisturb";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { Badge, Box, Typography } from "@mui/material";
 const UnitStatus = memo((props: unitProps) => {
   const householdType = props.type;
   const note = props.note;
@@ -33,7 +34,11 @@ const UnitStatus = memo((props: unitProps) => {
     if (householdType === defaultOption) {
       return <></>;
     }
-    return <Typography level="body-xs">{householdType}</Typography>;
+    return (
+      <Typography variant="subtitle1" sx={{ whiteSpace: "nowrap" }}>
+        {householdType}
+      </Typography>
+    );
   };
 
   return (
@@ -46,12 +51,11 @@ const UnitStatus = memo((props: unitProps) => {
     >
       <Badge
         badgeContent={currentStatus === STATUS_CODES.NOT_HOME ? nhcount : 0}
-        size="sm"
       >
         {status}
       </Badge>
       {getHouseholdBadge(householdType, defaultOption)}
-      {note && <Typography level="body-xs">🗒️</Typography>}
+      {note && <Typography variant="body1">🗒️</Typography>}
     </Box>
   );
 });

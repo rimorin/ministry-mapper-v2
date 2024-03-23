@@ -25,10 +25,9 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     addressName: "test",
-    userAccessLevel: 1,
-    isPersonalSlip: true
+    userAccessLevel: 1
   },
-  render: ({ addressName, userAccessLevel, isPersonalSlip }) => (
+  render: ({ addressName, userAccessLevel }) => (
     <NiceModal.Provider>
       <ConfirmSlipDetails
         id="1"
@@ -36,10 +35,12 @@ export const Default: Story = {
         userAccessLevel={userAccessLevel}
         // addresses={[]}
         type={0}
-        marks={[]}
+        // marks={[]}
         // defaultVisible
         defaultExpiryHrs={24}
         // isPersonalSlip={isPersonalSlip}
+        maxFloor={0}
+        maxSequence={0}
       />
     </NiceModal.Provider>
   ),

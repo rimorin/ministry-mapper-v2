@@ -1,9 +1,6 @@
-// import { Table } from "react-bootstrap";
 import { territoryTableProps } from "../../utils/interface";
-import TableHeader from "./header";
-import FloorHeader from "./floor";
 import UnitStatus from "./unit";
-import { Box, IconButton, Sheet, Table, Typography } from "@mui/joy";
+// import { Box, IconButton, Sheet, Table, Typography } from "@mui/joy";
 import ZeroPad from "../../utils/helpers/zeropad";
 import {
   DEFAULT_FLOOR_PADDING,
@@ -12,92 +9,116 @@ import {
 } from "../../utils/constants";
 import ComponentAuthorizer from "../navigation/authorizer";
 import DeleteIcon from "@mui/icons-material/Delete";
+import {
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography
+} from "@mui/material";
 const PublicTerritoryTable = ({
   postalCode,
   floors,
   maxUnitNumberLength,
+  policy,
   completedPercent,
-  policy: hhPolicy,
   userAccessLevel,
   handleFloorDelete,
   handleUnitNoUpdate,
   handleUnitStatusUpdate
-}: territoryTableProps) => (
-  <Sheet
-  // sx={{
-  //   padding: "0.5rem",
-  //   display: "flex",
-  //   justifyContent: "center",
-  //   overflow: "auto"
-  // }}
-  >
-    <Table stickyHeader hoverRow stripe="odd" borderAxis="both">
-      {/* <TableHeader floors={floors} maxUnitNumber={maxUnitNumberLength} /> */}
-      <thead>
-        <tr>
-          <th
-            style={{
-              width: 100,
-              height: 50,
-              textAlign: "center",
-              verticalAlign: "middle",
-              // position: "sticky",
-              left: 0,
-              zIndex: 101
-            }}
-            scope="col"
-            // className="text-center align-middle sticky-left-cell"
-          >
-            lvl/unit
-          </th>
-          {floors.length > 0 &&
-            floors[0].units.map((item, index) => {
-              return (
-                <th
+}: territoryTableProps) => {
+  const isAdmin = userAccessLevel === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
+  return (
+    <TableContainer
+      sx={{
+        // padding: "0.5rem",
+        // display: "flex",
+        // justifyContent: "center",
+        overflow: "auto",
+        maxHeight: 300,
+        width: "100%",
+        overflowX: "auto"
+      }}
+    >
+      <Table stickyHeader>
+        {/* <TableHeader floors={floors} maxUnitNumber={maxUnitNumberLength} /> */}
+        <TableHead>
+          <TableRow>
+            <TableCell
+              style={{
+                width: 100,
+                height: 50,
+                textAlign: "center",
+                verticalAlign: "middle",
+                left: 0,
+                zIndex: 101,
+                border: "0.5px solid #000"
+              }}
+              scope="col"
+            >
+              lvl/unit
+            </TableCell>
+            {floors.length > 0 &&
+              floors[0].units.map((item, index) => {
+                return (
+                  <TableCell
+                    style={{
+                      width: 100,
+                      // height: 50,
+                      textAlign: "center",
+                      verticalAlign: "middle",
+                      cursor: isAdmin ? "pointer" : "default",
+                      border: "0.5px solid #000"
+                    }}
+                    key={`${index}-${item.number}`}
+                    scope="col"
+                    onClick={isAdmin ? handleUnitNoUpdate : undefined}
+                    data-length={floors[0].units.length}
+                    data-sequence={item.sequence}
+                    data-unitno={item.number}
+                  >
+                    <Typography
+                      sx={
+                        isAdmin
+                          ? {
+                              "&:hover": {
+                                color: "red"
+                              }
+                            }
+                          : undefined
+                      }
+                    >
+                      {ZeroPad(item.number, maxUnitNumberLength)}
+                    </Typography>
+                  </TableCell>
+                );
+              })}
+          </TableRow>
+        </TableHead>
+        <TableBody key={`tbody-${postalCode}`}>
+          {floors &&
+            floors.map((floorElement, floorIndex) => (
+              <TableRow key={`row-${floorIndex}`}>
+                {/* <TableHead
+                  key={`floor-${floorIndex}`}
+                  // scope="row"
                   style={{
-                    width: 80,
-                    height: 50,
-                    textAlign: "center",
-                    verticalAlign: "middle"
+                    // width: 100,
+                    height: 60
                   }}
-                  key={`${index}-${item.number}`}
-                  scope="col"
-                  onClick={
-                    userAccessLevel ===
-                    USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
-                      ? handleUnitNoUpdate
-                      : undefined
-                  }
-                  data-length={floors[0].units.length}
-                  data-sequence={item.sequence}
-                  data-unitno={item.number}
-                >
-                  {ZeroPad(item.number, maxUnitNumberLength)}
-                </th>
-              );
-            })}
-        </tr>
-      </thead>
-      <tbody key={`tbody-${postalCode}`}>
-        {floors &&
-          floors.map((floorElement, floorIndex) => (
-            <tr key={`row-${floorIndex}`}>
-              <th
-                key={`floor-${floorIndex}`}
-                scope="row"
-                style={{
-                  width: 100,
-                  height: 60,
-                  position: "sticky",
-                  left: 0,
-                  zIndex: 100
-                }}
-              >
-                <Box
+                > */}
+                <TableCell
                   sx={{
                     display: "flex",
                     alignItems: "center",
-                    justifyContent: "center"
+                    justifyContent: "center",
+                    border: "0.5px solid #000",
+                    position: "sticky",
+                    left: 0,
+                    zIndex: 100
                   }}
                 >
                   <ComponentAuthorizer
@@ -113,82 +134,55 @@ const PublicTerritoryTable = ({
                       <DeleteIcon />
                     </IconButton>
                   </ComponentAuthorizer>
-                  <Typography level="body-sm">{`${ZeroPad(
+                  <Typography variant="body1">{`${ZeroPad(
                     floorElement.floor.toString(),
                     DEFAULT_FLOOR_PADDING
                   )}`}</Typography>
-                </Box>
-              </th>
-              {floorElement.units.map((detailsElement, index) => (
-                <td
-                  style={{
-                    width: 80,
-                    height: 60,
-                    textAlign: "center",
-                    verticalAlign: "middle"
-                  }}
-                  // className={`inline-cell ${policy?.getUnitColor(
-                  //   detailsElement,
-                  //   completedPercent.completedValue
-                  // )}`}
-                  onClick={handleUnitStatusUpdate}
-                  key={`${index}-${detailsElement.number}`}
-                  data-floor={floorElement.floor}
-                  data-unitno={detailsElement.number}
-                  data-hhtype={detailsElement.type}
-                  data-hhnote={detailsElement.note}
-                  data-hhstatus={detailsElement.status}
-                  data-nhcount={detailsElement.nhcount}
-                  data-addressid={detailsElement.addressId}
-                  data-postal={detailsElement.propertyPostal}
-                  data-dnctime={
-                    detailsElement.dnctime || DEFAULT_UNIT_DNC_MS_TIME
-                  }
-                >
-                  <UnitStatus
-                    key={`unit-${index}-${detailsElement.number}`}
-                    type={detailsElement.type}
-                    note={detailsElement.note}
-                    status={detailsElement.status}
-                    nhcount={detailsElement.nhcount}
-                    defaultOption={hhPolicy?.defaultType}
-                  />
-                </td>
-              ))}
-            </tr>
-          ))}
-      </tbody>
-      {/* <tbody>
-      {floors &&
-        floors.map((item, index) => (
-          <tr key={`row-${index}`}>
-            <FloorHeader index={index} floor={item.floor} />
-            {item.units.map((element) => (
-              <td
-                className={`text-center align-middle inline-cell ${hhPolicy?.getUnitColor(
-                  element,
-                  completedPercent.completedValue
-                )}`}
-                onClick={handleUnitStatusUpdate}
-                data-floor={item.floor}
-                data-unitno={element.number}
-                data-addressid={element.addressId}
-                key={`${item.floor}-${element.number}`}
-              >
-                <UnitStatus
-                  type={element.type}
-                  note={element.note}
-                  status={element.status}
-                  nhcount={element.nhcount}
-                  defaultOption={hhPolicy?.defaultType}
-                />
-              </td>
+                </TableCell>
+                {/* </TableHead> */}
+                {floorElement.units.map((detailsElement, index) => (
+                  <TableCell
+                    style={{
+                      // width: 80,
+                      height: 60,
+                      textAlign: "center",
+                      verticalAlign: "middle",
+                      border: "0.5px solid #000"
+                    }}
+                    className={`inline-cell ${policy?.getUnitColor(
+                      detailsElement,
+                      completedPercent.completedValue
+                    )}`}
+                    onClick={handleUnitStatusUpdate}
+                    key={`${index}-${detailsElement.number}`}
+                    data-floor={floorElement.floor}
+                    data-unitno={detailsElement.number}
+                    data-hhtype={detailsElement.type}
+                    data-hhnote={detailsElement.note}
+                    data-hhstatus={detailsElement.status}
+                    data-nhcount={detailsElement.nhcount}
+                    data-addressid={detailsElement.addressId}
+                    data-postal={detailsElement.propertyPostal}
+                    data-dnctime={
+                      detailsElement.dnctime || DEFAULT_UNIT_DNC_MS_TIME
+                    }
+                  >
+                    <UnitStatus
+                      key={`unit-${index}-${detailsElement.number}`}
+                      type={detailsElement.type}
+                      note={detailsElement.note}
+                      status={detailsElement.status}
+                      nhcount={detailsElement.nhcount}
+                      defaultOption={policy?.defaultType}
+                    />
+                  </TableCell>
+                ))}
+              </TableRow>
             ))}
-          </tr>
-        ))}
-    </tbody> */}
-    </Table>
-  </Sheet>
-);
+        </TableBody>
+      </Table>
+    </TableContainer>
+  );
+};
 
 export default PublicTerritoryTable;

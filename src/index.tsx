@@ -1,19 +1,18 @@
-// Load bootstrap first followed by your custom styles
-import "./scss/App.scss";
-import "react-datetime-picker/dist/DateTimePicker.css";
 import "react-calendar/dist/Calendar.css";
 import "./css/main.css";
 import "./css/common.css";
-import "@fontsource/inter";
+import "@fontsource/roboto/300.css";
+import "@fontsource/roboto/400.css";
+import "@fontsource/roboto/500.css";
+import "@fontsource/roboto/700.css";
 import Main from "./pages/index";
-import NiceModal from "@ebay/nice-modal-react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { StrictMode } from "react";
 import { Provider } from "@rollbar/react";
 import { DEFEAULT_ROLLBAR_ENVIRONMENT } from "./utils/constants";
 import reportWebVitals from "./reportWebVitals";
-import { CssBaseline, CssVarsProvider, GlobalStyles } from "@mui/joy";
+// import { CssBaseline, CssVarsProvider, GlobalStyles } from "@mui/joy";
 const { VITE_ROLLBAR_ACCESS_TOKEN, VITE_ROLLBAR_ENVIRONMENT, VITE_VERSION } =
   import.meta.env;
 
@@ -34,28 +33,10 @@ const root = createRoot(document.getElementById("root") as HTMLElement);
 root.render(
   <StrictMode>
     <Provider config={rollbarConfig}>
-      <CssVarsProvider>
-        <CssBaseline />
-        <GlobalStyles
-          styles={(theme) => ({
-            ":root": {
-              "--Header-height": "52px",
-              // [theme.breakpoints.up("md")]: {
-              //   "--Header-height": "0px"
-              // },
-              "--Sidebar-width": "320px",
-              [theme.breakpoints.up("lg")]: {
-                "--Sidebar-width": "240px"
-              }
-            }
-          })}
-        />
-        <NiceModal.Provider>
-          <BrowserRouter>
-            <Main />
-          </BrowserRouter>
-        </NiceModal.Provider>
-      </CssVarsProvider>
+      <BrowserRouter>
+        <Main />
+      </BrowserRouter>
+      {/* </CssVarsProvider> */}
     </Provider>
   </StrictMode>
 );

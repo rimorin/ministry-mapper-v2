@@ -1,27 +1,68 @@
-import { Container, Card } from "react-bootstrap";
+import { AspectRatio } from "@mui/icons-material";
+import {
+  Box,
+  Card,
+  CardContent,
+  Stack,
+  Typography,
+  CardActions
+} from "@mui/material";
 import { SignInDifferentProps } from "../../utils/interface";
 import UseAnotherButton from "../navigation/useanother";
+// import {
+//   Box,
+//   AspectRatio,
+//   CardContent,
+//   Stack,
+//   Typography,
+//   CardActions,
+//   Card
+// } from "@mui/joy";
 
 const UnauthorizedPage = ({ handleClick, name }: SignInDifferentProps) => (
-  <Container className="container-main">
-    <Card className="card-main">
-      <Card.Img
-        alt="Ministry Mapper logo"
-        className="mm-logo"
-        src="/android-chrome-192x192.png"
-      />
-      <Card.Body>
-        <Card.Title className="text-center">
-          401 Unauthorized Access 🔐
-        </Card.Title>
-        <Card.Text className="text-justify">
-          We are sorry {name}! You are not authorised to access the system.
-          Please approach your respective administrators for assistance.
-        </Card.Text>
-      </Card.Body>
-      <UseAnotherButton handleClick={handleClick} />
+  <Box
+    sx={{
+      position: "fixed",
+      inset: 0,
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center"
+    }}
+  >
+    <Card
+      // variant="plain"
+      sx={{
+        width: "90%",
+        maxWidth: "100%"
+      }}
+    >
+      <AspectRatio
+        // color="neutral"
+        // variant="plain"
+        // ratio="1"
+        sx={{
+          width: 90,
+          margin: "auto"
+        }}
+      >
+        <img src="/android-chrome-192x192.png" alt="" />
+      </AspectRatio>
+      <CardContent>
+        <Stack spacing={2} sx={{ alignItems: "center", textAlign: "center" }}>
+          <Typography variant="subtitle1">
+            401 Unauthorized Access 🔐
+          </Typography>
+          <Typography variant="body1">
+            We are sorry {name}! You are not authorised to access the system.
+            Please approach your respective administrators for assistance.
+          </Typography>
+        </Stack>
+      </CardContent>
+      <CardActions>
+        <UseAnotherButton handleClick={handleClick} />
+      </CardActions>
     </Card>
-  </Container>
+  </Box>
 );
 
 export default UnauthorizedPage;

@@ -1,22 +1,33 @@
 import { memo } from "react";
-import { Fade } from "react-bootstrap";
 import { backToTopProp } from "../../utils/interface";
 import { ReactComponent as TopArrowImage } from "../../assets/top-arrow.svg";
+import { IconButton } from "@mui/material";
+// import { IconButton } from "@mui/joy";
 
 const BackToTopButton = memo(({ showButton }: backToTopProp) => (
-  <Fade in={showButton}>
-    <div
-      onClick={() => {
-        window.scrollTo({
-          top: 0,
-          behavior: "smooth"
-        });
-      }}
-      className="back-to-top"
-    >
-      <TopArrowImage />
-    </div>
-  </Fade>
+  <>
+    {showButton && (
+      <IconButton
+        // variant="plain"
+        // color="neutral"
+        size="small"
+        sx={{
+          position: "fixed",
+          bottom: "25px",
+          right: "25px",
+          cursor: "pointer"
+        }}
+        onClick={() => {
+          window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+          });
+        }}
+      >
+        <TopArrowImage />
+      </IconButton>
+    )}
+  </>
 ));
 
 export default BackToTopButton;

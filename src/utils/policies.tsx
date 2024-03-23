@@ -88,54 +88,54 @@ export class Policy {
 }
 
 export class LinkSession {
-  endDate: number;
+  end_date: number;
   map: string;
-  maxTries: number;
+  max_tries: number;
   type: number;
   user: string;
   congregation: string;
-  createDate: number;
+  create_date: number;
   key: string;
   name: string;
-  publisherName: string;
+  publisher_name: string;
   territory: string;
-  lowestFloor: number;
-  highestFloor: number;
-  lowestSequence: number;
-  highestSequence: number;
+  lowest_floor: number;
+  highest_floor: number;
+  lowest_sequence: number;
+  highest_sequence: number;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   constructor(linkData?: any, key?: string) {
-    this.endDate = 0;
+    this.end_date = 0;
     this.map = "";
     this.territory = "";
-    this.maxTries = DEFAULT_CONGREGATION_MAX_TRIES;
+    this.max_tries = DEFAULT_CONGREGATION_MAX_TRIES;
     this.type = LINK_TYPES.VIEW;
-    this.createDate = new Date().getTime();
+    this.create_date = new Date().getTime();
     this.user = "";
     this.congregation = "";
     this.key = "";
     this.name = "";
-    this.publisherName = "";
-    this.lowestFloor = 0;
-    this.highestFloor = 0;
-    this.lowestSequence = 0;
-    this.highestSequence = 0;
+    this.publisher_name = "";
+    this.lowest_floor = 0;
+    this.highest_floor = 0;
+    this.lowest_sequence = 0;
+    this.highest_sequence = 0;
     if (!linkData) return;
     this.key = key || "";
     this.user = linkData.user;
-    this.createDate = linkData.createDate;
+    this.create_date = linkData.create_date;
     this.congregation = linkData.congregation;
     this.name = linkData.name;
-    this.publisherName = linkData.publisherName;
-    this.endDate = linkData.endDate;
+    this.publisher_name = linkData.publisher_name;
+    this.end_date = linkData.end_date;
     this.map = linkData.map;
     this.type = linkData.type;
-    this.maxTries = linkData.maxTries;
+    this.max_tries = linkData.max_tries;
     this.territory = linkData.territory;
-    this.lowestFloor = linkData.lowestFloor || 0;
-    this.highestFloor = linkData.highestFloor || 0;
-    this.lowestSequence = linkData.lowestSequence || 0;
-    this.highestSequence = linkData.highestSequence || 0;
+    this.lowest_floor = linkData.lowest_floor || 0;
+    this.highest_floor = linkData.highest_floor || 100;
+    this.lowest_sequence = linkData.lowest_sequence || 0;
+    this.highest_sequence = linkData.highest_sequence || 1000;
   }
 }
 

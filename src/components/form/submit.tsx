@@ -1,4 +1,5 @@
-import { Button } from "@mui/joy";
+// import { Button } from "@mui/joy";
+import { Button, CircularProgress } from "@mui/material";
 import { SubmitBtnProps } from "../../utils/interface";
 
 const ModalSubmitButton = ({
@@ -11,7 +12,8 @@ const ModalSubmitButton = ({
       type="submit"
       color="primary"
       disabled={isSaving || disabled}
-      loading={isSaving}
+      // loading={isSaving}
+      endIcon={isSaving && <CircularProgress size={20} />}
     >
       {btnLabel}
     </Button>

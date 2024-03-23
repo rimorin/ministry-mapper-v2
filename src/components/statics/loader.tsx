@@ -1,12 +1,19 @@
-import { Container, Spinner } from "react-bootstrap";
+// import { Box, CircularProgress } from "@mui/joy";
 
-const Loader = ({ variant = "primary" }: { variant?: string }) => (
-  <Container
-    className="d-flex align-items-center justify-content-center vh-100"
-    fluid
+import { Box, CircularProgress } from "@mui/material";
+
+const Loader = () => (
+  <Box
+    // className="d-flex align-items-center justify-content-center vh-100"
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      height: "100vh"
+    }}
   >
-    <Spinner animation="border" variant={variant} role="status" />
-  </Container>
+    <CircularProgress />
+  </Box>
 );
 
 export default Loader;

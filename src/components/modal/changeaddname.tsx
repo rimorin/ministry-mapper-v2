@@ -1,16 +1,15 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal, { useModal } from "@ebay/nice-modal-react";
 import { useRollbar } from "@rollbar/react";
 import { useState, FormEvent } from "react";
-// import { Modal, Form } from "react-bootstrap";
 import { firestore } from "../../firebase";
-import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
+import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
-import HelpButton from "../navigation/help";
 import { ChangeAddressNameModalProps } from "../../utils/interface";
 import { doc, updateDoc } from "firebase/firestore";
-import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
+import { Dialog, DialogContent, DialogTitle } from "@mui/material";
+// import { DialogContent, DialogTitle, Modal, ModalDialog } from "@mui/joy";
 
 const ChangeAddressName = NiceModal.create(
   ({
@@ -43,29 +42,29 @@ const ChangeAddressName = NiceModal.create(
       }
     };
     return (
-      <Modal open={modal.visible} onClose={() => modal.hide()}>
-        <ModalDialog>
-          <DialogTitle>Change Address Name</DialogTitle>
-          <DialogContent>
-            <form onSubmit={handleUpdateBlockName}>
-              <GenericInputField
-                name="name"
-                handleChange={(event) => {
-                  const { value } = event.target as HTMLInputElement;
-                  setAddressName(value);
-                }}
-                changeValue={addressName}
-                required={true}
-              />
-              <ModalFooter
-                handleClick={modal.hide}
-                userAccessLevel={footerSaveAcl}
-                isSaving={isSaving}
-              />
-            </form>
-          </DialogContent>
-        </ModalDialog>
-      </Modal>
+      <Dialog open={modal.visible} onClose={() => modal.hide()}>
+        {/* <ModalDialog> */}
+        <DialogTitle>Change Address Name</DialogTitle>
+        <DialogContent>
+          <form onSubmit={handleUpdateBlockName}>
+            <GenericInputField
+              name="name"
+              handleChange={(event) => {
+                const { value } = event.target as HTMLInputElement;
+                setAddressName(value);
+              }}
+              changeValue={addressName}
+              required={true}
+            />
+            <ModalFooter
+              handleClick={modal.hide}
+              userAccessLevel={footerSaveAcl}
+              isSaving={isSaving}
+            />
+          </form>
+        </DialogContent>
+        {/* </ModalDialog> */}
+      </Dialog>
     );
   }
 );

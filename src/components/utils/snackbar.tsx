@@ -1,10 +1,10 @@
-import {
-  ColorPaletteProp,
-  Snackbar,
-  SnackbarPropsColorOverrides
-} from "@mui/joy";
+// import {
+//   ColorPaletteProp,
+//   Snackbar,
+//   SnackbarPropsColorOverrides
+// } from "@mui/joy";
 
-import { OverridableStringUnion } from "@mui/types";
+import { Snackbar } from "@mui/material";
 
 const AlertComponent = ({
   message,
@@ -12,7 +12,7 @@ const AlertComponent = ({
   open
 }: {
   message: string;
-  color: OverridableStringUnion<ColorPaletteProp, SnackbarPropsColorOverrides>;
+  color: string;
   open: boolean;
 }) => {
   return (
@@ -25,7 +25,7 @@ const AlertComponent = ({
       }}
       color={color}
     >
-      {message}
+      <>{message}</>
     </Snackbar>
   );
 };

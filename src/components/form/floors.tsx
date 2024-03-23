@@ -1,8 +1,7 @@
-import { Form } from "react-bootstrap";
-import RangeSlider from "react-bootstrap-range-slider";
+import { FormControl, FormLabel, Box, Slider } from "@mui/material";
 import { MIN_START_FLOOR, MAX_TOP_FLOOR } from "../../utils/constants";
 import { FloorProps } from "../../utils/interface";
-import { Box, FormControl, FormLabel, Slider } from "@mui/joy";
+// import { Box, FormControl, FormLabel, Slider } from "@mui/joy";
 
 const FloorField = ({ handleChange, changeValue }: FloorProps) => {
   return (

@@ -1,18 +1,7 @@
-// import { Table, Button } from "react-bootstrap";
-import {
-  TERRITORY_TYPES,
-  USER_ACCESS_LEVELS,
-  DEFAULT_FLOOR_PADDING,
-  DEFAULT_UNIT_DNC_MS_TIME
-} from "../../utils/constants";
-import ZeroPad from "../../utils/helpers/zeropad";
+import { TERRITORY_TYPES } from "../../utils/constants";
 import { territoryTableProps } from "../../utils/interface";
-import ComponentAuthorizer from "../navigation/authorizer";
-import UnitStatus from "./unit";
 import PrivateTerritoryTable from "./privatetable";
 import PublicTerritoryTable from "./publictable";
-import { Box, IconButton, Table, Typography } from "@mui/joy";
-import DeleteIcon from "@mui/icons-material/Delete";
 
 const AdminTable = ({
   postalCode,
@@ -20,7 +9,6 @@ const AdminTable = ({
   maxUnitNumberLength,
   completedPercent,
   policy,
-  adminUnitHeaderStyle,
   handleUnitNoUpdate,
   handleUnitStatusUpdate,
   handleFloorDelete,
