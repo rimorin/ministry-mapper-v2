@@ -1,0 +1,67 @@
+.admin-unit-header:hover {
+  background-color: #e7f1ff;
+}
+
+.aggregate-dark-text {
+  color: black;
+}
+
+.back-to-top {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  cursor: pointer;
+}
+
+.no-confirm-btn {
+  margin-left: 1.5rem;
+}
+
+.dropdown-btn {
+  display: inline-block;
+  margin: 0.25rem;
+}
+
+.resend-text {
+  cursor: pointer;
+  margin-bottom: 1.5rem;
+  color: #0d6efd;
+}
+
+.resend-text:hover {
+  text-decoration: underline;
+}
+
+.warning-help-button {
+  position: absolute;
+  right: 0.25rem;
+  top: 0.55rem;
+}
+
+.sticky-body-admin {
+  max-height: 45dvh;
+  overflow-y: auto;
+}
+
+.map-body-admin {
+  height: 60dvh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.notification-glow {
+  animation: notification-glow 1s infinite;
+}
+
+@keyframes notification-glow {
+  0% {
+    box-shadow: 0 0 5px green;
+  }
+  50% {
+    box-shadow: 0 0 20px green;
+  }
+  100% {
+    box-shadow: 0 0 5px green;
+  }
+}

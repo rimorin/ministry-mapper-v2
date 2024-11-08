@@ -1,0 +1,7 @@
+{
+  "congregations": {
+    "<congregation-code>": {
+      "name": "Name of congregation"
+    }
+  }
+}
