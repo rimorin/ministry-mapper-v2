@@ -1,0 +1,45 @@
+.sticky-body {
+  max-height: 75dvh;
+  overflow-y: auto;
+}
+
+.map-body {
+  height: 75dvh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.nav-item-hover {
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition:
+    box-shadow 0.3s ease,
+    background-color 0.3s ease;
+}
+
+.nav-item-hover:hover {
+  background-color: #e0f0e0;
+  border-radius: 5px;
+  box-shadow: 0 0 0 5px rgba(224, 240, 224, 0.5);
+}
+
+.highlighted {
+  animation: highlight-glow 1s infinite ease-in-out;
+  background: transparent;
+}
+
+@keyframes highlight-glow {
+  0% {
+    box-shadow: 0 0 5px rgba(197, 19, 43, 0.5);
+    filter: drop-shadow(0 0 5px rgba(197, 19, 43, 0.5));
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(197, 19, 43, 0.7);
+    filter: drop-shadow(0 0 20px rgba(197, 19, 43, 0.7));
+  }
+  100% {
+    box-shadow: 0 0 5px rgba(197, 19, 43, 0.5);
+    filter: drop-shadow(0 0 5px rgba(197, 19, 43, 0.5));
+  }
+}
