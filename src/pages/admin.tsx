@@ -539,7 +539,8 @@ function Admin({ user }: adminProps) {
           ),
           congDetails.max_tries || DEFAULT_CONGREGATION_MAX_TRIES,
           congDetails.origin || DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
-          congregationAccess.current[congregationCode]
+          congregationAccess.current[congregationCode],
+          congDetails.expiry_hours || DEFAULT_SELF_DESTRUCT_HOURS
         )
       );
 

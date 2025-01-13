@@ -5,7 +5,8 @@ import {
   LINK_TYPES,
   DEFAULT_CONGREGATION_MAX_TRIES,
   DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
-  USER_ACCESS_LEVELS
+  USER_ACCESS_LEVELS,
+  DEFAULT_SELF_DESTRUCT_HOURS
 } from "./constants";
 import { HHOptionProps, unitDetails } from "./interface";
 
@@ -30,18 +31,21 @@ export class Policy {
   defaultType: string;
   origin: string;
   options: Array<HHOptionProps>;
+  defaultExpiryHours: number;
   constructor(
     userName = "",
     options?: Array<HHOptionProps>,
     maxtries = DEFAULT_CONGREGATION_MAX_TRIES,
     origin = DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
-    userRole = USER_ACCESS_LEVELS.CONDUCTOR.CODE
+    userRole = USER_ACCESS_LEVELS.CONDUCTOR.CODE,
+    defaultExpiryHours = DEFAULT_SELF_DESTRUCT_HOURS
   ) {
     this.userName = userName;
     this.userRole = userRole;
     this.maxTries = maxtries;
     this.countableTypes = [];
     this.defaultType = "";
+    this.defaultExpiryHours = defaultExpiryHours;
     this.origin = origin;
     this.options = options || [];
     options?.forEach((option) => {

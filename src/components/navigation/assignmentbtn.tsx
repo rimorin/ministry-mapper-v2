@@ -63,7 +63,9 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
 
       const linkObject = linkReturn as Record<string, unknown>;
       const expiryHrs = (
-        linkType === LINK_TYPES.PERSONAL ? linkObject.linkExpiryHrs : 24
+        linkType === LINK_TYPES.PERSONAL
+          ? linkObject.linkExpiryHrs
+          : policy.defaultExpiryHours
       ) as number;
       await shareTimedLink(
         linkType,
