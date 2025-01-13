@@ -112,7 +112,8 @@ const Map = () => {
             ),
             linkRecord.expand?.map.expand?.congregation.max_tries,
             linkRecord.expand?.map.expand?.congregation.origin,
-            USER_ACCESS_LEVELS.PUBLISHER.CODE
+            USER_ACCESS_LEVELS.PUBLISHER.CODE,
+            linkRecord.expand?.map.expand?.congregation.expiry_hours
           )
         );
 
