@@ -177,6 +177,11 @@ const CLOUD_FUNCTIONS_CALLS = {
 
 const PB_SECURITY_HEADER_KEY = "link-id";
 
+const PB_FIELDS = {
+  GET_ADDRESSES:
+    "id,code,coordinates,notes,type,status,not_home_tries,dnctime,sequence,floor,updated,updated_by, expand.type.id, expand.type.code"
+};
+
 export {
   UNSUPPORTED_BROWSER_MSG,
   STATUS_CODES,
@@ -217,5 +222,6 @@ export {
   ACCESS_LEVEL_MAPPING,
   DEFAULT_UNIT_PADDING,
   MESSAGE_TYPES,
-  PB_SECURITY_HEADER_KEY
+  PB_SECURITY_HEADER_KEY,
+  PB_FIELDS
 };
