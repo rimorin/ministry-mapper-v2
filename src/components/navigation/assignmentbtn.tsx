@@ -4,7 +4,8 @@ import ModalManager from "@ebay/nice-modal-react";
 import {
   UNSUPPORTED_BROWSER_MSG,
   LINK_TYPES,
-  USER_ACCESS_LEVELS
+  USER_ACCESS_LEVELS,
+  PB_FIELDS
 } from "../../utils/constants";
 import SuspenseComponent from "../utils/suspense";
 import { addressDetails } from "../../utils/interface";
@@ -136,7 +137,8 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
       const mapAssignments = await pb.collection("assignments").getFullList({
         filter: `map='${mapId}'`,
         requestKey: `get-map-assignments-${mapId}`,
-        expand: "map"
+        expand: "map",
+        fields: PB_FIELDS.ASSIGNMENTS
       });
       const personalLinks = new Map<string, LinkSession>();
       const normalLinks = new Map<string, LinkSession>();
@@ -181,7 +183,8 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
       },
       {
         filter: `map='${mapId}'`,
-        requestKey: `map-sub-assignments-${mapId}`
+        requestKey: `map-sub-assignments-${mapId}`,
+        fields: PB_FIELDS.ASSIGNMENTS
       }
     );
     retrieveAssignments();

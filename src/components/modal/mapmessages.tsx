@@ -13,6 +13,7 @@ import {
 } from "../../utils/interface";
 import FeedbackList from "../navigation/feedbacklist";
 import {
+  PB_FIELDS,
   PB_SECURITY_HEADER_KEY,
   USER_ACCESS_LEVELS
 } from "../../utils/constants";
@@ -64,7 +65,8 @@ const UpdateMapMessages = NiceModal.create(
         const feedbacks = await pb.collection("messages").getFullList({
           filter: `map="${mapId}"`,
           sort: "pinned, created",
-          requestKey: `msg-${mapId}`
+          requestKey: `msg-${mapId}`,
+          fields: PB_FIELDS.MESSAGES
         });
 
         setMessages(
@@ -83,7 +85,8 @@ const UpdateMapMessages = NiceModal.create(
 
       const msgSubheader = {
         filter: `map="${mapId}"`,
-        requestKey: `msg-sub-${mapId}`
+        requestKey: `msg-sub-${mapId}`,
+        fields: PB_FIELDS.MESSAGES
       } as RecordSubscribeOptions;
 
       if (assignmentId) {
