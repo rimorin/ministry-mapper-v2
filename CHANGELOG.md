@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.0.0...v1.0.1) (2025-01-14)
+
+
+### Bug Fixes
+
+* optimised address fetching logic ([15ef977](https://github.com/rimorin/ministry-mapper-v2/commit/15ef977a50aecfb594b73899bcdb04add7c1347a))
+
 # 1.0.0 (2025-01-13)
 
 
