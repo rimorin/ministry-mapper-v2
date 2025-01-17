@@ -18,7 +18,8 @@ import {
   DEFAULT_COORDINATES,
   MESSAGE_TYPES,
   USER_ACCESS_LEVELS,
-  PB_SECURITY_HEADER_KEY
+  PB_SECURITY_HEADER_KEY,
+  PB_FIELDS
 } from "../utils/constants";
 import "../css/slip.css";
 import { RecordModel } from "pocketbase";
@@ -68,7 +69,7 @@ const Map = () => {
       if (readPinnedMessages === "true") return;
       const pinnedMessages = await pb.collection("messages").getFullList({
         filter: `map = "${map}" && type= "${MESSAGE_TYPES.ADMIN}" && pinned = true`,
-        fields: "id, read",
+        fields: "id",
         requestKey: `unread-msg-${mapDetails?.id}`
       });
       setHasPinnedMessages(pinnedMessages.length > 0);
@@ -77,13 +78,21 @@ const Map = () => {
       try {
         const linkRecord = await getDataById("assignments", id, {
           requestKey: `slip-data-${id}`,
-          expand:
-            "map, map.congregation, map.congregation.sorted_options_via_congregation"
+          expand: "map, map.congregation",
+          fields: PB_FIELDS.ASSIGNMENT_LINKS
         });
         if (!linkRecord) {
           setIsLinkExpired(true);
           return;
         }
+        const congId = linkRecord.expand?.map.expand?.congregation.id;
+        const congOptions =
+          (await pb.collection("options").getFullList({
+            filter: `congregation="${congId}"`,
+            requestKey: `congregation-options-${congId}`,
+            fields: PB_FIELDS.CONGREGATION_OPTIONS,
+            sort: "sequence"
+          })) || [];
         const expiryTimestamp = new Date(linkRecord.expiry_date).getTime();
         setTokenEndTime(expiryTimestamp);
         const currentTimestamp = new Date().getTime();
@@ -98,18 +107,16 @@ const Map = () => {
         setPolicy(
           new Policy(
             linkRecord.publisher,
-            linkRecord.expand?.map.expand?.congregation.expand?.sorted_options_via_congregation.map(
-              (option: RecordModel) => {
-                return {
-                  id: option.id,
-                  code: option.code,
-                  description: option.description,
-                  isCountable: option.is_countable,
-                  isDefault: option.is_default,
-                  sequence: option.sequence
-                };
-              }
-            ),
+            congOptions.map((option: RecordModel) => {
+              return {
+                id: option.id,
+                code: option.code,
+                description: option.description,
+                isCountable: option.is_countable,
+                isDefault: option.is_default,
+                sequence: option.sequence
+              };
+            }),
             linkRecord.expand?.map.expand?.congregation.max_tries,
             linkRecord.expand?.map.expand?.congregation.origin,
             USER_ACCESS_LEVELS.PUBLISHER.CODE,
@@ -152,6 +159,7 @@ const Map = () => {
           },
           {
             requestKey: `slip-sub-${linkRecord.id}`,
+            fields: PB_FIELDS.MAPS,
             headers: {
               [PB_SECURITY_HEADER_KEY]: id as string
             }

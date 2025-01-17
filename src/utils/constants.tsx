@@ -178,8 +178,20 @@ const CLOUD_FUNCTIONS_CALLS = {
 const PB_SECURITY_HEADER_KEY = "link-id";
 
 const PB_FIELDS = {
-  GET_ADDRESSES:
-    "id,code,coordinates,notes,type,status,not_home_tries,dnctime,sequence,floor,updated,updated_by, expand.type.id, expand.type.code"
+  CONGREGATION_OPTIONS:
+    "id, code, description, is_countable, is_default, sequence",
+  MESSAGES: "id, message, created_by, read, pinned, created, type",
+  ASSIGNMENTS:
+    "id, user, type, expiry_date, publisher, created, expand.map.description",
+  ASSIGNMENT_LINKS:
+    "id, map, expiry_date, publisher, expand.map.description, expand.map.type, expand.map.location, expand.map.coordinates, expand.map.progress, expand.map.expand.congregation.max_tries, expand.map.expand.congregation.origin, expand.map.expand.congregation.expiry_hours, expand.map.expand.congregation.id",
+  ADDRESSES:
+    "id, code, coordinates, notes, type, status, not_home_tries, dnctime, sequence, floor, updated, updated_by, expand.type.id, expand.type.code",
+  ROLES: "id, role, expand.congregation.id, expand.congregation.name",
+  CONGREGATION_ROLES:
+    "id, role, expand.user.name, expand.user.email, expand.user.verified",
+  TERRITORIES: "id, code, description, progress",
+  MAPS: "id, code, description, type, location, progress, coordinates"
 };
 
 export {

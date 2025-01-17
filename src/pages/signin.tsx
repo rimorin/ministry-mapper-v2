@@ -24,8 +24,9 @@ const LoginComponent = () => {
   ) => {
     try {
       setIsLogin(true);
-      await pb.collection("users").authWithPassword(email, password, {
-        requestKey: `login-${email}`
+      const processedEmail = email.trim().toLowerCase();
+      await pb.collection("users").authWithPassword(processedEmail, password, {
+        requestKey: `login-${processedEmail}`
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {

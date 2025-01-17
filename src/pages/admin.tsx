@@ -41,7 +41,8 @@ import {
   DEFAULT_CONGREGATION_MAX_TRIES,
   DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
   DEFAULT_AGGREGATES,
-  DEFAULT_COORDINATES
+  DEFAULT_COORDINATES,
+  PB_FIELDS
 } from "../utils/constants";
 import errorHandler from "../utils/helpers/errorhandler";
 
@@ -422,6 +423,7 @@ function Admin({ user }: adminProps) {
         filter: `user="${uid}"`,
         sort: "created",
         expand: "map",
+        fields: PB_FIELDS.ASSIGNMENTS,
         requestKey: `get-usr-assignments-${uid}`
       });
 
@@ -449,7 +451,7 @@ function Admin({ user }: adminProps) {
       const userRoles = await pb.collection("roles").getFullList({
         filter: `user="${user?.id}"`,
         expand: "congregation",
-        fields: "id, role, expand.congregation.id, expand.congregation.name",
+        fields: PB_FIELDS.ROLES,
         requestKey: `user-roles-${user?.id}`
       });
       if (!userRoles || userRoles.length === 0) {
@@ -508,14 +510,20 @@ function Admin({ user }: adminProps) {
 
     const fetchCongregationData = async () => {
       const congDetails = await getDataById("congregations", congregationCode, {
-        requestKey: `congregation-${congregationCode}`,
-        expand: "sorted_options_via_congregation"
+        requestKey: `congregation-${congregationCode}`
       });
 
       if (!congDetails) {
         alert("Congregation not found.");
         return;
       }
+
+      const congOptions = await pb.collection("options").getFullList({
+        filter: `congregation="${congregationCode}"`,
+        requestKey: `congregation-options-${congregationCode}`,
+        fields: PB_FIELDS.CONGREGATION_OPTIONS,
+        sort: "sequence"
+      });
 
       setCongregationName(congDetails.name);
       document.title = congDetails.name;
@@ -525,18 +533,16 @@ function Admin({ user }: adminProps) {
       setPolicy(
         new Policy(
           pb.authStore?.record?.name,
-          congDetails.expand?.sorted_options_via_congregation?.map(
-            (option: RecordModel) => {
-              return {
-                id: option.id,
-                code: option.code,
-                description: option.description,
-                isCountable: option.is_countable,
-                isDefault: option.is_default,
-                sequence: option.sequence
-              };
-            }
-          ),
+          congOptions?.map((option: RecordModel) => {
+            return {
+              id: option.id,
+              code: option.code,
+              description: option.description,
+              isCountable: option.is_countable,
+              isDefault: option.is_default,
+              sequence: option.sequence
+            };
+          }),
           congDetails.max_tries || DEFAULT_CONGREGATION_MAX_TRIES,
           congDetails.origin || DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
           congregationAccess.current[congregationCode],
@@ -545,9 +551,10 @@ function Admin({ user }: adminProps) {
       );
 
       const territoryDetails = await pb.collection("territories").getFullList({
-        filter: `congregation.id="${congregationCode}"`,
+        filter: `congregation="${congregationCode}"`,
         requestKey: `territories-${congregationCode}`,
-        sort: "code"
+        sort: "code",
+        fields: PB_FIELDS.TERRITORIES
       });
       const territoryMap = processCongregationTerritories(territoryDetails);
       setTerritories(territoryMap);
@@ -578,8 +585,9 @@ function Admin({ user }: adminProps) {
           });
         },
         {
-          filter: `congregation.id="${congregationCode}"`,
-          requestKey: `territories-sub-${congregationCode}`
+          filter: `congregation="${congregationCode}"`,
+          requestKey: `territories-sub-${congregationCode}`,
+          fields: PB_FIELDS.TERRITORIES
         }
       );
       setIsLoading(false);
@@ -611,22 +619,21 @@ function Admin({ user }: adminProps) {
       } as addressDetails;
     };
 
-    const fetchAddressData = async () => {
-      const addresses = await pb.collection("maps").getFullList({
+    const fetchMapData = async () => {
+      const maps = await pb.collection("maps").getFullList({
         filter: `territory="${selectedTerritoryId}"`,
         requestKey: `territory-maps-${selectedTerritoryId}`,
-        sort: "code"
+        sort: "code",
+        fields: PB_FIELDS.MAPS
       });
-      return addresses.map((address) => processMapRecord(address));
+      return maps.map((map) => processMapRecord(map));
     };
 
     const setupAddresses = async () => {
-      const sortedAddresses = await fetchAddressData();
-      setSortedAddressList(sortedAddresses);
-      setAccordionKeys(sortedAddresses.map((address) => address.id));
-      setMapViews(
-        new Map(sortedAddresses.map((address) => [address.id, false]))
-      );
+      const sortedMaps = await fetchMapData();
+      setSortedAddressList(sortedMaps);
+      setAccordionKeys(sortedMaps.map((address) => address.id));
+      setMapViews(new Map(sortedMaps.map((address) => [address.id, false])));
     };
 
     pb.collection("maps").subscribe(
@@ -660,7 +667,8 @@ function Admin({ user }: adminProps) {
       },
       {
         filter: `territory="${selectedTerritoryId}"`,
-        requestKey: `maps-sub-${selectedTerritoryId}`
+        requestKey: `maps-sub-${selectedTerritoryId}`,
+        fields: PB_FIELDS.MAPS
       }
     );
 
