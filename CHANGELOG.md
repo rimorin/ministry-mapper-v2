@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.0.2...v1.0.3) (2025-01-17)
+
+
+### Bug Fixes
+
+* adjust assignment logic and improve test assignment using utc tz ([aa85428](https://github.com/rimorin/ministry-mapper-v2/commit/aa85428b4c7339af77d0fef13b47a087b0028761))
+
 ## [1.0.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.0.1...v1.0.2) (2025-01-17)
 
 
