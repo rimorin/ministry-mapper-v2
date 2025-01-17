@@ -1,0 +1,38 @@
+name: PR Checks
+
+on:
+  pull_request:
+    branches:
+      - master
+      - staging
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Setup Node.js environment
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 22
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Check formatting
+      - name: Check formatting
+        run: npm run prettier
+
+      # Step 5: Run tests
+      - name: Run tests
+        run: npm test
+
+      # Step 6: Build the project
+      - name: Build the project
+        run: npm run build
