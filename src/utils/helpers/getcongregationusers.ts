@@ -1,5 +1,6 @@
 import { pb } from "../pocketbase";
 import { userDetails } from "../interface";
+import { PB_FIELDS } from "../constants";
 
 const getCongregationUsers = async (
   code: string
@@ -8,6 +9,7 @@ const getCongregationUsers = async (
     filter: `congregation="${code}"`,
     sort: "-role",
     expand: "user",
+    fields: PB_FIELDS.CONGREGATION_ROLES,
     requestKey: `usr-roles-${code}`
   });
 

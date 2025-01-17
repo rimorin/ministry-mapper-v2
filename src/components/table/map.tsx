@@ -36,8 +36,6 @@ const MainTable = ({
   const [addresses, setAddresses] = useState<Map<string, unitDetails>>(
     new Map()
   );
-  const [maxUnitLength, setMaxUnitLength] = useState(DEFAULT_UNIT_PADDING);
-  const [floorList, setFloorList] = useState<floorDetails[]>([]);
 
   const deleteAddressFloor = useCallback(async (floor: number) => {
     await pb.send("map/floor/remove", {
@@ -184,50 +182,24 @@ const MainTable = ({
       const addresses = await pb.collection("addresses").getFullList({
         filter: `map="${mapId}"`,
         expand: "type",
-        sort: "-floor,sequence",
-        fields: PB_FIELDS.GET_ADDRESSES,
-        requestKey: `addresses-${mapId}`
+        requestKey: `addresses-${mapId}`,
+        fields: PB_FIELDS.ADDRESSES
       });
 
-      let maxUnitLength = DEFAULT_UNIT_PADDING;
-
-      const floorListing = [] as floorDetails[];
-      let currentFloor = -1;
-      let currentUnits = [] as unitDetails[];
-      const addressMap = new Map<string, unitDetails>();
+      const addressMap = new Map();
 
       addresses.forEach((address) => {
-        const unitDetails = createUnitDetails(address);
-        addressMap.set(address.id, unitDetails);
-
-        const { floor, code } = address;
-        if (floor !== currentFloor) {
-          if (currentFloor !== -1) {
-            floorListing.push({ floor: currentFloor, units: currentUnits });
-          }
-          currentFloor = floor;
-          currentUnits = [];
-        }
-
-        currentUnits.push(unitDetails);
-        maxUnitLength = Math.max(maxUnitLength, code.length);
+        addressMap.set(address.id, createUnitDetails(address));
       });
 
-      // Add the last floor and its units
-      if (currentFloor !== -1) {
-        floorListing.push({ floor: currentFloor, units: currentUnits });
-      }
-
-      setFloorList(floorListing);
-      setMaxUnitLength(maxUnitLength);
       setAddresses(addressMap);
     };
 
     const subOptions = {
       filter: `map="${mapId}"`,
-      fields: PB_FIELDS.GET_ADDRESSES,
       expand: "type",
-      requestKey: `addresses-sub-${mapId}`
+      requestKey: `addresses-sub-${mapId}`,
+      fields: PB_FIELDS.ADDRESSES
     } as RecordSubscribeOptions;
 
     if (assignmentId) {
@@ -250,9 +222,6 @@ const MainTable = ({
           } else if (dataAction === "delete") {
             newAddresses.delete(addressId);
           }
-          const { floorList, maxUnitLength } = organizeAddresses(newAddresses);
-          setFloorList(floorList);
-          setMaxUnitLength(maxUnitLength);
 
           return newAddresses;
         });
@@ -263,6 +232,10 @@ const MainTable = ({
     fetchAddressData();
   }, []);
 
+  const { floorList, maxUnitLength } = useMemo(
+    () => organizeAddresses(addresses),
+    [addresses]
+  );
   if (floorList.length === 0) {
     return <div className="text-center p-2">Loading...</div>;
   }

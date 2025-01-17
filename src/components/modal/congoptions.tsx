@@ -16,7 +16,7 @@ import {
   OverlayTrigger,
   Tooltip
 } from "react-bootstrap";
-import { WIKI_CATEGORIES } from "../../utils/constants";
+import { PB_FIELDS, WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import HelpButton from "../navigation/help";
 import { pb } from "../../utils/pocketbase";
@@ -140,7 +140,8 @@ const UpdateCongregationOptions = NiceModal.create(
         const data = await pb.collection("options").getFullList({
           filter: `congregation="${currentCongregation}"`,
           requestKey: `get-options-${currentCongregation}`,
-          sort: "sequence"
+          sort: "sequence",
+          fields: PB_FIELDS.CONGREGATION_OPTIONS
         });
 
         data.forEach((option) => {

@@ -30,7 +30,7 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
     const fetchUnreadMsgs = async () => {
       const unreadMessages = await pb.collection("messages").getFullList({
         filter: `map = "${mapId}" && type!= "${MESSAGE_TYPES.ADMIN}" && read = false`,
-        fields: "id, read",
+        fields: "id",
         requestKey: `unread-msg-${mapId}`
       });
       setUnreadMsgCount(unreadMessages.length);
@@ -44,6 +44,7 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
       },
       {
         filter: `map="${mapId}"`,
+        fields: "id",
         requestKey: `unread-msg-sub-${mapId}`
       }
     );
