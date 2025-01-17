@@ -1,3 +1,11 @@
+## [1.0.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.0.1...v1.0.2) (2025-01-17)
+
+
+### Bug Fixes
+
+* lowercase and trim email during sign in ([9354dc0](https://github.com/rimorin/ministry-mapper-v2/commit/9354dc07423aac3427931801607ac65195c04b12))
+* optimised fields in queries ([b6d6c9a](https://github.com/rimorin/ministry-mapper-v2/commit/b6d6c9a1b9d134ae7c75f137b1ea345db2b20a76))
+
 ## [1.0.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.0.0...v1.0.1) (2025-01-14)
 
 
