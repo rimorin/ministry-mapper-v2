@@ -1,7 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
-import { ViteImageOptimizer } from "vite-plugin-image-optimizer";
 import TurboConsole from "unplugin-turbo-console/vite";
 export default defineConfig(() => {
   return {
@@ -13,7 +12,8 @@ export default defineConfig(() => {
           manualChunks: {
             react: ["react", "react-dom", "react-router", "react-router-dom"],
             rollbar: ["rollbar"],
-            gmaps: ["@vis.gl/react-google-maps"]
+            gmaps: ["@vis.gl/react-google-maps"],
+            pocketbase: ["pocketbase"]
           }
         },
         onwarn(warning, defaultHandler) {
@@ -29,6 +29,6 @@ export default defineConfig(() => {
       port: 3000,
       host: true
     },
-    plugins: [react(), visualizer(), ViteImageOptimizer(), TurboConsole()]
+    plugins: [react(), visualizer(), TurboConsole()]
   };
 });

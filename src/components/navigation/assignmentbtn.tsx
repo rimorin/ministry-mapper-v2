@@ -116,6 +116,12 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
         url: absoluteUrl.toString()
       });
     } catch (error) {
+      if (error instanceof Error) {
+        // Ignore the error if the user aborts the share
+        if (error.name === "AbortError") {
+          return;
+        }
+      }
       errorHandler(error, rollbar, false);
     }
   };
