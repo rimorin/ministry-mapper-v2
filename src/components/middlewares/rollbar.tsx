@@ -13,10 +13,8 @@ const DEFEAULT_ROLLBAR_ENVIRONMENT = "staging";
 const rollbarConfig = VITE_ROLLBAR_ACCESS_TOKEN
   ? {
       accessToken: VITE_ROLLBAR_ACCESS_TOKEN,
-      autoInstrument: true,
       captureUncaught: true,
       captureUnhandledRejections: true,
-      code_version: VITE_VERSION,
       environment: VITE_SYSTEM_ENVIRONMENT || DEFEAULT_ROLLBAR_ENVIRONMENT,
       client: {
         javascript: {
