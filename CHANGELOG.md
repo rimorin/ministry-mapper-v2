@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/rimorin/ministry-mapper-v2/compare/v1.0.3...v1.0.4) (2025-01-22)
+
+
+### Bug Fixes
+
+* ignore cancel share exception ([139dcfb](https://github.com/rimorin/ministry-mapper-v2/commit/139dcfba862e1ade456b7a42bb7d48c21386f7c3))
+
 ## [1.0.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.0.2...v1.0.3) (2025-01-17)
 
 
