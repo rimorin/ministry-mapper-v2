@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.0.4...v1.1.0) (2025-01-28)
+
+
+### Features
+
+* migrate to wouter to reduce bundle size ([797088f](https://github.com/rimorin/ministry-mapper-v2/commit/797088f4e0556be0f1259f7b47f83b19bdc35eda))
+
 ## [1.0.4](https://github.com/rimorin/ministry-mapper-v2/compare/v1.0.3...v1.0.4) (2025-01-22)
 
 
