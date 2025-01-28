@@ -10,7 +10,7 @@ export default defineConfig(() => {
       rollupOptions: {
         output: {
           manualChunks: {
-            react: ["react", "react-dom", "react-router", "react-router-dom"],
+            react: ["react", "react-dom"],
             rollbar: ["rollbar"],
             gmaps: ["@vis.gl/react-google-maps"],
             pocketbase: ["pocketbase"]
