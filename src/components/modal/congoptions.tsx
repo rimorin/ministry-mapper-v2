@@ -26,7 +26,6 @@ import {
 } from "../../utils/interface";
 import GenericInputField from "../form/input";
 import ModalSubmitButton from "../form/submit";
-import { flushSync } from "react-dom";
 
 const UpdateCongregationOptions = NiceModal.create(
   ({ currentCongregation }: UpdateCongregationOptionsModalProps) => {
@@ -35,6 +34,8 @@ const UpdateCongregationOptions = NiceModal.create(
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [deletedOptions, setDeletedOptions] = useState<Array<string>>([]);
     const [options, setOptions] = useState<Array<HHOptionProps>>([]);
+    const [newOptionAdded, setNewOptionAdded] = useState(false);
+
     const handleSubmitCongOptions = async (
       event: FormEvent<HTMLFormElement>
     ) => {
@@ -158,6 +159,17 @@ const UpdateCongregationOptions = NiceModal.create(
       };
       getHHOptions();
     }, []);
+
+    // scroll to the bottom of the table when a new option is added
+    useEffect(() => {
+      if (newOptionAdded) {
+        const table = document.getElementById("optionTable");
+        if (table) {
+          table.scrollIntoView({ behavior: "smooth", block: "end" });
+        }
+        setNewOptionAdded(false);
+      }
+    }, [newOptionAdded]);
 
     return (
       <Modal
@@ -376,16 +388,8 @@ const UpdateCongregationOptions = NiceModal.create(
                   isDeleted: false
                 });
 
-                // rerender table before scrolling to bottom
-                flushSync(() => {
-                  setOptions(newOptions);
-                });
-
-                // scroll to bottom of table
-                const table = document.getElementById("optionTable");
-                if (table) {
-                  table.scrollIntoView({ behavior: "smooth", block: "end" });
-                }
+                setOptions(newOptions);
+                setNewOptionAdded(true);
               }}
             >
               New Option
