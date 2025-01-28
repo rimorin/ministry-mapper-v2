@@ -7,7 +7,7 @@ import {
   useMemo,
   lazy,
   useRef,
-  MouseEvent
+  memo
 } from "react";
 import {
   Accordion,
@@ -21,6 +21,7 @@ import {
 } from "react-bootstrap";
 import { useRollbar } from "@rollbar/react";
 import { RecordModel } from "pocketbase";
+import { FixedSizeList } from "react-window";
 
 import {
   valuesDetails,
@@ -28,9 +29,7 @@ import {
   addressDetails,
   adminProps,
   userDetails,
-  CongregationAccessObject,
-  DropDirections,
-  DropDirection
+  CongregationAccessObject
 } from "../utils/interface";
 import { LinkSession, Policy } from "../utils/policies";
 import {
@@ -42,7 +41,8 @@ import {
   DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
   DEFAULT_AGGREGATES,
   DEFAULT_COORDINATES,
-  PB_FIELDS
+  PB_FIELDS,
+  LIST_WINDOW
 } from "../utils/constants";
 import errorHandler from "../utils/helpers/errorhandler";
 
@@ -147,7 +147,6 @@ function Admin({ user }: adminProps) {
   const [userCongregationAccesses, setUserCongregationAccesses] = useState<
     CongregationAccessObject[]
   >([]);
-  const [dropDirections, setDropDirections] = useState<DropDirections>({});
   const rollbar = useRollbar();
   const congregationAccess = useRef<Record<string, string>>({});
   // create a useRef to store maps view mode if true/false
@@ -162,21 +161,6 @@ function Admin({ user }: adminProps) {
     "territoryCode",
     ""
   );
-
-  const handleDropdownDirection = (
-    event: MouseEvent<HTMLElement, globalThis.MouseEvent>,
-    dropdownId: string
-  ) => {
-    const clickPositionY = event.clientY;
-    const dropdownHeight = 300;
-    const windowInnerHeight = window.innerHeight;
-
-    let dropdownDirection: DropDirection = "down";
-    if (windowInnerHeight - clickPositionY < dropdownHeight) {
-      dropdownDirection = "up";
-    }
-    setDropDirections((prev) => ({ ...prev, [dropdownId]: dropdownDirection }));
-  };
 
   const getUsers = useCallback(async () => {
     try {
@@ -597,6 +581,251 @@ function Admin({ user }: adminProps) {
       pb.collection("territories").unsubscribe();
     };
   }, [congregationCode]);
+
+  const renderMapRow = memo(
+    ({
+      data = [],
+      index,
+      style
+    }: {
+      data: addressDetails[];
+      index: number;
+      style: object;
+    }) => {
+      const addressElement = data[index];
+      const currentMapId = addressElement.id;
+      const currentMapCode = addressElement.mapId;
+      const currentMapName = addressElement.name;
+      const currentMapType = addressElement.type;
+      const completeValue =
+        addressElement.aggregates?.value || DEFAULT_AGGREGATES.value;
+      const completedPercent =
+        addressElement.aggregates?.display || DEFAULT_AGGREGATES.display;
+
+      return (
+        <div style={style} key={`accordion-${currentMapId}`}>
+          <Accordion.Item eventKey={currentMapId}>
+            <Accordion.Header>
+              <span className="fluid-bolding fluid-text">{currentMapName}</span>
+            </Accordion.Header>
+            <Accordion.Body className="p-0">
+              <ProgressBar
+                style={{ borderRadius: 0 }}
+                now={completeValue}
+                label={completedPercent}
+              />
+              <div key={`div-${currentMapId}`}>
+                <Navbar bg="light" expand="lg" key={`navbar-${currentMapId}`}>
+                  <Container fluid className="justify-content-end">
+                    {currentMapType === TERRITORY_TYPES.SINGLE_STORY && (
+                      <Button
+                        size="sm"
+                        variant="outline-primary"
+                        className="m-1"
+                        onClick={() => {
+                          setMapViews((prev) => {
+                            const updatedMapViews = new Map(prev);
+                            updatedMapViews.set(
+                              currentMapId,
+                              !updatedMapViews.get(currentMapId)
+                            );
+                            return updatedMapViews;
+                          });
+                        }}
+                      >
+                        {mapViews.get(currentMapId) ? "List View" : "Map View"}
+                      </Button>
+                    )}
+
+                    <AssignmentButtonGroup
+                      addressElement={addressElement}
+                      policy={policy}
+                      userId={pb.authStore?.record?.id as string}
+                    />
+                    <Button
+                      size="sm"
+                      variant="outline-primary"
+                      className="m-1"
+                      onClick={() => {
+                        ModalManager.show(
+                          SuspenseComponent(GetMapGeolocation),
+                          {
+                            coordinates: addressElement.coordinates,
+                            name: currentMapName,
+                            origin: policy.origin
+                          }
+                        );
+                      }}
+                    >
+                      Direction
+                    </Button>
+                    <MessageButtonGroup
+                      addressElement={addressElement}
+                      policy={policy}
+                    />
+                    <ComponentAuthorizer
+                      requiredPermission={
+                        USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
+                      }
+                      userPermission={userAccessLevel}
+                    >
+                      <DropdownButton
+                        className="dropdown-btn"
+                        align="end"
+                        variant="outline-primary"
+                        size="sm"
+                        title={
+                          <>
+                            {processingMap.isProcessing &&
+                              processingMap.mapId === currentMapId && (
+                                <>
+                                  <Spinner
+                                    as="span"
+                                    animation="border"
+                                    size="sm"
+                                    aria-hidden="true"
+                                  />{" "}
+                                </>
+                              )}{" "}
+                            Address
+                          </>
+                        }
+                      >
+                        <Dropdown.Item
+                          onClick={() =>
+                            ModalManager.show(
+                              SuspenseComponent(ChangeMapGeoLocation),
+                              {
+                                footerSaveAcl: userAccessLevel,
+                                mapId: currentMapId,
+                                coordinates: addressElement.coordinates,
+                                origin: policy.origin
+                              }
+                            )
+                          }
+                        >
+                          Change Location
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          onClick={() =>
+                            ModalManager.show(
+                              SuspenseComponent(ChangeMapCode),
+                              {
+                                footerSaveAcl: userAccessLevel,
+                                mapId: currentMapId,
+                                mapCode: currentMapCode
+                              }
+                            )
+                          }
+                        >
+                          Change Map Number
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          onClick={() => {
+                            setValues({
+                              ...values,
+                              map: currentMapId,
+                              name: currentMapName
+                            });
+                            toggleAddressTerritoryListing();
+                          }}
+                        >
+                          Change Territory
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          onClick={() =>
+                            ModalManager.show(
+                              SuspenseComponent(ChangeAddressName),
+                              {
+                                footerSaveAcl: userAccessLevel,
+                                mapId: currentMapId,
+                                name: currentMapName
+                              }
+                            )
+                          }
+                        >
+                          Rename
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          onClick={() => {
+                            ModalManager.show(SuspenseComponent(NewUnit), {
+                              footerSaveAcl: userAccessLevel,
+                              mapId: currentMapId,
+                              addressData: addressElement
+                            });
+                          }}
+                        >
+                          Add{" "}
+                          {addressElement.type === TERRITORY_TYPES.SINGLE_STORY
+                            ? "Property"
+                            : "Unit"}{" "}
+                          No.
+                        </Dropdown.Item>
+                        {(!addressElement.type ||
+                          addressElement.type ===
+                            TERRITORY_TYPES.MULTIPLE_STORIES) && (
+                          <Dropdown.Item
+                            onClick={() => {
+                              addFloorToMap(currentMapId, true);
+                            }}
+                          >
+                            Add Higher Floor
+                          </Dropdown.Item>
+                        )}
+                        {(!addressElement.type ||
+                          addressElement.type ===
+                            TERRITORY_TYPES.MULTIPLE_STORIES) && (
+                          <Dropdown.Item
+                            onClick={() => {
+                              addFloorToMap(currentMapId);
+                            }}
+                          >
+                            Add Lower Floor
+                          </Dropdown.Item>
+                        )}
+                        <Dropdown.Item
+                          onClick={() => {
+                            const confirmReset = window.confirm(
+                              `⚠️ WARNING: Resetting all property statuses of "${currentMapName}" will reset all statuses. This action cannot be undone. Proceed?`
+                            );
+
+                            if (confirmReset) {
+                              resetMap(currentMapId);
+                            }
+                          }}
+                        >
+                          Reset Status
+                        </Dropdown.Item>
+                        <Dropdown.Item
+                          onClick={() => {
+                            const confirmDelete = window.confirm(
+                              `⚠️ WARNING: Deleting map "${currentMapName}" will remove it completely. This action cannot be undone. Proceed?`
+                            );
+
+                            if (confirmDelete) {
+                              deleteMap(currentMapId, currentMapName, true);
+                            }
+                          }}
+                        >
+                          Delete
+                        </Dropdown.Item>
+                      </DropdownButton>
+                    </ComponentAuthorizer>
+                  </Container>
+                </Navbar>
+                <MainTable
+                  mapView={mapViews.get(currentMapId)}
+                  key={`table-${currentMapId}`}
+                  policy={policy}
+                  addressDetails={addressElement}
+                />
+              </div>
+            </Accordion.Body>
+          </Accordion.Item>
+        </div>
+      );
+    }
+  );
 
   useEffect(() => {
     if (!selectedTerritoryId) return;
@@ -1086,249 +1315,15 @@ function Admin({ user }: adminProps) {
         alwaysOpen={!isReadonly}
         flush
       >
-        {sortedAddressList.map((addressElement) => {
-          const currentMapId = addressElement.id;
-          const currentMapCode = addressElement.mapId;
-          const currentMapName = addressElement.name;
-          const currentMapType = addressElement.type;
-          const completeValue =
-            addressElement.aggregates?.value || DEFAULT_AGGREGATES.value;
-          const completedPercent =
-            addressElement.aggregates?.display || DEFAULT_AGGREGATES.display;
-          return (
-            <Accordion.Item
-              key={`accordion-${currentMapId}`}
-              eventKey={currentMapId}
-            >
-              <Accordion.Header>
-                <span className="fluid-bolding fluid-text">
-                  {currentMapName}
-                </span>
-              </Accordion.Header>
-              <Accordion.Body className="p-0">
-                <ProgressBar
-                  style={{ borderRadius: 0 }}
-                  now={completeValue}
-                  label={completedPercent}
-                />
-                <div key={`div-${currentMapId}`}>
-                  <Navbar bg="light" expand="lg" key={`navbar-${currentMapId}`}>
-                    <Container fluid className="justify-content-end">
-                      {/* if type is single, display a button to indicate list or map view. Set MapView ref with boolean */}
-                      {currentMapType === TERRITORY_TYPES.SINGLE_STORY && (
-                        <Button
-                          size="sm"
-                          variant="outline-primary"
-                          className="m-1"
-                          onClick={() => {
-                            setMapViews((prev) => {
-                              const updatedMapViews = new Map(prev);
-                              updatedMapViews.set(
-                                currentMapId,
-                                !updatedMapViews.get(currentMapId)
-                              );
-                              return updatedMapViews;
-                            });
-                          }}
-                        >
-                          {mapViews.get(currentMapId)
-                            ? "List View"
-                            : "Map View"}
-                        </Button>
-                      )}
-
-                      <AssignmentButtonGroup
-                        addressElement={addressElement}
-                        policy={policy}
-                        userId={pb.authStore?.record?.id as string}
-                      />
-                      <Button
-                        size="sm"
-                        variant="outline-primary"
-                        className="m-1"
-                        onClick={() => {
-                          ModalManager.show(
-                            SuspenseComponent(GetMapGeolocation),
-                            {
-                              coordinates: addressElement.coordinates,
-                              name: currentMapName,
-                              origin: policy.origin
-                            }
-                          );
-                        }}
-                      >
-                        Direction
-                      </Button>
-                      <MessageButtonGroup
-                        addressElement={addressElement}
-                        policy={policy}
-                      />
-                      <ComponentAuthorizer
-                        requiredPermission={
-                          USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
-                        }
-                        userPermission={userAccessLevel}
-                      >
-                        <DropdownButton
-                          className="dropdown-btn"
-                          align="end"
-                          variant="outline-primary"
-                          size="sm"
-                          title={
-                            <>
-                              {processingMap.isProcessing &&
-                                processingMap.mapId === currentMapId && (
-                                  <>
-                                    <Spinner
-                                      as="span"
-                                      animation="border"
-                                      size="sm"
-                                      aria-hidden="true"
-                                    />{" "}
-                                  </>
-                                )}{" "}
-                              Address
-                            </>
-                          }
-                          drop={dropDirections[currentMapId]}
-                          onClick={(e) =>
-                            handleDropdownDirection(e, currentMapId)
-                          }
-                        >
-                          <Dropdown.Item
-                            onClick={() =>
-                              ModalManager.show(
-                                SuspenseComponent(ChangeMapGeoLocation),
-                                {
-                                  footerSaveAcl: userAccessLevel,
-                                  mapId: currentMapId,
-                                  coordinates: addressElement.coordinates,
-                                  origin: policy.origin
-                                }
-                              )
-                            }
-                          >
-                            Change Location
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() =>
-                              ModalManager.show(
-                                SuspenseComponent(ChangeMapCode),
-                                {
-                                  footerSaveAcl: userAccessLevel,
-                                  mapId: currentMapId,
-                                  mapCode: currentMapCode
-                                }
-                              )
-                            }
-                          >
-                            Change Map Number
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() => {
-                              setValues({
-                                ...values,
-                                map: currentMapId,
-                                name: currentMapName
-                              });
-                              toggleAddressTerritoryListing();
-                            }}
-                          >
-                            Change Territory
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() =>
-                              ModalManager.show(
-                                SuspenseComponent(ChangeAddressName),
-                                {
-                                  footerSaveAcl: userAccessLevel,
-                                  mapId: currentMapId,
-                                  name: currentMapName
-                                }
-                              )
-                            }
-                          >
-                            Rename
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() => {
-                              ModalManager.show(SuspenseComponent(NewUnit), {
-                                footerSaveAcl: userAccessLevel,
-                                mapId: currentMapId,
-                                addressData: addressElement
-                              });
-                            }}
-                          >
-                            Add{" "}
-                            {addressElement.type ===
-                            TERRITORY_TYPES.SINGLE_STORY
-                              ? "Property"
-                              : "Unit"}{" "}
-                            No.
-                          </Dropdown.Item>
-                          {(!addressElement.type ||
-                            addressElement.type ===
-                              TERRITORY_TYPES.MULTIPLE_STORIES) && (
-                            <Dropdown.Item
-                              onClick={() => {
-                                addFloorToMap(currentMapId, true);
-                              }}
-                            >
-                              Add Higher Floor
-                            </Dropdown.Item>
-                          )}
-                          {(!addressElement.type ||
-                            addressElement.type ===
-                              TERRITORY_TYPES.MULTIPLE_STORIES) && (
-                            <Dropdown.Item
-                              onClick={() => {
-                                addFloorToMap(currentMapId);
-                              }}
-                            >
-                              Add Lower Floor
-                            </Dropdown.Item>
-                          )}
-                          <Dropdown.Item
-                            onClick={() => {
-                              const confirmReset = window.confirm(
-                                `⚠️ WARNING: Resetting all property statuses of "${currentMapName}" will reset all statuses. This action cannot be undone. Proceed?`
-                              );
-
-                              if (confirmReset) {
-                                resetMap(currentMapId);
-                              }
-                            }}
-                          >
-                            Reset Status
-                          </Dropdown.Item>
-                          <Dropdown.Item
-                            onClick={() => {
-                              const confirmDelete = window.confirm(
-                                `⚠️ WARNING: Deleting map "${currentMapName}" will remove it completely. This action cannot be undone. Proceed?`
-                              );
-
-                              if (confirmDelete) {
-                                deleteMap(currentMapId, currentMapName, true);
-                              }
-                            }}
-                          >
-                            Delete
-                          </Dropdown.Item>
-                        </DropdownButton>
-                      </ComponentAuthorizer>
-                    </Container>
-                  </Navbar>
-                  <MainTable
-                    mapView={mapViews.get(currentMapId)}
-                    key={`table-${currentMapId}`}
-                    policy={policy}
-                    addressDetails={addressElement}
-                  />
-                </div>
-              </Accordion.Body>
-            </Accordion.Item>
-          );
-        })}
+        <FixedSizeList
+          height={LIST_WINDOW.LIST_HEIGHT}
+          itemCount={sortedAddressList.length}
+          itemData={sortedAddressList}
+          itemSize={LIST_WINDOW.ITEM_HEIGHT}
+          width={LIST_WINDOW.LIST_WIDTH}
+        >
+          {renderMapRow}
+        </FixedSizeList>
       </Accordion>
       <BackToTopButton showButton={showBkTopButton} />
     </>

@@ -194,6 +194,12 @@ const PB_FIELDS = {
   MAPS: "id, code, description, type, location, progress, coordinates"
 };
 
+const LIST_WINDOW = {
+  ITEM_HEIGHT: 600,
+  LIST_HEIGHT: 750,
+  LIST_WIDTH: "100%"
+};
+
 export {
   UNSUPPORTED_BROWSER_MSG,
   STATUS_CODES,
@@ -235,5 +241,6 @@ export {
   DEFAULT_UNIT_PADDING,
   MESSAGE_TYPES,
   PB_SECURITY_HEADER_KEY,
-  PB_FIELDS
+  PB_FIELDS,
+  LIST_WINDOW
 };

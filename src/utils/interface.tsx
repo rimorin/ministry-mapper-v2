@@ -94,9 +94,6 @@ export interface valuesDetails extends floorInterface, nameInterface {
   map?: string;
 }
 
-export type DropDirection = "up" | "down";
-export type DropDirections = { [key: string]: DropDirection };
-
 export type adminProps = userInterface;
 
 export interface territoryDetails extends nameInterface {
