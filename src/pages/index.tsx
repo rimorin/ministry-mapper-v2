@@ -3,14 +3,13 @@ import "../css/main.css";
 import "../css/common.css";
 import "react-calendar/dist/Calendar.css";
 import { FC, ReactNode } from "react";
-import { RouterProvider } from "react-router-dom";
 import MaintenanceMiddleware from "../components/middlewares/maintenance";
 import MainMiddleware from "../components/middlewares/main";
 import StateMiddleware from "../components/middlewares/context";
 import MapsMiddleware from "../components/middlewares/googlemap";
 import RollbarMiddleware from "../components/middlewares/rollbar";
 import { Provider as NiceModelMiddleware } from "@ebay/nice-modal-react";
-import router from "./router";
+import Router from "./router";
 
 interface CombinedMiddlewareProps {
   children: ReactNode;
@@ -31,11 +30,7 @@ const CombinedMiddleware: FC<CombinedMiddlewareProps> = ({ children }) => (
 );
 
 const Main: FC = () => {
-  return (
-    <CombinedMiddleware>
-      <RouterProvider router={router} />
-    </CombinedMiddleware>
-  );
+  return <CombinedMiddleware>{Router()}</CombinedMiddleware>;
 };
 
 export default Main;

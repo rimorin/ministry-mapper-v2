@@ -6,13 +6,13 @@ import {
   FloatingLabel,
   Spinner
 } from "react-bootstrap";
-import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Loader from "../components/statics/loader";
 import NavBarBranding from "../components/navigation/branding";
 import { PASSWORD_POLICY, MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
 import PasswordChecklist from "react-password-checklist";
 import { pb } from "../utils/pocketbase";
+import { useSearch } from "wouter";
 
 const MODE_RESET_PASSWORD = "resetPassword";
 const MODE_VERIFY_EMAIL = "verifyEmail";
@@ -25,8 +25,8 @@ const UserManagementComponent = () => {
   const [loginPassword, setLoginPassword] = useState("");
   const [cloginPassword, setCloginPassword] = useState("");
   const [isLoginPasswordOk, setIsLoginPasswordOk] = useState(false);
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
+  const searchString = useSearch();
+  const searchParams = new URLSearchParams(searchString);
 
   const mode = searchParams.get("mode") || "";
   const oobCode = searchParams.get("oobCode") || "";

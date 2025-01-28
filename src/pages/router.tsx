@@ -1,6 +1,6 @@
-import { createBrowserRouter } from "react-router-dom";
 import { ComponentType, lazy, LazyExoticComponent, Suspense } from "react";
 import Loader from "../components/statics/loader";
+import { Route, Switch } from "wouter";
 
 const LazyLoad = (Component: LazyExoticComponent<ComponentType>) => (
   <Suspense fallback={<Loader suspended />}>
@@ -12,28 +12,14 @@ const Map = lazy(() => import("./map"));
 const FrontPage = lazy(() => import("./frontpage"));
 const UserManagement = lazy(() => import("./usrmgmt"));
 const NotFoundPage = lazy(() => import("../components/statics/notfound"));
-const ErrorPage = lazy(() => import("../components/statics/error"));
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: LazyLoad(FrontPage),
-    errorElement: LazyLoad(ErrorPage)
-  },
-  {
-    path: "/map/:id",
-    element: LazyLoad(Map),
-    errorElement: LazyLoad(ErrorPage)
-  },
-  {
-    path: "/usermgmt",
-    element: LazyLoad(UserManagement),
-    errorElement: LazyLoad(ErrorPage)
-  },
-  {
-    path: "*",
-    element: LazyLoad(NotFoundPage)
-  }
-]);
+const router = () => (
+  <Switch>
+    <Route path="/">{LazyLoad(FrontPage)}</Route>
+    <Route path="/map/:id">{LazyLoad(Map)}</Route>
+    <Route path="/usermgmt">{LazyLoad(UserManagement)}</Route>
+    <Route path="*">{LazyLoad(NotFoundPage)}</Route>
+  </Switch>
+);
 
 export default router;
