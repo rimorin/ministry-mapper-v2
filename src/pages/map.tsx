@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback, lazy, useMemo } from "react";
-import { useParams } from "react-router-dom";
 import { useRollbar } from "@rollbar/react";
 import { pb } from "../utils/pocketbase";
 import { Container, Image, Nav, Navbar } from "react-bootstrap";
@@ -25,6 +24,7 @@ import "../css/slip.css";
 import { RecordModel } from "pocketbase";
 import getDataById from "../utils/helpers/getdatabyid";
 import useLocalStorage from "../utils/helpers/storage";
+import { useParams } from "wouter";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 const UpdateMapMessages = lazy(() => import("../components/modal/mapmessages"));
 const ShowExpiry = lazy(() => import("../components/modal/slipexpiry"));
