@@ -79,6 +79,21 @@ const LoginComponent = () => {
     await loginInWithEmailAndPassword(loginEmail, loginPassword);
   };
 
+  const handleClipboardPaste = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      setOtpCode(text);
+    } catch (err) {
+      if (err instanceof Error) {
+        // Ignore the error if the user aborts the share
+        if (err.name === "NotAllowedError") {
+          alert("Permission to access clipboard was denied.");
+        }
+      }
+      errorHandler(err, rollbar);
+    }
+  };
+
   return (
     <>
       {!otpSessionId ? (
@@ -226,9 +241,7 @@ const LoginComponent = () => {
                 className="mx-2"
                 variant="outline-primary"
                 type="button"
-                onClick={async () => {
-                  setOtpCode(await navigator.clipboard.readText());
-                }}
+                onClick={handleClipboardPaste}
               >
                 Paste
               </Button>
