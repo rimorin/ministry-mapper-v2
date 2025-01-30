@@ -175,8 +175,6 @@ const Map = () => {
 
     return () => {
       pb.collection("maps").unsubscribe();
-      pb.collection("messages").unsubscribe();
-      pb.collection("addresses").unsubscribe();
     };
   }, []);
 

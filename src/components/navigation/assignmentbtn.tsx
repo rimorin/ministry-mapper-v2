@@ -194,6 +194,9 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
       }
     );
     retrieveAssignments();
+    return () => {
+      pb.collection("assignments").unsubscribe();
+    };
   }, []);
 
   return (
