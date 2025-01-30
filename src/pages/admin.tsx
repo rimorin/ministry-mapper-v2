@@ -676,9 +676,6 @@ function Admin({ user }: adminProps) {
 
     return () => {
       pb.collection("maps").unsubscribe();
-      pb.collection("addresses").unsubscribe();
-      pb.collection("messages").unsubscribe();
-      pb.collection("assignments").unsubscribe();
       setSortedAddressList([]);
     };
   }, [selectedTerritoryId]);
