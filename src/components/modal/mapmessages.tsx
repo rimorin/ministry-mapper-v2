@@ -102,6 +102,9 @@ const UpdateMapMessages = NiceModal.create(
         },
         msgSubheader
       );
+      return () => {
+        pb.collection("messages").unsubscribe();
+      };
     }, []);
 
     return (

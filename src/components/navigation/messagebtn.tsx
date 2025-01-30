@@ -48,6 +48,9 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
         requestKey: `unread-msg-sub-${mapId}`
       }
     );
+    return () => {
+      pb.collection("messages").unsubscribe();
+    };
   }, []);
 
   return (
