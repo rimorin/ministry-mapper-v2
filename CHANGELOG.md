@@ -1,3 +1,11 @@
+## [1.1.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.1.0...v1.1.1) (2025-01-30)
+
+
+### Bug Fixes
+
+* handle error with paste permission is not granted ([bc25dbc](https://github.com/rimorin/ministry-mapper-v2/commit/bc25dbc2ae02935d8c5b7b794f8d7bac9f18d888))
+* improve pb subscription cancellation calls ([28fa170](https://github.com/rimorin/ministry-mapper-v2/commit/28fa1702f1b9f5105748d90704b462ca6d30af3a))
+
 # [1.1.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.0.4...v1.1.0) (2025-01-28)
 
 
