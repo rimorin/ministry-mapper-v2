@@ -1,3 +1,11 @@
+## [1.1.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.1.1...v1.1.2) (2025-01-31)
+
+
+### Bug Fixes
+
+* ensure sequence format when creating new maps ([89d791f](https://github.com/rimorin/ministry-mapper-v2/commit/89d791f61b1b886640d4816c5701e10a56df7cef))
+* redirect to signin page when token is no longer valid ([6122a5b](https://github.com/rimorin/ministry-mapper-v2/commit/6122a5b310b02686193ccbc1e17662f1906208dc))
+
 ## [1.1.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.1.0...v1.1.1) (2025-01-30)
 
 
