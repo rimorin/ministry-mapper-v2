@@ -6,18 +6,18 @@
   "dependencies": {
     "@ebay/nice-modal-react": "^1.2.13",
     "@rollbar/react": "^0.11.2",
-    "@vis.gl/react-google-maps": "^1.5.0",
+    "@vis.gl/react-google-maps": "^1.5.1",
     "bootstrap": "^5.3.3",
     "pocketbase": "^0.25.1",
     "react": "^18.3.1",
-    "react-bootstrap": "^2.10.8",
+    "react-bootstrap": "^2.10.9",
     "react-calendar": "^5.1.0",
     "react-countdown": "^2.3.6",
     "react-dom": "^18.3.1",
     "react-password-checklist": "^1.8.1",
     "react-select": "^5.10.0",
     "rollbar": "^2.26.4",
-    "wouter": "^3.5.0"
+    "wouter": "^3.5.1"
   },
   "scripts": {
     "start": "vite",
