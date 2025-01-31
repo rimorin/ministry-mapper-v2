@@ -19,12 +19,19 @@ const Admin = lazy(() => import("./admin"));
 
 const FrontPage = () => {
   const context = useContext(StateContext);
-  const [loginUser, setLoginUser] = useState<AuthModel>(pb.authStore.record);
+  const [loginUser, setLoginUser] = useState<AuthModel>(
+    pb.authStore.isValid ? pb.authStore.record : null
+  );
   const { frontPageMode } = context;
   const rollbar = useRollbar();
 
   useEffect(() => {
-    pb.authStore.onChange((_: string, model: AuthModel) => setLoginUser(model));
+    const unsub = pb.authStore.onChange((_: string, model: AuthModel) =>
+      setLoginUser(model)
+    );
+    return () => {
+      unsub();
+    };
   }, []);
 
   if (loginUser && !loginUser.verified) {

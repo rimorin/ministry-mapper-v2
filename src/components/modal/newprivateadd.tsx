@@ -11,6 +11,7 @@ import {
 import isValidMapCode from "../../utils/helpers/checkvalidmapcd";
 import isValidMapSequence from "../../utils/helpers/checkvalidseq";
 import errorHandler from "../../utils/helpers/errorhandler";
+import processSequence from "../../utils/helpers/processsequence";
 import {
   NewPrivateAddressModalProps,
   latlongInterface
@@ -144,7 +145,7 @@ const NewPrivateAddress = NiceModal.create(
               placeholder="House sequence with comma seperator. For eg, 1A,1B,2A ..."
               handleChange={(e: ChangeEvent<HTMLElement>) => {
                 const { value } = e.target as HTMLInputElement;
-                setSequence(value);
+                setSequence(processSequence(value));
               }}
               changeValue={sequence}
               required={true}
