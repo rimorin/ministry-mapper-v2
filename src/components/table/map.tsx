@@ -21,6 +21,8 @@ import ZeroPad from "../../utils/helpers/zeropad";
 import PublicTerritoryTable from "./publictable";
 import { RecordModel, RecordSubscribeOptions } from "pocketbase";
 import TerritoryMapView from "./mapmode";
+import errorHandler from "../../utils/helpers/errorhandler";
+import { useRollbar } from "@rollbar/react";
 const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
 const UpdateUnit = lazy(() => import("../modal/updateunit"));
 
@@ -32,19 +34,24 @@ const MainTable = ({
 }: territoryTableProps) => {
   const mapId = addressDetails?.id;
   const mapName = addressDetails?.name;
+  const rollbar = useRollbar();
 
   const [addresses, setAddresses] = useState<Map<string, unitDetails>>(
     new Map()
   );
 
   const deleteAddressFloor = useCallback(async (floor: number) => {
-    await pb.send("map/floor/remove", {
-      method: "POST",
-      body: {
-        map: mapId,
-        floor: floor
-      }
-    });
+    try {
+      await pb.send("map/floor/remove", {
+        method: "POST",
+        body: {
+          map: mapId,
+          floor: floor
+        }
+      });
+    } catch (error) {
+      errorHandler(error, rollbar);
+    }
   }, []);
 
   const updateAddressCode = useCallback(
