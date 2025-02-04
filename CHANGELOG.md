@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.1.2...v1.1.3) (2025-02-04)
+
+
+### Bug Fixes
+
+* allow deletion of floor if there are more than one floor ([28e47f4](https://github.com/rimorin/ministry-mapper-v2/commit/28e47f439fff432ca8a739f3204061d78b7a49a7))
+
 ## [1.1.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.1.1...v1.1.2) (2025-01-31)
 
 
