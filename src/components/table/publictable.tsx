@@ -17,6 +17,7 @@ const PublicTerritoryTable = ({
   handleFloorDelete,
   handleUnitNoUpdate
 }: territoryMultiProps) => {
+  const moreThanOneFloor = floors.length > 1;
   return (
     <div className={policy.isFromAdmin() ? "sticky-body-admin" : "sticky-body"}>
       <Table
@@ -58,22 +59,24 @@ const PublicTerritoryTable = ({
                   key={`${index}-${item.floor}`}
                   scope="row"
                 >
-                  <ComponentAuthorizer
-                    requiredPermission={
-                      USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
-                    }
-                    userPermission={policy?.userRole}
-                  >
-                    <Button
-                      size="sm"
-                      variant="outline-warning"
-                      className="me-1"
-                      onClick={handleFloorDelete}
-                      data-floor={item.floor}
+                  {moreThanOneFloor && (
+                    <ComponentAuthorizer
+                      requiredPermission={
+                        USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
+                      }
+                      userPermission={policy?.userRole}
                     >
-                      🗑️
-                    </Button>
-                  </ComponentAuthorizer>
+                      <Button
+                        size="sm"
+                        variant="outline-warning"
+                        className="me-1"
+                        onClick={handleFloorDelete}
+                        data-floor={item.floor}
+                      >
+                        🗑️
+                      </Button>
+                    </ComponentAuthorizer>
+                  )}
                   {ZeroPad(item.floor.toString(), DEFAULT_FLOOR_PADDING)}
                 </th>
                 {item.units.map((element) => (
