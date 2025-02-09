@@ -26,12 +26,10 @@ const FrontPage = () => {
   const rollbar = useRollbar();
 
   useEffect(() => {
-    const unsub = pb.authStore.onChange((_: string, model: AuthModel) =>
-      setLoginUser(model)
-    );
-    return () => {
-      unsub();
-    };
+    pb.authStore.onChange((_: string, model: AuthModel) => setLoginUser(model));
+    // return () => {
+    //   unsub();
+    // };
   }, []);
 
   if (loginUser && !loginUser.verified) {

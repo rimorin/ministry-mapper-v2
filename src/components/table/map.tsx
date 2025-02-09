@@ -237,9 +237,9 @@ const MainTable = ({
     );
 
     fetchAddressData();
-    return () => {
-      pb.collection("addresses").unsubscribe();
-    };
+    // return () => {
+    //   pb.collection("addresses").unsubscribe();
+    // };
   }, []);
 
   const { floorList, maxUnitLength } = useMemo(

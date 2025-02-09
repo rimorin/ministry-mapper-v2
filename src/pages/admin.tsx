@@ -593,9 +593,9 @@ function Admin({ user }: adminProps) {
       setIsLoading(false);
     };
     fetchCongregationData();
-    return () => {
-      pb.collection("territories").unsubscribe();
-    };
+    // return () => {
+    //   pb.collection("territories").unsubscribe();
+    // };
   }, [congregationCode]);
 
   useEffect(() => {
@@ -674,10 +674,10 @@ function Admin({ user }: adminProps) {
 
     setupAddresses();
 
-    return () => {
-      pb.collection("maps").unsubscribe();
-      setSortedAddressList([]);
-    };
+    // return () => {
+    //   pb.collection("maps").unsubscribe();
+    //   setSortedAddressList([]);
+    // };
   }, [selectedTerritoryId]);
 
   if (isLoading) return <Loader />;

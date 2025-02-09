@@ -173,9 +173,9 @@ const Map = () => {
     };
     getLinkData();
 
-    return () => {
-      pb.collection("maps").unsubscribe();
-    };
+    // return () => {
+    //   pb.collection("maps").unsubscribe();
+    // };
   }, []);
 
   const memoizedMapDetails = useMemo(() => mapDetails, [mapDetails]);
