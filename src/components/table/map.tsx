@@ -237,9 +237,19 @@ const MainTable = ({
     );
 
     fetchAddressData();
-    // return () => {
-    //   pb.collection("addresses").unsubscribe();
-    // };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        alert("Visibility changed");
+        fetchAddressData();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      // pb.collection("maps").unsubscribe();
+    };
   }, []);
 
   const { floorList, maxUnitLength } = useMemo(
