@@ -171,12 +171,22 @@ const Map = () => {
         setIsLoading(false);
       }
     };
+
     getLinkData();
 
-    // return () => {
-    //   pb.collection("maps").unsubscribe();
-    // };
-  }, []);
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        getLinkData();
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+      pb.collection("maps").unsubscribe();
+    };
+  }, [id, readPinnedMessages, rollbar]);
 
   const memoizedMapDetails = useMemo(() => mapDetails, [mapDetails]);
   const memoizedPolicy = useMemo(() => policy, [policy]);
