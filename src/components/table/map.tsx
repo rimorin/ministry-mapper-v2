@@ -240,14 +240,12 @@ const MainTable = ({
 
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        alert("Visibility changed");
         fetchAddressData();
       }
     };
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
-      alert("remove event listener");
       document.removeEventListener("visibilitychange", handleVisibilityChange);
       pb.collection("maps").unsubscribe();
     };

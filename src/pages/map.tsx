@@ -176,7 +176,7 @@ const Map = () => {
     // return () => {
     //   pb.collection("maps").unsubscribe();
     // };
-  }, []);
+  }, [id]);
 
   const memoizedMapDetails = useMemo(() => mapDetails, [mapDetails]);
   const memoizedPolicy = useMemo(() => policy, [policy]);
