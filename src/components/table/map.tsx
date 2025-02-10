@@ -247,8 +247,9 @@ const MainTable = ({
     document.addEventListener("visibilitychange", handleVisibilityChange);
 
     return () => {
+      alert("remove event listener");
       document.removeEventListener("visibilitychange", handleVisibilityChange);
-      // pb.collection("maps").unsubscribe();
+      pb.collection("maps").unsubscribe();
     };
   }, []);
 
