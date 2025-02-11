@@ -23,6 +23,7 @@ import { RecordModel, RecordSubscribeOptions } from "pocketbase";
 import TerritoryMapView from "./mapmode";
 import errorHandler from "../../utils/helpers/errorhandler";
 import { useRollbar } from "@rollbar/react";
+import useVisibilityChange from "../utils/visibilitychange";
 const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
 const UpdateUnit = lazy(() => import("../modal/updateunit"));
 
@@ -237,7 +238,10 @@ const MainTable = ({
     );
 
     fetchAddressData();
+    const refreshAddresses = () => useVisibilityChange(fetchAddressData);
+    document.addEventListener("visibilitychange", refreshAddresses);
     return () => {
+      document.removeEventListener("visibilitychange", refreshAddresses);
       pb.collection("addresses").unsubscribe();
     };
   }, []);
