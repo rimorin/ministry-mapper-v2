@@ -17,6 +17,7 @@ import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import ComponentAuthorizer from "./authorizer";
 import addHours from "../../utils/helpers/addhours";
 import { RecordModel } from "pocketbase";
+import useVisibilityChange from "../utils/visibilitychange";
 const ConfirmSlipDetails = lazy(
   () => import("../../components/modal/slipdetails")
 );
@@ -194,7 +195,10 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
       }
     );
     retrieveAssignments();
+    const refreshAssignments = () => useVisibilityChange(retrieveAssignments);
+    document.addEventListener("visibilitychange", refreshAssignments);
     return () => {
+      document.removeEventListener("visibilitychange", refreshAssignments);
       pb.collection("assignments").unsubscribe();
     };
   }, []);

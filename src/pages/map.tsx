@@ -74,80 +74,87 @@ const Map = () => {
       });
       setHasPinnedMessages(pinnedMessages.length > 0);
     };
-    const getLinkData = async () => {
+    const retrieveLinkData = async (): Promise<addressDetails | undefined> => {
+      const linkRecord = await getDataById("assignments", id, {
+        requestKey: `slip-data-${id}`,
+        expand: "map, map.congregation",
+        fields: PB_FIELDS.ASSIGNMENT_LINKS
+      });
+      if (!linkRecord) {
+        return;
+      }
+      const congId = linkRecord.expand?.map.expand?.congregation.id;
+      const congOptions =
+        (await pb.collection("options").getFullList({
+          filter: `congregation="${congId}"`,
+          requestKey: `congregation-options-${congId}`,
+          fields: PB_FIELDS.CONGREGATION_OPTIONS,
+          sort: "sequence"
+        })) || [];
+      const expiryTimestamp = new Date(linkRecord.expiry_date).getTime();
+      setTokenEndTime(expiryTimestamp);
+      const currentTimestamp = new Date().getTime();
+      const isLinkExpired = currentTimestamp > expiryTimestamp;
+      setIsLinkExpired(isLinkExpired);
+      if (isLinkExpired) {
+        return;
+      }
+      setCoordinates(
+        linkRecord.expand?.map.coordinates || DEFAULT_COORDINATES.Singapore
+      );
+      setPolicy(
+        new Policy(
+          linkRecord.publisher,
+          congOptions.map((option: RecordModel) => {
+            return {
+              id: option.id,
+              code: option.code,
+              description: option.description,
+              isCountable: option.is_countable,
+              isDefault: option.is_default,
+              sequence: option.sequence
+            };
+          }),
+          linkRecord.expand?.map.expand?.congregation.max_tries,
+          linkRecord.expand?.map.expand?.congregation.origin,
+          USER_ACCESS_LEVELS.PUBLISHER.CODE,
+          linkRecord.expand?.map.expand?.congregation.expiry_hours
+        )
+      );
+
+      const details = {
+        id: linkRecord.map,
+        type: linkRecord.expand?.map.type || TERRITORY_TYPES.MULTIPLE_STORIES,
+        location: linkRecord.expand?.map.location || "",
+        aggregates: {
+          display: linkRecord.expand?.map.progress + "%",
+          value: linkRecord.expand?.map.progress
+        },
+        mapId: linkRecord.expand?.map.code,
+        name: linkRecord.expand?.map.description,
+        coordinates: linkRecord.expand?.map.coordinates
+      } as addressDetails;
+
+      if (localStorage.getItem(`${id}-readPinnedMessages`) === null) {
+        checkPinnedMessages(linkRecord.map);
+      }
+
+      return details;
+    };
+    const getMapData = async () => {
       try {
-        const linkRecord = await getDataById("assignments", id, {
-          requestKey: `slip-data-${id}`,
-          expand: "map, map.congregation",
-          fields: PB_FIELDS.ASSIGNMENT_LINKS
-        });
-        if (!linkRecord) {
+        const mapDetails = await retrieveLinkData();
+        if (!mapDetails) {
           setIsLinkExpired(true);
           return;
         }
-        const congId = linkRecord.expand?.map.expand?.congregation.id;
-        const congOptions =
-          (await pb.collection("options").getFullList({
-            filter: `congregation="${congId}"`,
-            requestKey: `congregation-options-${congId}`,
-            fields: PB_FIELDS.CONGREGATION_OPTIONS,
-            sort: "sequence"
-          })) || [];
-        const expiryTimestamp = new Date(linkRecord.expiry_date).getTime();
-        setTokenEndTime(expiryTimestamp);
-        const currentTimestamp = new Date().getTime();
-        const isLinkExpired = currentTimestamp > expiryTimestamp;
-        setIsLinkExpired(isLinkExpired);
-        if (isLinkExpired) {
-          return;
-        }
-        setCoordinates(
-          linkRecord.expand?.map.coordinates || DEFAULT_COORDINATES.Singapore
-        );
-        setPolicy(
-          new Policy(
-            linkRecord.publisher,
-            congOptions.map((option: RecordModel) => {
-              return {
-                id: option.id,
-                code: option.code,
-                description: option.description,
-                isCountable: option.is_countable,
-                isDefault: option.is_default,
-                sequence: option.sequence
-              };
-            }),
-            linkRecord.expand?.map.expand?.congregation.max_tries,
-            linkRecord.expand?.map.expand?.congregation.origin,
-            USER_ACCESS_LEVELS.PUBLISHER.CODE,
-            linkRecord.expand?.map.expand?.congregation.expiry_hours
-          )
-        );
-
-        const details = {
-          id: linkRecord.map,
-          type: linkRecord.expand?.map.type || TERRITORY_TYPES.MULTIPLE_STORIES,
-          location: linkRecord.expand?.map.location || "",
-          aggregates: {
-            display: linkRecord.expand?.map.progress + "%",
-            value: linkRecord.expand?.map.progress
-          },
-          mapId: linkRecord.expand?.map.code,
-          name: linkRecord.expand?.map.description,
-          coordinates: linkRecord.expand?.map.coordinates
-        } as addressDetails;
-
-        setMapDetails(details);
-        if (localStorage.getItem(`${id}-readPinnedMessages`) === null) {
-          checkPinnedMessages(linkRecord.map);
-        }
-
+        setMapDetails(mapDetails);
         pb.collection("maps").subscribe(
-          linkRecord.map,
+          mapDetails.id,
           (sub) => {
             const data = sub.record;
             setMapDetails({
-              ...details,
+              ...mapDetails,
               aggregates: {
                 display: data.progress + "%",
                 value: data.progress
@@ -158,7 +165,7 @@ const Map = () => {
             });
           },
           {
-            requestKey: `slip-sub-${linkRecord.id}`,
+            requestKey: `slip-sub-${mapDetails.id}`,
             fields: PB_FIELDS.MAPS,
             headers: {
               [PB_SECURITY_HEADER_KEY]: id as string
@@ -171,9 +178,14 @@ const Map = () => {
         setIsLoading(false);
       }
     };
-    getLinkData();
+    getMapData();
 
+    const refreshMapData = async () => {
+      await retrieveLinkData();
+    };
+    document.addEventListener("visibilitychange", refreshMapData);
     return () => {
+      document.removeEventListener("visibilitychange", refreshMapData);
       pb.collection("maps").unsubscribe();
     };
   }, []);
