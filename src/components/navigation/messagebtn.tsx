@@ -11,6 +11,7 @@ import { pb } from "../../utils/pocketbase";
 
 import ModalManager from "@ebay/nice-modal-react";
 import SuspenseComponent from "../utils/suspense";
+import useVisibilityChange from "../utils/visibilitychange";
 const UpdateMapMessages = lazy(() => import("../modal/mapmessages"));
 
 interface PersonalButtonGroupProps {
@@ -48,7 +49,10 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
         requestKey: `unread-msg-sub-${mapId}`
       }
     );
+    const refreshUnreadMsgs = () => useVisibilityChange(fetchUnreadMsgs);
+    document.addEventListener("visibilitychange", refreshUnreadMsgs);
     return () => {
+      document.removeEventListener("visibilitychange", refreshUnreadMsgs);
       pb.collection("messages").unsubscribe();
     };
   }, []);

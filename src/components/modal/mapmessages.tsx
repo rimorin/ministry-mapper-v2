@@ -18,6 +18,7 @@ import {
   USER_ACCESS_LEVELS
 } from "../../utils/constants";
 import { RecordSubscribeOptions } from "pocketbase";
+import useVisibilityChange from "../utils/visibilitychange";
 
 const UpdateMapMessages = NiceModal.create(
   ({
@@ -102,7 +103,10 @@ const UpdateMapMessages = NiceModal.create(
         },
         msgSubheader
       );
+      const refreshFeedbacks = () => useVisibilityChange(fetchFeedbacks);
+      document.addEventListener("visibilitychange", refreshFeedbacks);
       return () => {
+        document.removeEventListener("visibilitychange", refreshFeedbacks);
         pb.collection("messages").unsubscribe();
       };
     }, []);

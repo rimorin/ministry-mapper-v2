@@ -65,6 +65,7 @@ import AssignmentButtonGroup from "../components/navigation/assignmentbtn";
 import MessageButtonGroup from "../components/navigation/messagebtn";
 import getDataById from "../utils/helpers/getdatabyid";
 import { pb } from "../utils/pocketbase";
+import useVisibilityChange from "../components/utils/visibilitychange";
 
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 
@@ -673,8 +674,10 @@ function Admin({ user }: adminProps) {
     );
 
     setupAddresses();
-
+    const refreshAddresses = () => useVisibilityChange(setupAddresses);
+    document.addEventListener("visibilitychange", refreshAddresses);
     return () => {
+      document.removeEventListener("visibilitychange", refreshAddresses);
       pb.collection("maps").unsubscribe();
       setSortedAddressList([]);
     };
