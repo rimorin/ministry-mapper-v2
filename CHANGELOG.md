@@ -1,3 +1,10 @@
+## [1.1.4](https://github.com/rimorin/ministry-mapper-v2/compare/v1.1.3...v1.1.4) (2025-02-12)
+
+
+### Bug Fixes
+
+* implement browser visibility check to refresh page ([dfd5272](https://github.com/rimorin/ministry-mapper-v2/commit/dfd52727ec5b579e7bd0262280e30711ca60cbcb))
+
 ## [1.1.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.1.2...v1.1.3) (2025-02-04)
 
 
