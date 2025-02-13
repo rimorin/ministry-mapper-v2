@@ -1,3 +1,10 @@
+## [1.1.5](https://github.com/rimorin/ministry-mapper-v2/compare/v1.1.4...v1.1.5) (2025-02-13)
+
+
+### Bug Fixes
+
+* missing useVisibilityChange function in map page ([bd70512](https://github.com/rimorin/ministry-mapper-v2/commit/bd70512f5031e41246e479cbc35492e2c6adcccc))
+
 ## [1.1.4](https://github.com/rimorin/ministry-mapper-v2/compare/v1.1.3...v1.1.4) (2025-02-12)
 
 
