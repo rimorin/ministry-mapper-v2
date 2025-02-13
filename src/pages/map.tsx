@@ -25,6 +25,7 @@ import { RecordModel } from "pocketbase";
 import getDataById from "../utils/helpers/getdatabyid";
 import useLocalStorage from "../utils/helpers/storage";
 import { useParams } from "wouter";
+import useVisibilityChange from "../components/utils/visibilitychange";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 const UpdateMapMessages = lazy(() => import("../components/modal/mapmessages"));
 const ShowExpiry = lazy(() => import("../components/modal/slipexpiry"));
@@ -180,9 +181,7 @@ const Map = () => {
     };
     getMapData();
 
-    const refreshMapData = async () => {
-      await retrieveLinkData();
-    };
+    const refreshMapData = () => useVisibilityChange(retrieveLinkData);
     document.addEventListener("visibilitychange", refreshMapData);
     return () => {
       document.removeEventListener("visibilitychange", refreshMapData);
