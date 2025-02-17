@@ -199,7 +199,6 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
     document.addEventListener("visibilitychange", refreshAssignments);
     return () => {
       document.removeEventListener("visibilitychange", refreshAssignments);
-      pb.collection("assignments").unsubscribe();
     };
   }, []);
 
