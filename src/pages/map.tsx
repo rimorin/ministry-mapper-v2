@@ -158,7 +158,9 @@ const Map = () => {
               ...mapDetails,
               aggregates: {
                 display: data.progress + "%",
-                value: data.progress
+                value: data.progress,
+                notDone: data.aggregates?.not_done,
+                notHome: data.aggregates?.not_home
               },
               location: data.location,
               name: data.description,
@@ -186,6 +188,8 @@ const Map = () => {
     return () => {
       document.removeEventListener("visibilitychange", refreshMapData);
       pb.collection("maps").unsubscribe();
+      pb.collection("addresses").unsubscribe();
+      pb.collection("messages").unsubscribe();
     };
   }, []);
 
