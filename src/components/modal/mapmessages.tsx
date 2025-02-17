@@ -107,7 +107,6 @@ const UpdateMapMessages = NiceModal.create(
       document.addEventListener("visibilitychange", refreshFeedbacks);
       return () => {
         document.removeEventListener("visibilitychange", refreshFeedbacks);
-        pb.collection("messages").unsubscribe();
       };
     }, []);
 

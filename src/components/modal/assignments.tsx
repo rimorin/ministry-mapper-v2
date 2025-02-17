@@ -61,7 +61,7 @@ const GetAssignments = NiceModal.create(
             {currentAssignments.map((assignment) => {
               return (
                 <ListGroup.Item
-                  key={`assignment-${assignment.key}`}
+                  key={`assignment-${assignment.id}`}
                   className="d-flex justify-content-between align-items-center"
                 >
                   <div className="ms-2 me-auto">

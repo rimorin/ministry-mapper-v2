@@ -526,6 +526,8 @@ export interface UpdateUnitModalProps
 export interface AggregatesProps {
   value: number;
   display: string;
+  notHome: number;
+  notDone: number;
 }
 
 export interface Message {

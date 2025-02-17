@@ -242,7 +242,6 @@ const MainTable = ({
     document.addEventListener("visibilitychange", refreshAddresses);
     return () => {
       document.removeEventListener("visibilitychange", refreshAddresses);
-      pb.collection("addresses").unsubscribe();
     };
   }, []);
 

@@ -17,7 +17,7 @@ const ConfirmSlipDetails = NiceModal.create(
   }: ConfirmSlipDetailsModalProps) => {
     const modal = useModal();
     const [linkExpiryHrs, setLinkExpiryHrs] = useState<number | undefined>();
-    const [name, setName] = useState<string>();
+    const [name, setName] = useState<string>("");
 
     const handleSubmitPersonalSlip = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
