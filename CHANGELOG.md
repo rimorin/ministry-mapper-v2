@@ -1,3 +1,10 @@
+# [1.2.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.1.5...v1.2.0) (2025-02-17)
+
+
+### Features
+
+* implement map view for admin page ([837aca0](https://github.com/rimorin/ministry-mapper-v2/commit/837aca054bcdcee7afa613c351cc0a70db2bb857))
+
 ## [1.1.5](https://github.com/rimorin/ministry-mapper-v2/compare/v1.1.4...v1.1.5) (2025-02-13)
 
 
