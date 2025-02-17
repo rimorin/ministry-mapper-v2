@@ -53,7 +53,6 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
     document.addEventListener("visibilitychange", refreshUnreadMsgs);
     return () => {
       document.removeEventListener("visibilitychange", refreshUnreadMsgs);
-      pb.collection("messages").unsubscribe();
     };
   }, []);
 
