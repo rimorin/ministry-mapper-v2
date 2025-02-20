@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useCallback, useContext, useRef, useState } from "react";
 import { Form, Button, Spinner, FloatingLabel } from "react-bootstrap";
 import { pb } from "../utils/pocketbase";
 import { useRollbar } from "@rollbar/react";
@@ -18,68 +18,80 @@ const LoginComponent = () => {
 
   const { setFrontPageMode } = useContext(StateContext);
 
-  const loginInWithEmailAndPassword = async (
-    email: string,
-    password: string
-  ) => {
-    try {
-      setIsLogin(true);
-      const processedEmail = email.trim().toLowerCase();
-      await pb.collection("users").authWithPassword(processedEmail, password, {
-        requestKey: `login-${processedEmail}`
-      });
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      const mfaId = err.response?.mfaId;
-      setValidated(false);
-      if (!mfaId) {
-        errorHandler(err, rollbar);
-        return;
-      }
-      await handleOtpRequest();
-      setMfaId(mfaId);
-    } finally {
-      setIsLogin(false);
-    }
-  };
+  const processEmail = useCallback((email: string) => {
+    return email.trim().toLowerCase();
+  }, []);
 
-  const handleOtpRequest = async () => {
+  const loginInWithEmailAndPassword = useCallback(
+    async (email: string, password: string) => {
+      const processedEmail = processEmail(email);
+      try {
+        setIsLogin(true);
+        await pb
+          .collection("users")
+          .authWithPassword(processedEmail, password, {
+            requestKey: `login-${processedEmail}`
+          });
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        const mfaId = err.response?.mfaId;
+        setValidated(false);
+        if (!mfaId) {
+          errorHandler(err, rollbar);
+          return;
+        }
+        await handleOtpRequest(processedEmail);
+        setMfaId(mfaId);
+      } finally {
+        setIsLogin(false);
+      }
+    },
+    []
+  );
+
+  const handleOtpRequest = useCallback(async (email: string) => {
     try {
-      const result = await pb.collection("users").requestOTP(loginEmail, {
-        requestKey: `otp-${loginEmail}`
+      const result = await pb.collection("users").requestOTP(email, {
+        requestKey: `otp-${email}`
       });
       setOtpSessionId(result.otpId);
     } catch (err) {
       errorHandler(err, rollbar);
     }
-  };
+  }, []);
 
-  const handleOtpSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    try {
-      setIsLogin(true);
-      await pb.collection("users").authWithOTP(otpSessionId, otpCode, {
-        mfaId: mfaId,
-        requestKey: `otp-auth-${otpSessionId}`
-      });
-    } catch (err) {
-      errorHandler(err, rollbar);
-    } finally {
-      setIsLogin(false);
-    }
-  };
+  const handleOtpSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      event.preventDefault();
+      try {
+        setIsLogin(true);
+        await pb.collection("users").authWithOTP(otpSessionId, otpCode, {
+          mfaId: mfaId,
+          requestKey: `otp-auth-${otpSessionId}`
+        });
+      } catch (err) {
+        errorHandler(err, rollbar);
+      } finally {
+        setIsLogin(false);
+      }
+    },
+    [otpSessionId, otpCode, mfaId]
+  );
 
-  const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    const form = event.currentTarget;
-    event.preventDefault();
-    setValidated(true);
-    if (form.checkValidity() === false) {
-      return;
-    }
-    await loginInWithEmailAndPassword(loginEmail, loginPassword);
-  };
+  const handleLoginSubmit = useCallback(
+    async (event: React.FormEvent<HTMLFormElement>) => {
+      const form = event.currentTarget;
+      event.preventDefault();
+      setValidated(true);
+      if (form.checkValidity() === false) {
+        return;
+      }
+      await loginInWithEmailAndPassword(loginEmail, loginPassword);
+    },
+    [loginEmail, loginPassword]
+  );
 
-  const handleClipboardPaste = async () => {
+  const handleClipboardPaste = useCallback(async () => {
     try {
       const text = await navigator.clipboard.readText();
       setOtpCode(text);
@@ -88,11 +100,12 @@ const LoginComponent = () => {
         // Ignore the error if the user aborts the share
         if (err.name === "NotAllowedError") {
           alert("Permission to access clipboard was denied.");
+          return;
         }
       }
       errorHandler(err, rollbar);
     }
-  };
+  }, []);
 
   return (
     <>
@@ -212,7 +225,7 @@ const LoginComponent = () => {
             <div className="text-end">
               <Form.Text
                 onClick={async () => {
-                  await handleOtpRequest();
+                  await handleOtpRequest(processEmail(loginEmail));
                   alert("OTP sent to your email");
                 }}
                 className="text-underline"

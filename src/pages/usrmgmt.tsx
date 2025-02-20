@@ -6,7 +6,7 @@ import {
   FloatingLabel,
   Spinner
 } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Loader from "../components/statics/loader";
 import NavBarBranding from "../components/navigation/branding";
 import { PASSWORD_POLICY, MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
@@ -31,35 +31,41 @@ const UserManagementComponent = () => {
   const mode = searchParams.get("mode") || "";
   const oobCode = searchParams.get("oobCode") || "";
 
-  async function handleResetPassword(actionCode: string): Promise<void> {
-    try {
-      setIsResetting(true);
-      await pb
-        .collection("users")
-        .confirmPasswordReset(actionCode, loginPassword, cloginPassword);
-      setMessage("Your password has been successfully reset.");
-    } catch (error) {
-      setMessage(JSON.stringify(error));
-    } finally {
-      setIsResetting(false);
-    }
-  }
+  const handleResetPassword = useCallback(
+    async (actionCode: string): Promise<void> => {
+      try {
+        setIsResetting(true);
+        await pb
+          .collection("users")
+          .confirmPasswordReset(actionCode, loginPassword, cloginPassword);
+        setMessage("Your password has been successfully reset.");
+      } catch (error) {
+        setMessage(JSON.stringify(error));
+      } finally {
+        setIsResetting(false);
+      }
+    },
+    [loginPassword, cloginPassword]
+  );
 
-  async function handleVerifyEmail(actionCode: string): Promise<void> {
-    try {
-      setIsProcessing(true);
-      await pb.collection("users").confirmVerification(actionCode, {
-        requestKey: `verify-email-${actionCode}`
-      });
-      setMessage("Your email address has been verified.");
-    } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : JSON.stringify(error)
-      );
-    } finally {
-      setIsProcessing(false);
-    }
-  }
+  const handleVerifyEmail = useCallback(
+    async (actionCode: string): Promise<void> => {
+      try {
+        setIsProcessing(true);
+        await pb.collection("users").confirmVerification(actionCode, {
+          requestKey: `verify-email-${actionCode}`
+        });
+        setMessage("Your email address has been verified.");
+      } catch (error) {
+        setMessage(
+          error instanceof Error ? error.message : JSON.stringify(error)
+        );
+      } finally {
+        setIsProcessing(false);
+      }
+    },
+    []
+  );
 
   const resetCreationForm = () => {
     setLoginPassword("");

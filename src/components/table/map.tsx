@@ -14,7 +14,7 @@ import {
 } from "../../utils/interface";
 import ModalManager from "@ebay/nice-modal-react";
 import PrivateTerritoryTable from "./privatetable";
-import { lazy, useCallback, useEffect, useMemo, useState } from "react";
+import { lazy, useCallback, useEffect, useState } from "react";
 import { pb } from "../../utils/pocketbase";
 import SuspenseComponent from "../utils/suspense";
 import ZeroPad from "../../utils/helpers/zeropad";
@@ -56,12 +56,12 @@ const MainTable = ({
   }, []);
 
   const updateAddressCode = useCallback(
-    async (addressId: string, mapId: string, maxUnitLength: number) => {
+    async (unitDetails: unitDetails | undefined, maxUnitLength: number) => {
+      if (!unitDetails) return;
       if (policy?.userRole !== USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE)
         return;
-      const unitDetails = addresses?.get(addressId);
-      const unitNo = unitDetails?.number || "";
-      const sequence = unitDetails?.sequence;
+      const unitNo = unitDetails.number || "";
+      const sequence = unitDetails.sequence;
       ModalManager.show(SuspenseComponent(UpdateUnit), {
         mapId: mapId,
         mapName: mapName,
@@ -71,13 +71,12 @@ const MainTable = ({
         unitDisplay: ZeroPad(unitNo, maxUnitLength)
       });
     },
-    [addresses]
+    []
   );
 
   const updateUnitStatus = useCallback(
-    async (floor: number, addressId: string, maxUnitLength: number) => {
-      const unitDetails = addresses.get(addressId);
-      const unitNo = unitDetails?.number || "";
+    async (unitDetails: unitDetails | undefined, maxUnitLength: number) => {
+      if (!unitDetails) return;
       try {
         ModalManager.show(SuspenseComponent(UpdateUnitStatus), {
           options: policy?.options,
@@ -85,43 +84,49 @@ const MainTable = ({
           userAccessLevel: policy?.userRole,
           territoryType: addressDetails?.type,
           congregation: addressDetails?.mapId,
-          mapId: addressDetails?.mapId,
-          unitNo: unitNo,
-          unitNoDisplay: ZeroPad(unitNo, maxUnitLength),
-          floor: floor,
-          floorDisplay: ZeroPad(floor.toString(), DEFAULT_FLOOR_PADDING),
-          unitDetails: unitDetails,
+          mapId,
+          unitNo: unitDetails.number || "",
+          unitNoDisplay: ZeroPad(unitDetails.number || "", maxUnitLength),
+          floor: unitDetails.floor || 0,
+          floorDisplay: ZeroPad(
+            (unitDetails.floor || 0).toString(),
+            DEFAULT_FLOOR_PADDING
+          ),
+          unitDetails,
           addressData: addressDetails,
           origin: policy?.origin,
-          policy: policy
+          policy
         });
       } catch (error) {
         console.error("Error updating unit status", error);
       }
     },
-    [addresses]
+    []
   );
 
-  const handleHouseUpdate = (
-    event: React.MouseEvent<HTMLElement> | google.maps.MapMouseEvent,
-    maxUnitLength: number
-  ) => {
-    let floor: string | undefined;
-    let id: string | undefined;
-
-    if ("domEvent" in event) {
-      // event is a GoogleMapMouseEvent
-      const domEvent = event.domEvent.target as HTMLElement;
-      ({ floor, id } = domEvent.dataset);
-    } else {
+  const getIdFromEvent = useCallback(
+    (event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>) => {
+      if ("domEvent" in event) {
+        // event is a GoogleMapMouseEvent
+        const domEvent = event.domEvent.target as HTMLElement;
+        return domEvent.dataset.id;
+      }
       // event is a React.MouseEvent
-      ({ floor, id } = event.currentTarget.dataset);
-    }
+      return event.currentTarget.dataset.id;
+    },
+    []
+  );
 
-    if (floor && id) {
-      updateUnitStatus(Number(floor), id, maxUnitLength);
-    }
-  };
+  const getUnitDetails = useCallback(
+    (
+      event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>,
+      addresses: Map<string, unitDetails>
+    ) => {
+      const id = getIdFromEvent(event) || "";
+      return addresses.get(id);
+    },
+    []
+  );
 
   const handleFloorDelete = useCallback(async (floor: number) => {
     const confirmDelete = window.confirm(
@@ -133,8 +138,8 @@ const MainTable = ({
     }
   }, []);
 
-  const createUnitDetails = useMemo(
-    () => (address: RecordModel) => ({
+  const createUnitDetails = useCallback(
+    (address: RecordModel) => ({
       id: address.id,
       coordinates: address.coordinates,
       number: address.code,
@@ -151,58 +156,62 @@ const MainTable = ({
     []
   );
 
-  const organizeAddresses = (
-    addresses: Map<string, unitDetails>
-  ): { floorList: floorDetails[]; maxUnitLength: number } => {
-    if (addresses.size === 0) {
-      return { floorList: [], maxUnitLength: DEFAULT_UNIT_PADDING };
-    }
-
-    let maxUnitLength = DEFAULT_UNIT_PADDING;
-
-    // Use a Map to group units by floor
-    const floorMap = new Map<number, unitDetails[]>();
-
-    // Single pass to group by floor and track maxUnitLength
-    for (const address of addresses.values()) {
-      const { floor, number } = address;
-      maxUnitLength = Math.max(maxUnitLength, number.length);
-
-      if (!floorMap.has(floor)) {
-        floorMap.set(floor, []);
+  const organizeAddresses = useCallback(
+    (
+      addresses: Map<string, unitDetails>
+    ): { floorList: floorDetails[]; maxUnitLength: number } => {
+      if (addresses.size === 0) {
+        return { floorList: [], maxUnitLength: DEFAULT_UNIT_PADDING };
       }
-      floorMap.get(floor)!.push(address);
-    }
 
-    // Convert to final format, sort floors and units
-    const floorList: floorDetails[] = Array.from(floorMap.entries())
-      .map(([floor, units]) => ({
-        floor,
-        units: units.sort((a, b) => a.sequence - b.sequence)
-      }))
-      .sort((a, b) => b.floor - a.floor);
+      let maxUnitLength = DEFAULT_UNIT_PADDING;
 
-    return { floorList, maxUnitLength };
-  };
+      // Use a Map to group units by floor
+      const floorMap = new Map<number, unitDetails[]>();
+
+      // Single pass to group by floor and track maxUnitLength
+      for (const address of addresses.values()) {
+        const { floor, number } = address;
+        maxUnitLength = Math.max(maxUnitLength, number.length);
+
+        if (!floorMap.has(floor)) {
+          floorMap.set(floor, []);
+        }
+        floorMap.get(floor)!.push(address);
+      }
+
+      // Convert to final format, sort floors and units
+      const floorList: floorDetails[] = Array.from(floorMap.entries())
+        .map(([floor, units]) => ({
+          floor,
+          units: units.sort((a, b) => a.sequence - b.sequence)
+        }))
+        .sort((a, b) => b.floor - a.floor);
+
+      return { floorList, maxUnitLength };
+    },
+    []
+  );
+
+  const fetchAddressData = useCallback(async (mapId: string) => {
+    const addresses = await pb.collection("addresses").getFullList({
+      filter: `map="${mapId}"`,
+      expand: "type",
+      requestKey: `addresses-${mapId}`,
+      fields: PB_FIELDS.ADDRESSES
+    });
+
+    const addressMap = new Map();
+
+    addresses.forEach((address) => {
+      addressMap.set(address.id, createUnitDetails(address));
+    });
+
+    setAddresses(addressMap);
+  }, []);
 
   useEffect(() => {
-    const fetchAddressData = async () => {
-      const addresses = await pb.collection("addresses").getFullList({
-        filter: `map="${mapId}"`,
-        expand: "type",
-        requestKey: `addresses-${mapId}`,
-        fields: PB_FIELDS.ADDRESSES
-      });
-
-      const addressMap = new Map();
-
-      addresses.forEach((address) => {
-        addressMap.set(address.id, createUnitDetails(address));
-      });
-
-      setAddresses(addressMap);
-    };
-
+    if (!mapId) return;
     const subOptions = {
       filter: `map="${mapId}"`,
       expand: "type",
@@ -237,18 +246,16 @@ const MainTable = ({
       subOptions
     );
 
-    fetchAddressData();
-    const refreshAddresses = () => useVisibilityChange(fetchAddressData);
+    fetchAddressData(mapId);
+    const refreshAddresses = () =>
+      useVisibilityChange(() => fetchAddressData(mapId));
     document.addEventListener("visibilitychange", refreshAddresses);
     return () => {
       document.removeEventListener("visibilitychange", refreshAddresses);
     };
   }, []);
 
-  const { floorList, maxUnitLength } = useMemo(
-    () => organizeAddresses(addresses),
-    [addresses]
-  );
+  const { floorList, maxUnitLength } = organizeAddresses(addresses);
   if (floorList.length === 0) {
     return <div className="text-center p-2">Loading...</div>;
   }
@@ -259,7 +266,9 @@ const MainTable = ({
           addressDetails={addressDetails}
           houses={floorList[0] || []}
           policy={policy}
-          handleHouseUpdate={(event) => handleHouseUpdate(event, maxUnitLength)}
+          handleHouseUpdate={(event) =>
+            updateUnitStatus(getUnitDetails(event, addresses), maxUnitLength)
+          }
         />
       );
     }
@@ -267,7 +276,9 @@ const MainTable = ({
       <PrivateTerritoryTable
         addressDetails={addressDetails}
         houses={floorList[0] || []}
-        handleHouseUpdate={(event) => handleHouseUpdate(event, maxUnitLength)}
+        handleHouseUpdate={(event) =>
+          updateUnitStatus(getUnitDetails(event, addresses), maxUnitLength)
+        }
         policy={policy}
       />
     );
@@ -279,18 +290,16 @@ const MainTable = ({
       policy={policy}
       addressDetails={addressDetails}
       maxUnitLength={maxUnitLength}
-      handleUnitStatusUpdate={(event) => {
-        const { floor, id } = event.currentTarget.dataset;
-        updateUnitStatus(Number(floor), id || "", maxUnitLength);
-      }}
+      handleUnitStatusUpdate={(event) =>
+        updateUnitStatus(getUnitDetails(event, addresses), maxUnitLength)
+      }
       handleFloorDelete={(event) => {
         const { floor } = event.currentTarget.dataset;
         handleFloorDelete(Number(floor));
       }}
-      handleUnitNoUpdate={(event) => {
-        const { id } = event.currentTarget.dataset;
-        updateAddressCode(id || "", mapId, maxUnitLength);
-      }}
+      handleUnitNoUpdate={(event) =>
+        updateAddressCode(getUnitDetails(event, addresses), maxUnitLength)
+      }
     />
   );
 };

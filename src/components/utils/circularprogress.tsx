@@ -6,9 +6,9 @@ interface CircularProgressProps {
   strokeWidth: number;
   highlightColor: string;
   backgroundColor: string;
-  hasAssignments: boolean; // Add hasAssignments prop
-  hasPersonal: boolean; // Add hasPersonal prop
-  children?: React.ReactNode; // Add children prop
+  hasAssignments: boolean;
+  hasPersonal: boolean;
+  children?: React.ReactNode;
 }
 
 const CircularProgress: React.FC<CircularProgressProps> = ({
@@ -17,9 +17,9 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   strokeWidth,
   highlightColor,
   backgroundColor,
-  hasAssignments, // Destructure hasAssignments
-  hasPersonal, // Destructure hasPersonal
-  children // Destructure children
+  hasAssignments,
+  hasPersonal,
+  children
 }) => {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -54,22 +54,22 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
           <circle
             className="circular-progress-assignments"
             stroke="red"
-            strokeWidth={5} // Thicker red ring for assignments
+            strokeWidth={5}
             fill="none"
             cx={size / 2}
             cy={size / 2}
-            r={radius - strokeWidth - 2} // Adjust radius for the ring
+            r={radius - strokeWidth - 2}
           />
         )}
         {hasPersonal && (
           <circle
             className="circular-progress-personal"
             stroke="green"
-            strokeWidth={3} // Thinner green ring for personal
+            strokeWidth={3}
             fill="none"
             cx={size / 2}
             cy={size / 2}
-            r={radius - strokeWidth - 6} // Adjust radius for the ring
+            r={radius - strokeWidth - 6}
           />
         )}
       </svg>

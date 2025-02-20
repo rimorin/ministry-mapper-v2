@@ -276,10 +276,10 @@ export interface HelpButtonProps {
 }
 
 export interface userDetails extends nameInterface {
-  uid: string;
   email: string;
   verified: boolean;
   role: string;
+  roleId: string;
 }
 
 export type CongregationAccessObject = {
@@ -302,7 +302,6 @@ export interface CongregationListingProps {
 export interface UserListingProps {
   showListing: boolean;
   hideFunction: () => void;
-  currentUid?: string;
   handleSelect?: (
     eventKey: string | null,
     e: React.SyntheticEvent<unknown>

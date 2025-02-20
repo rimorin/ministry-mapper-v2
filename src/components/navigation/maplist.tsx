@@ -217,7 +217,8 @@ const MapListing: React.FC<MapListingProps> = ({
                                 footerSaveAcl: userAccessLevel,
                                 mapId: currentMapId,
                                 coordinates: addressElement.coordinates,
-                                origin: policy.origin
+                                origin: policy.origin,
+                                name: currentMapName
                               }
                             )
                           }
