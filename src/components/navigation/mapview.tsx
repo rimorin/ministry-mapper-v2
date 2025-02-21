@@ -63,7 +63,7 @@ const MapView: React.FC<MapListingProps> = ({ sortedAddressList, policy }) => {
         center={center}
         defaultCenter={defaultCenter}
         defaultZoom={18}
-        zoomControlOptions={{
+        cameraControlOptions={{
           position: ControlPosition.RIGHT_TOP
         }}
         fullscreenControl={false}
