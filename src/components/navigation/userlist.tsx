@@ -5,16 +5,7 @@ import { UserListingProps } from "../../utils/interface";
 import UserRoleBadge from "./rolebadge";
 
 const UserListing = memo(
-  ({
-    showListing,
-    hideFunction,
-    currentUid,
-    handleSelect,
-    users
-  }: UserListingProps) => {
-    const currentCongUsers = users
-      ? users.filter((element) => element.uid !== currentUid)
-      : undefined;
+  ({ showListing, hideFunction, handleSelect, users }: UserListingProps) => {
     return (
       <Offcanvas
         placement={"bottom"}
@@ -27,12 +18,12 @@ const UserListing = memo(
         </Offcanvas.Header>
         <Offcanvas.Body>
           <ListGroup onSelect={handleSelect}>
-            {currentCongUsers &&
-              currentCongUsers.map((element) => (
+            {users &&
+              users.map((element) => (
                 <ListGroup.Item
                   action
-                  key={`list-group-item-${element.uid}`}
-                  eventKey={element.uid}
+                  key={`list-group-item-${element.roleId}`}
+                  eventKey={element.roleId}
                 >
                   <div
                     style={{ justifyContent: "space-between", display: "flex" }}

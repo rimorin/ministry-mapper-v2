@@ -1,6 +1,6 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useRollbar } from "@rollbar/react";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { pb } from "../../utils/pocketbase";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
@@ -26,54 +26,57 @@ const InviteUser = NiceModal.create(
     const modal = useModal();
     const rollbar = useRollbar();
 
-    const getUsersByNames = async (inputValue: string) => {
+    const getUsersByNames = useCallback(async (inputValue: string) => {
       return pb.collection("users").getList(1, 10, {
         filter: `(email ~ "${inputValue}%" || name ~ "${inputValue}") && verified = true`,
         requestKey: `get-users-${inputValue}`
       });
-    };
+    }, []);
 
-    const handleUserDetails = async (event: FormEvent<HTMLElement>) => {
-      event.preventDefault();
-      setIsSaving(true);
-      try {
-        if (userId === email) {
-          alert("Please do not invite yourself.");
-          return;
-        }
-        if (
-          await getFirstItemOfList(
-            "roles",
-            `user="${userId}" && congregation="${congregation}"`
-          )
-        ) {
-          alert("This user is already part of the congregation.");
-          return;
-        }
-
-        pb.collection("roles").create(
-          {
-            user: userId,
-            congregation,
-            role: userRole
-          },
-          {
-            requestKey: `create-role-${userId}-${congregation}`
+    const handleUserDetails = useCallback(
+      async (event: FormEvent<HTMLElement>) => {
+        event.preventDefault();
+        setIsSaving(true);
+        try {
+          if (userId === email) {
+            alert("Please do not invite yourself.");
+            return;
           }
-        );
-        let roleDisplay = USER_ACCESS_LEVELS.READ_ONLY.DISPLAY;
-        if (userRole === USER_ACCESS_LEVELS.CONDUCTOR.CODE)
-          roleDisplay = USER_ACCESS_LEVELS.CONDUCTOR.DISPLAY;
-        if (userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE)
-          roleDisplay = USER_ACCESS_LEVELS.TERRITORY_SERVANT.DISPLAY;
-        alert(`Granted ${roleDisplay} access to user.`);
-        modal.hide();
-      } catch (error) {
-        errorHandler(error, rollbar);
-      } finally {
-        setIsSaving(false);
-      }
-    };
+          if (
+            await getFirstItemOfList(
+              "roles",
+              `user="${userId}" && congregation="${congregation}"`
+            )
+          ) {
+            alert("This user is already part of the congregation.");
+            return;
+          }
+
+          pb.collection("roles").create(
+            {
+              user: userId,
+              congregation,
+              role: userRole
+            },
+            {
+              requestKey: `create-role-${userId}-${congregation}`
+            }
+          );
+          let roleDisplay = USER_ACCESS_LEVELS.READ_ONLY.DISPLAY;
+          if (userRole === USER_ACCESS_LEVELS.CONDUCTOR.CODE)
+            roleDisplay = USER_ACCESS_LEVELS.CONDUCTOR.DISPLAY;
+          if (userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE)
+            roleDisplay = USER_ACCESS_LEVELS.TERRITORY_SERVANT.DISPLAY;
+          alert(`Granted ${roleDisplay} access to user.`);
+          modal.hide();
+        } catch (error) {
+          errorHandler(error, rollbar);
+        } finally {
+          setIsSaving(false);
+        }
+      },
+      [userId, userRole]
+    );
     const promiseOptions = async (
       inputValue: string
     ): Promise<OptionsOrGroups<unknown, GroupBase<unknown>>> => {

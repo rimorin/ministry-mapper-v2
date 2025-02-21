@@ -1,4 +1,4 @@
-import React, { lazy, useEffect } from "react";
+import React, { lazy, useCallback, useEffect } from "react";
 import { ButtonGroup, Button, Spinner, Badge } from "react-bootstrap";
 import ModalManager from "@ebay/nice-modal-react";
 import {
@@ -48,7 +48,7 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   const mapId = addressElement.id;
   const rollbar = useRollbar();
 
-  const handleButtonClick = async (linkType: string) => {
+  const handleButtonClick = useCallback(async (linkType: string) => {
     if (!navigator.share) {
       alert(UNSUPPORTED_BROWSER_MSG);
       return;
@@ -80,52 +80,88 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
       setIsSettingNormalLink(false);
       setIsSettingPersonalLink(false);
     }
-  };
+  }, []);
 
-  const shareTimedLink = async (
-    linktype: string,
-    title: string,
-    body: string,
-    hours: number,
-    publisherName = ""
-  ) => {
-    if (!navigator.share) {
-      alert(UNSUPPORTED_BROWSER_MSG);
-      return;
-    }
-    try {
-      if (linktype === LINK_TYPES.ASSIGNMENT) setIsSettingNormalLink(true);
-      if (linktype === LINK_TYPES.PERSONAL) setIsSettingPersonalLink(true);
-      const linkRecord = await pb.collection("assignments").create(
-        {
-          map: mapId,
-          user: userId,
-          type: linktype,
-          expiry_date: addHours(hours),
-          publisher: publisherName
-        },
-        {
-          requestKey: `create-assignment-${mapId}-${userId}`
-        }
-      );
-      const linkId = linkRecord.id;
-      const url = `map/${linkId}`;
-      const absoluteUrl = new URL(url, window.location.href);
-      await navigator.share({
-        title: title,
-        text: body,
-        url: absoluteUrl.toString()
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        // Ignore the error if the user aborts the share
-        if (error.name === "AbortError") {
-          return;
-        }
+  const shareTimedLink = useCallback(
+    async (
+      linktype: string,
+      title: string,
+      body: string,
+      hours: number,
+      publisherName = ""
+    ) => {
+      if (!navigator.share) {
+        alert(UNSUPPORTED_BROWSER_MSG);
+        return;
       }
-      errorHandler(error, rollbar, false);
+      try {
+        if (linktype === LINK_TYPES.ASSIGNMENT) setIsSettingNormalLink(true);
+        if (linktype === LINK_TYPES.PERSONAL) setIsSettingPersonalLink(true);
+        const linkRecord = await pb.collection("assignments").create(
+          {
+            map: mapId,
+            user: userId,
+            type: linktype,
+            expiry_date: addHours(hours),
+            publisher: publisherName
+          },
+          {
+            requestKey: `create-assignment-${mapId}-${userId}`
+          }
+        );
+        const linkId = linkRecord.id;
+        const url = `map/${linkId}`;
+        const absoluteUrl = new URL(url, window.location.href);
+        await navigator.share({
+          title: title,
+          text: body,
+          url: absoluteUrl.toString()
+        });
+      } catch (error) {
+        if (error instanceof Error) {
+          // Ignore the error if the user aborts the share
+          if (error.name === "AbortError") {
+            return;
+          }
+        }
+        errorHandler(error, rollbar, false);
+      }
+    },
+    []
+  );
+
+  const retrieveAssignments = useCallback(async () => {
+    const mapAssignments = await pb.collection("assignments").getFullList({
+      filter: `map='${mapId}'`,
+      requestKey: `get-map-assignments-${mapId}`,
+      expand: "map",
+      fields: PB_FIELDS.ASSIGNMENTS
+    });
+    const personalLinks = new Map<string, LinkSession>();
+    const normalLinks = new Map<string, LinkSession>();
+    for (const assignment of mapAssignments) {
+      if (assignment.type === LINK_TYPES.PERSONAL) {
+        personalLinks.set(assignment.id, new LinkSession(assignment));
+      } else {
+        normalLinks.set(assignment.id, new LinkSession(assignment));
+      }
     }
-  };
+    setPersonalLinks(personalLinks);
+    setNormalLinks(normalLinks);
+  }, []);
+
+  const updateLinks = useCallback(
+    (prev: Map<string, LinkSession>, record: RecordModel, action: string) => {
+      const updatedSet = new Map(prev);
+      if (action === "delete") {
+        updatedSet.delete(record.id);
+      } else {
+        updatedSet.set(record.id, new LinkSession(record));
+      }
+      return updatedSet;
+    },
+    []
+  );
 
   const handleAssignmentsButtonClick = (linkType: string) => {
     // get list of linksession from normallinks
@@ -139,41 +175,6 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   };
 
   useEffect(() => {
-    // Add your logic to fetch the personal count here
-    const retrieveAssignments = async () => {
-      const mapAssignments = await pb.collection("assignments").getFullList({
-        filter: `map='${mapId}'`,
-        requestKey: `get-map-assignments-${mapId}`,
-        expand: "map",
-        fields: PB_FIELDS.ASSIGNMENTS
-      });
-      const personalLinks = new Map<string, LinkSession>();
-      const normalLinks = new Map<string, LinkSession>();
-      for (const assignment of mapAssignments) {
-        if (assignment.type === LINK_TYPES.PERSONAL) {
-          personalLinks.set(assignment.id, new LinkSession(assignment));
-        } else {
-          normalLinks.set(assignment.id, new LinkSession(assignment));
-        }
-      }
-      setPersonalLinks(personalLinks);
-      setNormalLinks(normalLinks);
-    };
-
-    const updateLinks = (
-      prev: Map<string, LinkSession>,
-      record: RecordModel,
-      action: string
-    ) => {
-      const updatedSet = new Map(prev);
-      if (action === "delete") {
-        updatedSet.delete(record.id);
-      } else {
-        updatedSet.set(record.id, new LinkSession(record));
-      }
-      return updatedSet;
-    };
-
     pb.collection("assignments").subscribe(
       "*",
       (data) => {

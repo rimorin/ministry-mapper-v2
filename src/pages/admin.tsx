@@ -53,6 +53,7 @@ import useVisibilityChange from "../components/utils/visibilitychange";
 import MapListing from "../components/navigation/maplist";
 import MapView from "../components/navigation/mapview";
 import ModeToggle from "../components/navigation/maptoggle";
+import { unsubscriber } from "../utils/helpers/unsubscriber";
 
 const UnauthorizedPage = SuspenseComponent(
   lazy(() => import("../components/statics/unauth"))
@@ -80,6 +81,9 @@ const ChangeTerritoryCode = lazy(
 );
 
 function Admin({ user }: adminProps) {
+  const userId = user?.id as string;
+  const userName = user?.name as string;
+  const userEmail = user?.email as string;
   const [congregationCode, setCongregationCode] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isProcessingTerritory, setIsProcessingTerritory] =
@@ -145,7 +149,9 @@ function Admin({ user }: adminProps) {
   const getUsers = useCallback(async () => {
     try {
       setIsShowingUserListing(true);
-      setCongregationUsers(await getCongregationUsers(congregationCode));
+      setCongregationUsers(
+        await getCongregationUsers(congregationCode, userId)
+      );
       toggleUserListing();
     } catch (error) {
       errorHandler(error, rollbar);
@@ -163,10 +169,7 @@ function Admin({ user }: adminProps) {
     setIsProcessingTerritory(true);
     try {
       // kill all subscriptions before deleting
-      await pb.collection("maps").unsubscribe();
-      await pb.collection("addresses").unsubscribe();
-      await pb.collection("messages").unsubscribe();
-      await pb.collection("assignments").unsubscribe();
+      unsubscriber(["maps", "addresses", "messages", "assignments"]);
       await pb.collection("territories").delete(selectedTerritoryId, {
         requestKey: `territory-del-${congregationCode}-${selectedTerritoryCode}`
       });
@@ -249,30 +252,31 @@ function Admin({ user }: adminProps) {
     }
   }, []);
 
-  const processCongregationTerritories = (
+  const processCongregationTerritories = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    congregationTerritories: any
-  ) => {
-    const territoryList = new Map<string, territoryDetails>();
-    try {
-      if (!congregationTerritories) return territoryList;
-      for (const territory in congregationTerritories) {
-        const name = congregationTerritories[territory]["description"];
-        const id = congregationTerritories[territory]["id"];
-        const code = congregationTerritories[territory]["code"];
-        const progress = congregationTerritories[territory]["progress"];
-        territoryList.set(id, {
-          id: id,
-          code: code,
-          name: name,
-          aggregates: progress
-        });
+    (congregationTerritories: any) => {
+      const territoryList = new Map<string, territoryDetails>();
+      try {
+        if (!congregationTerritories) return territoryList;
+        for (const territory in congregationTerritories) {
+          const name = congregationTerritories[territory]["description"];
+          const id = congregationTerritories[territory]["id"];
+          const code = congregationTerritories[territory]["code"];
+          const progress = congregationTerritories[territory]["progress"];
+          territoryList.set(id, {
+            id: id,
+            code: code,
+            name: name,
+            aggregates: progress
+          });
+        }
+      } catch (error) {
+        console.error("Error processing congregation territories: ", error);
       }
-    } catch (error) {
-      console.error("Error processing congregation territories: ", error);
-    }
-    return territoryList;
-  };
+      return territoryList;
+    },
+    []
+  );
 
   const handleTerritorySelect = useCallback(
     (eventKey: string | null) => {
@@ -411,69 +415,57 @@ function Admin({ user }: adminProps) {
     }
   }, []);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      const userRoles = await pb.collection("roles").getFullList({
-        filter: `user="${user?.id}"`,
-        expand: "congregation",
-        fields: PB_FIELDS.ROLES,
-        requestKey: `user-roles-${user?.id}`
-      });
-      if (!userRoles || userRoles.length === 0) {
-        setIsLoading(false);
-        setIsUnauthorised(true);
-        errorHandler(`Unauthorised access by ${user?.email}`, rollbar, false);
-        return;
+  const fetchData = useCallback(async () => {
+    const userRoles = await pb.collection("roles").getFullList({
+      filter: `user="${userId}"`,
+      expand: "congregation",
+      fields: PB_FIELDS.ROLES,
+      requestKey: `user-roles-${userId}`
+    });
+    if (!userRoles || userRoles.length === 0) {
+      setIsLoading(false);
+      setIsUnauthorised(true);
+      errorHandler(`Unauthorised access by ${userEmail}`, rollbar, false);
+      return;
+    }
+
+    const congregationAccesses: CongregationAccessObject[] = userRoles.map(
+      (record) => {
+        return {
+          code: record.expand?.congregation.id,
+          access: record.role,
+          name: record.expand?.congregation.name
+        };
       }
+    );
+    congregationAccess.current = congregationAccesses.reduce(
+      (acc, { code, access }) => {
+        acc[code] = access;
+        return acc;
+      },
+      {} as Record<string, string>
+    );
+    setUserCongregationAccesses(congregationAccesses);
+    const isCongregationCodeCacheValid = congregationAccesses.some(
+      (access) => access.code === congregationCodeCache
+    );
 
-      const congregationAccesses: CongregationAccessObject[] = userRoles.map(
-        (record) => {
-          return {
-            code: record.expand?.congregation.id,
-            access: record.role,
-            name: record.expand?.congregation.name
-          };
-        }
-      );
-      congregationAccess.current = congregationAccesses.reduce(
-        (acc, { code, access }) => {
-          acc[code] = access;
-          return acc;
-        },
-        {} as Record<string, string>
-      );
-      setUserCongregationAccesses(congregationAccesses);
-      const isCongregationCodeCacheValid = congregationAccesses.some(
-        (access) => access.code === congregationCodeCache
-      );
+    const initialSelectedCode = isCongregationCodeCacheValid
+      ? congregationCodeCache
+      : congregationAccesses?.[0]?.code;
 
-      const initialSelectedCode = isCongregationCodeCacheValid
-        ? congregationCodeCache
-        : congregationAccesses?.[0]?.code;
-
-      if (!isCongregationCodeCacheValid) {
-        setCongregationCodeCache("");
-      }
-      setCongregationCode(initialSelectedCode);
-    };
-
-    fetchData();
-
-    const handleScroll = () => {
-      setShowBkTopButton(window.scrollY > PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY);
-    };
-
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    if (!isCongregationCodeCacheValid) {
+      setCongregationCodeCache("");
+    }
+    setCongregationCode(initialSelectedCode);
   }, []);
 
-  useEffect(() => {
-    if (!congregationCode) return;
-    setUserAccessLevel(congregationAccess.current[congregationCode]);
+  const handleScroll = useCallback(() => {
+    setShowBkTopButton(window.scrollY > PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY);
+  }, []);
 
-    const fetchCongregationData = async () => {
+  const fetchCongregationData = useCallback(
+    async (congregationCode: string) => {
       const congDetails = await getDataById("congregations", congregationCode, {
         requestKey: `congregation-${congregationCode}`
       });
@@ -530,83 +522,97 @@ function Admin({ user }: adminProps) {
         setTerritoryCodeCache("");
       }
 
-      pb.collection("territories").subscribe(
-        "*",
-        (sub) => {
-          const data = sub.record;
-          setTerritories((prev) => {
-            const updatedTerritories = new Map(prev);
-            if (sub.action === "delete") {
-              updatedTerritories.delete(data.id);
-            } else {
-              updatedTerritories.set(data.id, {
-                id: data.id,
-                code: data.code,
-                name: data.description,
-                aggregates: data.progress
-              });
-            }
-            return updatedTerritories;
-          });
-        },
-        {
-          filter: `congregation="${congregationCode}"`,
-          requestKey: `territories-sub-${congregationCode}`,
-          fields: PB_FIELDS.TERRITORIES
-        }
-      );
       setIsLoading(false);
-    };
-    fetchCongregationData();
+    },
+    []
+  );
+
+  const processMapRecord = useCallback((mapRecord: RecordModel) => {
+    return {
+      id: mapRecord.id,
+      type: mapRecord.type || TERRITORY_TYPES.MULTIPLE_STORIES,
+      location: mapRecord.location || "",
+      aggregates: {
+        display: mapRecord.progress + "%",
+        value: mapRecord.progress,
+        notDone: mapRecord.aggregates?.notDone || 0,
+        notHome: mapRecord.aggregates?.notHome || 0
+      },
+      mapId: mapRecord.code,
+      name: mapRecord.description,
+      coordinates: mapRecord.coordinates || DEFAULT_COORDINATES.Singapore
+    } as addressDetails;
+  }, []);
+
+  const setupAddresses = useCallback(async (territoryId: string) => {
+    const maps = await pb.collection("maps").getFullList({
+      filter: `territory="${territoryId}"`,
+      requestKey: `territory-maps-${territoryId}`,
+      sort: "code",
+      fields: PB_FIELDS.MAPS
+    });
+    const sortedMaps = maps.map((map) => processMapRecord(map));
+    setSortedAddressList(sortedMaps);
+    setAccordionKeys(sortedMaps.map((address) => address.id));
+    setMapViews(new Map(sortedMaps.map((address) => [address.id, false])));
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      pb.collection("territories").unsubscribe();
-      pb.collection("maps").unsubscribe();
-      pb.collection("addresses").unsubscribe();
-      pb.collection("messages").unsubscribe();
-      pb.collection("assignments").unsubscribe();
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!congregationCode) return;
+    setUserAccessLevel(congregationAccess.current[congregationCode]);
+
+    fetchCongregationData(congregationCode);
+
+    pb.collection("territories").subscribe(
+      "*",
+      (sub) => {
+        const data = sub.record;
+        setTerritories((prev) => {
+          const updatedTerritories = new Map(prev);
+          if (sub.action === "delete") {
+            updatedTerritories.delete(data.id);
+          } else {
+            updatedTerritories.set(data.id, {
+              id: data.id,
+              code: data.code,
+              name: data.description,
+              aggregates: data.progress
+            });
+          }
+          return updatedTerritories;
+        });
+      },
+      {
+        filter: `congregation="${congregationCode}"`,
+        requestKey: `territories-sub-${congregationCode}`,
+        fields: PB_FIELDS.TERRITORIES
+      }
+    );
+    return () => {
+      unsubscriber([
+        "territories",
+        "maps",
+        "addresses",
+        "messages",
+        "assignments"
+      ]);
     };
   }, [congregationCode]);
 
   useEffect(() => {
     if (!selectedTerritoryId) return;
+    setupAddresses(selectedTerritoryId);
     const selectedTerritoryData = territories.get(selectedTerritoryId);
     setSelectedTerritoryName(selectedTerritoryData?.name);
     setSelectedTerritoryCode(selectedTerritoryData?.code);
-
-    const processMapRecord = (mapRecord: RecordModel) => {
-      return {
-        id: mapRecord.id,
-        type: mapRecord.type || TERRITORY_TYPES.MULTIPLE_STORIES,
-        location: mapRecord.location || "",
-        aggregates: {
-          display: mapRecord.progress + "%",
-          value: mapRecord.progress,
-          notDone: mapRecord.aggregates?.notDone || 0,
-          notHome: mapRecord.aggregates?.notHome || 0
-        },
-        mapId: mapRecord.code,
-        name: mapRecord.description,
-        coordinates: mapRecord.coordinates || DEFAULT_COORDINATES.Singapore
-      } as addressDetails;
-    };
-
-    const fetchMapData = async () => {
-      const maps = await pb.collection("maps").getFullList({
-        filter: `territory="${selectedTerritoryId}"`,
-        requestKey: `territory-maps-${selectedTerritoryId}`,
-        sort: "code",
-        fields: PB_FIELDS.MAPS
-      });
-      return maps.map((map) => processMapRecord(map));
-    };
-
-    const setupAddresses = async () => {
-      const sortedMaps = await fetchMapData();
-      setSortedAddressList(sortedMaps);
-      setAccordionKeys(sortedMaps.map((address) => address.id));
-      setMapViews(new Map(sortedMaps.map((address) => [address.id, false])));
-    };
-
     pb.collection("maps").subscribe(
       "*",
       (data) => {
@@ -642,23 +648,19 @@ function Admin({ user }: adminProps) {
         fields: PB_FIELDS.MAPS
       }
     );
-
-    setupAddresses();
-    const refreshAddresses = () => useVisibilityChange(setupAddresses);
+    const refreshAddresses = () =>
+      useVisibilityChange(() => setupAddresses(selectedTerritoryId));
     document.addEventListener("visibilitychange", refreshAddresses);
     return () => {
       document.removeEventListener("visibilitychange", refreshAddresses);
-      pb.collection("addresses").unsubscribe();
-      pb.collection("maps").unsubscribe();
-      pb.collection("assignments").unsubscribe();
-      pb.collection("messages").unsubscribe();
+      unsubscriber(["addresses", "maps", "assignments", "messages"]);
       setSortedAddressList([]);
     };
   }, [selectedTerritoryId]);
 
   if (isLoading) return <Loader />;
   if (isUnauthorised) {
-    return <UnauthorizedPage handleClick={logoutUser} name={`${user?.name}`} />;
+    return <UnauthorizedPage handleClick={logoutUser} name={userName} />;
   }
 
   const isReadonly = userAccessLevel === USER_ACCESS_LEVELS.READ_ONLY.CODE;
@@ -683,7 +685,6 @@ function Admin({ user }: adminProps) {
       <UserListing
         showListing={showUserListing}
         users={Array.from(congregationUsers.values())}
-        currentUid={user?.id}
         hideFunction={toggleUserListing}
         handleSelect={handleUserSelect}
       />
@@ -1043,7 +1044,7 @@ function Admin({ user }: adminProps) {
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      {!selectedTerritoryCode && <Welcome name={`${user?.name}`} />}
+      {!selectedTerritoryCode && <Welcome name={userName} />}
       <TerritoryHeader name={selectedTerritoryName} />
       {isMapView ? (
         <MapView

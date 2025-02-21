@@ -1,6 +1,6 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useRollbar } from "@rollbar/react";
-import { useState, FormEvent, useEffect } from "react";
+import { useState, FormEvent, useEffect, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { pb } from "../../utils/pocketbase";
 import errorHandler from "../../utils/helpers/errorhandler";
@@ -37,52 +37,57 @@ const UpdateMapMessages = NiceModal.create(
     const isAdmin =
       policy.userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
 
-    const handleSubmitFeedback = async (event: FormEvent<HTMLElement>) => {
-      event.preventDefault();
-      setIsSaving(true);
-      try {
-        await pb.collection("messages").create(
-          {
-            map: mapId,
-            message: feedback,
-            read: isAdmin,
-            created_by: policy.userName,
-            type: messageType
-          },
-          {
-            requestKey: `create-msg-${mapId}`
-          }
-        );
-        setFeedback("");
-      } catch (error) {
-        errorHandler(error, rollbar);
-      } finally {
-        setIsSaving(false);
-      }
-    };
+    const handleSubmitFeedback = useCallback(
+      async (event: FormEvent<HTMLElement>) => {
+        event.preventDefault();
+        setIsSaving(true);
+        try {
+          await pb.collection("messages").create(
+            {
+              map: mapId,
+              message: feedback,
+              read: isAdmin,
+              created_by: policy.userName,
+              type: messageType
+            },
+            {
+              requestKey: `create-msg-${mapId}`
+            }
+          );
+          setFeedback("");
+        } catch (error) {
+          errorHandler(error, rollbar);
+        } finally {
+          setIsSaving(false);
+        }
+      },
+      [feedback]
+    );
+
+    const fetchFeedbacks = useCallback(async (mapId: string) => {
+      const feedbacks = await pb.collection("messages").getFullList({
+        filter: `map="${mapId}"`,
+        sort: "pinned, created",
+        requestKey: `msg-${mapId}`,
+        fields: PB_FIELDS.MESSAGES
+      });
+
+      setMessages(
+        feedbacks.map((fb) => ({
+          id: fb.id,
+          message: fb.message,
+          created_by: fb.created_by,
+          read: fb.read,
+          pinned: fb.pinned,
+          created: new Date(fb.created),
+          type: fb.type
+        }))
+      );
+    }, []);
 
     useEffect(() => {
-      const fetchFeedbacks = async () => {
-        const feedbacks = await pb.collection("messages").getFullList({
-          filter: `map="${mapId}"`,
-          sort: "pinned, created",
-          requestKey: `msg-${mapId}`,
-          fields: PB_FIELDS.MESSAGES
-        });
-
-        setMessages(
-          feedbacks.map((fb) => ({
-            id: fb.id,
-            message: fb.message,
-            created_by: fb.created_by,
-            read: fb.read,
-            pinned: fb.pinned,
-            created: new Date(fb.created),
-            type: fb.type
-          }))
-        );
-      };
-      fetchFeedbacks();
+      if (!mapId) return;
+      fetchFeedbacks(mapId);
 
       const msgSubheader = {
         filter: `map="${mapId}"`,
@@ -99,11 +104,12 @@ const UpdateMapMessages = NiceModal.create(
       pb.collection("messages").subscribe(
         "*",
         () => {
-          fetchFeedbacks();
+          fetchFeedbacks(mapId);
         },
         msgSubheader
       );
-      const refreshFeedbacks = () => useVisibilityChange(fetchFeedbacks);
+      const refreshFeedbacks = () =>
+        useVisibilityChange(() => fetchFeedbacks(mapId));
       document.addEventListener("visibilitychange", refreshFeedbacks);
       return () => {
         document.removeEventListener("visibilitychange", refreshFeedbacks);

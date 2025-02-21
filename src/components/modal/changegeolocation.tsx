@@ -19,6 +19,7 @@ import CurrentLocationMarker from "../statics/currentlocator";
 const ChangeMapGeolocation = NiceModal.create(
   ({
     mapId = "",
+    name = "",
     coordinates,
     origin,
     isNew = false
@@ -130,6 +131,7 @@ const ChangeMapGeolocation = NiceModal.create(
                 <ControlPanel
                   lat={addressLocation.lat}
                   lng={addressLocation.lng}
+                  name={name}
                 />
               )}
               <GmapAutocomplete

@@ -11,7 +11,7 @@ import { LinkSession } from "../../utils/policies";
 import ModalFooter from "../form/footer";
 import HelpButton from "../navigation/help";
 import { pb } from "../../utils/pocketbase";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AssignmentModalProps } from "../../utils/interface";
 
 const GetAssignments = NiceModal.create(
@@ -25,11 +25,11 @@ const GetAssignments = NiceModal.create(
     const [currentAssignments, setCurrentAssignments] =
       useState<LinkSession[]>(assignments);
 
-    const deleteAssignment = async (linkid: string) => {
+    const deleteAssignment = useCallback(async (linkid: string) => {
       await pb.collection("assignments").delete(linkid, {
         requestKey: `assignment-delete-${linkid}`
       });
-    };
+    }, []);
 
     useEffect(() => {
       if (currentAssignments.length === 0) {

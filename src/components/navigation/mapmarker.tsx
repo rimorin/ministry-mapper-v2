@@ -62,13 +62,13 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
   return (
     <AdvancedMarker
       position={addressElement.coordinates}
-      draggable={false}
+      draggable={true}
       onClick={onClick}
       className={isSelected ? "selected-marker" : ""}
     >
       <CircularProgress
         size={55}
-        progress={addressElement.aggregates.value} // Example progress value
+        progress={addressElement.aggregates.value}
         strokeWidth={3}
         highlightColor="#00f"
         backgroundColor="#ddd"
