@@ -115,7 +115,7 @@ function Admin({ user }: adminProps) {
   const [sortedAddressList, setSortedAddressList] = useState<
     Array<addressDetails>
   >([]);
-  const [selectedTerritoryId, setSelectedTerritoryId] = useState<string>();
+  const [selectedTerritoryId, setSelectedTerritoryId] = useState<string>("");
   const [selectedTerritoryCode, setSelectedTerritoryCode] = useState<string>();
   const [selectedTerritoryName, setSelectedTerritoryName] = useState<string>();
   const [accordingKeys, setAccordionKeys] = useState<Array<string>>([]);
@@ -648,15 +648,13 @@ function Admin({ user }: adminProps) {
         fields: PB_FIELDS.MAPS
       }
     );
-    const refreshAddresses = () =>
-      useVisibilityChange(() => setupAddresses(selectedTerritoryId));
-    document.addEventListener("visibilitychange", refreshAddresses);
     return () => {
-      document.removeEventListener("visibilitychange", refreshAddresses);
       unsubscriber(["addresses", "maps", "assignments", "messages"]);
       setSortedAddressList([]);
     };
   }, [selectedTerritoryId]);
+
+  useVisibilityChange(() => setupAddresses(selectedTerritoryId));
 
   if (isLoading) return <Loader />;
   if (isUnauthorised) {

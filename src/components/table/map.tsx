@@ -247,13 +247,8 @@ const MainTable = ({
     );
 
     fetchAddressData(mapId);
-    const refreshAddresses = () =>
-      useVisibilityChange(() => fetchAddressData(mapId));
-    document.addEventListener("visibilitychange", refreshAddresses);
-    return () => {
-      document.removeEventListener("visibilitychange", refreshAddresses);
-    };
   }, []);
+  useVisibilityChange(() => fetchAddressData(mapId));
 
   const { floorList, maxUnitLength } = organizeAddresses(addresses);
   if (floorList.length === 0) {

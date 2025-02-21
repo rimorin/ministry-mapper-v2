@@ -196,12 +196,8 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
       }
     );
     retrieveAssignments();
-    const refreshAssignments = () => useVisibilityChange(retrieveAssignments);
-    document.addEventListener("visibilitychange", refreshAssignments);
-    return () => {
-      document.removeEventListener("visibilitychange", refreshAssignments);
-    };
   }, []);
+  useVisibilityChange(() => retrieveAssignments());
 
   return (
     <>
