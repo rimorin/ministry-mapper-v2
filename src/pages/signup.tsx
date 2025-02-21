@@ -72,7 +72,7 @@ const SignupComponent = () => {
     }
   };
 
-  const resetCreationForm = () => {
+  const resetCreationForm = useCallback(() => {
     setFormData({
       email: "",
       password: "",
@@ -80,7 +80,7 @@ const SignupComponent = () => {
       name: ""
     });
     setValidated(false);
-  };
+  }, []);
 
   return (
     <Form

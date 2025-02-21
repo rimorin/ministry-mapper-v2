@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, lazy, useMemo } from "react";
+import { useEffect, useState, useCallback, lazy } from "react";
 import { useRollbar } from "@rollbar/react";
 import { pb } from "../utils/pocketbase";
 import { Container, Image, Nav, Navbar } from "react-bootstrap";
@@ -26,6 +26,7 @@ import getDataById from "../utils/helpers/getdatabyid";
 import useLocalStorage from "../utils/helpers/storage";
 import { useParams } from "wouter";
 import useVisibilityChange from "../components/utils/visibilitychange";
+import { unsubscriber } from "../utils/helpers/unsubscriber";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 const UpdateMapMessages = lazy(() => import("../components/modal/mapmessages"));
 const ShowExpiry = lazy(() => import("../components/modal/slipexpiry"));
@@ -53,20 +54,8 @@ const Map = () => {
     setShowLegend((prevShowLegend) => !prevShowLegend);
   }, []);
 
-  useEffect(() => {
-    if (!id) return;
-
-    // Note: The beforeSend function does not apply to realtime subscriptions, only to REST API requests.
-    // Therefore, headers must be set manually for realtime subscriptions.
-    pb.beforeSend = (url, options) => {
-      options.headers = {
-        ...options.headers,
-        [PB_SECURITY_HEADER_KEY]: id as string
-      };
-      return { url, options };
-    };
-
-    const checkPinnedMessages = async (map: string) => {
+  const checkPinnedMessages = useCallback(
+    async (map: string) => {
       if (readPinnedMessages === "true") return;
       const pinnedMessages = await pb.collection("messages").getFullList({
         filter: `map = "${map}" && type= "${MESSAGE_TYPES.ADMIN}" && pinned = true`,
@@ -74,14 +63,19 @@ const Map = () => {
         requestKey: `unread-msg-${mapDetails?.id}`
       });
       setHasPinnedMessages(pinnedMessages.length > 0);
-    };
-    const retrieveLinkData = async (): Promise<addressDetails | undefined> => {
+    },
+    [readPinnedMessages]
+  );
+
+  const retrieveLinkData = useCallback(
+    async (id: string): Promise<addressDetails | undefined> => {
       const linkRecord = await getDataById("assignments", id, {
         requestKey: `slip-data-${id}`,
         expand: "map, map.congregation",
         fields: PB_FIELDS.ASSIGNMENT_LINKS
       });
       if (!linkRecord) {
+        setIsLinkExpired(true);
         return;
       }
       const congId = linkRecord.expand?.map.expand?.congregation.id;
@@ -139,63 +133,70 @@ const Map = () => {
       if (localStorage.getItem(`${id}-readPinnedMessages`) === null) {
         checkPinnedMessages(linkRecord.map);
       }
-
+      setMapDetails(details);
       return details;
-    };
-    const getMapData = async () => {
-      try {
-        const mapDetails = await retrieveLinkData();
-        if (!mapDetails) {
-          setIsLinkExpired(true);
-          return;
-        }
-        setMapDetails(mapDetails);
-        pb.collection("maps").subscribe(
-          mapDetails.id,
-          (sub) => {
-            const data = sub.record;
-            setMapDetails({
-              ...mapDetails,
-              aggregates: {
-                display: data.progress + "%",
-                value: data.progress,
-                notDone: data.aggregates?.not_done,
-                notHome: data.aggregates?.not_home
-              },
-              location: data.location,
-              name: data.description,
-              coordinates: data.coordinates
-            });
-          },
-          {
-            requestKey: `slip-sub-${mapDetails.id}`,
-            fields: PB_FIELDS.MAPS,
-            headers: {
-              [PB_SECURITY_HEADER_KEY]: id as string
-            }
-          }
-        );
-      } catch (error) {
-        errorHandler(error, rollbar, false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    getMapData();
+    },
+    []
+  );
 
-    const refreshMapData = () => useVisibilityChange(retrieveLinkData);
+  const getMapData = useCallback(async (id: string) => {
+    try {
+      const mapDetails = await retrieveLinkData(id);
+      if (!mapDetails) {
+        return;
+      }
+      pb.collection("maps").subscribe(
+        mapDetails.id,
+        (sub) => {
+          const data = sub.record;
+          setMapDetails({
+            ...mapDetails,
+            aggregates: {
+              display: data.progress + "%",
+              value: data.progress,
+              notDone: data.aggregates?.not_done,
+              notHome: data.aggregates?.not_home
+            },
+            location: data.location,
+            name: data.description,
+            coordinates: data.coordinates
+          });
+        },
+        {
+          requestKey: `slip-sub-${mapDetails.id}`,
+          fields: PB_FIELDS.MAPS,
+          headers: {
+            [PB_SECURITY_HEADER_KEY]: id as string
+          }
+        }
+      );
+    } catch (error) {
+      errorHandler(error, rollbar, false);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!id) return;
+    // Note: The beforeSend function does not apply to realtime subscriptions, only to REST API requests.
+    // Therefore, headers must be set manually for realtime subscriptions.
+    pb.beforeSend = (url, options) => {
+      options.headers = {
+        ...options.headers,
+        [PB_SECURITY_HEADER_KEY]: id as string
+      };
+      return { url, options };
+    };
+    getMapData(id);
+    const refreshMapData = () =>
+      useVisibilityChange(() => retrieveLinkData(id));
     document.addEventListener("visibilitychange", refreshMapData);
     return () => {
       document.removeEventListener("visibilitychange", refreshMapData);
-      pb.collection("maps").unsubscribe();
-      pb.collection("addresses").unsubscribe();
-      pb.collection("messages").unsubscribe();
+      unsubscriber(["maps", "addresses", "messages"]);
     };
   }, []);
-
-  const memoizedMapDetails = useMemo(() => mapDetails, [mapDetails]);
-  const memoizedPolicy = useMemo(() => policy, [policy]);
-  const memoizedCoordinates = useMemo(() => coordinates, [coordinates]);
 
   if (isLoading) return <Loader />;
   if (isLinkExpired) {
@@ -238,11 +239,12 @@ const Map = () => {
           </Navbar.Brand>
         </Container>
       </Navbar>
-      {memoizedMapDetails && (
+      {mapDetails && (
         <MainTable
+          key={`link-map-${id}`}
           mapView={mapView}
-          policy={memoizedPolicy}
-          addressDetails={memoizedMapDetails as addressDetails}
+          policy={policy}
+          addressDetails={mapDetails}
           assignmentId={id}
         />
       )}
@@ -258,7 +260,7 @@ const Map = () => {
                 name: mapDetails?.name,
                 mapId: mapDetails?.id,
                 helpLink: WIKI_CATEGORIES.PUBLISHER_ADDRESS_FEEDBACK,
-                policy: memoizedPolicy,
+                policy: policy,
                 messageType: MESSAGE_TYPES.PUBLISHER,
                 assignmentId: id
               });
@@ -305,13 +307,12 @@ const Map = () => {
             className="text-center nav-item-hover"
             onClick={() => {
               ModalManager.show(SuspenseComponent(GetMapGeolocation), {
-                coordinates: memoizedCoordinates,
+                coordinates: coordinates,
                 name: mapDetails?.name,
                 origin: policy.origin
               });
             }}
           >
-            {/* <MapLocationImg /> */}
             <Image
               src="https://assets.ministry-mapper.com/maplocation.svg"
               alt="Location"

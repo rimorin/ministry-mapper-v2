@@ -35,6 +35,7 @@ const UpdateUnitStatus = NiceModal.create(
     policy
   }: UpdateAddressStatusModalProps) => {
     const status = unitDetails?.status;
+    const addressId = unitDetails?.id || "";
     const [isNotHome, setIsNotHome] = useState(
       status === STATUS_CODES.NOT_HOME
     );
@@ -67,8 +68,8 @@ const UpdateUnitStatus = NiceModal.create(
     const handleDeleteProperty = useCallback(async () => {
       setIsSaving(true);
       try {
-        await pb.collection("addresses").delete(unitDetails?.id as string, {
-          requestKey: `delete-property-${unitDetails?.id}`
+        await pb.collection("addresses").delete(addressId as string, {
+          requestKey: `delete-address-${addressId}`
         });
         modal.hide();
       } catch (error) {
@@ -94,8 +95,8 @@ const UpdateUnitStatus = NiceModal.create(
 
         try {
           setIsSaving(true);
-          await pb.collection("addresses").update(unitDetails?.id, updateData, {
-            requestKey: `update-address-${unitDetails?.id}`
+          await pb.collection("addresses").update(addressId, updateData, {
+            requestKey: `update-address-${addressId}`
           });
           modal.hide();
         } catch (error) {
@@ -226,7 +227,8 @@ const UpdateUnitStatus = NiceModal.create(
                   ModalManager.show(ChangeMapGeolocation, {
                     coordinates: coordinates || addressData?.coordinates,
                     isNew: true,
-                    origin: origin
+                    origin: origin,
+                    name: addressData?.name
                   }).then((result) => {
                     const coordinates = result as {
                       lat: number;

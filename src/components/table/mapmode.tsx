@@ -79,21 +79,21 @@ const TerritoryMapView = ({
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    fontSize: "14px", // Increased font size
-                    color: "#fff", // Changed font color to white
-                    border: "2px solid white", // Add a white border for better contrast
-                    boxShadow: "0 0 5px rgba(0,0,0,0.7)" // Increased shadow for better visibility
+                    fontSize: "14px",
+                    color: "#fff",
+                    border: "2px solid white",
+                    boxShadow: "0 0 5px rgba(0,0,0,0.7)"
                   }}
                 >
                   <div
                     style={{
                       position: "absolute",
-                      top: "-5px", // Move the text slightly above the circle
-                      left: "-5px", // Move the text slightly to the left of the circle
-                      fontSize: "10px", // Increased font size
+                      top: "-5px",
+                      left: "-5px",
+                      fontSize: "10px",
                       padding: "1px 3px",
-                      backgroundColor: "rgba(0, 0, 0, 0.5)", // Added semi-transparent background
-                      color: "#fff" // Changed font color to white
+                      backgroundColor: "rgba(0, 0, 0, 0.5)",
+                      color: "#fff"
                     }}
                   >
                     {houseType}

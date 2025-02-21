@@ -1,6 +1,6 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useRollbar } from "@rollbar/react";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { pb } from "../../utils/pocketbase";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
@@ -22,33 +22,36 @@ const UpdateUser = NiceModal.create(
     const modal = useModal();
     const rollbar = useRollbar();
 
-    const handleUserDetails = async (event: FormEvent<HTMLElement>) => {
-      event.preventDefault();
-      setIsSaving(true);
-      try {
-        if (userRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
-          await pb.collection("roles").delete(uid, {
-            requestKey: `delete-usr-role-${uid}`
-          });
-        } else {
-          await pb.collection("roles").update(
-            uid,
-            {
-              role: userRole
-            },
-            {
-              requestKey: `update-usr-role-${uid}`
-            }
-          );
+    const handleUserDetails = useCallback(
+      async (event: FormEvent<HTMLElement>) => {
+        event.preventDefault();
+        setIsSaving(true);
+        try {
+          if (userRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
+            await pb.collection("roles").delete(uid, {
+              requestKey: `delete-usr-role-${uid}`
+            });
+          } else {
+            await pb.collection("roles").update(
+              uid,
+              {
+                role: userRole
+              },
+              {
+                requestKey: `update-usr-role-${uid}`
+              }
+            );
+          }
+          modal.resolve(userRole);
+          modal.hide();
+        } catch (error) {
+          errorHandler(error, rollbar);
+        } finally {
+          setIsSaving(false);
         }
-        modal.resolve(userRole);
-        modal.hide();
-      } catch (error) {
-        errorHandler(error, rollbar);
-      } finally {
-        setIsSaving(false);
-      }
-    };
+      },
+      [userRole]
+    );
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
