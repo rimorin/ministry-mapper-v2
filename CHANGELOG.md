@@ -1,3 +1,11 @@
+## [1.2.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.2.0...v1.2.1) (2025-02-22)
+
+
+### Bug Fixes
+
+* adjust cam control settings ([b639651](https://github.com/rimorin/ministry-mapper-v2/commit/b639651b0df77ea8cf458fa022ba1240e3b8d8c5))
+* adjust visibility effects ([c82bbfb](https://github.com/rimorin/ministry-mapper-v2/commit/c82bbfb6d79a7a5bba8c9a049bb3cdecb5b779b9))
+
 # [1.2.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.1.5...v1.2.0) (2025-02-17)
 
 
