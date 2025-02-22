@@ -189,14 +189,11 @@ const Map = () => {
       return { url, options };
     };
     getMapData(id);
-    const refreshMapData = () =>
-      useVisibilityChange(() => retrieveLinkData(id));
-    document.addEventListener("visibilitychange", refreshMapData);
     return () => {
-      document.removeEventListener("visibilitychange", refreshMapData);
       unsubscriber(["maps", "addresses", "messages"]);
     };
   }, []);
+  useVisibilityChange(() => getMapData(id || ""));
 
   if (isLoading) return <Loader />;
   if (isLinkExpired) {

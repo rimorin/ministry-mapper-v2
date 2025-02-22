@@ -108,13 +108,8 @@ const UpdateMapMessages = NiceModal.create(
         },
         msgSubheader
       );
-      const refreshFeedbacks = () =>
-        useVisibilityChange(() => fetchFeedbacks(mapId));
-      document.addEventListener("visibilitychange", refreshFeedbacks);
-      return () => {
-        document.removeEventListener("visibilitychange", refreshFeedbacks);
-      };
     }, []);
+    useVisibilityChange(() => fetchFeedbacks(mapId));
 
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>

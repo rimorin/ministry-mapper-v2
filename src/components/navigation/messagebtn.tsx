@@ -27,15 +27,16 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   const mapId = addressElement.id;
   const isAdmin = policy.userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
 
+  const fetchUnreadMsgs = React.useCallback(async () => {
+    const unreadMessages = await pb.collection("messages").getFullList({
+      filter: `map = "${mapId}" && type!= "${MESSAGE_TYPES.ADMIN}" && read = false`,
+      fields: "id",
+      requestKey: `unread-msg-${mapId}`
+    });
+    setUnreadMsgCount(unreadMessages.length);
+  }, []);
+
   useEffect(() => {
-    const fetchUnreadMsgs = async () => {
-      const unreadMessages = await pb.collection("messages").getFullList({
-        filter: `map = "${mapId}" && type!= "${MESSAGE_TYPES.ADMIN}" && read = false`,
-        fields: "id",
-        requestKey: `unread-msg-${mapId}`
-      });
-      setUnreadMsgCount(unreadMessages.length);
-    };
     fetchUnreadMsgs();
 
     pb.collection("messages").subscribe(
@@ -49,12 +50,8 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
         requestKey: `unread-msg-sub-${mapId}`
       }
     );
-    const refreshUnreadMsgs = () => useVisibilityChange(fetchUnreadMsgs);
-    document.addEventListener("visibilitychange", refreshUnreadMsgs);
-    return () => {
-      document.removeEventListener("visibilitychange", refreshUnreadMsgs);
-    };
   }, []);
+  useVisibilityChange(() => fetchUnreadMsgs());
 
   return (
     <>
