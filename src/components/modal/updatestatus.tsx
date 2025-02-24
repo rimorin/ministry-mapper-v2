@@ -7,7 +7,8 @@ import {
   USER_ACCESS_LEVELS,
   STATUS_CODES,
   TERRITORY_TYPES,
-  NOT_HOME_STATUS_CODES
+  NOT_HOME_STATUS_CODES,
+  MIN_START_FLOOR
 } from "../../utils/constants";
 import ModalManager from "@ebay/nice-modal-react";
 import errorHandler from "../../utils/helpers/errorhandler";
@@ -28,14 +29,10 @@ import ChangeMapGeolocation from "./changegeolocation";
 import DateFormat from "../../utils/helpers/dateformat";
 
 const UpdateUnitStatus = NiceModal.create(
-  ({
-    addressData,
-    unitDetails,
-    origin,
-    policy
-  }: UpdateAddressStatusModalProps) => {
+  ({ addressData, unitDetails, policy }: UpdateAddressStatusModalProps) => {
     const status = unitDetails?.status;
     const addressId = unitDetails?.id || "";
+    const origin = policy.origin;
     const [isNotHome, setIsNotHome] = useState(
       status === STATUS_CODES.NOT_HOME
     );
@@ -119,7 +116,7 @@ const UpdateUnitStatus = NiceModal.create(
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <ModalUnitTitle
           unit={unitDetails?.number || ""}
-          floor={unitDetails?.floor || 1}
+          floor={unitDetails?.floor || MIN_START_FLOOR}
           type={addressData?.type}
           name={addressData?.name || ""}
         />

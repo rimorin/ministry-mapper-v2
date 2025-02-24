@@ -30,6 +30,78 @@ interface PersonalButtonGroupProps {
   userId: string;
 }
 
+const useAssignments = (mapId: string) => {
+  const [personalLinks, setPersonalLinks] = React.useState<
+    Map<string, LinkSession>
+  >(new Map());
+  const [normalLinks, setNormalLinks] = React.useState<
+    Map<string, LinkSession>
+  >(new Map());
+
+  const retrieveAssignments = useCallback(async () => {
+    if (!mapId) return;
+    const mapAssignments = await pb.collection("assignments").getFullList({
+      filter: `map='${mapId}'`,
+      requestKey: `get-map-assignments-${mapId}`,
+      expand: "map",
+      fields: PB_FIELDS.ASSIGNMENTS
+    });
+    const personalLinks = new Map<string, LinkSession>();
+    const normalLinks = new Map<string, LinkSession>();
+    for (const assignment of mapAssignments) {
+      if (assignment.type === LINK_TYPES.PERSONAL) {
+        personalLinks.set(assignment.id, new LinkSession(assignment));
+      } else {
+        normalLinks.set(assignment.id, new LinkSession(assignment));
+      }
+    }
+    setPersonalLinks(personalLinks);
+    setNormalLinks(normalLinks);
+  }, []);
+
+  const updateLinks = useCallback(
+    (prev: Map<string, LinkSession>, record: RecordModel, action: string) => {
+      const updatedSet = new Map(prev);
+      if (action === "delete") {
+        updatedSet.delete(record.id);
+      } else {
+        updatedSet.set(record.id, new LinkSession(record));
+      }
+      return updatedSet;
+    },
+    []
+  );
+
+  useEffect(() => {
+    if (!mapId) return;
+    retrieveAssignments();
+    pb.collection("assignments").subscribe(
+      "*",
+      (data) => {
+        const { action, record } = data;
+        const isPersonal = record.type === LINK_TYPES.PERSONAL;
+
+        if (action === "delete" || action === "update" || action === "create") {
+          if (isPersonal) {
+            setPersonalLinks((prev) => updateLinks(prev, record, action));
+          } else {
+            setNormalLinks((prev) => updateLinks(prev, record, action));
+          }
+        }
+      },
+      {
+        filter: `map='${mapId}'`,
+        requestKey: `map-sub-assignments-${mapId}`,
+        fields: PB_FIELDS.ASSIGNMENTS
+      }
+    );
+  }, []);
+
+  useVisibilityChange(retrieveAssignments);
+
+  return { personalLinks, normalLinks };
+};
+
 const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   addressElement,
   policy,
@@ -38,15 +110,9 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   const [isSettingPersonalLink, setIsSettingPersonalLink] =
     React.useState(false);
   const [isSettingNormalLink, setIsSettingNormalLink] = React.useState(false);
-  // use a set to store the personal links
-  const [personalLinks, setPersonalLinks] = React.useState<
-    Map<string, LinkSession>
-  >(new Map());
-  const [normalLinks, setNormalLinks] = React.useState<
-    Map<string, LinkSession>
-  >(new Map());
   const mapId = addressElement.id;
   const rollbar = useRollbar();
+  const { personalLinks, normalLinks } = useAssignments(mapId);
 
   const handleButtonClick = useCallback(async (linkType: string) => {
     if (!navigator.share) {
@@ -130,41 +196,7 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
     []
   );
 
-  const retrieveAssignments = useCallback(async () => {
-    const mapAssignments = await pb.collection("assignments").getFullList({
-      filter: `map='${mapId}'`,
-      requestKey: `get-map-assignments-${mapId}`,
-      expand: "map",
-      fields: PB_FIELDS.ASSIGNMENTS
-    });
-    const personalLinks = new Map<string, LinkSession>();
-    const normalLinks = new Map<string, LinkSession>();
-    for (const assignment of mapAssignments) {
-      if (assignment.type === LINK_TYPES.PERSONAL) {
-        personalLinks.set(assignment.id, new LinkSession(assignment));
-      } else {
-        normalLinks.set(assignment.id, new LinkSession(assignment));
-      }
-    }
-    setPersonalLinks(personalLinks);
-    setNormalLinks(normalLinks);
-  }, []);
-
-  const updateLinks = useCallback(
-    (prev: Map<string, LinkSession>, record: RecordModel, action: string) => {
-      const updatedSet = new Map(prev);
-      if (action === "delete") {
-        updatedSet.delete(record.id);
-      } else {
-        updatedSet.set(record.id, new LinkSession(record));
-      }
-      return updatedSet;
-    },
-    []
-  );
-
   const handleAssignmentsButtonClick = (linkType: string) => {
-    // get list of linksession from normallinks
     const assignments =
       linkType === LINK_TYPES.PERSONAL ? personalLinks : normalLinks;
     ModalManager.show(SuspenseComponent(GetAssignments), {
@@ -173,31 +205,6 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
       assignmentTerritory: addressElement.name
     });
   };
-
-  useEffect(() => {
-    pb.collection("assignments").subscribe(
-      "*",
-      (data) => {
-        const { action, record } = data;
-        const isPersonal = record.type === LINK_TYPES.PERSONAL;
-
-        if (action === "delete" || action === "update" || action === "create") {
-          if (isPersonal) {
-            setPersonalLinks((prev) => updateLinks(prev, record, action));
-          } else {
-            setNormalLinks((prev) => updateLinks(prev, record, action));
-          }
-        }
-      },
-      {
-        filter: `map='${mapId}'`,
-        requestKey: `map-sub-assignments-${mapId}`,
-        fields: PB_FIELDS.ASSIGNMENTS
-      }
-    );
-    retrieveAssignments();
-  }, []);
-  useVisibilityChange(() => retrieveAssignments());
 
   return (
     <>

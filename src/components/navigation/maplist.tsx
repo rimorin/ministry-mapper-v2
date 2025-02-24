@@ -152,6 +152,7 @@ const MapListing: React.FC<MapListingProps> = ({
                     )}
 
                     <AssignmentButtonGroup
+                      key={`assignment-btn-${currentMapId}`}
                       addressElement={addressElement}
                       policy={policy}
                       userId={pb.authStore?.record?.id as string}
@@ -174,6 +175,7 @@ const MapListing: React.FC<MapListingProps> = ({
                       Direction
                     </Button>
                     <MessageButtonGroup
+                      key={`message-btn-${currentMapId}`}
                       addressElement={addressElement}
                       policy={policy}
                     />

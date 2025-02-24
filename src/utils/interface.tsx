@@ -494,20 +494,9 @@ export interface UpdateAddressFeedbackModalProps
   assignmentId?: string;
 }
 
-export interface UpdateAddressStatusModalProps
-  extends mapInterface,
-    congregationInterface,
-    floorInterface,
-    originInterface {
-  addressName: string | undefined;
-  userAccessLevel: number | undefined;
-  territoryType: number | undefined;
-  unitNo: string;
-  unitNoDisplay: string;
+export interface UpdateAddressStatusModalProps {
   addressData: addressDetails | undefined;
   unitDetails: unitDetails;
-  options: Array<OptionProps>;
-  defaultOption: string;
   policy: Policy;
 }
 

@@ -139,7 +139,8 @@ const Map = () => {
     []
   );
 
-  const getMapData = useCallback(async (id: string) => {
+  const getMapData = useCallback(async (id: string | undefined) => {
+    if (!id) return;
     try {
       const mapDetails = await retrieveLinkData(id);
       if (!mapDetails) {
@@ -149,17 +150,20 @@ const Map = () => {
         mapDetails.id,
         (sub) => {
           const data = sub.record;
-          setMapDetails({
-            ...mapDetails,
-            aggregates: {
-              display: data.progress + "%",
-              value: data.progress,
-              notDone: data.aggregates?.not_done,
-              notHome: data.aggregates?.not_home
-            },
-            location: data.location,
-            name: data.description,
-            coordinates: data.coordinates
+          setMapDetails((prevDetails) => {
+            if (!prevDetails) return prevDetails;
+            return {
+              ...prevDetails,
+              aggregates: {
+                display: data.progress + "%",
+                value: data.progress,
+                notDone: data.aggregates?.not_done,
+                notHome: data.aggregates?.not_home
+              },
+              location: data.location,
+              name: data.description,
+              coordinates: data.coordinates
+            };
           });
         },
         {
@@ -192,8 +196,8 @@ const Map = () => {
     return () => {
       unsubscriber(["maps", "addresses", "messages"]);
     };
-  }, []);
-  useVisibilityChange(() => getMapData(id || ""));
+  }, [id]);
+  useVisibilityChange(() => getMapData(id));
 
   if (isLoading) return <Loader />;
   if (isLinkExpired) {
@@ -228,9 +232,7 @@ const Map = () => {
               <Image
                 src="https://assets.ministry-mapper.com/information.svg"
                 alt="Legend"
-                onClick={() => {
-                  toggleLegend();
-                }}
+                onClick={toggleLegend}
               />
             </div>
           </Navbar.Brand>

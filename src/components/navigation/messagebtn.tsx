@@ -1,4 +1,4 @@
-import React, { lazy, useEffect } from "react";
+import React, { lazy, useEffect, useCallback } from "react";
 import { ButtonGroup, Button, Badge } from "react-bootstrap";
 import {
   MESSAGE_TYPES,
@@ -19,15 +19,10 @@ interface PersonalButtonGroupProps {
   policy: Policy;
 }
 
-const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
-  addressElement,
-  policy
-}) => {
+const useUnreadMessages = (mapId: string) => {
   const [unreadMsgCount, setUnreadMsgCount] = React.useState(0);
-  const mapId = addressElement.id;
-  const isAdmin = policy.userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
 
-  const fetchUnreadMsgs = React.useCallback(async () => {
+  const fetchUnreadMsgs = useCallback(async () => {
     const unreadMessages = await pb.collection("messages").getFullList({
       filter: `map = "${mapId}" && type!= "${MESSAGE_TYPES.ADMIN}" && read = false`,
       fields: "id",
@@ -37,21 +32,39 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   }, []);
 
   useEffect(() => {
+    if (!mapId) return;
     fetchUnreadMsgs();
 
     pb.collection("messages").subscribe(
       "*",
-      () => {
-        fetchUnreadMsgs();
+      (data) => {
+        const action = data.action;
+        if (action === "create") {
+          setUnreadMsgCount((prevCount) => prevCount + 1);
+        } else if (action === "update") {
+          setUnreadMsgCount((prevCount) => prevCount - 1);
+        }
       },
       {
-        filter: `map="${mapId}"`,
+        filter: `map = "${mapId}" && type!= "${MESSAGE_TYPES.ADMIN}"`,
         fields: "id",
         requestKey: `unread-msg-sub-${mapId}`
       }
     );
   }, []);
-  useVisibilityChange(() => fetchUnreadMsgs());
+
+  useVisibilityChange(fetchUnreadMsgs);
+
+  return unreadMsgCount;
+};
+
+const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
+  addressElement,
+  policy
+}) => {
+  const mapId = addressElement.id;
+  const isAdmin = policy.userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
+  const unreadMsgCount = useUnreadMessages(mapId);
 
   return (
     <>
@@ -81,7 +94,7 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
             </Badge>
           </Button>
         )}
-      </ButtonGroup>{" "}
+      </ButtonGroup>
     </>
   );
 };

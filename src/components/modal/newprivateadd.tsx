@@ -6,7 +6,8 @@ import {
   USER_ACCESS_LEVELS,
   TERRITORY_TYPES,
   WIKI_CATEGORIES,
-  DEFAULT_COORDINATES
+  DEFAULT_COORDINATES,
+  MIN_START_FLOOR
 } from "../../utils/constants";
 import isValidMapCode from "../../utils/helpers/checkvalidmapcd";
 import isValidMapSequence from "../../utils/helpers/checkvalidseq";
@@ -70,7 +71,7 @@ const NewPrivateAddress = NiceModal.create(
             coordinates: JSON.stringify(coordinates),
             congregation: congregation,
             territory: territoryCode,
-            floors: 1
+            floors: MIN_START_FLOOR
           }
         });
         modal.resolve();
