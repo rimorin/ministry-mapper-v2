@@ -7,13 +7,14 @@ import { useRollbar } from "@rollbar/react";
 import { pb } from "../../utils/pocketbase";
 
 const VerificationPage = ({ user }: userInterface) => {
+  const userEmail = user?.email;
   const [isSending, setIsSending] = useState(false);
   const rollbar = useRollbar();
   const handleResendMail = useCallback(async () => {
     setIsSending(true);
     try {
-      await pb.collection("users").requestVerification(user?.email, {
-        requestKey: `resend-verification-${user?.email}`
+      await pb.collection("users").requestVerification(userEmail, {
+        requestKey: `resend-verification-${userEmail}`
       });
       alert(
         "Resent verification email! Please check your inbox or spam folder."
@@ -23,7 +24,7 @@ const VerificationPage = ({ user }: userInterface) => {
     } finally {
       setIsSending(false);
     }
-  }, [user]);
+  }, [userEmail]);
 
   const handleClick = useCallback(() => {
     pb.authStore.clear();

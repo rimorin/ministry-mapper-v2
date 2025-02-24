@@ -17,8 +17,80 @@ import {
   PB_SECURITY_HEADER_KEY,
   USER_ACCESS_LEVELS
 } from "../../utils/constants";
-import { RecordSubscribeOptions } from "pocketbase";
+import { RecordModel, RecordSubscribeOptions } from "pocketbase";
 import useVisibilityChange from "../utils/visibilitychange";
+
+const useMessages = (mapId: string, assignmentId?: string) => {
+  const [messages, setMessages] = useState<Array<Message>>([]);
+
+  const processRecord = (record: RecordModel) => {
+    return {
+      id: record.id,
+      message: record.message,
+      created_by: record.created_by,
+      read: record.read,
+      pinned: record.pinned,
+      created: new Date(record.created),
+      type: record.type
+    };
+  };
+
+  const fetchFeedbacks = useCallback(async () => {
+    console.log("fetching feedbacks");
+    if (!mapId) return;
+    const feedbacks = await pb.collection("messages").getFullList({
+      filter: `map="${mapId}"`,
+      sort: "pinned, created",
+      requestKey: `msg-${mapId}`,
+      fields: PB_FIELDS.MESSAGES
+    });
+
+    setMessages(feedbacks.map((fb) => processRecord(fb)));
+  }, [mapId]);
+
+  useEffect(() => {
+    if (!mapId) return;
+    fetchFeedbacks();
+
+    const msgSubheader = {
+      filter: `map="${mapId}"`,
+      requestKey: `msg-sub-${mapId}`,
+      fields: PB_FIELDS.MESSAGES
+    } as RecordSubscribeOptions;
+
+    if (assignmentId) {
+      msgSubheader.headers = {
+        [PB_SECURITY_HEADER_KEY]: assignmentId as string
+      };
+    }
+
+    pb.collection("messages").subscribe(
+      "*",
+      (data) => {
+        const { action, record: msgData } = data;
+        setMessages((prev) => {
+          switch (action) {
+            case "update":
+              return prev.map((msg) =>
+                msg.id === msgData.id ? processRecord(msgData) : msg
+              );
+            case "delete":
+              return prev.filter((msg) => msg.id !== msgData.id);
+            case "create":
+              return [...prev, processRecord(msgData)];
+            default:
+              return prev;
+          }
+        });
+      },
+      msgSubheader
+    );
+  }, []);
+
+  useVisibilityChange(fetchFeedbacks);
+
+  return { messages };
+};
 
 const UpdateMapMessages = NiceModal.create(
   ({
@@ -31,11 +103,11 @@ const UpdateMapMessages = NiceModal.create(
   }: UpdateAddressFeedbackModalProps) => {
     const [feedback, setFeedback] = useState("");
     const [isSaving, setIsSaving] = useState(false);
-    const [messages, setMessages] = useState<Array<Message>>([]);
     const modal = useModal();
     const rollbar = useRollbar();
     const isAdmin =
       policy.userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
+    const { messages } = useMessages(mapId, assignmentId);
 
     const handleSubmitFeedback = useCallback(
       async (event: FormEvent<HTMLElement>) => {
@@ -61,55 +133,8 @@ const UpdateMapMessages = NiceModal.create(
           setIsSaving(false);
         }
       },
-      [feedback]
+      [feedback, isAdmin]
     );
-
-    const fetchFeedbacks = useCallback(async (mapId: string) => {
-      const feedbacks = await pb.collection("messages").getFullList({
-        filter: `map="${mapId}"`,
-        sort: "pinned, created",
-        requestKey: `msg-${mapId}`,
-        fields: PB_FIELDS.MESSAGES
-      });
-
-      setMessages(
-        feedbacks.map((fb) => ({
-          id: fb.id,
-          message: fb.message,
-          created_by: fb.created_by,
-          read: fb.read,
-          pinned: fb.pinned,
-          created: new Date(fb.created),
-          type: fb.type
-        }))
-      );
-    }, []);
-
-    useEffect(() => {
-      if (!mapId) return;
-      fetchFeedbacks(mapId);
-
-      const msgSubheader = {
-        filter: `map="${mapId}"`,
-        requestKey: `msg-sub-${mapId}`,
-        fields: PB_FIELDS.MESSAGES
-      } as RecordSubscribeOptions;
-
-      if (assignmentId) {
-        msgSubheader.headers = {
-          [PB_SECURITY_HEADER_KEY]: assignmentId as string
-        };
-      }
-
-      pb.collection("messages").subscribe(
-        "*",
-        () => {
-          fetchFeedbacks(mapId);
-        },
-        msgSubheader
-      );
-    }, []);
-    useVisibilityChange(() => fetchFeedbacks(mapId));
 
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>

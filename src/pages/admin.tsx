@@ -1052,6 +1052,7 @@ function Admin({ user }: adminProps) {
         />
       ) : (
         <MapListing
+          key={`maplist-${selectedTerritoryId}`}
           sortedAddressList={sortedAddressList}
           accordingKeys={accordingKeys}
           setAccordionKeys={setAccordionKeys}

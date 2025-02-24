@@ -7,7 +7,8 @@ import {
   USER_ACCESS_LEVELS,
   TERRITORY_TYPES,
   WIKI_CATEGORIES,
-  DEFAULT_COORDINATES
+  DEFAULT_COORDINATES,
+  MIN_START_FLOOR
 } from "../../utils/constants";
 import isValidMapCode from "../../utils/helpers/checkvalidmapcd";
 import isValidMapSequence from "../../utils/helpers/checkvalidseq";
@@ -35,7 +36,7 @@ const NewPublicAddress = NiceModal.create(
     const [mapCode, setMapCode] = useState("");
     const [name, setName] = useState("");
     const [sequence, setSequence] = useState("");
-    const [floors, setFloors] = useState(1);
+    const [floors, setFloors] = useState(MIN_START_FLOOR);
     const [location, setLocation] = useState("");
     const [coordinates, setCoordinates] = useState<latlongInterface>(
       DEFAULT_COORDINATES.Singapore
