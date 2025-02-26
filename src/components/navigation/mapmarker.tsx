@@ -62,7 +62,6 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
   return (
     <AdvancedMarker
       position={addressElement.coordinates}
-      draggable={true}
       onClick={onClick}
       className={isSelected ? "selected-marker" : ""}
     >

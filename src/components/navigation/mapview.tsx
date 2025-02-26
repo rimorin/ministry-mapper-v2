@@ -94,48 +94,43 @@ const MapView: React.FC<MapListingProps> = ({ sortedAddressList, policy }) => {
           })}
         {selectedAddress && (
           <MapControl position={ControlPosition.RIGHT_BOTTOM}>
-            <Card
-              style={{
-                width: "18rem",
-                fontSize: "0.8rem"
-              }}
-            >
-              <Card.Header className="text-center">
+            <Card className="marker-info-card" style={{ width: "17rem" }}>
+              <Card.Header className="text-center py-2">
                 <b>{selectedAddress.name}</b>
               </Card.Header>
-              <Card.Body>
-                <Table hover>
+              <Card.Body className="p-1">
+                <Table size="sm" hover responsive className="mb-1">
                   <thead>
                     <tr>
-                      <td className="text-center">Not Done</td>
-                      <td className="text-center">Not Home</td>
+                      <th className="text-center small">Not Done</th>
+                      <th className="text-center small">Not Home</th>
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className="text-center">
+                      <td className="text-center small">
                         {selectedAddress.aggregates.notDone}
                       </td>
-                      <td className="text-center">
+                      <td className="text-center small">
                         {selectedAddress.aggregates.notHome}
                       </td>
                     </tr>
                   </tbody>
                 </Table>
+                <ComponentAuthorizer
+                  requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
+                  userPermission={policy.userRole}
+                >
+                  <div className="text-center">
+                    <AssignmentButtonGroup
+                      key={`marker-assignments-${selectedAddress.id}`}
+                      addressElement={selectedAddress}
+                      policy={policy}
+                      userId={pb.authStore?.record?.id as string}
+                    />
+                  </div>
+                </ComponentAuthorizer>
               </Card.Body>
-              <ComponentAuthorizer
-                requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
-                userPermission={policy.userRole}
-              >
-                <Card.Footer className="text-center">
-                  <AssignmentButtonGroup
-                    key={`marker-assignments-${selectedAddress.id}`}
-                    addressElement={selectedAddress}
-                    policy={policy}
-                    userId={pb.authStore?.record?.id as string}
-                  />
-                </Card.Footer>
-              </ComponentAuthorizer>
             </Card>
           </MapControl>
         )}
