@@ -1,12 +1,14 @@
 ![Screenshot 2022-08-19 at 2 10 11 PM](https://user-images.githubusercontent.com/40650158/185554709-ce94a04e-2a34-43a9-b7de-09aa7f437139.png)
 
-**Important Notice**: Ministry Mapper tracks residential addresses, which may be subject to data privacy laws. Please review your local regulations and ensure compliance before using Ministry Mapper to avoid legal issues.
+**Important Notice**: Ministry Mapper tracks residential addresses, which may be subject to data privacy laws. These laws vary significantly between countries and regions (such as GDPR in Europe, CCPA in California, LGPD in Brazil, etc.). Please thoroughly review your local regulations and ensure compliance before using Ministry Mapper to avoid legal issues.
+
+**Map Service Availability Notice**: Ministry Mapper relies on Google Maps API, which may have limited functionality or be completely unavailable in certain countries or regions due to local restrictions. Please verify Google Maps availability in your area before implementing Ministry Mapper for your local territories.
 
 A web application for the field ministry.
 
 ## Introduction
 
-This is a comprehensive overhaul of version 1 of the app, which was based on Firebase and had limitations on querying and vendor lock-in concerns. The most significant change is the transition to a [PocketBase](https://pocketbase.io) backend, which is open source and offers enhanced performance and scalability.
+This is a comprehensive overhaul of version 1 of the app, which was based on Firebase and had limitations on querying and vendor lock-in concerns. The most significant change is the transition to a [PocketBase](https://pocketbase.io) backend, which is open source and provides more flexibility in data management.
 
 ## Why Ministry Mapper Stands Out
 
@@ -42,15 +44,13 @@ Adopting Ministry Mapper is a forward-thinking move, but it's important to consi
 
 Ministry Mapper is a web application built using ReactJs, Typescript, and Pocketbase. It leverages [Pocketbase](https://pocketbase.io) for data storage, synchronization, and user management. The application can be hosted on any cloud infrastructure provider such as Vercel, Netlify, or AWS.
 
-To ensure the highest level of operational reliability, Ministry Mapper leverages Rollbar for comprehensive error tracking and monitoring. This integration not only enhances the user experience by minimizing disruptions but also provides valuable insights for continuous improvement and swift issue resolution.
+To ensure the a level of operational reliability, Ministry Mapper leverages Rollbar for comprehensive error tracking and monitoring. This integration not only enhances the user experience by minimizing disruptions but also provides valuable insights for continuous improvement and swift issue resolution.
 
 For territory management, Ministry Mapper utilizes Google Maps API to display territories and facilitate efficient navigation. This feature enhances the user experience by providing a visual representation of territories and enabling users to easily locate and access specific areas.
 
 ### Deployment
 
-- Pocketbase setup
-
-  1. Create Pocketbase instance and setup database
+**Important**: The Ministry Mapper frontend requires a properly configured backend engine to function. The frontend application alone will not work without the backend component being deployed and accessible. Please refer to the [Ministry Mapper BE](https://github.com/rimorin/ministry-mapper-be) documentation for instructions on setting up the backend engine.
 
 - Rollbar setup
 
@@ -64,21 +64,21 @@ For territory management, Ministry Mapper utilizes Google Maps API to display te
   1. Setup .env with the following environment variables and their values.
      - VITE_SYSTEM_ENVIRONMENT=local
      - VITE_VERSION=$npm_package_version
-     - VITE_GOOGLE_MAPS_API_KEY=AIzaSyDp4sZVdKI4xrMLldYvH6EZkphlkgwh4Yc
-     - VITE_PRIVACY_URL=https://www.freeprivacypolicy.com/live/6e19a525-242a-4d9b-944f-341ce8323872
-     - VITE_TERMS_URL=https://www.freeprivacypolicy.com/live/ffd903e2-ed3b-4bdc-a36b-1f4c6da20ece
-     - VITE_ABOUT_URL=https://rimorin.github.io/ministry-mapper-doc
-     - VITE_POCKETBASE_URL=http://127.0.0.1:8090
+     - VITE_GOOGLE_MAPS_API_KEY=
+     - VITE_PRIVACY_URL=
+     - VITE_TERMS_URL=
+     - VITE_ABOUT_URL=
+     - VITE_POCKETBASE_URL=
   2. Restart shell and run `npm start`
 
 - Production deployment
   1. Run `npm run build`
-  2. Copy build package into a cloud CDN provider of your choice.
-  3. When deploying, ensure the following environment variables are configured.
+  2. When building, ensure the following environment variables are configured.
      - VITE_SYSTEM_ENVIRONMENT=production
      - VITE_VERSION=$npm_package_version
-     - VITE_GOOGLE_MAPS_API_KEY=AIzaSyDp4sZVdKI4xrMLldYvH6EZkphlkgwh4Yc
-     - VITE_PRIVACY_URL=https://www.freeprivacypolicy.com/live/6e19a525-242a-4d9b-944f-341ce8323872
-     - VITE_TERMS_URL=https://www.freeprivacypolicy.com/live/ffd903e2-ed3b-4bdc-a36b-1f4c6da20ece
-     - VITE_ABOUT_URL=https://rimorin.github.io/ministry-mapper-doc
-     - VITE_POCKETBASE_URL=http://127.0.0.1:8090
+     - VITE_GOOGLE_MAPS_API_KEY=
+     - VITE_PRIVACY_URL=
+     - VITE_TERMS_URL=
+     - VITE_ABOUT_URL=
+     - VITE_POCKETBASE_URL=
+  3. Copy the contents of the `build` folder to your hosting provider.
