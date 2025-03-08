@@ -13,21 +13,14 @@ export default defineConfig(() => {
             react: ["react", "react-dom"],
             rollbar: ["rollbar"],
             gmaps: ["@vis.gl/react-google-maps"],
-            pocketbase: ["pocketbase"]
+            pocketbase: ["pocketbase"],
+            routing: ["wouter"]
           }
-        },
-        onwarn(warning, defaultHandler) {
-          if (warning.code === "SOURCEMAP_ERROR") {
-            return;
-          }
-
-          defaultHandler(warning);
         }
       }
     },
     server: {
-      port: 3000,
-      host: true
+      port: 3000
     },
     plugins: [react(), visualizer(), TurboConsole()]
   };
