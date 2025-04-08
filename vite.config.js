@@ -22,6 +22,19 @@ export default defineConfig(() => {
     server: {
       port: 3000
     },
-    plugins: [react(), visualizer(), TurboConsole()]
+    plugins: [react(), visualizer(), TurboConsole()],
+    css: {
+      preprocessorOptions: {
+        scss: {
+          silenceDeprecations: [
+            "import",
+            "mixed-decls",
+            "color-functions",
+            "global-builtin",
+            "legacy-js-api"
+          ]
+        }
+      }
+    }
   };
 });
