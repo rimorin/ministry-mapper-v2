@@ -36,7 +36,6 @@ const useMessages = (mapId: string, assignmentId?: string) => {
   };
 
   const fetchFeedbacks = useCallback(async () => {
-    console.log("fetching feedbacks");
     if (!mapId) return;
     const feedbacks = await pb.collection("messages").getFullList({
       filter: `map="${mapId}"`,
