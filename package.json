@@ -63,7 +63,7 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.29.1",
     "unplugin-turbo-console": "^1.11.3",
-    "vite": "^6.2.5",
+    "vite": "^6.2.6",
     "vitest": "^3.1.1"
   },
   "release": {
