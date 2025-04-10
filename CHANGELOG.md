@@ -4,6 +4,14 @@
 ### Bug Fixes
 
 * allow for parentheses when updating territory code ([#37](https://github.com/rimorin/ministry-mapper-v2/issues/37)) ([3bc174d](https://github.com/rimorin/ministry-mapper-v2/commit/3bc174d2252e09d868ec04f5f76ebec2d76e8361))
+* version fix ([3acffda](https://github.com/rimorin/ministry-mapper-v2/commit/3acffda50065dc5fa46ee2883dffe60e70a7591c))
+
+## [1.2.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.2.1...v1.2.2) (2025-04-10)
+
+
+### Bug Fixes
+
+* allow for parentheses when updating territory code ([#37](https://github.com/rimorin/ministry-mapper-v2/issues/37)) ([3bc174d](https://github.com/rimorin/ministry-mapper-v2/commit/3bc174d2252e09d868ec04f5f76ebec2d76e8361))
 
 ## [1.2.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.2.1...v1.2.2) (2025-04-10)
 
