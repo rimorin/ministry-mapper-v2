@@ -14,11 +14,13 @@
  * performance data sent to Sentry, while capturing all traces in development environments.
  */
 import * as Sentry from "@sentry/react";
+const isProduction = import.meta.env.VITE_SYSTEM_ENVIRONMENT === "production";
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN || undefined,
   environment: import.meta.env.VITE_SYSTEM_ENVIRONMENT || "local",
   release: import.meta.env.VITE_VERSION || undefined,
-  tracesSampleRate:
-    import.meta.env.VITE_SYSTEM_ENVIRONMENT === "production" ? 0.2 : 1.0,
-  integrations: [Sentry.browserTracingIntegration()]
+  tracesSampleRate: isProduction ? 0.1 : 1.0,
+  replaysSessionSampleRate: isProduction ? 0.1 : 1.0,
+  replaysOnErrorSampleRate: isProduction ? 0.1 : 1.0,
+  integrations: [Sentry.browserTracingIntegration(), Sentry.replayIntegration()]
 });
