@@ -20,7 +20,7 @@ import ZeroPad from "../../utils/helpers/zeropad";
 import PublicTerritoryTable from "./publictable";
 import TerritoryMapView from "./mapmode";
 import errorHandler from "../../utils/helpers/errorhandler";
-import { useRollbar } from "@rollbar/react";
+
 import useVisibilityChange from "../utils/visibilitychange";
 import { RecordModel, RecordSubscribeOptions } from "pocketbase";
 const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
@@ -119,7 +119,7 @@ const MainTable = ({
   const mapId = addressDetails?.id;
   const mapName = addressDetails?.name;
   const userRole = policy?.userRole || USER_ACCESS_LEVELS.PUBLISHER.CODE;
-  const rollbar = useRollbar();
+
   const addresses = useAddresses(mapId, assignmentId);
 
   const deleteAddressFloor = useCallback(
@@ -133,7 +133,7 @@ const MainTable = ({
           }
         });
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       }
     },
     [mapId]

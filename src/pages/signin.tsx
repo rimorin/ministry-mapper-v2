@@ -1,7 +1,7 @@
 import { useCallback, useContext, useRef, useState } from "react";
 import { Form, Button, Spinner, FloatingLabel } from "react-bootstrap";
 import { pb } from "../utils/pocketbase";
-import { useRollbar } from "@rollbar/react";
+
 import errorHandler from "../utils/helpers/errorhandler";
 import { StateContext } from "../components/utils/context";
 
@@ -13,7 +13,7 @@ const LoginComponent = () => {
   const [otpSessionId, setOtpSessionId] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [mfaId, setMfaId] = useState("");
-  const rollbar = useRollbar();
+
   const formRef = useRef<HTMLInputElement>(null);
 
   const { setFrontPageMode } = useContext(StateContext);
@@ -37,7 +37,7 @@ const LoginComponent = () => {
         const mfaId = err.response?.mfaId;
         setValidated(false);
         if (!mfaId) {
-          errorHandler(err, rollbar);
+          errorHandler(err);
           return;
         }
         await handleOtpRequest(processedEmail);
@@ -56,7 +56,7 @@ const LoginComponent = () => {
       });
       setOtpSessionId(result.otpId);
     } catch (err) {
-      errorHandler(err, rollbar);
+      errorHandler(err);
     }
   }, []);
 
@@ -70,7 +70,7 @@ const LoginComponent = () => {
           requestKey: `otp-auth-${otpSessionId}`
         });
       } catch (err) {
-        errorHandler(err, rollbar);
+        errorHandler(err);
       } finally {
         setIsLogin(false);
       }
@@ -103,7 +103,7 @@ const LoginComponent = () => {
           return;
         }
       }
-      errorHandler(err, rollbar);
+      errorHandler(err);
     }
   }, []);
 

@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useRollbar } from "@rollbar/react";
+
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import {
@@ -23,7 +23,6 @@ const NewUnit = NiceModal.create(
     const [unit, setUnit] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
-    const rollbar = useRollbar();
 
     const handleCreateNewUnit = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
@@ -44,7 +43,7 @@ const NewUnit = NiceModal.create(
         });
         modal.hide();
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       } finally {
         setIsSaving(false);
       }

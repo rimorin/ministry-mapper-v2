@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useRollbar } from "@rollbar/react";
+
 import { useState, FormEvent, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { pb } from "../../utils/pocketbase";
@@ -20,7 +20,6 @@ const UpdateUser = NiceModal.create(
     const [userRole, setUserRole] = useState(role);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
-    const rollbar = useRollbar();
 
     const handleUserDetails = useCallback(
       async (event: FormEvent<HTMLElement>) => {
@@ -45,7 +44,7 @@ const UpdateUser = NiceModal.create(
           modal.resolve(userRole);
           modal.hide();
         } catch (error) {
-          errorHandler(error, rollbar);
+          errorHandler(error);
         } finally {
           setIsSaving(false);
         }

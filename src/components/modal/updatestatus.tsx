@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useRollbar } from "@rollbar/react";
+
 import { useState, FormEvent, ChangeEvent, useCallback } from "react";
 import { Modal, Form, Collapse, Button } from "react-bootstrap";
 import { pb } from "../../utils/pocketbase";
@@ -60,7 +60,6 @@ const UpdateUnitStatus = NiceModal.create(
         : ""
     );
     const modal = useModal();
-    const rollbar = useRollbar();
 
     const handleDeleteProperty = useCallback(async () => {
       setIsSaving(true);
@@ -70,7 +69,7 @@ const UpdateUnitStatus = NiceModal.create(
         });
         modal.hide();
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       } finally {
         setIsSaving(false);
       }
@@ -97,7 +96,7 @@ const UpdateUnitStatus = NiceModal.create(
           });
           modal.hide();
         } catch (error) {
-          errorHandler(error, rollbar);
+          errorHandler(error);
         } finally {
           setIsSaving(false);
         }

@@ -1,8 +1,8 @@
-import Rollbar from "rollbar";
+import * as Sentry from "@sentry/react";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const errorHandler = (error: any, rollbar: Rollbar, showAlert = true) => {
-  rollbar.error(error);
+const errorHandler = (error: any, showAlert = true) => {
+  Sentry.captureException(error);
   if (showAlert) {
     const errorStatus = error.status || "Error";
     if (error.response && error.response.message) {

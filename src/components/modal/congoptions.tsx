@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useRollbar } from "@rollbar/react";
+
 import {
   useState,
   FormEvent,
@@ -30,7 +30,7 @@ import ModalSubmitButton from "../form/submit";
 const UpdateCongregationOptions = NiceModal.create(
   ({ currentCongregation }: UpdateCongregationOptionsModalProps) => {
     const modal = useModal();
-    const rollbar = useRollbar();
+
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [deletedOptions, setDeletedOptions] = useState<Array<string>>([]);
     const [options, setOptions] = useState<Array<HHOptionProps>>([]);
@@ -107,7 +107,7 @@ const UpdateCongregationOptions = NiceModal.create(
         alert("Congregation household options updated.");
         window.location.reload();
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       } finally {
         setIsSaving(false);
       }
