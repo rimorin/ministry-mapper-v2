@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.2.2...v1.3.0) (2025-04-11)
+
+
+### Features
+
+* sentry migration ([#40](https://github.com/rimorin/ministry-mapper-v2/issues/40)) ([87bb411](https://github.com/rimorin/ministry-mapper-v2/commit/87bb4115583e19cf532352015a2940c887e4f9fa))
+
 ## [1.2.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.2.1...v1.2.2) (2025-04-10)
 
 
