@@ -3,13 +3,13 @@ import { userInterface } from "../../utils/interface";
 import UseAnotherButton from "./useanother";
 import { useCallback, useState } from "react";
 import errorHandler from "../../utils/helpers/errorhandler";
-import { useRollbar } from "@rollbar/react";
+
 import { pb } from "../../utils/pocketbase";
 
 const VerificationPage = ({ user }: userInterface) => {
   const userEmail = user?.email;
   const [isSending, setIsSending] = useState(false);
-  const rollbar = useRollbar();
+
   const handleResendMail = useCallback(async () => {
     setIsSending(true);
     try {
@@ -20,7 +20,7 @@ const VerificationPage = ({ user }: userInterface) => {
         "Resent verification email! Please check your inbox or spam folder."
       );
     } catch (error) {
-      errorHandler(error, rollbar, true);
+      errorHandler(error, true);
     } finally {
       setIsSending(false);
     }

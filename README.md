@@ -44,7 +44,7 @@ Adopting Ministry Mapper is a forward-thinking move, but it's important to consi
 
 Ministry Mapper is a web application built using ReactJs, Typescript, and Pocketbase. It leverages [Pocketbase](https://pocketbase.io) for data storage, synchronization, and user management. The application can be hosted on any cloud infrastructure provider such as Vercel, Netlify, or AWS.
 
-To ensure the a level of operational reliability, Ministry Mapper leverages Rollbar for comprehensive error tracking and monitoring. This integration not only enhances the user experience by minimizing disruptions but also provides valuable insights for continuous improvement and swift issue resolution.
+To ensure a level of operational reliability, Ministry Mapper leverages Sentry for comprehensive error tracking and monitoring. This integration not only enhances the user experience by minimizing disruptions but also provides valuable insights for continuous improvement and swift issue resolution.
 
 For territory management, Ministry Mapper utilizes Google Maps API to display territories and facilitate efficient navigation. This feature enhances the user experience by providing a visual representation of territories and enabling users to easily locate and access specific areas.
 
@@ -52,12 +52,15 @@ For territory management, Ministry Mapper utilizes Google Maps API to display te
 
 **Important**: The Ministry Mapper frontend requires a properly configured backend engine to function. The frontend application alone will not work without the backend component being deployed and accessible. Please refer to the [Ministry Mapper BE](https://github.com/rimorin/ministry-mapper-be) documentation for instructions on setting up the backend engine.
 
-- Rollbar setup
+- Sentry setup
 
-  1. Create [Rollbar](https://rollbar.com/) account
+  1. Create [Sentry](https://sentry.io/) account
   2. Create a React project
-  3. Go to setting and retrieve client keys DSN.
-  4. Copy access token to environment variable, `VITE_ROLLBAR_ACCESS_TOKEN` when building for production.
+  3. Go to settings and retrieve the DSN key
+  4. Configure the following Sentry-related environment variables when building:
+     - `VITE_SENTRY_DSN`: Your Sentry project DSN
+     - `VITE_SYSTEM_ENVIRONMENT`: Set to "production" for production environments (affects tracing sample rate)
+     - `VITE_VERSION`: Used for release tracking in Sentry (defaults to package version)
 
 - Local deployment
 
@@ -69,6 +72,7 @@ For territory management, Ministry Mapper utilizes Google Maps API to display te
      - VITE_TERMS_URL=
      - VITE_ABOUT_URL=
      - VITE_POCKETBASE_URL=
+     - VITE_SENTRY_DSN=
   2. Restart shell and run `npm start`
 
 - Production deployment
@@ -81,4 +85,5 @@ For territory management, Ministry Mapper utilizes Google Maps API to display te
      - VITE_TERMS_URL=
      - VITE_ABOUT_URL=
      - VITE_POCKETBASE_URL=
+     - VITE_SENTRY_DSN=
   3. Copy the contents of the `build` folder to your hosting provider.

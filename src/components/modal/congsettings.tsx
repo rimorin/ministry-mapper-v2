@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useRollbar } from "@rollbar/react";
+
 import { useState, FormEvent } from "react";
 import { Form, Row, Col, Modal } from "react-bootstrap";
 import FormRange from "react-bootstrap/FormRange";
@@ -23,7 +23,7 @@ const UpdateCongregationSettings = NiceModal.create(
     currentDefaultExpiryHrs = DEFAULT_SELF_DESTRUCT_HOURS
   }: UpdateCongregationSettingsModalProps) => {
     const modal = useModal();
-    const rollbar = useRollbar();
+
     const [maxTries, setMaxTries] = useState(currentMaxTries);
     const [defaultExpiryHrs, setDefaultExpiryHrs] = useState(
       currentDefaultExpiryHrs
@@ -49,7 +49,7 @@ const UpdateCongregationSettings = NiceModal.create(
         alert("Congregation settings updated.");
         window.location.reload();
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       } finally {
         setIsSaving(false);
       }

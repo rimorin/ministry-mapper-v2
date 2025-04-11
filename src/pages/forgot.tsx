@@ -1,6 +1,6 @@
 import { useContext, useRef, useState } from "react";
 import { Form, Button, Spinner, FloatingLabel } from "react-bootstrap";
-import { useRollbar } from "@rollbar/react";
+
 import errorHandler from "../utils/helpers/errorhandler";
 import { StateContext } from "../components/utils/context";
 import { pb } from "../utils/pocketbase";
@@ -9,7 +9,7 @@ const ForgotComponent = () => {
   const [loginEmail, setLoginEmail] = useState("");
   const [validated, setValidated] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const rollbar = useRollbar();
+
   const formRef = useRef<HTMLInputElement>(null);
 
   const { setFrontPageMode } = useContext(StateContext);
@@ -28,10 +28,9 @@ const ForgotComponent = () => {
       await pb.collection("users").requestPasswordReset(loginEmail, {
         requestKey: `reset-password-${loginEmail}`
       });
-      rollbar.info(`User attempting to reset password! Email: ${loginEmail}`);
       alert(`Password reset email sent to ${loginEmail}.`);
     } catch (error) {
-      errorHandler(error, rollbar);
+      errorHandler(error);
     } finally {
       setIsProcessing(false);
     }

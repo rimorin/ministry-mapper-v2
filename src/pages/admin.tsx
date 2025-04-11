@@ -9,7 +9,7 @@ import {
   Navbar,
   Spinner
 } from "react-bootstrap";
-import { useRollbar } from "@rollbar/react";
+
 import { RecordModel } from "pocketbase";
 
 import {
@@ -129,7 +129,7 @@ function Admin({ user }: adminProps) {
   const [userCongregationAccesses, setUserCongregationAccesses] = useState<
     CongregationAccessObject[]
   >([]);
-  const rollbar = useRollbar();
+
   const congregationAccess = useRef<Record<string, string>>({});
   // create a useRef to store maps view mode if true/false
   const [mapViews, setMapViews] = useState<Map<string, boolean>>(new Map());
@@ -154,7 +154,7 @@ function Admin({ user }: adminProps) {
       );
       toggleUserListing();
     } catch (error) {
-      errorHandler(error, rollbar);
+      errorHandler(error);
     } finally {
       setIsShowingUserListing(false);
     }
@@ -176,7 +176,7 @@ function Admin({ user }: adminProps) {
       alert(`Deleted territory, ${selectedTerritoryCode}.`);
       window.location.reload();
     } catch (error) {
-      errorHandler(error, rollbar);
+      errorHandler(error);
     } finally {
       setIsProcessingTerritory(false);
     }
@@ -191,7 +191,7 @@ function Admin({ user }: adminProps) {
         });
         if (showAlert) alert(`Deleted address, ${name}.`);
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       } finally {
         setProcessingMap({ isProcessing: false, mapId: null });
       }
@@ -211,7 +211,7 @@ function Admin({ user }: adminProps) {
           }
         });
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       } finally {
         setProcessingMap({ isProcessing: false, mapId: null });
       }
@@ -230,7 +230,7 @@ function Admin({ user }: adminProps) {
         }
       });
     } catch (error) {
-      errorHandler(error, rollbar);
+      errorHandler(error);
     } finally {
       setIsProcessingTerritory(false);
     }
@@ -246,7 +246,7 @@ function Admin({ user }: adminProps) {
         }
       });
     } catch (error) {
-      errorHandler(error, rollbar);
+      errorHandler(error);
     } finally {
       setProcessingMap({ isProcessing: false, mapId: null });
     }
@@ -353,7 +353,7 @@ function Admin({ user }: adminProps) {
           `Changed territory of ${details.name} from ${selectedTerritoryCode} to ${newTerritoryCode}.`
         );
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       } finally {
         setProcessingMap({ isProcessing: false, mapId: null });
       }
@@ -425,7 +425,7 @@ function Admin({ user }: adminProps) {
     if (!userRoles || userRoles.length === 0) {
       setIsLoading(false);
       setIsUnauthorised(true);
-      errorHandler(`Unauthorised access by ${userEmail}`, rollbar, false);
+      errorHandler(`Unauthorised access by ${userEmail}`, false);
       return;
     }
 

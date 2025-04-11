@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useRollbar } from "@rollbar/react";
+
 import { useState, FormEvent, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { pb } from "../../utils/pocketbase";
@@ -24,7 +24,6 @@ const InviteUser = NiceModal.create(
     const [userId, setUserId] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
-    const rollbar = useRollbar();
 
     const getUsersByNames = useCallback(async (inputValue: string) => {
       return pb.collection("users").getList(1, 10, {
@@ -70,7 +69,7 @@ const InviteUser = NiceModal.create(
           alert(`Granted ${roleDisplay} access to user.`);
           modal.hide();
         } catch (error) {
-          errorHandler(error, rollbar);
+          errorHandler(error);
         } finally {
           setIsSaving(false);
         }
