@@ -7,7 +7,6 @@ import MaintenanceMiddleware from "../components/middlewares/maintenance";
 import MainMiddleware from "../components/middlewares/main";
 import StateMiddleware from "../components/middlewares/context";
 import MapsMiddleware from "../components/middlewares/googlemap";
-import RollbarMiddleware from "../components/middlewares/rollbar";
 import { Provider as NiceModelMiddleware } from "@ebay/nice-modal-react";
 import Router from "./router";
 
@@ -16,17 +15,15 @@ interface CombinedMiddlewareProps {
 }
 
 const CombinedMiddleware: FC<CombinedMiddlewareProps> = ({ children }) => (
-  <RollbarMiddleware>
-    <MainMiddleware>
-      <MaintenanceMiddleware>
-        <MapsMiddleware>
-          <NiceModelMiddleware>
-            <StateMiddleware>{children}</StateMiddleware>
-          </NiceModelMiddleware>
-        </MapsMiddleware>
-      </MaintenanceMiddleware>
-    </MainMiddleware>
-  </RollbarMiddleware>
+  <MainMiddleware>
+    <MaintenanceMiddleware>
+      <MapsMiddleware>
+        <NiceModelMiddleware>
+          <StateMiddleware>{children}</StateMiddleware>
+        </NiceModelMiddleware>
+      </MapsMiddleware>
+    </MaintenanceMiddleware>
+  </MainMiddleware>
 );
 
 const Main: FC = () => {

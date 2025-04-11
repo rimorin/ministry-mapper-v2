@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useRollbar } from "@rollbar/react";
+
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
@@ -19,7 +19,6 @@ const ChangeMapCode = NiceModal.create(
     const [newMapCode, setNewMapCode] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
-    const rollbar = useRollbar();
 
     const handleUpdateMapCode = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
@@ -42,7 +41,7 @@ const ChangeMapCode = NiceModal.create(
         modal.resolve();
         modal.hide();
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       } finally {
         setIsSaving(false);
       }

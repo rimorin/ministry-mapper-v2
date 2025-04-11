@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useRollbar } from "@rollbar/react";
+
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
@@ -10,7 +10,7 @@ import { pb } from "../../utils/pocketbase";
 
 const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
   const modal = useModal();
-  const rollbar = useRollbar();
+
   const [isSaving, setIsSaving] = useState(false);
   const [username, setUsername] = useState(user?.name || "");
 
@@ -30,7 +30,7 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
       alert("Profile updated.");
       modal.hide();
     } catch (error) {
-      errorHandler(error, rollbar);
+      errorHandler(error);
     } finally {
       setIsSaving(false);
     }

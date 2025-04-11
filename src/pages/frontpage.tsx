@@ -4,7 +4,7 @@ import { MINISTRY_MAPPER_WIKI_PAGE } from "../utils/constants";
 import NavBarBranding from "../components/navigation/branding";
 import { StateContext } from "../components/utils/context";
 import { pb } from "../utils/pocketbase";
-import { useRollbar } from "@rollbar/react";
+
 import VerificationPage from "../components/navigation/verification";
 import { AuthModel } from "pocketbase";
 import Loader from "../components/statics/loader";
@@ -23,7 +23,6 @@ const FrontPage = () => {
     pb.authStore.isValid ? pb.authStore.record : null
   );
   const { frontPageMode } = context;
-  const rollbar = useRollbar();
 
   useEffect(() => {
     const unsub = pb.authStore.onChange((_: string, model: AuthModel) =>
@@ -35,9 +34,6 @@ const FrontPage = () => {
   }, []);
 
   if (loginUser && !loginUser.verified) {
-    rollbar.info(
-      `Unverified user attempting to access the system!! Email: ${loginUser.email}, Name: ${loginUser.displayName}`
-    );
     return <VerificationPage user={loginUser} />;
   }
 

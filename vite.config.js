@@ -11,7 +11,7 @@ export default defineConfig(() => {
         output: {
           manualChunks: {
             react: ["react", "react-dom"],
-            rollbar: ["rollbar"],
+            sentry: ["@sentry/react"],
             gmaps: ["@vis.gl/react-google-maps"],
             pocketbase: ["pocketbase"],
             routing: ["wouter"]

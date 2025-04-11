@@ -12,7 +12,7 @@ import { addressDetails } from "../../utils/interface";
 import { LinkSession, Policy } from "../../utils/policies";
 import { pb } from "../../utils/pocketbase";
 import errorHandler from "../../utils/helpers/errorhandler";
-import { useRollbar } from "@rollbar/react";
+
 import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import ComponentAuthorizer from "./authorizer";
 import addHours from "../../utils/helpers/addhours";
@@ -111,7 +111,7 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
     React.useState(false);
   const [isSettingNormalLink, setIsSettingNormalLink] = React.useState(false);
   const mapId = addressElement.id;
-  const rollbar = useRollbar();
+
   const { personalLinks, normalLinks } = useAssignments(mapId);
 
   const handleButtonClick = useCallback(async (linkType: string) => {
@@ -190,7 +190,7 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
             return;
           }
         }
-        errorHandler(error, rollbar, false);
+        errorHandler(error, false);
       }
     },
     []

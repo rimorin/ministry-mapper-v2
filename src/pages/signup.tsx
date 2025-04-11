@@ -1,7 +1,7 @@
 import { useContext, useState, useCallback } from "react";
 import { Form, Button, Spinner, FloatingLabel } from "react-bootstrap";
 import PasswordChecklist from "react-password-checklist";
-import { useRollbar } from "@rollbar/react";
+
 import errorHandler from "../utils/helpers/errorhandler";
 import { PASSWORD_POLICY, MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
 import { StateContext } from "../components/utils/context";
@@ -18,7 +18,7 @@ const SignupComponent = () => {
   const [validated, setValidated] = useState(false);
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
-  const rollbar = useRollbar();
+
   const { setFrontPageMode } = useContext(StateContext);
   const privacyUrl = VITE_PRIVACY_URL;
   const termsUrl = VITE_TERMS_URL;
@@ -57,16 +57,13 @@ const SignupComponent = () => {
       await pb.collection("users").requestVerification(formData.email, {
         requestKey: `verify-email-${formData.email}`
       });
-      rollbar.info(
-        `New User Created! Email: ${formData.email}, Name: ${formData.name}`
-      );
       alert(
         "Account created! Please check your email for verification procedures."
       );
       setFrontPageMode("login");
     } catch (err) {
       setValidated(false);
-      errorHandler(err, rollbar);
+      errorHandler(err);
     } finally {
       setIsCreating(false);
     }

@@ -5,7 +5,7 @@
   "type": "module",
   "dependencies": {
     "@ebay/nice-modal-react": "^1.2.13",
-    "@rollbar/react": "^0.12.1",
+    "@sentry/react": "^9.12.0",
     "@vis.gl/react-google-maps": "^1.5.2",
     "bootstrap": "^5.3.5",
     "pocketbase": "^0.25.2",
@@ -16,7 +16,6 @@
     "react-dom": "^18.3.1",
     "react-password-checklist": "^1.8.1",
     "react-select": "^5.10.1",
-    "rollbar": "^2.26.4",
     "wouter": "^3.6.0"
   },
   "scripts": {

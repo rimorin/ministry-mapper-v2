@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useRollbar } from "@rollbar/react";
+
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { pb } from "../../utils/pocketbase";
@@ -43,7 +43,7 @@ const NewPublicAddress = NiceModal.create(
     );
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
-    const rollbar = useRollbar();
+
     const modalDescription = "Map Number";
 
     const handleCreateTerritoryAddress = async (
@@ -79,7 +79,7 @@ const NewPublicAddress = NiceModal.create(
         modal.resolve();
         modal.hide();
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       } finally {
         setIsSaving(false);
       }

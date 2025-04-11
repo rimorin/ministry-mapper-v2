@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useRollbar } from "@rollbar/react";
+
 import { useState, FormEvent, useCallback, useEffect } from "react";
 import { Modal, Form, Button, Spinner } from "react-bootstrap";
 import { pb } from "../../utils/pocketbase";
@@ -31,7 +31,6 @@ const ChangeMapGeolocation = NiceModal.create(
     const [currentLocation, setCurrentLocation] = useState<latlongInterface>();
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
-    const rollbar = useRollbar();
 
     const getCurrentLocation = (
       onSuccess: (position: GeolocationPosition) => void,
@@ -63,7 +62,7 @@ const ChangeMapGeolocation = NiceModal.create(
         modal.resolve(addressLocation);
         modal.hide();
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       } finally {
         setIsSaving(false);
       }

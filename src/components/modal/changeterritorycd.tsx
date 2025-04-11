@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useRollbar } from "@rollbar/react";
+
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { pb } from "../../utils/pocketbase";
@@ -20,7 +20,6 @@ const ChangeTerritoryCode = NiceModal.create(
     const [newTerritoryCode, setNewTerritoryCode] = useState(territoryCode);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
-    const rollbar = useRollbar();
 
     const handleUpdateTerritoryCode = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
@@ -38,7 +37,7 @@ const ChangeTerritoryCode = NiceModal.create(
         modal.resolve(newTerritoryCode);
         modal.hide();
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       } finally {
         setIsSaving(false);
       }

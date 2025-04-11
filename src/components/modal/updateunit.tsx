@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useRollbar } from "@rollbar/react";
+
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
 import { WIKI_CATEGORIES } from "../../utils/constants";
@@ -22,7 +22,6 @@ const UpdateUnit = NiceModal.create(
     const [unitSeq, setUnitSeq] = useState<number | undefined>(unitSequence);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
-    const rollbar = useRollbar();
 
     const processPostalUnitSequence = async (
       mapId: string,
@@ -41,7 +40,7 @@ const UpdateUnit = NiceModal.create(
         });
         modal.hide();
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       } finally {
         setIsSaving(false);
       }
@@ -58,7 +57,7 @@ const UpdateUnit = NiceModal.create(
           }
         });
       } catch (error) {
-        errorHandler(error, rollbar);
+        errorHandler(error);
       } finally {
         setIsSaving(false);
       }

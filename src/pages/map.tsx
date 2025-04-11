@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, lazy } from "react";
-import { useRollbar } from "@rollbar/react";
+
 import { pb } from "../utils/pocketbase";
 import { Container, Image, Nav, Navbar } from "react-bootstrap";
 import { addressDetails, latlongInterface } from "../utils/interface";
@@ -48,7 +48,6 @@ const Map = () => {
     `${id}-readPinnedMessages`,
     "false"
   );
-  const rollbar = useRollbar();
 
   const toggleLegend = useCallback(() => {
     setShowLegend((prevShowLegend) => !prevShowLegend);
@@ -175,7 +174,7 @@ const Map = () => {
         }
       );
     } catch (error) {
-      errorHandler(error, rollbar, false);
+      errorHandler(error, false);
     } finally {
       setIsLoading(false);
     }
