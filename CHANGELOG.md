@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.3.0...v1.3.1) (2025-04-12)
+
+
+### Bug Fixes
+
+* optimise realtime subscriptions request cancellations ([#42](https://github.com/rimorin/ministry-mapper-v2/issues/42)) ([1b5f9d0](https://github.com/rimorin/ministry-mapper-v2/commit/1b5f9d01d944306181b106948cc7732778a46d35))
+
 # [1.3.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.2.2...v1.3.0) (2025-04-11)
 
 
