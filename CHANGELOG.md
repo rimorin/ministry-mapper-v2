@@ -1,3 +1,10 @@
+## [1.3.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.3.1...v1.3.2) (2025-04-12)
+
+
+### Bug Fixes
+
+* ignore pb cancellation error ([#43](https://github.com/rimorin/ministry-mapper-v2/issues/43)) ([247bf99](https://github.com/rimorin/ministry-mapper-v2/commit/247bf9956bf856291899696ed47695e4e03c5343))
+
 ## [1.3.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.3.0...v1.3.1) (2025-04-12)
 
 
