@@ -592,7 +592,7 @@ function Admin({ user }: adminProps) {
       },
       {
         filter: `congregation="${congregationCode}"`,
-        requestKey: `territories-sub-${congregationCode}`,
+        requestKey: null,
         fields: PB_FIELDS.TERRITORIES
       }
     );
@@ -644,7 +644,7 @@ function Admin({ user }: adminProps) {
       },
       {
         filter: `territory="${selectedTerritoryId}"`,
-        requestKey: `maps-sub-${selectedTerritoryId}`,
+        requestKey: null,
         fields: PB_FIELDS.MAPS
       }
     );

@@ -72,7 +72,7 @@ const useAddresses = (mapId: string, assignmentId?: string) => {
     const subOptions = {
       filter: `map="${mapId}"`,
       expand: "type",
-      requestKey: `addresses-sub-${mapId}`,
+      requestKey: null,
       fields: PB_FIELDS.ADDRESSES
     } as RecordSubscribeOptions;
 
