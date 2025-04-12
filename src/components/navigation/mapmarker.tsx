@@ -52,7 +52,7 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
       {
         filter: `map="${addressElement.id}"`,
         fields: "id",
-        requestKey: `marker-sub-assignments-${addressElement.id}`
+        requestKey: null
       }
     );
 

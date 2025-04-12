@@ -91,7 +91,7 @@ const useAssignments = (mapId: string) => {
       },
       {
         filter: `map='${mapId}'`,
-        requestKey: `map-sub-assignments-${mapId}`,
+        requestKey: null,
         fields: PB_FIELDS.ASSIGNMENTS
       }
     );

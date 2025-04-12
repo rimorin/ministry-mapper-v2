@@ -48,7 +48,7 @@ const useUnreadMessages = (mapId: string) => {
       {
         filter: `map = "${mapId}" && type!= "${MESSAGE_TYPES.ADMIN}"`,
         fields: "id",
-        requestKey: `unread-msg-sub-${mapId}`
+        requestKey: null
       }
     );
   }, []);
