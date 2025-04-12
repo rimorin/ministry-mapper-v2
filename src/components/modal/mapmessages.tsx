@@ -53,7 +53,7 @@ const useMessages = (mapId: string, assignmentId?: string) => {
 
     const msgSubheader = {
       filter: `map="${mapId}"`,
-      requestKey: `msg-sub-${mapId}`,
+      requestKey: null,
       fields: PB_FIELDS.MESSAGES
     } as RecordSubscribeOptions;
 

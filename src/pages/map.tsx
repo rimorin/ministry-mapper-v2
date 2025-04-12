@@ -166,7 +166,7 @@ const Map = () => {
           });
         },
         {
-          requestKey: `slip-sub-${mapDetails.id}`,
+          requestKey: null,
           fields: PB_FIELDS.MAPS,
           headers: {
             [PB_SECURITY_HEADER_KEY]: id as string
