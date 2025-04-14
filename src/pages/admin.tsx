@@ -10,7 +10,7 @@ import {
   Spinner
 } from "react-bootstrap";
 
-import { RecordModel } from "pocketbase";
+import { AuthRecord, RecordModel } from "pocketbase";
 
 import {
   valuesDetails,
@@ -47,13 +47,21 @@ import ModalManager from "@ebay/nice-modal-react";
 import useLocalStorage from "../utils/helpers/storage";
 import CongListing from "../components/navigation/conglist";
 import getCongregationUsers from "../utils/helpers/getcongregationusers";
-import getDataById from "../utils/helpers/getdatabyid";
-import { pb } from "../utils/pocketbase";
 import useVisibilityChange from "../components/utils/visibilitychange";
 import MapListing from "../components/navigation/maplist";
 import MapView from "../components/navigation/mapview";
 import ModeToggle from "../components/navigation/maptoggle";
-import { unsubscriber } from "../utils/helpers/unsubscriber";
+import {
+  cleanupSession,
+  deleteDataById,
+  callFunction,
+  getList,
+  getDataById,
+  getUser,
+  setupRealtimeListener,
+  requestPasswordReset,
+  unsubscriber
+} from "../utils/pocketbase";
 
 const UnauthorizedPage = SuspenseComponent(
   lazy(() => import("../components/statics/unauth"))
@@ -160,9 +168,7 @@ function Admin({ user }: adminProps) {
     }
   }, [congregationCode]);
 
-  const logoutUser = useCallback(async () => {
-    pb.authStore.clear();
-  }, []);
+  const logoutUser = useCallback(() => cleanupSession(), []);
 
   const deleteTerritory = useCallback(async () => {
     if (!selectedTerritoryId) return;
@@ -170,7 +176,7 @@ function Admin({ user }: adminProps) {
     try {
       // kill all subscriptions before deleting
       unsubscriber(["maps", "addresses", "messages", "assignments"]);
-      await pb.collection("territories").delete(selectedTerritoryId, {
+      await deleteDataById("territories", selectedTerritoryId, {
         requestKey: `territory-del-${congregationCode}-${selectedTerritoryCode}`
       });
       alert(`Deleted territory, ${selectedTerritoryCode}.`);
@@ -186,7 +192,7 @@ function Admin({ user }: adminProps) {
     async (mapId: string, name: string, showAlert: boolean) => {
       setProcessingMap({ isProcessing: true, mapId: mapId });
       try {
-        await pb.collection("maps").delete(mapId, {
+        await deleteDataById("maps", mapId, {
           requestKey: `map-del-${mapId}`
         });
         if (showAlert) alert(`Deleted address, ${name}.`);
@@ -203,7 +209,7 @@ function Admin({ user }: adminProps) {
     async (mapId: string, higherFloor = false) => {
       setProcessingMap({ isProcessing: true, mapId: mapId });
       try {
-        await pb.send("map/floor/add", {
+        await callFunction("/map/floor/add", {
           method: "POST",
           body: {
             map: mapId,
@@ -223,7 +229,7 @@ function Admin({ user }: adminProps) {
     if (!selectedTerritoryCode) return;
     setIsProcessingTerritory(true);
     try {
-      await pb.send("territory/reset", {
+      await callFunction("/territory/reset", {
         method: "POST",
         body: {
           territory: selectedTerritoryId
@@ -239,7 +245,7 @@ function Admin({ user }: adminProps) {
   const resetMap = useCallback(async (mapId: string) => {
     setProcessingMap({ isProcessing: true, mapId: mapId });
     try {
-      await pb.send("map/reset", {
+      await callFunction("/map/reset", {
         method: "POST",
         body: {
           map: mapId
@@ -336,7 +342,7 @@ function Admin({ user }: adminProps) {
       setProcessingMap({ isProcessing: true, mapId: mapId });
       try {
         toggleAddressTerritoryListing();
-        await pb.send("map/territory/update", {
+        await callFunction("/map/territory/update", {
           method: "POST",
           body: {
             map: mapId,
@@ -388,7 +394,7 @@ function Admin({ user }: adminProps) {
   const getAssignments = useCallback(async (code: string, uid: string) => {
     setIsAssignmentLoading(true);
     try {
-      const snapshot = await pb.collection("assignments").getFullList({
+      const assignments = await getList("assignments", {
         filter: `user="${uid}"`,
         sort: "created",
         expand: "map",
@@ -396,13 +402,13 @@ function Admin({ user }: adminProps) {
         requestKey: `get-usr-assignments-${uid}`
       });
 
-      if (snapshot.length === 0) {
+      if (assignments.length === 0) {
         alert("No assignments found.");
         return;
       }
 
       const linkListing = new Array<LinkSession>();
-      snapshot.forEach((link) => {
+      assignments.forEach((link) => {
         linkListing.push(new LinkSession(link, link.id));
       });
 
@@ -416,13 +422,13 @@ function Admin({ user }: adminProps) {
   }, []);
 
   const fetchData = useCallback(async () => {
-    const userRoles = await pb.collection("roles").getFullList({
+    const userRoles = await getList("roles", {
       filter: `user="${userId}"`,
       expand: "congregation",
       fields: PB_FIELDS.ROLES,
       requestKey: `user-roles-${userId}`
     });
-    if (!userRoles || userRoles.length === 0) {
+    if (userRoles.length === 0) {
       setIsLoading(false);
       setIsUnauthorised(true);
       errorHandler(`Unauthorised access by ${userEmail}`, false);
@@ -475,7 +481,7 @@ function Admin({ user }: adminProps) {
         return;
       }
 
-      const congOptions = await pb.collection("options").getFullList({
+      const congOptions = await getList("options", {
         filter: `congregation="${congregationCode}"`,
         requestKey: `congregation-options-${congregationCode}`,
         fields: PB_FIELDS.CONGREGATION_OPTIONS,
@@ -489,7 +495,7 @@ function Admin({ user }: adminProps) {
       );
       setPolicy(
         new Policy(
-          pb.authStore?.record?.name,
+          getUser("name") as string,
           congOptions?.map((option: RecordModel) => {
             return {
               id: option.id,
@@ -507,7 +513,7 @@ function Admin({ user }: adminProps) {
         )
       );
 
-      const territoryDetails = await pb.collection("territories").getFullList({
+      const territoryDetails = await getList("territories", {
         filter: `congregation="${congregationCode}"`,
         requestKey: `territories-${congregationCode}`,
         sort: "code",
@@ -545,7 +551,8 @@ function Admin({ user }: adminProps) {
   }, []);
 
   const setupAddresses = useCallback(async (territoryId: string) => {
-    const maps = await pb.collection("maps").getFullList({
+    if (!territoryId) return;
+    const maps = await getList("maps", {
       filter: `territory="${territoryId}"`,
       requestKey: `territory-maps-${territoryId}`,
       sort: "code",
@@ -571,20 +578,20 @@ function Admin({ user }: adminProps) {
 
     fetchCongregationData(congregationCode);
 
-    pb.collection("territories").subscribe(
-      "*",
-      (sub) => {
-        const data = sub.record;
+    setupRealtimeListener(
+      "territories",
+      (data) => {
+        const territoryData = data.record;
         setTerritories((prev) => {
           const updatedTerritories = new Map(prev);
-          if (sub.action === "delete") {
-            updatedTerritories.delete(data.id);
+          if (data.action === "delete") {
+            updatedTerritories.delete(territoryData.id);
           } else {
-            updatedTerritories.set(data.id, {
-              id: data.id,
-              code: data.code,
-              name: data.description,
-              aggregates: data.progress
+            updatedTerritories.set(territoryData.id, {
+              id: territoryData.id,
+              code: territoryData.code,
+              name: territoryData.description,
+              aggregates: territoryData.progress
             });
           }
           return updatedTerritories;
@@ -613,8 +620,8 @@ function Admin({ user }: adminProps) {
     const selectedTerritoryData = territories.get(selectedTerritoryId);
     setSelectedTerritoryName(selectedTerritoryData?.name);
     setSelectedTerritoryCode(selectedTerritoryData?.code);
-    pb.collection("maps").subscribe(
-      "*",
+    setupRealtimeListener(
+      "maps",
       (data) => {
         const mapId = data.record.id;
         const dataAction = data.action;
@@ -970,7 +977,7 @@ function Admin({ user }: adminProps) {
                 <Dropdown.Item
                   onClick={() => {
                     ModalManager.show(SuspenseComponent(InviteUser), {
-                      email: pb.authStore?.record?.id,
+                      email: getUser("email") as string,
                       congregation: congregationCode,
                       footerSaveAcl: userAccessLevel
                     });
@@ -1004,7 +1011,7 @@ function Admin({ user }: adminProps) {
               <Dropdown.Item
                 onClick={() => {
                   ModalManager.show(SuspenseComponent(GetProfile), {
-                    user: pb.authStore.record
+                    user: getUser() as AuthRecord
                   });
                 }}
               >
@@ -1016,10 +1023,7 @@ function Admin({ user }: adminProps) {
               >
                 <Dropdown.Item
                   onClick={() =>
-                    getAssignments(
-                      congregationCode,
-                      pb.authStore.record?.id as string
-                    )
+                    getAssignments(congregationCode, getUser("id") as string)
                   }
                 >
                   Assignments
@@ -1027,11 +1031,7 @@ function Admin({ user }: adminProps) {
               </ComponentAuthorizer>
               <Dropdown.Item
                 onClick={async () => {
-                  await pb
-                    .collection("users")
-                    .requestPasswordReset(pb.authStore?.record?.email, {
-                      requestKey: `reset-password-${pb.authStore?.record?.email}`
-                    });
+                  await requestPasswordReset();
                   alert("Password reset email sent.");
                 }}
               >

@@ -12,7 +12,7 @@ import { Policy } from "../../utils/policies";
 import { Card, Table } from "react-bootstrap";
 import AddressMarker from "./mapmarker";
 import AssignmentButtonGroup from "./assignmentbtn";
-import { pb } from "../../utils/pocketbase";
+import { getUser } from "../../utils/pocketbase";
 import ComponentAuthorizer from "./authorizer";
 
 interface MapListingProps {
@@ -126,7 +126,7 @@ const MapView: React.FC<MapListingProps> = ({ sortedAddressList, policy }) => {
                       key={`marker-assignments-${selectedAddress.id}`}
                       addressElement={selectedAddress}
                       policy={policy}
-                      userId={pb.authStore?.record?.id as string}
+                      userId={getUser("id") as string}
                     />
                   </div>
                 </ComponentAuthorizer>

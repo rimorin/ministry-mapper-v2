@@ -6,7 +6,7 @@ import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
 import { UpdateProfileModalProps } from "../../utils/interface";
-import { pb } from "../../utils/pocketbase";
+import { updateDataById } from "../../utils/pocketbase";
 
 const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
   const modal = useModal();
@@ -18,7 +18,8 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
     event.preventDefault();
     setIsSaving(true);
     try {
-      await pb.collection("users").update(
+      await updateDataById(
+        "users",
         user?.id as string,
         {
           name: username

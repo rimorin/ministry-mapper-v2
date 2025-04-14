@@ -3,7 +3,7 @@ import { Button, Container, Navbar } from "react-bootstrap";
 import { MINISTRY_MAPPER_WIKI_PAGE } from "../utils/constants";
 import NavBarBranding from "../components/navigation/branding";
 import { StateContext } from "../components/utils/context";
-import { pb } from "../utils/pocketbase";
+import { authListener, getUser } from "../utils/pocketbase";
 
 import VerificationPage from "../components/navigation/verification";
 import { AuthModel } from "pocketbase";
@@ -19,18 +19,13 @@ const Admin = lazy(() => import("./admin"));
 
 const FrontPage = () => {
   const context = useContext(StateContext);
-  const [loginUser, setLoginUser] = useState<AuthModel>(
-    pb.authStore.isValid ? pb.authStore.record : null
-  );
+  const [loginUser, setLoginUser] = useState<AuthModel>(getUser() as AuthModel);
   const { frontPageMode } = context;
 
   useEffect(() => {
-    const unsub = pb.authStore.onChange((_: string, model: AuthModel) =>
-      setLoginUser(model)
-    );
-    return () => {
-      unsub();
-    };
+    authListener((model: AuthModel) => {
+      setLoginUser(model);
+    });
   }, []);
 
   if (loginUser && !loginUser.verified) {

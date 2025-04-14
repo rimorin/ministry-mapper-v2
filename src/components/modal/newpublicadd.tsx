@@ -2,7 +2,6 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
-import { pb } from "../../utils/pocketbase";
 import {
   USER_ACCESS_LEVELS,
   TERRITORY_TYPES,
@@ -26,6 +25,7 @@ import HelpButton from "../navigation/help";
 import ChangeMapGeolocation from "./changegeolocation";
 
 import ModalManager from "@ebay/nice-modal-react";
+import { callFunction } from "../../utils/pocketbase";
 const NewPublicAddress = NiceModal.create(
   ({
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE,
@@ -63,7 +63,7 @@ const NewPublicAddress = NiceModal.create(
 
       setIsSaving(true);
       try {
-        await pb.send("map/add", {
+        await callFunction("/map/add", {
           method: "POST",
           body: {
             code: mapCode,
@@ -76,7 +76,6 @@ const NewPublicAddress = NiceModal.create(
             sequence: sequence
           }
         });
-        modal.resolve();
         modal.hide();
       } catch (error) {
         errorHandler(error);

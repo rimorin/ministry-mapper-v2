@@ -2,7 +2,6 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, useEffect, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
-import { pb } from "../../utils/pocketbase";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
 import GenericTextAreaField from "../form/textarea";
@@ -19,6 +18,13 @@ import {
 } from "../../utils/constants";
 import { RecordModel, RecordSubscribeOptions } from "pocketbase";
 import useVisibilityChange from "../utils/visibilitychange";
+import {
+  createData,
+  deleteDataById,
+  getList,
+  setupRealtimeListener,
+  updateDataById
+} from "../../utils/pocketbase";
 
 const useMessages = (mapId: string, assignmentId?: string) => {
   const [messages, setMessages] = useState<Array<Message>>([]);
@@ -37,7 +43,7 @@ const useMessages = (mapId: string, assignmentId?: string) => {
 
   const fetchFeedbacks = useCallback(async () => {
     if (!mapId) return;
-    const feedbacks = await pb.collection("messages").getFullList({
+    const feedbacks = await getList("messages", {
       filter: `map="${mapId}"`,
       sort: "pinned, created",
       requestKey: `msg-${mapId}`,
@@ -63,8 +69,8 @@ const useMessages = (mapId: string, assignmentId?: string) => {
       };
     }
 
-    pb.collection("messages").subscribe(
-      "*",
+    setupRealtimeListener(
+      "messages",
       (data) => {
         const { action, record: msgData } = data;
         setMessages((prev) => {
@@ -113,7 +119,8 @@ const UpdateMapMessages = NiceModal.create(
         event.preventDefault();
         setIsSaving(true);
         try {
-          await pb.collection("messages").create(
+          await createData(
+            "messages",
             {
               map: mapId,
               message: feedback,
@@ -148,12 +155,13 @@ const UpdateMapMessages = NiceModal.create(
                 feedbacks={messages}
                 policy={policy}
                 handleDelete={async (id: string) => {
-                  await pb.collection("messages").delete(id, {
+                  await deleteDataById("messages", id, {
                     requestKey: `msg-del-${id}`
                   });
                 }}
                 handlePin={async (id: string, pinned: boolean) => {
-                  await pb.collection("messages").update(
+                  await updateDataById(
+                    "messages",
                     id,
                     { pinned: pinned },
                     {
@@ -162,7 +170,8 @@ const UpdateMapMessages = NiceModal.create(
                   );
                 }}
                 handleRead={async (id: string) => {
-                  await pb.collection("messages").update(
+                  await updateDataById(
+                    "messages",
                     id,
                     { read: true },
                     {

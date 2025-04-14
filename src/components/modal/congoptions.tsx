@@ -19,13 +19,13 @@ import {
 import { PB_FIELDS, WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import HelpButton from "../navigation/help";
-import { pb } from "../../utils/pocketbase";
 import {
   HHOptionProps,
   UpdateCongregationOptionsModalProps
 } from "../../utils/interface";
 import GenericInputField from "../form/input";
 import ModalSubmitButton from "../form/submit";
+import { callFunction, getList } from "../../utils/pocketbase";
 
 const UpdateCongregationOptions = NiceModal.create(
   ({ currentCongregation }: UpdateCongregationOptionsModalProps) => {
@@ -97,7 +97,7 @@ const UpdateCongregationOptions = NiceModal.create(
             sequence: option.sequence,
             is_deleted: option.isDeleted
           }));
-        await pb.send("options/update", {
+        await callFunction("options/update", {
           method: "POST",
           body: {
             congregation: currentCongregation,
@@ -138,7 +138,7 @@ const UpdateCongregationOptions = NiceModal.create(
     useEffect(() => {
       const getHHOptions = async () => {
         const householdTypes = new Array<HHOptionProps>();
-        const data = await pb.collection("options").getFullList({
+        const data = await getList("options", {
           filter: `congregation="${currentCongregation}"`,
           requestKey: `get-options-${currentCongregation}`,
           sort: "sequence",

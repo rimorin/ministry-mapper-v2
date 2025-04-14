@@ -20,7 +20,7 @@ import ComponentAuthorizer from "./authorizer";
 import MainTable from "../table/map";
 import ModalManager from "@ebay/nice-modal-react";
 import SuspenseComponent from "../utils/suspense";
-import { pb } from "../../utils/pocketbase";
+import { getUser } from "../../utils/pocketbase";
 import {
   addressDetails,
   DropDirection,
@@ -155,7 +155,7 @@ const MapListing: React.FC<MapListingProps> = ({
                       key={`assignment-btn-${currentMapId}`}
                       addressElement={addressElement}
                       policy={policy}
-                      userId={pb.authStore?.record?.id as string}
+                      userId={getUser("id") as string}
                     />
                     <Button
                       size="sm"

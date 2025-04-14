@@ -2,13 +2,13 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
-import { pb } from "../../utils/pocketbase";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import HelpButton from "../navigation/help";
 import { ChangeAddressNameModalProps } from "../../utils/interface";
+import { updateDataById } from "../../utils/pocketbase";
 
 const ChangeAddressName = NiceModal.create(
   ({
@@ -24,7 +24,8 @@ const ChangeAddressName = NiceModal.create(
       event.preventDefault();
       setIsSaving(true);
       try {
-        await pb.collection("maps").update(
+        await updateDataById(
+          "maps",
           mapId,
           { description: addressName },
           {

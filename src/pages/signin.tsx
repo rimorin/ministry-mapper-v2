@@ -1,6 +1,10 @@
 import { useCallback, useContext, useRef, useState } from "react";
 import { Form, Button, Spinner, FloatingLabel } from "react-bootstrap";
-import { pb } from "../utils/pocketbase";
+import {
+  authenticateEmailAndPassword,
+  authenticateOTP,
+  requestOTP
+} from "../utils/pocketbase";
 
 import errorHandler from "../utils/helpers/errorhandler";
 import { StateContext } from "../components/utils/context";
@@ -27,11 +31,7 @@ const LoginComponent = () => {
       const processedEmail = processEmail(email);
       try {
         setIsLogin(true);
-        await pb
-          .collection("users")
-          .authWithPassword(processedEmail, password, {
-            requestKey: `login-${processedEmail}`
-          });
+        await authenticateEmailAndPassword(processedEmail, password);
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
         const mfaId = err.response?.mfaId;
@@ -51,10 +51,7 @@ const LoginComponent = () => {
 
   const handleOtpRequest = useCallback(async (email: string) => {
     try {
-      const result = await pb.collection("users").requestOTP(email, {
-        requestKey: `otp-${email}`
-      });
-      setOtpSessionId(result.otpId);
+      setOtpSessionId(await requestOTP(email));
     } catch (err) {
       errorHandler(err);
     }
@@ -65,10 +62,7 @@ const LoginComponent = () => {
       event.preventDefault();
       try {
         setIsLogin(true);
-        await pb.collection("users").authWithOTP(otpSessionId, otpCode, {
-          mfaId: mfaId,
-          requestKey: `otp-auth-${otpSessionId}`
-        });
+        await authenticateOTP(otpSessionId, otpCode, mfaId);
       } catch (err) {
         errorHandler(err);
       } finally {

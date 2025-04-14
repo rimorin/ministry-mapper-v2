@@ -11,7 +11,7 @@ import Loader from "../components/statics/loader";
 import NavBarBranding from "../components/navigation/branding";
 import { PASSWORD_POLICY, MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
 import PasswordChecklist from "react-password-checklist";
-import { pb } from "../utils/pocketbase";
+import { confirmPasswordReset, confirmVerification } from "../utils/pocketbase";
 import { useSearch } from "wouter";
 
 const MODE_RESET_PASSWORD = "resetPassword";
@@ -35,9 +35,7 @@ const UserManagementComponent = () => {
     async (actionCode: string): Promise<void> => {
       try {
         setIsResetting(true);
-        await pb
-          .collection("users")
-          .confirmPasswordReset(actionCode, loginPassword, cloginPassword);
+        await confirmPasswordReset(actionCode, loginPassword, cloginPassword);
         setMessage("Your password has been successfully reset.");
       } catch (error) {
         setMessage(JSON.stringify(error));
@@ -52,9 +50,7 @@ const UserManagementComponent = () => {
     async (actionCode: string): Promise<void> => {
       try {
         setIsProcessing(true);
-        await pb.collection("users").confirmVerification(actionCode, {
-          requestKey: `verify-email-${actionCode}`
-        });
+        await confirmVerification(actionCode);
         setMessage("Your email address has been verified.");
       } catch (error) {
         setMessage(

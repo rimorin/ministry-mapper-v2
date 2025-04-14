@@ -10,9 +10,9 @@ import LinkDateFormatter from "../../utils/helpers/linkdateformatter";
 import { LinkSession } from "../../utils/policies";
 import ModalFooter from "../form/footer";
 import HelpButton from "../navigation/help";
-import { pb } from "../../utils/pocketbase";
 import { useCallback, useEffect, useState } from "react";
 import { AssignmentModalProps } from "../../utils/interface";
+import { deleteDataById } from "../../utils/pocketbase";
 
 const GetAssignments = NiceModal.create(
   ({
@@ -26,7 +26,7 @@ const GetAssignments = NiceModal.create(
       useState<LinkSession[]>(assignments);
 
     const deleteAssignment = useCallback(async (linkid: string) => {
-      await pb.collection("assignments").delete(linkid, {
+      await deleteDataById("assignments", linkid, {
         requestKey: `assignment-delete-${linkid}`
       });
     }, []);

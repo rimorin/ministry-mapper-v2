@@ -4,7 +4,7 @@ import UseAnotherButton from "./useanother";
 import { useCallback, useState } from "react";
 import errorHandler from "../../utils/helpers/errorhandler";
 
-import { pb } from "../../utils/pocketbase";
+import { cleanupSession, verifyEmail } from "../../utils/pocketbase";
 
 const VerificationPage = ({ user }: userInterface) => {
   const userEmail = user?.email;
@@ -13,9 +13,7 @@ const VerificationPage = ({ user }: userInterface) => {
   const handleResendMail = useCallback(async () => {
     setIsSending(true);
     try {
-      await pb.collection("users").requestVerification(userEmail, {
-        requestKey: `resend-verification-${userEmail}`
-      });
+      await verifyEmail(userEmail);
       alert(
         "Resent verification email! Please check your inbox or spam folder."
       );
@@ -26,9 +24,7 @@ const VerificationPage = ({ user }: userInterface) => {
     }
   }, [userEmail]);
 
-  const handleClick = useCallback(() => {
-    pb.authStore.clear();
-  }, []);
+  const handleClick = useCallback(() => cleanupSession(), []);
 
   return (
     <Container className="container-main">

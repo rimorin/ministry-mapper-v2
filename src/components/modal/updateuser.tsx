@@ -2,13 +2,13 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
-import { pb } from "../../utils/pocketbase";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import { UserModalProps } from "../../utils/interface";
 import ModalFooter from "../form/footer";
 import UserRoleField from "../form/role";
 import HelpButton from "../navigation/help";
+import { deleteDataById, updateDataById } from "../../utils/pocketbase";
 
 const UpdateUser = NiceModal.create(
   ({
@@ -27,15 +27,14 @@ const UpdateUser = NiceModal.create(
         setIsSaving(true);
         try {
           if (userRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
-            await pb.collection("roles").delete(uid, {
+            await deleteDataById("roles", uid, {
               requestKey: `delete-usr-role-${uid}`
             });
           } else {
-            await pb.collection("roles").update(
+            await updateDataById(
+              "roles",
               uid,
-              {
-                role: userRole
-              },
+              { role: userRole },
               {
                 requestKey: `update-usr-role-${uid}`
               }

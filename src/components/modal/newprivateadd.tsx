@@ -21,9 +21,9 @@ import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import GenericTextAreaField from "../form/textarea";
 import HelpButton from "../navigation/help";
-import { pb } from "../../utils/pocketbase";
 import ModalManager from "@ebay/nice-modal-react";
 import ChangeMapGeolocation from "./changegeolocation";
+import { callFunction } from "../../utils/pocketbase";
 
 const NewPrivateAddress = NiceModal.create(
   ({
@@ -61,7 +61,7 @@ const NewPrivateAddress = NiceModal.create(
 
       setIsSaving(true);
       try {
-        await pb.send("map/add", {
+        await callFunction("/map/add", {
           method: "POST",
           body: {
             code: mapCode,

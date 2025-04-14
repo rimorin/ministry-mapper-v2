@@ -5,7 +5,7 @@ import PasswordChecklist from "react-password-checklist";
 import errorHandler from "../utils/helpers/errorhandler";
 import { PASSWORD_POLICY, MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
 import { StateContext } from "../components/utils/context";
-import { pb } from "../utils/pocketbase";
+import { createData, verifyEmail } from "../utils/pocketbase";
 const { VITE_PRIVACY_URL, VITE_TERMS_URL } = import.meta.env;
 
 const SignupComponent = () => {
@@ -42,7 +42,8 @@ const SignupComponent = () => {
     }
     setIsCreating(true);
     try {
-      await pb.collection("users").create(
+      await createData(
+        "users",
         {
           email: formData.email,
           name: formData.name,
@@ -54,9 +55,7 @@ const SignupComponent = () => {
           requestKey: `user-signup-${formData.email}`
         }
       );
-      await pb.collection("users").requestVerification(formData.email, {
-        requestKey: `verify-email-${formData.email}`
-      });
+      await verifyEmail(formData.email);
       alert(
         "Account created! Please check your email for verification procedures."
       );

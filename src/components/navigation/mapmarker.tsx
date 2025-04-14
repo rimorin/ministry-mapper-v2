@@ -3,8 +3,10 @@ import { AdvancedMarker } from "@vis.gl/react-google-maps";
 import CircularProgress from "../utils/circularprogress";
 import { addressDetails } from "../../utils/interface";
 import { LINK_TYPES } from "../../utils/constants";
-import getFirstItemOfList from "../../utils/helpers/getfirstiteminlist";
-import { pb } from "../../utils/pocketbase";
+import {
+  getFirstItemOfList,
+  setupRealtimeListener
+} from "../../utils/pocketbase";
 
 interface AddressMarkerProps {
   addressElement: addressDetails;
@@ -44,8 +46,8 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
       setHasPersonal(!!hasPersonal);
     };
 
-    pb.collection("assignments").subscribe(
-      "*",
+    setupRealtimeListener(
+      "assignments",
       () => {
         fetchAssignmentsAndPersonals();
       },

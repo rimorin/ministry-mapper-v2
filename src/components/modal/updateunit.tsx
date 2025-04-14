@@ -8,7 +8,7 @@ import { UpdateUnitModalProps } from "../../utils/interface";
 import GenericInputField from "../form/input";
 import ModalSubmitButton from "../form/submit";
 import HelpButton from "../navigation/help";
-import { pb } from "../../utils/pocketbase";
+import { callFunction } from "../../utils/pocketbase";
 
 const UpdateUnit = NiceModal.create(
   ({
@@ -30,7 +30,7 @@ const UpdateUnit = NiceModal.create(
     ) => {
       setIsSaving(true);
       try {
-        pb.send("map/code/update", {
+        await callFunction("/map/code/update", {
           method: "POST",
           body: {
             map: mapId,
@@ -49,7 +49,7 @@ const UpdateUnit = NiceModal.create(
     const handleUnitDelete = async (mapId: string, unitNumber: string) => {
       setIsSaving(true);
       try {
-        await pb.send("map/code/delete", {
+        await callFunction("/map/code/delete", {
           method: "POST",
           body: {
             map: mapId,
