@@ -1,3 +1,10 @@
+## [1.3.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.3.2...v1.3.3) (2025-04-14)
+
+
+### Bug Fixes
+
+* useEffects and react components ([#45](https://github.com/rimorin/ministry-mapper-v2/issues/45)) ([1d74750](https://github.com/rimorin/ministry-mapper-v2/commit/1d747509a4fa824a428bb6a29d18ec12ec1ad6f8))
+
 ## [1.3.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.3.1...v1.3.2) (2025-04-12)
 
 
