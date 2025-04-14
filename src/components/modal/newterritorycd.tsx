@@ -2,7 +2,6 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
-import { pb } from "../../utils/pocketbase";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
@@ -10,7 +9,7 @@ import GenericInputField from "../form/input";
 import HelpButton from "../navigation/help";
 import IsValidTerritoryCode from "../../utils/helpers/checkterritorycd";
 import { NewTerritoryCodeModalProps } from "../../utils/interface";
-import getFirstItemOfList from "../../utils/helpers/getfirstiteminlist";
+import { createData, getFirstItemOfList } from "../../utils/pocketbase";
 
 const NewTerritoryCode = NiceModal.create(
   ({
@@ -36,7 +35,8 @@ const NewTerritoryCode = NiceModal.create(
           alert("Territory code already exists.");
           return;
         }
-        await pb.collection("territories").create(
+        await createData(
+          "territories",
           {
             code,
             description: name,

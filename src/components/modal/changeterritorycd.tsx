@@ -2,7 +2,6 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
-import { pb } from "../../utils/pocketbase";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
@@ -10,6 +9,7 @@ import GenericInputField from "../form/input";
 import HelpButton from "../navigation/help";
 import IsValidTerritoryCode from "../../utils/helpers/checkterritorycd";
 import { ChangeTerritoryCodeModalProps } from "../../utils/interface";
+import { updateDataById } from "../../utils/pocketbase";
 
 const ChangeTerritoryCode = NiceModal.create(
   ({
@@ -25,11 +25,10 @@ const ChangeTerritoryCode = NiceModal.create(
       event.preventDefault();
       setIsSaving(true);
       try {
-        await pb.collection("territories").update(
+        await updateDataById(
+          "territories",
           territoryId,
-          {
-            code: newTerritoryCode
-          },
+          { code: newTerritoryCode },
           {
             requestKey: `update-territory-code-${territoryId}`
           }

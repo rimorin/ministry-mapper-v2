@@ -12,7 +12,7 @@ import { NewUnitModalProps } from "../../utils/interface";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import HelpButton from "../navigation/help";
-import { pb } from "../../utils/pocketbase";
+import { callFunction } from "../../utils/pocketbase";
 
 const NewUnit = NiceModal.create(
   ({
@@ -34,7 +34,7 @@ const NewUnit = NiceModal.create(
           );
           return;
         }
-        await pb.send("map/code/add", {
+        await callFunction("/map/code/add", {
           method: "POST",
           body: {
             map: mapId,

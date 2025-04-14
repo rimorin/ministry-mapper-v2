@@ -1,6 +1,12 @@
 import { useEffect, useState, useCallback, lazy } from "react";
 
-import { pb } from "../utils/pocketbase";
+import {
+  configureHeader,
+  getDataById,
+  getList,
+  setupRealtimeListener,
+  unsubscriber
+} from "../utils/pocketbase";
 import { Container, Image, Nav, Navbar } from "react-bootstrap";
 import { addressDetails, latlongInterface } from "../utils/interface";
 import { Policy } from "../utils/policies";
@@ -22,11 +28,9 @@ import {
 } from "../utils/constants";
 import "../css/slip.css";
 import { RecordModel } from "pocketbase";
-import getDataById from "../utils/helpers/getdatabyid";
 import useLocalStorage from "../utils/helpers/storage";
 import { useParams } from "wouter";
 import useVisibilityChange from "../components/utils/visibilitychange";
-import { unsubscriber } from "../utils/helpers/unsubscriber";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 const UpdateMapMessages = lazy(() => import("../components/modal/mapmessages"));
 const ShowExpiry = lazy(() => import("../components/modal/slipexpiry"));
@@ -55,11 +59,12 @@ const Map = () => {
 
   const checkPinnedMessages = useCallback(
     async (map: string) => {
+      if (!map) return;
       if (readPinnedMessages === "true") return;
-      const pinnedMessages = await pb.collection("messages").getFullList({
+      const pinnedMessages = await getList("messages", {
         filter: `map = "${map}" && type= "${MESSAGE_TYPES.ADMIN}" && pinned = true`,
         fields: "id",
-        requestKey: `unread-msg-${mapDetails?.id}`
+        requestKey: `unread-msg-${map}`
       });
       setHasPinnedMessages(pinnedMessages.length > 0);
     },
@@ -78,13 +83,12 @@ const Map = () => {
         return;
       }
       const congId = linkRecord.expand?.map.expand?.congregation.id;
-      const congOptions =
-        (await pb.collection("options").getFullList({
-          filter: `congregation="${congId}"`,
-          requestKey: `congregation-options-${congId}`,
-          fields: PB_FIELDS.CONGREGATION_OPTIONS,
-          sort: "sequence"
-        })) || [];
+      const congOptions = await getList("options", {
+        filter: `congregation="${congId}"`,
+        requestKey: `congregation-options-${congId}`,
+        fields: PB_FIELDS.CONGREGATION_OPTIONS,
+        sort: "sequence"
+      });
       const expiryTimestamp = new Date(linkRecord.expiry_date).getTime();
       setTokenEndTime(expiryTimestamp);
       const currentTimestamp = new Date().getTime();
@@ -145,33 +149,35 @@ const Map = () => {
       if (!mapDetails) {
         return;
       }
-      pb.collection("maps").subscribe(
-        mapDetails.id,
-        (sub) => {
-          const data = sub.record;
+      setupRealtimeListener(
+        "maps",
+        (data) => {
+          const mapData = data.record;
           setMapDetails((prevDetails) => {
             if (!prevDetails) return prevDetails;
             return {
               ...prevDetails,
               aggregates: {
-                display: data.progress + "%",
-                value: data.progress,
-                notDone: data.aggregates?.not_done,
-                notHome: data.aggregates?.not_home
+                display: mapData.progress + "%",
+                value: mapData.progress,
+                notDone: mapData.aggregates?.not_done,
+                notHome: mapData.aggregates?.not_home
               },
-              location: data.location,
-              name: data.description,
-              coordinates: data.coordinates
+              location: mapData.location,
+              name: mapData.description,
+              coordinates: mapData.coordinates
             };
           });
         },
         {
+          filter: `id="${mapDetails.id}"`,
           requestKey: null,
           fields: PB_FIELDS.MAPS,
           headers: {
             [PB_SECURITY_HEADER_KEY]: id as string
           }
-        }
+        },
+        mapDetails.id
       );
     } catch (error) {
       errorHandler(error, false);
@@ -182,15 +188,7 @@ const Map = () => {
 
   useEffect(() => {
     if (!id) return;
-    // Note: The beforeSend function does not apply to realtime subscriptions, only to REST API requests.
-    // Therefore, headers must be set manually for realtime subscriptions.
-    pb.beforeSend = (url, options) => {
-      options.headers = {
-        ...options.headers,
-        [PB_SECURITY_HEADER_KEY]: id as string
-      };
-      return { url, options };
-    };
+    configureHeader(id);
     getMapData(id);
     return () => {
       unsubscriber(["maps", "addresses", "messages"]);

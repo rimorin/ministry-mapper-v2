@@ -11,9 +11,9 @@ import {
 } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import HelpButton from "../navigation/help";
-import { pb } from "../../utils/pocketbase";
 import ModalFooter from "../form/footer";
 import { UpdateCongregationSettingsModalProps } from "../../utils/interface";
+import { updateDataById } from "../../utils/pocketbase";
 
 const UpdateCongregationSettings = NiceModal.create(
   ({
@@ -35,7 +35,8 @@ const UpdateCongregationSettings = NiceModal.create(
       event.preventDefault();
       try {
         setIsSaving(true);
-        await pb.collection("congregations").update(
+        await updateDataById(
+          "congregations",
           currentCongregation,
           {
             name: name,

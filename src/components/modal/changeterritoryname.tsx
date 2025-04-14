@@ -2,13 +2,13 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
-import { pb } from "../../utils/pocketbase";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import HelpButton from "../navigation/help";
 import { ChangeTerritoryNameModalProps } from "../../utils/interface";
+import { updateDataById } from "../../utils/pocketbase";
 
 const ChangeTerritoryName = NiceModal.create(
   ({
@@ -24,11 +24,10 @@ const ChangeTerritoryName = NiceModal.create(
       event.preventDefault();
       setIsSaving(true);
       try {
-        await pb.collection("territories").update(
+        await updateDataById(
+          "territories",
           territoryCode,
-          {
-            description: territoryName
-          },
+          { description: territoryName },
           {
             requestKey: `update-territory-name-${territoryCode}`
           }

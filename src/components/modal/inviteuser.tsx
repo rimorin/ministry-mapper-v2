@@ -2,7 +2,6 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
-import { pb } from "../../utils/pocketbase";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import { UserModalProps } from "../../utils/interface";
@@ -12,7 +11,11 @@ import HelpButton from "../navigation/help";
 import AsyncSelect from "react-select/async";
 import { OptionsOrGroups, GroupBase } from "react-select";
 import { RecordModel } from "pocketbase";
-import getFirstItemOfList from "../../utils/helpers/getfirstiteminlist";
+import {
+  createData,
+  getFirstItemOfList,
+  getPaginatedList
+} from "../../utils/pocketbase";
 
 const InviteUser = NiceModal.create(
   ({
@@ -26,7 +29,7 @@ const InviteUser = NiceModal.create(
     const modal = useModal();
 
     const getUsersByNames = useCallback(async (inputValue: string) => {
-      return pb.collection("users").getList(1, 10, {
+      return getPaginatedList("users", 1, 10, {
         filter: `(email ~ "${inputValue}%" || name ~ "${inputValue}") && verified = true`,
         requestKey: `get-users-${inputValue}`
       });
@@ -51,7 +54,8 @@ const InviteUser = NiceModal.create(
             return;
           }
 
-          pb.collection("roles").create(
+          await createData(
+            "roles",
             {
               user: userId,
               congregation,

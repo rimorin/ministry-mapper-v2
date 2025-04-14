@@ -7,8 +7,8 @@ import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import HelpButton from "../navigation/help";
-import { pb } from "../../utils/pocketbase";
 import { ChangeAddressMapCodeModalProps } from "../../utils/interface";
+import { updateDataById } from "../../utils/pocketbase";
 
 const ChangeMapCode = NiceModal.create(
   ({
@@ -29,16 +29,14 @@ const ChangeMapCode = NiceModal.create(
       }
       setIsSaving(true);
       try {
-        await pb.collection("maps").update(
+        await updateDataById(
+          "maps",
           mapId,
-          {
-            code: newMapCode
-          },
+          { code: newMapCode },
           {
             requestKey: `update-map-code-${mapId}`
           }
         );
-        modal.resolve();
         modal.hide();
       } catch (error) {
         errorHandler(error);

@@ -14,7 +14,6 @@ import {
 } from "../../utils/interface";
 import ModalManager from "@ebay/nice-modal-react";
 import PrivateTerritoryTable from "./privatetable";
-import { pb } from "../../utils/pocketbase";
 import SuspenseComponent from "../utils/suspense";
 import ZeroPad from "../../utils/helpers/zeropad";
 import PublicTerritoryTable from "./publictable";
@@ -23,6 +22,11 @@ import errorHandler from "../../utils/helpers/errorhandler";
 
 import useVisibilityChange from "../utils/visibilitychange";
 import { RecordModel, RecordSubscribeOptions } from "pocketbase";
+import {
+  getList,
+  setupRealtimeListener,
+  callFunction
+} from "../../utils/pocketbase";
 const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
 const UpdateUnit = lazy(() => import("../modal/updateunit"));
 
@@ -51,7 +55,7 @@ const useAddresses = (mapId: string, assignmentId?: string) => {
 
   const fetchAddressData = useCallback(async () => {
     if (!mapId) return;
-    const addresses = await pb.collection("addresses").getFullList({
+    const addresses = await getList("addresses", {
       filter: `map="${mapId}"`,
       expand: "type",
       requestKey: `addresses-${mapId}`,
@@ -82,8 +86,8 @@ const useAddresses = (mapId: string, assignmentId?: string) => {
       };
     }
 
-    pb.collection("addresses").subscribe(
-      "*",
+    setupRealtimeListener(
+      "addresses",
       (data) => {
         const addressId = data.record.id;
         const addressData = data.record;
@@ -125,7 +129,7 @@ const MainTable = ({
   const deleteAddressFloor = useCallback(
     async (floor: number) => {
       try {
-        await pb.send("map/floor/remove", {
+        await callFunction("/map/floor/remove", {
           method: "POST",
           body: {
             map: mapId,
