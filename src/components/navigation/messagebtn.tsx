@@ -26,10 +26,10 @@ const useUnreadMessages = (mapId: string) => {
     const unreadMessages = await getList("messages", {
       filter: `map = "${mapId}" && type!= "${MESSAGE_TYPES.ADMIN}" && read = false`,
       fields: "id",
-      requestKey: `unread-msg-${mapId}`
+      requestKey: null
     });
     setUnreadMsgCount(unreadMessages.length);
-  }, []);
+  }, [mapId]);
 
   useEffect(() => {
     if (!mapId) return;

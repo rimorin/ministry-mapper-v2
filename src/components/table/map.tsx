@@ -58,7 +58,7 @@ const useAddresses = (mapId: string, assignmentId?: string) => {
     const addresses = await getList("addresses", {
       filter: `map="${mapId}"`,
       expand: "type",
-      requestKey: `addresses-${mapId}`,
+      requestKey: null,
       fields: PB_FIELDS.ADDRESSES
     });
 

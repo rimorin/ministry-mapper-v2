@@ -64,7 +64,7 @@ const Map = () => {
       const pinnedMessages = await getList("messages", {
         filter: `map = "${map}" && type= "${MESSAGE_TYPES.ADMIN}" && pinned = true`,
         fields: "id",
-        requestKey: `unread-msg-${map}`
+        requestKey: null
       });
       setHasPinnedMessages(pinnedMessages.length > 0);
     },
@@ -74,7 +74,7 @@ const Map = () => {
   const retrieveLinkData = useCallback(
     async (id: string): Promise<addressDetails | undefined> => {
       const linkRecord = await getDataById("assignments", id, {
-        requestKey: `slip-data-${id}`,
+        requestKey: null,
         expand: "map, map.congregation",
         fields: PB_FIELDS.ASSIGNMENT_LINKS
       });
@@ -85,7 +85,7 @@ const Map = () => {
       const congId = linkRecord.expand?.map.expand?.congregation.id;
       const congOptions = await getList("options", {
         filter: `congregation="${congId}"`,
-        requestKey: `congregation-options-${congId}`,
+        requestKey: null,
         fields: PB_FIELDS.CONGREGATION_OPTIONS,
         sort: "sequence"
       });
@@ -142,13 +142,14 @@ const Map = () => {
     []
   );
 
-  const getMapData = useCallback(async (id: string | undefined) => {
-    if (!id) return;
+  const getMapData = useCallback(async (linkId: string | undefined) => {
+    if (!linkId) return;
     try {
-      const mapDetails = await retrieveLinkData(id);
+      const mapDetails = await retrieveLinkData(linkId);
       if (!mapDetails) {
         return;
       }
+      const mapId = mapDetails.id;
       setupRealtimeListener(
         "maps",
         (data) => {
@@ -170,14 +171,14 @@ const Map = () => {
           });
         },
         {
-          filter: `id="${mapDetails.id}"`,
+          filter: `id="${mapId}"`,
           requestKey: null,
           fields: PB_FIELDS.MAPS,
           headers: {
-            [PB_SECURITY_HEADER_KEY]: id as string
+            [PB_SECURITY_HEADER_KEY]: linkId as string
           }
         },
-        mapDetails.id
+        mapId
       );
     } catch (error) {
       errorHandler(error, false);
