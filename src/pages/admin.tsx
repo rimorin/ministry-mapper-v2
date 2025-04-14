@@ -554,7 +554,7 @@ function Admin({ user }: adminProps) {
     if (!territoryId) return;
     const maps = await getList("maps", {
       filter: `territory="${territoryId}"`,
-      requestKey: `territory-maps-${territoryId}`,
+      requestKey: null,
       sort: "code",
       fields: PB_FIELDS.MAPS
     });

@@ -46,7 +46,7 @@ const useAssignments = (mapId: string) => {
     if (!mapId) return;
     const mapAssignments = await getList("assignments", {
       filter: `map='${mapId}'`,
-      requestKey: `get-map-assignments-${mapId}`,
+      requestKey: null,
       expand: "map",
       fields: PB_FIELDS.ASSIGNMENTS
     });
@@ -61,7 +61,7 @@ const useAssignments = (mapId: string) => {
     }
     setPersonalLinks(personalLinks);
     setNormalLinks(normalLinks);
-  }, []);
+  }, [mapId]);
 
   const updateLinks = useCallback(
     (prev: Map<string, LinkSession>, record: RecordModel, action: string) => {
@@ -99,7 +99,7 @@ const useAssignments = (mapId: string) => {
         fields: PB_FIELDS.ASSIGNMENTS
       }
     );
-  }, []);
+  }, [mapId]);
 
   useVisibilityChange(retrieveAssignments);
 

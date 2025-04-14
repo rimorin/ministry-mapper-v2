@@ -238,6 +238,10 @@ const UpdateUnitStatus = NiceModal.create(
                 }}
                 changeValue={location}
                 required={false}
+                // Empty handleChange added to satisfy React's controlled component pattern
+                // This input is primarily updated through map selection via handleClick,
+                // but React requires an onChange handler when a value prop is provided
+                handleChange={() => {}}
                 information="Latitude and Longitude of the address."
               />
             )}
