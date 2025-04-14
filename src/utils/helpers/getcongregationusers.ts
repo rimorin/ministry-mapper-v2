@@ -1,4 +1,4 @@
-import { pb } from "../pocketbase";
+import { getList } from "../pocketbase";
 import { userDetails } from "../interface";
 import { PB_FIELDS } from "../constants";
 
@@ -6,7 +6,7 @@ const getCongregationUsers = async (
   code: string,
   currentUserId: string
 ): Promise<Map<string, userDetails>> => {
-  const records = await pb.collection("roles").getFullList({
+  const records = await getList("roles", {
     filter: `congregation="${code}" && user != "${currentUserId}"`,
     sort: "-role",
     expand: "user",

@@ -3,7 +3,7 @@ import { Form, Button, Spinner, FloatingLabel } from "react-bootstrap";
 
 import errorHandler from "../utils/helpers/errorhandler";
 import { StateContext } from "../components/utils/context";
-import { pb } from "../utils/pocketbase";
+import { requestPasswordReset } from "../utils/pocketbase";
 
 const ForgotComponent = () => {
   const [loginEmail, setLoginEmail] = useState("");
@@ -25,9 +25,7 @@ const ForgotComponent = () => {
     }
     try {
       setIsProcessing(true);
-      await pb.collection("users").requestPasswordReset(loginEmail, {
-        requestKey: `reset-password-${loginEmail}`
-      });
+      await requestPasswordReset(loginEmail);
       alert(`Password reset email sent to ${loginEmail}.`);
     } catch (error) {
       errorHandler(error);

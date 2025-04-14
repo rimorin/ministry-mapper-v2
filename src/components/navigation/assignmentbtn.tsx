@@ -10,7 +10,6 @@ import {
 import SuspenseComponent from "../utils/suspense";
 import { addressDetails } from "../../utils/interface";
 import { LinkSession, Policy } from "../../utils/policies";
-import { pb } from "../../utils/pocketbase";
 import errorHandler from "../../utils/helpers/errorhandler";
 
 import assignmentMessage from "../../utils/helpers/assignmentmsg";
@@ -18,6 +17,11 @@ import ComponentAuthorizer from "./authorizer";
 import addHours from "../../utils/helpers/addhours";
 import { RecordModel } from "pocketbase";
 import useVisibilityChange from "../utils/visibilitychange";
+import {
+  getList,
+  setupRealtimeListener,
+  createData
+} from "../../utils/pocketbase";
 const ConfirmSlipDetails = lazy(
   () => import("../../components/modal/slipdetails")
 );
@@ -40,7 +44,7 @@ const useAssignments = (mapId: string) => {
 
   const retrieveAssignments = useCallback(async () => {
     if (!mapId) return;
-    const mapAssignments = await pb.collection("assignments").getFullList({
+    const mapAssignments = await getList("assignments", {
       filter: `map='${mapId}'`,
       requestKey: `get-map-assignments-${mapId}`,
       expand: "map",
@@ -75,8 +79,8 @@ const useAssignments = (mapId: string) => {
   useEffect(() => {
     if (!mapId) return;
     retrieveAssignments();
-    pb.collection("assignments").subscribe(
-      "*",
+    setupRealtimeListener(
+      "assignments",
       (data) => {
         const { action, record } = data;
         const isPersonal = record.type === LINK_TYPES.PERSONAL;
@@ -163,7 +167,8 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
       try {
         if (linktype === LINK_TYPES.ASSIGNMENT) setIsSettingNormalLink(true);
         if (linktype === LINK_TYPES.PERSONAL) setIsSettingPersonalLink(true);
-        const linkRecord = await pb.collection("assignments").create(
+        const linkRecord = await createData(
+          "assignments",
           {
             map: mapId,
             user: userId,

@@ -7,11 +7,11 @@ import {
 } from "../../utils/constants";
 import { addressDetails } from "../../utils/interface";
 import { Policy } from "../../utils/policies";
-import { pb } from "../../utils/pocketbase";
 
 import ModalManager from "@ebay/nice-modal-react";
 import SuspenseComponent from "../utils/suspense";
 import useVisibilityChange from "../utils/visibilitychange";
+import { getList, setupRealtimeListener } from "../../utils/pocketbase";
 const UpdateMapMessages = lazy(() => import("../modal/mapmessages"));
 
 interface PersonalButtonGroupProps {
@@ -23,7 +23,7 @@ const useUnreadMessages = (mapId: string) => {
   const [unreadMsgCount, setUnreadMsgCount] = React.useState(0);
 
   const fetchUnreadMsgs = useCallback(async () => {
-    const unreadMessages = await pb.collection("messages").getFullList({
+    const unreadMessages = await getList("messages", {
       filter: `map = "${mapId}" && type!= "${MESSAGE_TYPES.ADMIN}" && read = false`,
       fields: "id",
       requestKey: `unread-msg-${mapId}`
@@ -35,10 +35,10 @@ const useUnreadMessages = (mapId: string) => {
     if (!mapId) return;
     fetchUnreadMsgs();
 
-    pb.collection("messages").subscribe(
-      "*",
+    setupRealtimeListener(
+      "messages",
       (data) => {
-        const action = data.action;
+        const { action } = data;
         if (action === "create") {
           setUnreadMsgCount((prevCount) => prevCount + 1);
         } else if (action === "update") {

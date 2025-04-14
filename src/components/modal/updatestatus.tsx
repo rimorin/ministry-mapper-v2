@@ -2,7 +2,6 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, ChangeEvent, useCallback } from "react";
 import { Modal, Form, Collapse, Button } from "react-bootstrap";
-import { pb } from "../../utils/pocketbase";
 import {
   USER_ACCESS_LEVELS,
   STATUS_CODES,
@@ -27,6 +26,7 @@ import HHTypeField from "../form/household";
 import ComponentAuthorizer from "../navigation/authorizer";
 import ChangeMapGeolocation from "./changegeolocation";
 import DateFormat from "../../utils/helpers/dateformat";
+import { deleteDataById, updateDataById } from "../../utils/pocketbase";
 
 const UpdateUnitStatus = NiceModal.create(
   ({ addressData, unitDetails, policy }: UpdateAddressStatusModalProps) => {
@@ -64,7 +64,7 @@ const UpdateUnitStatus = NiceModal.create(
     const handleDeleteProperty = useCallback(async () => {
       setIsSaving(true);
       try {
-        await pb.collection("addresses").delete(addressId as string, {
+        await deleteDataById("addresses", addressId, {
           requestKey: `delete-address-${addressId}`
         });
         modal.hide();
@@ -91,7 +91,7 @@ const UpdateUnitStatus = NiceModal.create(
 
         try {
           setIsSaving(true);
-          await pb.collection("addresses").update(addressId, updateData, {
+          await updateDataById("addresses", addressId, updateData, {
             requestKey: `update-address-${addressId}`
           });
           modal.hide();

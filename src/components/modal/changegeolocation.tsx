@@ -2,7 +2,6 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, useCallback, useEffect } from "react";
 import { Modal, Form, Button, Spinner } from "react-bootstrap";
-import { pb } from "../../utils/pocketbase";
 import { WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import HelpButton from "../navigation/help";
@@ -15,6 +14,7 @@ import { GmapAutocomplete } from "../utils/mapautocomplete";
 import { ControlPanel } from "../utils/mapinfopanel";
 import { MapCurrentTarget } from "../utils/mapcurrenttarget";
 import CurrentLocationMarker from "../statics/currentlocator";
+import { updateDataById } from "../../utils/pocketbase";
 
 const ChangeMapGeolocation = NiceModal.create(
   ({
@@ -49,7 +49,8 @@ const ChangeMapGeolocation = NiceModal.create(
       setIsSaving(true);
       try {
         if (!isNew) {
-          await pb.collection("maps").update(
+          await updateDataById(
+            "maps",
             mapId,
             {
               coordinates: JSON.stringify(addressLocation)
