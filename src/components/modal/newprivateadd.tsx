@@ -138,6 +138,7 @@ const NewPrivateAddress = NiceModal.create(
               }}
               changeValue={location}
               required={true}
+              handleChange={() => {}}
               information="Latitude and Longitude of the map. This is used for direction purposes."
             />
             <GenericTextAreaField

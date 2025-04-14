@@ -46,7 +46,7 @@ const useMessages = (mapId: string, assignmentId?: string) => {
     const feedbacks = await getList("messages", {
       filter: `map="${mapId}"`,
       sort: "pinned, created",
-      requestKey: `msg-${mapId}`,
+      requestKey: null,
       fields: PB_FIELDS.MESSAGES
     });
 
@@ -90,7 +90,7 @@ const useMessages = (mapId: string, assignmentId?: string) => {
       },
       msgSubheader
     );
-  }, []);
+  }, [mapId]);
 
   useVisibilityChange(fetchFeedbacks);
 
