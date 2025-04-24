@@ -16,6 +16,7 @@ import {
   OverlayTrigger,
   Tooltip
 } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { PB_FIELDS, WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import HelpButton from "../navigation/help";
@@ -29,6 +30,7 @@ import { callFunction, getList } from "../../utils/pocketbase";
 
 const UpdateCongregationOptions = NiceModal.create(
   ({ currentCongregation }: UpdateCongregationOptionsModalProps) => {
+    const { t } = useTranslation();
     const modal = useModal();
 
     const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -47,7 +49,12 @@ const UpdateCongregationOptions = NiceModal.create(
         .map((option) => option.code);
       const uniqueCodes = [...new Set(codes)];
       if (codes.length !== uniqueCodes.length) {
-        alert("Duplicate option codes found. Please check your input.");
+        alert(
+          t(
+            "congregation.duplicateOptionCodes",
+            "Duplicate option codes found. Please check your input."
+          )
+        );
         return;
       }
 
@@ -57,7 +64,12 @@ const UpdateCongregationOptions = NiceModal.create(
         .map((option) => option.sequence);
       const uniqueSequences = [...new Set(sequences)];
       if (sequences.length !== uniqueSequences.length) {
-        alert("Duplicate option sequences found. Please check your input.");
+        alert(
+          t(
+            "congregation.duplicateSequences",
+            "Duplicate option sequences found. Please check your input."
+          )
+        );
         return;
       }
 
@@ -66,7 +78,12 @@ const UpdateCongregationOptions = NiceModal.create(
         (option) => option.isDefault && !option.isDeleted
       );
       if (defaultOptions.length !== 1) {
-        alert("Please select one default option.");
+        alert(
+          t(
+            "congregation.selectOneDefault",
+            "Please select one default option."
+          )
+        );
         return;
       }
 
@@ -75,7 +92,11 @@ const UpdateCongregationOptions = NiceModal.create(
         return;
       }
       const confirmUpdate = window.confirm(
-        `⚠️ WARNING: You have removed [${deletedOptions.join(", ")}] from the household dropdown list. Existing records with these options will be replaced with the default option. Proceed?`
+        t(
+          "congregation.deleteOptionsWarning",
+          `⚠️ WARNING: You have removed [{{options}}] from the household dropdown list. Existing records with these options will be replaced with the default option. Proceed?`,
+          { options: deletedOptions.join(", ") }
+        )
       );
 
       if (confirmUpdate) {
@@ -104,7 +125,12 @@ const UpdateCongregationOptions = NiceModal.create(
             options: optionsList
           }
         });
-        alert("Congregation household options updated.");
+        alert(
+          t(
+            "congregation.optionsUpdated",
+            "Congregation household options updated."
+          )
+        );
         window.location.reload();
       } catch (error) {
         errorHandler(error);
@@ -179,7 +205,9 @@ const UpdateCongregationOptions = NiceModal.create(
       >
         <Form onSubmit={handleSubmitCongOptions}>
           <Modal.Header>
-            <Modal.Title>Household Options</Modal.Title>
+            <Modal.Title>
+              {t("congregation.householdOptions", "Household Options")}
+            </Modal.Title>
             <HelpButton link={WIKI_CATEGORIES.MANAGE_CONG_OPTIONS} />
           </Modal.Header>
           <Modal.Body
@@ -197,41 +225,56 @@ const UpdateCongregationOptions = NiceModal.create(
                   <th style={{ width: "15%", textAlign: "center" }}>
                     <Link
                       id="optionCd"
-                      title="This code will appear in the territory house boxes. It will be used to indicate the type of household."
+                      title={t(
+                        "congregation.optionCodeTooltip",
+                        "This code will appear in the territory house boxes. It will be used to indicate the type of household."
+                      )}
                     >
-                      Code
+                      {t("common.code", "Code")}
                     </Link>
                   </th>
                   <th style={{ width: "35%" }}>
                     <Link
                       id="optionDesc"
-                      title="Description will appear in the household dropdown list."
+                      title={t(
+                        "congregation.optionDescTooltip",
+                        "Description will appear in the household dropdown list."
+                      )}
                     >
-                      Description
+                      {t("common.description", "Description")}
                     </Link>
                   </th>
                   <th style={{ width: "15%" }}>
                     <Link
                       id="optionSeq"
-                      title="This determines the positioning of the option in the dropdown list. Dropdown is sorted in ascending order."
+                      title={t(
+                        "congregation.optionSeqTooltip",
+                        "This determines the positioning of the option in the dropdown list. Dropdown is sorted in ascending order."
+                      )}
                     >
-                      Sequence
+                      {t("congregation.sequence", "Sequence")}
                     </Link>
                   </th>
                   <th style={{ width: "15%", textAlign: "center" }}>
                     <Link
                       id="optionCountable"
-                      title="This determines if the option will be counted in the territory completion percentage."
+                      title={t(
+                        "congregation.optionCountableTooltip",
+                        "This determines if the option will be counted in the territory completion percentage."
+                      )}
                     >
-                      Countable
+                      {t("congregation.countable", "Countable")}
                     </Link>
                   </th>
                   <th style={{ width: "15%", textAlign: "center" }}>
                     <Link
                       id="optionDefault"
-                      title="This determines the default household type of a congregation territory. Default option will not appear in the territory house boxes."
+                      title={t(
+                        "congregation.optionDefaultTooltip",
+                        "This determines the default household type of a congregation territory. Default option will not appear in the territory house boxes."
+                      )}
                     >
-                      Default
+                      {t("congregation.default", "Default")}
                     </Link>
                   </th>
                   <th style={{ width: "15%" }}></th>
@@ -341,7 +384,10 @@ const UpdateCongregationOptions = NiceModal.create(
                                 const newOptions = [...options];
                                 if (newOptions.length === 1) {
                                   alert(
-                                    "There must be at least one option in the dropdown list."
+                                    t(
+                                      "congregation.minimumOneOption",
+                                      "There must be at least one option in the dropdown list."
+                                    )
                                   );
                                   return;
                                 }
@@ -368,7 +414,7 @@ const UpdateCongregationOptions = NiceModal.create(
           </Modal.Body>
           <Modal.Footer className="justify-content-around">
             <Button variant="secondary" onClick={modal.hide}>
-              Close
+              {t("common.close", "Close")}
             </Button>
             <Button
               variant="secondary"
@@ -392,7 +438,7 @@ const UpdateCongregationOptions = NiceModal.create(
                 setNewOptionAdded(true);
               }}
             >
-              New Option
+              {t("congregation.newOption", "New Option")}
             </Button>
             <ModalSubmitButton isSaving={isSaving} />
           </Modal.Footer>

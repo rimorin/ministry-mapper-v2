@@ -3,10 +3,12 @@ import { userInterface } from "../../utils/interface";
 import UseAnotherButton from "./useanother";
 import { useCallback, useState } from "react";
 import errorHandler from "../../utils/helpers/errorhandler";
+import { useTranslation } from "react-i18next";
 
 import { cleanupSession, verifyEmail } from "../../utils/pocketbase";
 
 const VerificationPage = ({ user }: userInterface) => {
+  const { t } = useTranslation();
   const userEmail = user?.email;
   const [isSending, setIsSending] = useState(false);
 
@@ -15,7 +17,10 @@ const VerificationPage = ({ user }: userInterface) => {
     try {
       await verifyEmail(userEmail);
       alert(
-        "Resent verification email! Please check your inbox or spam folder."
+        t(
+          "auth.verificationEmailResent",
+          "Resent verification email! Please check your inbox or spam folder."
+        )
       );
     } catch (error) {
       errorHandler(error, true);
@@ -30,14 +35,17 @@ const VerificationPage = ({ user }: userInterface) => {
     <Container className="container-main">
       <Card className="card-main">
         <Card.Img
-          alt="Ministry Mapper logo"
+          alt={t("branding.logo", "Ministry Mapper logo")}
           className="mm-logo"
           src="https://assets.ministry-mapper.com/android-chrome-192x192.png"
         />
         <Card.Body>
           <Card.Title className="text-center">
-            We are sorry {user?.name}! Please verify your email account before
-            proceeding 🪪
+            {t(
+              "auth.verifyEmailMessage",
+              "We are sorry {{name}}! Please verify your email account before proceeding 🪪",
+              { name: user?.name }
+            )}
           </Card.Title>
         </Card.Body>
         <>
@@ -45,7 +53,7 @@ const VerificationPage = ({ user }: userInterface) => {
             className="resend-text fluid-bolding fluid-text"
             onClick={handleResendMail}
           >
-            Didn&#39;t receive verification email ?{" "}
+            {t("auth.didNotReceiveEmail", "Didn't receive verification email?")}
             {isSending && (
               <Spinner
                 size="sm"

@@ -1,4 +1,5 @@
-import { useEffect, useState, useCallback, lazy } from "react";
+import { useEffect, useState, useCallback, lazy, useContext } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   configureHeader,
@@ -31,12 +32,16 @@ import { RecordModel } from "pocketbase";
 import useLocalStorage from "../utils/helpers/storage";
 import { useParams } from "wouter";
 import useVisibilityChange from "../components/utils/visibilitychange";
+import { LanguageContext } from "../i18n/LanguageContext";
+import LanguageSelector from "../i18n/LanguageSelector";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 const UpdateMapMessages = lazy(() => import("../components/modal/mapmessages"));
 const ShowExpiry = lazy(() => import("../components/modal/slipexpiry"));
 
 const Map = () => {
   const { id } = useParams();
+  const { t } = useTranslation();
+  const { currentLanguage, languageOptions } = useContext(LanguageContext);
   const [isLinkExpired, setIsLinkExpired] = useState(false);
   const [tokenEndTime, setTokenEndTime] = useState(0);
   const [showLegend, setShowLegend] = useState(false);
@@ -272,7 +277,7 @@ const Map = () => {
                   : ""
               }
             />
-            <div className="small">Messages</div>
+            <div className="small">{t("common.Messages", "Messages")}</div>
           </Nav.Item>
           {mapDetails?.type === TERRITORY_TYPES.SINGLE_STORY && (
             <Nav.Item
@@ -287,7 +292,9 @@ const Map = () => {
                     src="https://assets.ministry-mapper.com/gridmode.svg"
                     alt="Grid"
                   />
-                  <div className="small">Grid View</div>
+                  <div className="small">
+                    {t("navigation.listView", "List View")}
+                  </div>
                 </>
               ) : (
                 <>
@@ -295,7 +302,9 @@ const Map = () => {
                     src="https://assets.ministry-mapper.com/mapmode.svg"
                     alt="Map"
                   />
-                  <div className="small">Map View</div>
+                  <div className="small">
+                    {t("navigation.mapView", "Map View")}
+                  </div>
                 </>
               )}
             </Nav.Item>
@@ -314,7 +323,7 @@ const Map = () => {
               src="https://assets.ministry-mapper.com/maplocation.svg"
               alt="Location"
             />
-            <div className="small">Directions</div>
+            <div className="small">{t("common.Directions", "Directions")}</div>
           </Nav.Item>
           <Nav.Item
             className="text-center nav-item-hover"
@@ -328,8 +337,24 @@ const Map = () => {
               src="https://assets.ministry-mapper.com/time.svg"
               alt="Expiry"
             />
-            <div>Expiry</div>
+            <div className="small">{t("common.Expiry", "Expiry")}</div>
           </Nav.Item>
+          {currentLanguage && (
+            <Nav.Item className="text-center nav-item-hover">
+              <LanguageSelector
+                buttonSize="sm"
+                variant="link"
+                showText={false}
+              />
+              <div className="small">
+                {
+                  languageOptions.find(
+                    (option) => option.value === currentLanguage
+                  )?.label
+                }
+              </div>
+            </Nav.Item>
+          )}
         </Nav>
       </Navbar>
     </>

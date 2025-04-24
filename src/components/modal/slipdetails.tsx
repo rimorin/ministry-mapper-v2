@@ -1,4 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import { useTranslation } from "react-i18next";
 import { useState, FormEvent, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
 import Calendar from "react-calendar";
@@ -15,6 +16,7 @@ const ConfirmSlipDetails = NiceModal.create(
     userAccessLevel,
     isPersonalSlip = true
   }: ConfirmSlipDetailsModalProps) => {
+    const { t } = useTranslation();
     const modal = useModal();
     const [linkExpiryHrs, setLinkExpiryHrs] = useState<number | undefined>();
     const [name, setName] = useState<string>("");
@@ -23,7 +25,7 @@ const ConfirmSlipDetails = NiceModal.create(
       async (event: FormEvent<HTMLElement>) => {
         event.preventDefault();
         if (!linkExpiryHrs && isPersonalSlip) {
-          alert("Please select an expiry date.");
+          alert(t("slip.selectExpiryValidation"));
           return;
         }
         modal.resolve({ linkExpiryHrs: linkExpiryHrs, publisherName: name });
@@ -36,9 +38,9 @@ const ConfirmSlipDetails = NiceModal.create(
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
           <Modal.Title>
-            {`Confirm ${
-              isPersonalSlip ? "personal" : ""
-            } slip details for ${addressName}`}
+            {isPersonalSlip
+              ? t("slip.confirmPersonalTitle", { addressName })
+              : t("slip.confirmRegularTitle", { addressName })}
           </Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.CREATE_PERSONAL_SLIPS} />
         </Modal.Header>
@@ -60,13 +62,13 @@ const ConfirmSlipDetails = NiceModal.create(
               />
             )}
             <GenericInputField
-              label="Publishers Name"
+              label={t("slip.publisherNameLabel")}
               name="name"
               handleChange={(event) => {
                 const { value } = event.target as HTMLInputElement;
                 setName(value);
               }}
-              placeholder="Names of the assigned publishers"
+              placeholder={t("slip.publisherNamePlaceholder")}
               changeValue={name}
               focus={true}
               required={true}
@@ -77,7 +79,7 @@ const ConfirmSlipDetails = NiceModal.create(
             userAccessLevel={userAccessLevel}
             requiredAcLForSave={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
             isSaving={false}
-            submitLabel="Confirm"
+            submitLabel={t("slip.confirmButton")}
           />
         </Form>
       </Modal>

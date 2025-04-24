@@ -2,6 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
@@ -16,6 +17,7 @@ const NewTerritoryCode = NiceModal.create(
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE,
     congregation
   }: NewTerritoryCodeModalProps) => {
+    const { t } = useTranslation();
     const [code, setCode] = useState("");
     const [name, setName] = useState("");
     const [isSaving, setIsSaving] = useState(false);
@@ -32,7 +34,9 @@ const NewTerritoryCode = NiceModal.create(
             `code="${code}" && congregation="${congregation}"`
           )
         ) {
-          alert("Territory code already exists.");
+          alert(
+            t("territory.codeAlreadyExists", "Territory code already exists.")
+          );
           return;
         }
         await createData(
@@ -46,7 +50,11 @@ const NewTerritoryCode = NiceModal.create(
             requestKey: `create-territory-${congregation}-${code}`
           }
         );
-        alert(`Created territory, ${name}.`);
+        alert(
+          t("territory.createdSuccess", "Created territory, {{name}}.", {
+            name
+          })
+        );
         window.location.reload();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
@@ -58,13 +66,15 @@ const NewTerritoryCode = NiceModal.create(
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
-          <Modal.Title>Create New Territory</Modal.Title>
+          <Modal.Title>
+            {t("territory.createNew", "Create New Territory")}
+          </Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.CREATE_TERRITORIES} />
         </Modal.Header>
         <Form onSubmit={handleCreateTerritory}>
           <Modal.Body>
             <GenericInputField
-              label="Territory Code"
+              label={t("territory.territoryCode", "Territory Code")}
               name="code"
               handleChange={(e: ChangeEvent<HTMLElement>) => {
                 const { value } = e.target as HTMLInputElement;
@@ -75,10 +85,13 @@ const NewTerritoryCode = NiceModal.create(
               }}
               changeValue={code}
               required={true}
-              placeholder={"Territory code. For eg, M01, W12, etc."}
+              placeholder={t(
+                "territory.codeExample",
+                "Territory code. For eg, M01, W12, etc."
+              )}
             />
             <GenericInputField
-              label="Name"
+              label={t("common.name", "Name")}
               name="name"
               handleChange={(e: ChangeEvent<HTMLElement>) => {
                 const { value } = e.target as HTMLInputElement;
@@ -86,9 +99,10 @@ const NewTerritoryCode = NiceModal.create(
               }}
               changeValue={name}
               required={true}
-              placeholder={
+              placeholder={t(
+                "territory.nameExample",
                 "Name of the territory. For eg, 801-810, Woodlands Drive."
-              }
+              )}
             />
           </Modal.Body>
           <ModalFooter

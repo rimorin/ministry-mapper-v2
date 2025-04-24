@@ -3,9 +3,11 @@ import { Offcanvas, ListGroup } from "react-bootstrap";
 import { TERRITORY_SELECTOR_VIEWPORT_HEIGHT } from "../../utils/constants";
 import { UserListingProps } from "../../utils/interface";
 import UserRoleBadge from "./rolebadge";
+import { useTranslation } from "react-i18next";
 
 const UserListing = memo(
   ({ showListing, hideFunction, handleSelect, users }: UserListingProps) => {
+    const { t } = useTranslation();
     return (
       <Offcanvas
         placement={"bottom"}
@@ -14,7 +16,7 @@ const UserListing = memo(
         style={{ height: TERRITORY_SELECTOR_VIEWPORT_HEIGHT }}
       >
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>Select Users</Offcanvas.Title>
+          <Offcanvas.Title>{t("user.selectUser")}</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <ListGroup onSelect={handleSelect}>

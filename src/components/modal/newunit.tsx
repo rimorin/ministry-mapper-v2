@@ -1,4 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import { useTranslation } from "react-i18next";
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
@@ -20,6 +21,7 @@ const NewUnit = NiceModal.create(
     mapId,
     addressData
   }: NewUnitModalProps) => {
+    const { t } = useTranslation();
     const [unit, setUnit] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -29,9 +31,7 @@ const NewUnit = NiceModal.create(
       setIsSaving(true);
       try {
         if (!/^[a-zA-Z0-9\-*]+$/.test(unit)) {
-          alert(
-            "The Unit/Property number should only include alphanumeric characters, dash or hyphen."
-          );
+          alert(t("unit.alphanumericDashHyphenValidation"));
           return;
         }
         await callFunction("/map/code/add", {
@@ -52,15 +52,9 @@ const NewUnit = NiceModal.create(
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
           <Modal.Title>
-            {`Add ${
-              addressData.type === TERRITORY_TYPES.SINGLE_STORY
-                ? "property"
-                : "unit"
-            } to ${
-              addressData.type === TERRITORY_TYPES.SINGLE_STORY
-                ? addressData.name
-                : mapId
-            }`}
+            {addressData.type === TERRITORY_TYPES.SINGLE_STORY
+              ? t("unit.addPropertyTitle", { name: addressData.name })
+              : t("unit.addUnitTitle", { mapId: mapId })}
           </Modal.Title>
           {addressData.type === TERRITORY_TYPES.SINGLE_STORY ? (
             <HelpButton link={WIKI_CATEGORIES.ADD_DELETE_PRIVATE_PROPERTY} />
@@ -71,11 +65,11 @@ const NewUnit = NiceModal.create(
         <Form onSubmit={handleCreateNewUnit}>
           <Modal.Body>
             <GenericInputField
-              label={`${
+              label={
                 addressData.type === TERRITORY_TYPES.SINGLE_STORY
-                  ? "Property"
-                  : "Unit"
-              } number`}
+                  ? t("unit.propertyNumberLabel")
+                  : t("unit.unitNumberLabel")
+              }
               name="unit"
               handleChange={(e: ChangeEvent<HTMLElement>) => {
                 const { value } = e.target as HTMLInputElement;

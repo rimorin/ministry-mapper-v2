@@ -13,6 +13,7 @@ import HelpButton from "../navigation/help";
 import { useCallback, useEffect, useState } from "react";
 import { AssignmentModalProps } from "../../utils/interface";
 import { deleteDataById } from "../../utils/pocketbase";
+import { useTranslation } from "react-i18next";
 
 const GetAssignments = NiceModal.create(
   ({
@@ -21,6 +22,7 @@ const GetAssignments = NiceModal.create(
     assignmentTerritory
   }: AssignmentModalProps) => {
     const modal = useModal();
+    const { t } = useTranslation();
 
     const [currentAssignments, setCurrentAssignments] =
       useState<LinkSession[]>(assignments);
@@ -44,10 +46,15 @@ const GetAssignments = NiceModal.create(
         <Modal.Header>
           <Modal.Title>
             {isAssignOrPersonalAssignments
-              ? `${assignmentTerritory} ${LinkTypeDescription(
-                  assignmentType
-                )} Links`
-              : "Assignments"}
+              ? t(
+                  "assignment.linkWithTerritory",
+                  "{{territory}} {{type}} Links",
+                  {
+                    territory: assignmentTerritory,
+                    type: LinkTypeDescription(assignmentType)
+                  }
+                )
+              : t("assignment.assignments", "Assignments")}
           </Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.GET_ASSIGNMENTS} />
         </Modal.Header>
@@ -72,7 +79,7 @@ const GetAssignments = NiceModal.create(
                         rel="noreferrer"
                       >
                         {isAssignOrPersonalAssignments
-                          ? "Link"
+                          ? t("assignment.link", "Link")
                           : assignment.name}
                       </a>
                     </div>
@@ -83,17 +90,18 @@ const GetAssignments = NiceModal.create(
                     )}
                     {assignment.publisherName && (
                       <div className="fluid-text">
-                        Publisher : {assignment.publisherName}
+                        {t("assignments.publisher", "Publisher")}:{" "}
+                        {assignment.publisherName}
                       </div>
                     )}
                     <div className="fluid-text">
-                      Created Dt :{" "}
+                      {t("assignments.createdDate", "Created Dt")}:{" "}
                       {LinkDateFormatter.format(
                         new Date(assignment.tokenCreatetime)
                       )}
                     </div>
                     <div className="fluid-text">
-                      Expiry Dt :{" "}
+                      {t("assignments.expiryDate", "Expiry Dt")}:{" "}
                       {LinkDateFormatter.format(
                         new Date(assignment.tokenEndtime)
                       )}

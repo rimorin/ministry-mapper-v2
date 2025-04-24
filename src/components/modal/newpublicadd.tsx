@@ -2,6 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import {
   USER_ACCESS_LEVELS,
   TERRITORY_TYPES,
@@ -33,6 +34,7 @@ const NewPublicAddress = NiceModal.create(
     territoryCode,
     origin
   }: NewPublicAddressModalProps) => {
+    const { t } = useTranslation();
     const [mapCode, setMapCode] = useState("");
     const [name, setName] = useState("");
     const [sequence, setSequence] = useState("");
@@ -44,7 +46,7 @@ const NewPublicAddress = NiceModal.create(
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
 
-    const modalDescription = "Map Number";
+    const modalDescription = t("map.mapNumber");
 
     const handleCreateTerritoryAddress = async (
       event: FormEvent<HTMLElement>
@@ -52,12 +54,12 @@ const NewPublicAddress = NiceModal.create(
       event.preventDefault();
 
       if (!isValidMapCode(mapCode)) {
-        alert(`Invalid ${modalDescription}`);
+        alert(t("map.invalidMapNumber"));
         return;
       }
 
       if (!isValidMapSequence(sequence, TERRITORY_TYPES.MULTIPLE_STORIES)) {
-        alert("Invalid sequence");
+        alert(t("map.invalidSequence"));
         return;
       }
 
@@ -86,7 +88,7 @@ const NewPublicAddress = NiceModal.create(
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
-          <Modal.Title>Create Multi Story Map</Modal.Title>
+          <Modal.Title>{t("map.createMultiStory")}</Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.CREATE_PUBLIC_ADDRESS} />
         </Modal.Header>
         <Form onSubmit={handleCreateTerritoryAddress}>
@@ -96,14 +98,10 @@ const NewPublicAddress = NiceModal.create(
               overflowY: "auto"
             }}
           >
-            <p>
-              This map will include multiple floors, each containing several
-              units. The map is designed to organize and display units across
-              different floors efficiently.
-            </p>
+            <p>{t("map.multiStoryDescription")}</p>
             <GenericInputField
               inputType="number"
-              label={"Map Number"}
+              label={modalDescription}
               name="refNo"
               handleChange={(e: ChangeEvent<HTMLElement>) => {
                 const { value } = e.target as HTMLInputElement;
@@ -111,10 +109,10 @@ const NewPublicAddress = NiceModal.create(
               }}
               changeValue={mapCode}
               required={true}
-              information="This is a unique identifier for the map, requiring a minimum of 6 unique digits."
+              information={t("map.uniqueIdentifierInfo")}
             />
             <GenericInputField
-              label="Map Name"
+              label={t("map.mapName")}
               name="name"
               handleChange={(e: ChangeEvent<HTMLElement>) => {
                 const { value } = e.target as HTMLInputElement;
@@ -122,12 +120,12 @@ const NewPublicAddress = NiceModal.create(
               }}
               changeValue={name}
               required={true}
-              information="Description of the map."
+              information={t("map.descriptionInfo")}
             />
             <GenericInputField
-              label="Map Coordinates"
+              label={t("map.mapCoordinates")}
               name="location"
-              placeholder="Click to select location"
+              placeholder={t("map.clickToSelectLocation")}
               handleClick={() => {
                 ModalManager.show(ChangeMapGeolocation, {
                   coordinates: coordinates,
@@ -144,7 +142,7 @@ const NewPublicAddress = NiceModal.create(
               changeValue={location}
               required={true}
               handleChange={() => {}}
-              information="Latitude and Longitude of the map. This is used for direction purposes."
+              information={t("map.coordinatesInfo")}
             />
             <FloorField
               handleChange={(e: ChangeEvent<HTMLElement>) => {
@@ -154,9 +152,9 @@ const NewPublicAddress = NiceModal.create(
               changeValue={floors}
             />
             <GenericTextAreaField
-              label="Unit Sequence"
+              label={t("map.unitSequence")}
               name="units"
-              placeholder="Unit sequence with comma seperator. For eg, 301,303,305 ..."
+              placeholder={t("map.unitSequenceInfo")}
               handleChange={(e: ChangeEvent<HTMLElement>) => {
                 const { value } = e.target as HTMLInputElement;
                 setSequence(processSequence(value, true));
@@ -166,7 +164,7 @@ const NewPublicAddress = NiceModal.create(
             />
           </Modal.Body>
           <ModalFooter
-            submitLabel="Create"
+            submitLabel={t("common.create")}
             handleClick={modal.hide}
             userAccessLevel={footerSaveAcl}
             isSaving={isSaving}

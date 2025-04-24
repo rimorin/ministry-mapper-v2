@@ -1,6 +1,7 @@
 import React, { lazy, useCallback, useEffect } from "react";
 import { ButtonGroup, Button, Spinner, Badge } from "react-bootstrap";
 import ModalManager from "@ebay/nice-modal-react";
+import { useTranslation } from "react-i18next";
 import {
   UNSUPPORTED_BROWSER_MSG,
   LINK_TYPES,
@@ -111,6 +112,7 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   policy,
   userId
 }) => {
+  const { t } = useTranslation();
   const [isSettingPersonalLink, setIsSettingPersonalLink] =
     React.useState(false);
   const [isSettingNormalLink, setIsSettingNormalLink] = React.useState(false);
@@ -224,7 +226,7 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
             variant="outline-primary"
             onClick={() => handleButtonClick(LINK_TYPES.PERSONAL)}
           >
-            Personal
+            {t("links.personal", "Personal")}
           </Button>
           {(isSettingPersonalLink && (
             <Button size="sm" variant="outline-primary">
@@ -262,7 +264,7 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
             variant="outline-primary"
             onClick={() => handleButtonClick(LINK_TYPES.ASSIGNMENT)}
           >
-            Assign
+            {t("links.assignment", "Assign")}
           </Button>
           {(isSettingNormalLink && (
             <Button size="sm" variant="outline-primary">

@@ -2,6 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, useEffect, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
 import GenericTextAreaField from "../form/textarea";
@@ -106,6 +107,7 @@ const UpdateMapMessages = NiceModal.create(
     messageType,
     assignmentId
   }: UpdateAddressFeedbackModalProps) => {
+    const { t } = useTranslation();
     const [feedback, setFeedback] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -145,7 +147,9 @@ const UpdateMapMessages = NiceModal.create(
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
-          <Modal.Title>{`Messages on ${name}`}</Modal.Title>
+          <Modal.Title>
+            {t("messages.messagesOn", "Messages on {{name}}", { name })}
+          </Modal.Title>
           <HelpButton link={helpLink} />
         </Modal.Header>
         <Form onSubmit={handleSubmitFeedback}>
@@ -183,6 +187,7 @@ const UpdateMapMessages = NiceModal.create(
             )}
             <GenericTextAreaField
               name="feedback"
+              label={t("messages.enterMessage", "Enter message")}
               handleChange={(event) => {
                 const { value } = event.target as HTMLInputElement;
                 setFeedback(value);
@@ -196,7 +201,7 @@ const UpdateMapMessages = NiceModal.create(
             requiredAcLForSave={USER_ACCESS_LEVELS.READ_ONLY.CODE}
             isSaving={isSaving}
             disableSubmitBtn={feedback.length === 0}
-            submitLabel="Submit"
+            submitLabel={t("common.submit", "Submit")}
           />
         </Form>
       </Modal>

@@ -9,6 +9,8 @@ import StateMiddleware from "../components/middlewares/context";
 import MapsMiddleware from "../components/middlewares/googlemap";
 import { Provider as NiceModelMiddleware } from "@ebay/nice-modal-react";
 import Router from "./router";
+import "../i18n";
+import { LanguageProvider } from "../i18n/LanguageContext";
 
 interface CombinedMiddlewareProps {
   children: ReactNode;
@@ -16,13 +18,15 @@ interface CombinedMiddlewareProps {
 
 const CombinedMiddleware: FC<CombinedMiddlewareProps> = ({ children }) => (
   <MainMiddleware>
-    <MaintenanceMiddleware>
-      <MapsMiddleware>
-        <NiceModelMiddleware>
-          <StateMiddleware>{children}</StateMiddleware>
-        </NiceModelMiddleware>
-      </MapsMiddleware>
-    </MaintenanceMiddleware>
+    <LanguageProvider>
+      <MaintenanceMiddleware>
+        <MapsMiddleware>
+          <NiceModelMiddleware>
+            <StateMiddleware>{children}</StateMiddleware>
+          </NiceModelMiddleware>
+        </MapsMiddleware>
+      </MaintenanceMiddleware>
+    </LanguageProvider>
   </MainMiddleware>
 );
 

@@ -1,4 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import { useTranslation } from "react-i18next";
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form, Button } from "react-bootstrap";
@@ -19,6 +20,7 @@ const UpdateUnit = NiceModal.create(
     unitLength,
     unitDisplay
   }: UpdateUnitModalProps) => {
+    const { t } = useTranslation();
     const [unitSeq, setUnitSeq] = useState<number | undefined>(unitSequence);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -71,16 +73,16 @@ const UpdateUnit = NiceModal.create(
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
-          <Modal.Title>Unit {unitDisplay}</Modal.Title>
-          <HelpButton link={WIKI_CATEGORIES.UPDATE_UNIT_NUMBER} />
+          <Modal.Title>{t("unit.updateTitle", { unitDisplay })}</Modal.Title>
+          <HelpButton link={WIKI_CATEGORIES.ADD_PUBLIC_UNIT} />
         </Modal.Header>
         <Form onSubmit={handleUpdateUnit}>
           <Modal.Body>
             <GenericInputField
               inputType="number"
-              label="Sequence Number"
+              label={t("unit.sequenceNumberLabel")}
               name="sequence"
-              placeholder="Optional unit row sequence number"
+              placeholder={t("unit.sequenceNumberPlaceholder")}
               handleChange={(e: ChangeEvent<HTMLElement>) => {
                 const { value } = e.target as HTMLInputElement;
                 const parsedValue = parseInt(value);
@@ -93,18 +95,18 @@ const UpdateUnit = NiceModal.create(
           </Modal.Body>
           <Modal.Footer className="justify-content-around">
             <Button variant="secondary" onClick={() => modal.hide()}>
-              Close
+              {t("common.close")}
             </Button>
             <Button
               variant="secondary"
               onClick={() => {
                 const hasOnlyOneUnitNumber = unitLength === 1;
                 if (hasOnlyOneUnitNumber) {
-                  alert(`Territory requires at least 1 unit number.`);
+                  alert(t("unit.requireOneUnitValidation"));
                   return;
                 }
                 const confirmDelete = window.confirm(
-                  `⚠️ WARNING: Deleting unit number "${unitNo}" of "${mapName}". This action cannot be undone. Proceed?`
+                  t("unit.confirmDelete", { unitNo, mapName })
                 );
                 if (confirmDelete) {
                   handleUnitDelete(mapId, unitNo);
@@ -112,7 +114,7 @@ const UpdateUnit = NiceModal.create(
                 }
               }}
             >
-              Delete Unit
+              {t("unit.deleteUnitButton")}
             </Button>
             <ModalSubmitButton isSaving={isSaving} />
           </Modal.Footer>

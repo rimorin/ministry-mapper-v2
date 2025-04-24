@@ -2,6 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, useCallback, useEffect } from "react";
 import { Modal, Form, Button, Spinner } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import HelpButton from "../navigation/help";
@@ -24,6 +25,7 @@ const ChangeMapGeolocation = NiceModal.create(
     origin,
     isNew = false
   }: ConfigureAddressCoordinatesModalProps) => {
+    const { t } = useTranslation();
     const [addressLocation, setAddressLocation] =
       useState<latlongInterface>(coordinates);
     const [currentCenter, setCurrentCenter] =
@@ -37,7 +39,12 @@ const ChangeMapGeolocation = NiceModal.create(
       onError: () => void
     ) => {
       if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser");
+        alert(
+          t(
+            "errors.geolocationNotSupported",
+            "Geolocation is not supported by your browser"
+          )
+        );
         onError();
         return;
       }
@@ -86,7 +93,10 @@ const ChangeMapGeolocation = NiceModal.create(
         },
         () => {
           alert(
-            "Unable to get your current location. Please check your browser settings."
+            t(
+              "errors.unableToGetLocation",
+              "Unable to get your current location. Please check your browser settings."
+            )
           );
           modal.hide();
         }
@@ -100,7 +110,12 @@ const ChangeMapGeolocation = NiceModal.create(
         onHide={() => modal.remove()}
       >
         <Modal.Header>
-          <Modal.Title>{isNew ? "Select" : "Change"} Location</Modal.Title>
+          <Modal.Title>
+            {isNew
+              ? t("common.select", "Select")
+              : t("common.change", "Change")}{" "}
+            {t("address.location", "Location")}
+          </Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.CHANGE_ADDRESS_NAME} />
         </Modal.Header>
         <Form onSubmit={handleUpdateGeoLocation}>
@@ -158,7 +173,7 @@ const ChangeMapGeolocation = NiceModal.create(
           </Modal.Body>
           <Modal.Footer className="justify-content-around">
             <Button variant="secondary" onClick={() => modal.hide()}>
-              Close
+              {t("common.close", "Close")}
             </Button>
             <Button variant="primary" type="submit">
               {isSaving && (
@@ -171,7 +186,7 @@ const ChangeMapGeolocation = NiceModal.create(
                   />{" "}
                 </>
               )}
-              {isNew ? "Select" : "Save"}
+              {isNew ? t("common.select", "Select") : t("common.save", "Save")}
             </Button>
           </Modal.Footer>
         </Form>
