@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.3.3...v1.4.0) (2025-04-28)
+
+
+### Features
+
+* implement i18n internationalization ([#46](https://github.com/rimorin/ministry-mapper-v2/issues/46)) ([8d82ff1](https://github.com/rimorin/ministry-mapper-v2/commit/8d82ff1a15641a5a092532893b3ee46f14010ccf))
+
 ## [1.3.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.3.2...v1.3.3) (2025-04-14)
 
 
