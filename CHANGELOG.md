@@ -1,3 +1,10 @@
+## [1.4.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.4.0...v1.4.1) (2025-04-28)
+
+
+### Bug Fixes
+
+* i18n translation issue ([d8afdae](https://github.com/rimorin/ministry-mapper-v2/commit/d8afdae138bdc2fd5a6f4c12ee3d44da21cc2262))
+
 # [1.4.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.3.3...v1.4.0) (2025-04-28)
 
 
