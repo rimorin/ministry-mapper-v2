@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 const ModalSubmitButton = ({
   isSaving = false,
-  btnLabel = "common.save",
+  btnLabel,
   disabled = false
 }: SubmitBtnProps) => {
   const { t } = useTranslation();
