@@ -27,6 +27,7 @@ import {
   setupRealtimeListener,
   callFunction
 } from "../../utils/pocketbase";
+import { useTranslation } from "react-i18next";
 const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
 const UpdateUnit = lazy(() => import("../modal/updateunit"));
 
@@ -123,7 +124,7 @@ const MainTable = ({
   const mapId = addressDetails?.id;
   const mapName = addressDetails?.name;
   const userRole = policy?.userRole || USER_ACCESS_LEVELS.PUBLISHER.CODE;
-
+  const { t } = useTranslation();
   const addresses = useAddresses(mapId, assignmentId);
 
   const deleteAddressFloor = useCallback(
@@ -204,7 +205,14 @@ const MainTable = ({
   const handleFloorDelete = useCallback(
     async (floor: number) => {
       const confirmDelete = window.confirm(
-        `⚠️ WARNING: Floor Deletion\n\nThis action will delete floor ${floor} of ${addressDetails?.name}.\n\nAre you sure you want to proceed?`
+        t(
+          "address.deleteFloorWarning",
+          '⚠️ WARNING: Deleting floor {{floor}} of "{{name}}". This action cannot be undone. Proceed?',
+          {
+            floor: floor,
+            name: addressDetails?.name
+          }
+        )
       );
 
       if (confirmDelete) {

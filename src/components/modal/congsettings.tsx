@@ -14,6 +14,7 @@ import HelpButton from "../navigation/help";
 import ModalFooter from "../form/footer";
 import { UpdateCongregationSettingsModalProps } from "../../utils/interface";
 import { updateDataById } from "../../utils/pocketbase";
+import { useTranslation } from "react-i18next";
 
 const UpdateCongregationSettings = NiceModal.create(
   ({
@@ -23,6 +24,7 @@ const UpdateCongregationSettings = NiceModal.create(
     currentDefaultExpiryHrs = DEFAULT_SELF_DESTRUCT_HOURS
   }: UpdateCongregationSettingsModalProps) => {
     const modal = useModal();
+    const { t } = useTranslation();
 
     const [maxTries, setMaxTries] = useState(currentMaxTries);
     const [defaultExpiryHrs, setDefaultExpiryHrs] = useState(
@@ -47,7 +49,9 @@ const UpdateCongregationSettings = NiceModal.create(
             requestKey: `congregations-details-${currentCongregation}`
           }
         );
-        alert("Congregation settings updated.");
+        alert(
+          t("congregation.settingsUpdated", "Congregation settings updated.")
+        );
         window.location.reload();
       } catch (error) {
         errorHandler(error);
@@ -60,15 +64,20 @@ const UpdateCongregationSettings = NiceModal.create(
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Form onSubmit={handleSubmitCongSettings}>
           <Modal.Header>
-            <Modal.Title>Congregation Settings</Modal.Title>
+            <Modal.Title>
+              {t("congregation.settings", "Congregation Settings")}
+            </Modal.Title>
             <HelpButton link={WIKI_CATEGORIES.MANAGE_CONG_SETTINGS} />
           </Modal.Header>
           <Modal.Body>
             <Form.Group className="mb-3" controlId="formBasicCongName">
-              <Form.Label>Name</Form.Label>
+              <Form.Label>{t("common.name", "Name")}</Form.Label>
               <Form.Control
                 type="text"
-                placeholder="Enter congregation name"
+                placeholder={t(
+                  "congregation.enterName",
+                  "Enter congregation name"
+                )}
                 onChange={(event) => {
                   const { value } = event.target as HTMLInputElement;
                   setName(value);
@@ -81,7 +90,9 @@ const UpdateCongregationSettings = NiceModal.create(
               controlId="formBasicTriesRange"
               as={Row}
             >
-              <Form.Label>No. of Tries</Form.Label>
+              <Form.Label>
+                {t("congregation.numberOfTries", "No. of Tries")}
+              </Form.Label>
               <Col xs="9">
                 <FormRange
                   min={1}
@@ -97,8 +108,10 @@ const UpdateCongregationSettings = NiceModal.create(
                 <Form.Control value={maxTries} disabled />
               </Col>
               <Form.Text muted>
-                The number of times to try not at homes before considering it
-                done
+                {t(
+                  "congregation.triesDescription",
+                  "The number of times to try not at homes before considering it done"
+                )}
               </Form.Text>
             </Form.Group>
             <Form.Group
@@ -106,7 +119,12 @@ const UpdateCongregationSettings = NiceModal.create(
               controlId="formBasicExpiryHoursRange"
               as={Row}
             >
-              <Form.Label>Default Slip Expiry Hours</Form.Label>
+              <Form.Label>
+                {t(
+                  "congregation.defaultSlipExpiry",
+                  "Default Slip Expiry Hours"
+                )}
+              </Form.Label>
               <Col xs="9">
                 <FormRange
                   min={1}
@@ -122,7 +140,10 @@ const UpdateCongregationSettings = NiceModal.create(
                 <Form.Control value={defaultExpiryHrs} disabled />
               </Col>
               <Form.Text muted>
-                The duration of the territory slip link before it expires
+                {t(
+                  "congregation.expiryDescription",
+                  "The duration of the territory slip link before it expires"
+                )}
               </Form.Text>
             </Form.Group>
           </Modal.Body>

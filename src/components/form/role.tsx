@@ -1,12 +1,15 @@
 import { Form, ToggleButtonGroup, ToggleButton } from "react-bootstrap";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import { UserRoleProps } from "../../utils/interface";
+import { useTranslation } from "react-i18next";
 
 const UserRoleField = ({
   handleRoleChange,
   role,
   isUpdate = true
 }: UserRoleProps) => {
+  const { t } = useTranslation();
+
   return (
     <Form.Group
       className="mb-1 text-center"
@@ -26,7 +29,7 @@ const UserRoleField = ({
             value={USER_ACCESS_LEVELS.NO_ACCESS.CODE}
             className="fluid-button"
           >
-            {USER_ACCESS_LEVELS.NO_ACCESS.DISPLAY}
+            {t("user.roles.noAccess", "No Access")}
           </ToggleButton>
         )}
         <ToggleButton
@@ -35,7 +38,7 @@ const UserRoleField = ({
           value={USER_ACCESS_LEVELS.READ_ONLY.CODE}
           className="fluid-button"
         >
-          {USER_ACCESS_LEVELS.READ_ONLY.DISPLAY}
+          {t("user.roles.readOnly", "Read-only")}
         </ToggleButton>
         <ToggleButton
           id="status-tb-2"
@@ -43,7 +46,7 @@ const UserRoleField = ({
           value={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
           className="fluid-button"
         >
-          {USER_ACCESS_LEVELS.CONDUCTOR.DISPLAY}
+          {t("user.roles.conductor", "Conductor")}
         </ToggleButton>
         <ToggleButton
           id="status-tb-4"
@@ -51,7 +54,7 @@ const UserRoleField = ({
           value={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
           className="fluid-button"
         >
-          {USER_ACCESS_LEVELS.TERRITORY_SERVANT.DISPLAY}
+          {t("user.roles.administrator", "Administrator")}
         </ToggleButton>
       </ToggleButtonGroup>
     </Form.Group>

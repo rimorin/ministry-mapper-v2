@@ -1,6 +1,7 @@
 import { useContext, useState, useCallback } from "react";
 import { Form, Button, Spinner, FloatingLabel } from "react-bootstrap";
 import PasswordChecklist from "react-password-checklist";
+import { useTranslation } from "react-i18next";
 
 import errorHandler from "../utils/helpers/errorhandler";
 import { PASSWORD_POLICY, MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
@@ -9,6 +10,7 @@ import { createData, verifyEmail } from "../utils/pocketbase";
 const { VITE_PRIVACY_URL, VITE_TERMS_URL } = import.meta.env;
 
 const SignupComponent = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -57,7 +59,10 @@ const SignupComponent = () => {
       );
       await verifyEmail(formData.email);
       alert(
-        "Account created! Please check your email for verification procedures."
+        t(
+          "auth.accountCreated",
+          "Account created! Please check your email for verification procedures."
+        )
       );
       setFrontPageMode("login");
     } catch (err) {
@@ -86,13 +91,13 @@ const SignupComponent = () => {
       className="responsive-width"
     >
       <Form.Group className="mb-3 text-center">
-        <h1>Sign Up</h1>
+        <h1>{t("auth.signUp", "Sign Up")}</h1>
       </Form.Group>
       <Form.Group className="mb-3" controlId="name">
-        <FloatingLabel controlId="name" label="User Name">
+        <FloatingLabel controlId="name" label={t("auth.name", "User Name")}>
           <Form.Control
             type="text"
-            placeholder="Enter Name"
+            placeholder={t("auth.enterName", "Enter Name")}
             value={formData.name}
             required
             onChange={handleInputChange}
@@ -100,24 +105,30 @@ const SignupComponent = () => {
         </FloatingLabel>
       </Form.Group>
       <Form.Group className="mb-3" controlId="email">
-        <FloatingLabel controlId="email" label="Email Address">
+        <FloatingLabel
+          controlId="email"
+          label={t("auth.emailAddress", "Email Address")}
+        >
           <Form.Control
             type="email"
-            placeholder="Enter email"
+            placeholder={t("auth.enterEmail", "Enter email")}
             value={formData.email}
             required
             onChange={handleInputChange}
           />
           <Form.Control.Feedback type="invalid">
-            Please enter a valid email.
+            {t("auth.validEmailRequired", "Please enter a valid email.")}
           </Form.Control.Feedback>
         </FloatingLabel>
       </Form.Group>
       <Form.Group className="mb-3" controlId="password">
-        <FloatingLabel controlId="password" label="Password">
+        <FloatingLabel
+          controlId="password"
+          label={t("auth.password", "Password")}
+        >
           <Form.Control
             type="password"
-            placeholder="Password"
+            placeholder={t("auth.password", "Password")}
             value={formData.password}
             required
             onChange={handleInputChange}
@@ -125,10 +136,13 @@ const SignupComponent = () => {
         </FloatingLabel>
       </Form.Group>
       <Form.Group className="mb-3" controlId="confirmPassword">
-        <FloatingLabel controlId="confirmPassword" label="Confirm Password">
+        <FloatingLabel
+          controlId="confirmPassword"
+          label={t("auth.confirmPassword", "Confirm Password")}
+        >
           <Form.Control
             type="password"
-            placeholder="Confirm Password"
+            placeholder={t("auth.confirmPassword", "Confirm Password")}
             value={formData.confirmPassword}
             required
             onChange={handleInputChange}
@@ -142,17 +156,30 @@ const SignupComponent = () => {
           value={formData.password}
           valueAgain={formData.confirmPassword}
           onChange={setIsPasswordValid}
+          messages={{
+            minLength: t(
+              "password.minLength",
+              "Password must be at least {{length}} characters long.",
+              { length: MINIMUM_PASSWORD_LENGTH }
+            ),
+            number: t("password.number", "Password must contain numbers."),
+            capital: t(
+              "password.capital",
+              "Password must contain uppercase letters."
+            ),
+            match: t("password.match", "Passwords must match.")
+          }}
         />
       </Form.Group>
       <Form.Group className="text-center mb-3">
         <p>
-          By signing up, you agree to our{" "}
+          {t("auth.termsAgreement", "By signing up, you agree to our")}{" "}
           <a href={privacyUrl} target="_blank" rel="noopener noreferrer">
-            privacy policy
+            {t("auth.privacyPolicy", "privacy policy")}
           </a>{" "}
-          and our{" "}
+          {t("auth.andOur", "and our")}{" "}
           <a href={termsUrl} target="_blank" rel="noopener noreferrer">
-            terms of service
+            {t("auth.termsOfService", "terms of service")}
           </a>
           .
         </p>
@@ -168,7 +195,7 @@ const SignupComponent = () => {
               <Spinner size="sm" />{" "}
             </>
           )}
-          Sign Up
+          {t("auth.signUp", "Sign Up")}
         </Button>
         <Button
           className="mx-2"
@@ -176,18 +203,18 @@ const SignupComponent = () => {
           type="reset"
           onClick={resetCreationForm}
         >
-          Clear
+          {t("common.clear", "Clear")}
         </Button>
       </Form.Group>
       <Form.Group className="text-center" controlId="formBasicButton">
         <hr />
         <p>
-          Already have an account?{" "}
+          {t("auth.alreadyHaveAccount", "Already have an account?")}{" "}
           <span
             style={{ cursor: "pointer", color: "blue" }}
             onClick={() => setFrontPageMode("login")}
           >
-            Sign In
+            {t("auth.signIn", "Sign In")}
           </span>
         </p>
       </Form.Group>

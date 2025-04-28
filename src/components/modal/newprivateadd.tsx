@@ -2,6 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import {
   USER_ACCESS_LEVELS,
   TERRITORY_TYPES,
@@ -32,6 +33,7 @@ const NewPrivateAddress = NiceModal.create(
     territoryCode,
     origin
   }: NewPrivateAddressModalProps) => {
+    const { t } = useTranslation();
     const [mapCode, setMapCode] = useState("");
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");
@@ -42,7 +44,7 @@ const NewPrivateAddress = NiceModal.create(
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
 
-    const modalDescription = "Map Number";
+    const modalDescription = t("map.mapNumber");
 
     const handleCreateTerritoryAddress = async (
       event: FormEvent<HTMLElement>
@@ -50,12 +52,12 @@ const NewPrivateAddress = NiceModal.create(
       event.preventDefault();
 
       if (!isValidMapCode(mapCode)) {
-        alert(`Invalid ${modalDescription}`);
+        alert(t("map.invalidMapNumber"));
         return;
       }
 
       if (!isValidMapSequence(sequence, TERRITORY_TYPES.SINGLE_STORY)) {
-        alert("Invalid sequence");
+        alert(t("map.invalidSequence"));
         return;
       }
 
@@ -85,7 +87,7 @@ const NewPrivateAddress = NiceModal.create(
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
-          <Modal.Title>Create Single Story Property</Modal.Title>
+          <Modal.Title>{t("map.createSingleStory")}</Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.CREATE_PRIVATE_ADDRESS} />
         </Modal.Header>
         <Form onSubmit={handleCreateTerritoryAddress}>
@@ -95,7 +97,7 @@ const NewPrivateAddress = NiceModal.create(
               overflowY: "auto"
             }}
           >
-            <p>This is a map with a list of single-story properties</p>
+            <p>{t("map.singleStoryDescription")}</p>
             <GenericInputField
               inputType="number"
               label={modalDescription}
@@ -106,10 +108,10 @@ const NewPrivateAddress = NiceModal.create(
               }}
               changeValue={mapCode}
               required={true}
-              information="This is a unique identifier for the map, requiring a minimum of 6 unique digits."
+              information={t("map.uniqueIdentifierInfo")}
             />
             <GenericInputField
-              label="Map Name"
+              label={t("map.mapName")}
               name="name"
               handleChange={(e: ChangeEvent<HTMLElement>) => {
                 const { value } = e.target as HTMLInputElement;
@@ -117,12 +119,12 @@ const NewPrivateAddress = NiceModal.create(
               }}
               changeValue={name}
               required={true}
-              information="Description of the map."
+              information={t("map.descriptionInfo")}
             />
             <GenericInputField
-              label="Map Coordinates"
+              label={t("map.mapCoordinates")}
               name="location"
-              placeholder="Click to select location"
+              placeholder={t("map.clickToSelectLocation")}
               handleClick={() => {
                 ModalManager.show(ChangeMapGeolocation, {
                   coordinates: coordinates,
@@ -139,12 +141,12 @@ const NewPrivateAddress = NiceModal.create(
               changeValue={location}
               required={true}
               handleChange={() => {}}
-              information="Latitude and Longitude of the map. This is used for direction purposes."
+              information={t("map.coordinatesInfo")}
             />
             <GenericTextAreaField
-              label="House Sequence"
+              label={t("map.houseSequence")}
               name="units"
-              placeholder="House sequence with comma seperator. For eg, 1A,1B,2A ..."
+              placeholder={t("map.houseSequenceInfo")}
               handleChange={(e: ChangeEvent<HTMLElement>) => {
                 const { value } = e.target as HTMLInputElement;
                 setSequence(processSequence(value));
@@ -154,7 +156,7 @@ const NewPrivateAddress = NiceModal.create(
             />
           </Modal.Body>
           <ModalFooter
-            submitLabel="Create"
+            submitLabel={t("common.create")}
             handleClick={modal.hide}
             userAccessLevel={footerSaveAcl}
             isSaving={isSaving}

@@ -2,6 +2,7 @@ import { memo } from "react";
 import { Offcanvas, ListGroup } from "react-bootstrap";
 import { CongregationListingProps } from "../../utils/interface";
 import UserRoleBadge from "./rolebadge";
+import { useTranslation } from "react-i18next";
 
 const CongListing = memo(
   ({
@@ -11,6 +12,7 @@ const CongListing = memo(
     handleSelect,
     congregations
   }: CongregationListingProps) => {
+    const { t } = useTranslation();
     const currentCongregations = congregations
       ? congregations.filter((element) => element.code !== currentCongCode)
       : [];
@@ -24,7 +26,9 @@ const CongListing = memo(
         }}
       >
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>Select Congregation</Offcanvas.Title>
+          <Offcanvas.Title>
+            {t("congregation.selectCongregation")}
+          </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <ListGroup onSelect={handleSelect}>

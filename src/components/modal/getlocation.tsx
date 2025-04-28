@@ -1,6 +1,7 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useState, useEffect } from "react";
 import { Button, ButtonGroup, Modal } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
 import HelpButton from "../navigation/help";
 import {
@@ -14,6 +15,7 @@ import getDirection from "../../utils/helpers/directiongenerator";
 
 const GetMapGeolocation = NiceModal.create(
   ({ coordinates, origin, name }: GetMapGeolocationModalProps) => {
+    const { t } = useTranslation();
     const [currentCenter, setCurrentCenter] =
       useState<latlongInterface>(coordinates);
     const [currentLocation, setCurrentLocation] = useState<latlongInterface>();
@@ -36,7 +38,12 @@ const GetMapGeolocation = NiceModal.create(
       onError: () => void
     ) => {
       if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser");
+        alert(
+          t(
+            "errors.geolocationNotSupported",
+            "Geolocation is not supported by your browser"
+          )
+        );
         onError();
         return;
       }
@@ -88,7 +95,10 @@ const GetMapGeolocation = NiceModal.create(
         },
         () => {
           alert(
-            "Unable to get your current location. Please check your browser settings."
+            t(
+              "errors.unableToGetLocation",
+              "Unable to get your current location. Please check your browser settings."
+            )
           );
           modal.hide();
         }
@@ -102,7 +112,9 @@ const GetMapGeolocation = NiceModal.create(
         onHide={() => modal.remove()}
       >
         <Modal.Header>
-          <Modal.Title>{name} Location</Modal.Title>
+          <Modal.Title>
+            {t("address.locationWithName", "{{name}} Location", { name })}
+          </Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.CHANGE_ADDRESS_NAME} />
         </Modal.Header>
         <Modal.Body
@@ -136,16 +148,18 @@ const GetMapGeolocation = NiceModal.create(
               window.open(getDirection(coordinates), "_blank");
             }}
           >
-            Open Maps
+            {t("navigation.openMaps", "Open Maps")}
           </Button>
-          <ButtonGroup aria-label="Transport modes">
+          <ButtonGroup
+            aria-label={t("navigation.transportModes", "Transport modes")}
+          >
             <Button
               variant={
                 travelMode === google.maps.TravelMode.WALKING
                   ? "primary"
                   : "secondary"
               }
-              aria-label="Walk mode"
+              aria-label={t("navigation.walkMode", "Walk mode")}
               onClick={() => setTravelMode(google.maps.TravelMode.WALKING)}
             >
               🚶
@@ -156,7 +170,7 @@ const GetMapGeolocation = NiceModal.create(
                   ? "primary"
                   : "secondary"
               }
-              aria-label="Drive mode"
+              aria-label={t("navigation.driveMode", "Drive mode")}
               onClick={() => setTravelMode(google.maps.TravelMode.DRIVING)}
             >
               🚗
@@ -167,7 +181,7 @@ const GetMapGeolocation = NiceModal.create(
                   ? "primary"
                   : "secondary"
               }
-              aria-label="Transit mode"
+              aria-label={t("navigation.transitMode", "Transit mode")}
               onClick={() => setTravelMode(google.maps.TravelMode.TRANSIT)}
             >
               🚌

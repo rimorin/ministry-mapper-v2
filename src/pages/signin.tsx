@@ -1,5 +1,6 @@
 import { useCallback, useContext, useRef, useState } from "react";
 import { Form, Button, Spinner, FloatingLabel } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import {
   authenticateEmailAndPassword,
   authenticateOTP,
@@ -10,6 +11,7 @@ import errorHandler from "../utils/helpers/errorhandler";
 import { StateContext } from "../components/utils/context";
 
 const LoginComponent = () => {
+  const { t } = useTranslation();
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [validated, setValidated] = useState(false);
@@ -93,7 +95,12 @@ const LoginComponent = () => {
       if (err instanceof Error) {
         // Ignore the error if the user aborts the share
         if (err.name === "NotAllowedError") {
-          alert("Permission to access clipboard was denied.");
+          alert(
+            t(
+              "auth.clipboardDenied",
+              "Permission to access clipboard was denied."
+            )
+          );
           return;
         }
       }
@@ -111,14 +118,17 @@ const LoginComponent = () => {
           className="responsive-width"
         >
           <Form.Group className="mb-3 text-center">
-            <h1>Sign in</h1>
+            <h1>{t("auth.signIn", "Sign In")}</h1>
           </Form.Group>
           <Form.Group className="my-3" controlId="formBasicEmail">
-            <FloatingLabel controlId="formBasicEmail" label="Email address">
+            <FloatingLabel
+              controlId="formBasicEmail"
+              label={t("auth.emailAddress", "Email address")}
+            >
               <Form.Control
                 ref={formRef}
                 type="email"
-                placeholder="Enter email"
+                placeholder={t("auth.enterEmail", "Enter email")}
                 value={loginEmail}
                 required
                 onChange={(e) => {
@@ -126,23 +136,28 @@ const LoginComponent = () => {
                 }}
               />
               <Form.Control.Feedback type="invalid">
-                Please enter a valid email.
+                {t("auth.validEmailRequired", "Please enter a valid email.")}
               </Form.Control.Feedback>
             </FloatingLabel>
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicPassword">
-            <FloatingLabel controlId="formBasicPassword" label="Password">
+            <FloatingLabel
+              controlId="formBasicPassword"
+              label={t("auth.password", "Password")}
+            >
               <Form.Control
                 type="password"
-                placeholder="Password"
+                placeholder={t("auth.password", "Password")}
                 value={loginPassword}
                 required
                 onChange={(event) => setLoginPassword(event.target.value)}
               />
             </FloatingLabel>
-            <Form.Control.Feedback>Looks Good!</Form.Control.Feedback>
+            <Form.Control.Feedback>
+              {t("auth.looksGood", "Looks Good!")}
+            </Form.Control.Feedback>
             <Form.Control.Feedback type="invalid">
-              Please enter password.
+              {t("auth.enterPassword", "Please enter password.")}
             </Form.Control.Feedback>
             <div className="text-end">
               <Form.Text
@@ -150,7 +165,7 @@ const LoginComponent = () => {
                 className="text-underline"
                 muted
               >
-                Forgot Password?
+                {t("auth.forgotPassword", "Forgot Password?")}
               </Form.Text>
             </div>
           </Form.Group>
@@ -166,7 +181,7 @@ const LoginComponent = () => {
                   <Spinner size="sm" />{" "}
                 </>
               )}
-              Sign In
+              {t("auth.signIn", "Sign In")}
             </Button>
             <Button
               className="mx-2"
@@ -179,18 +194,18 @@ const LoginComponent = () => {
                 setValidated(false);
               }}
             >
-              Clear
+              {t("common.clear", "Clear")}
             </Button>
           </Form.Group>
           <Form.Group className="text-center" controlId="formBasicButton">
             <hr />
             <p>
-              Dont have an account?{" "}
+              {t("auth.noAccountQuestion", "Don't have an account?")}{" "}
               <span
                 style={{ cursor: "pointer", color: "blue" }}
                 onClick={() => setFrontPageMode("signup")}
               >
-                Sign Up
+                {t("auth.signUp", "Sign Up")}
               </span>
             </p>
           </Form.Group>
@@ -198,19 +213,21 @@ const LoginComponent = () => {
       ) : (
         <Form onSubmit={handleOtpSubmit} className="responsive-width">
           <Form.Group className="mb-3 text-center">
-            <h1>One Time Password Verification</h1>
+            <h1>
+              {t("auth.otpVerification", "One Time Password Verification")}
+            </h1>
             <p className="text-muted">
-              An OTP has been sent to your email address.
+              {t("auth.otpSent", "An OTP has been sent to your email address.")}
             </p>
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicOtp">
             <FloatingLabel
               controlId="formBasicPassword"
-              label="One-time Password"
+              label={t("auth.oneTimePassword", "One-time Password")}
             >
               <Form.Control
                 type="text"
-                placeholder="Enter OTP"
+                placeholder={t("auth.enterOTP", "Enter OTP")}
                 value={otpCode}
                 required
                 onChange={(event) => setOtpCode(event.target.value)}
@@ -220,12 +237,12 @@ const LoginComponent = () => {
               <Form.Text
                 onClick={async () => {
                   await handleOtpRequest(processEmail(loginEmail));
-                  alert("OTP sent to your email");
+                  alert(t("auth.otpSentAlert", "OTP sent to your email"));
                 }}
                 className="text-underline"
                 muted
               >
-                Resent OTP
+                {t("auth.resendOTP", "Resend OTP")}
               </Form.Text>
             </div>
           </Form.Group>
@@ -241,7 +258,7 @@ const LoginComponent = () => {
                   <Spinner size="sm" />{" "}
                 </>
               )}
-              Verify
+              {t("auth.verify", "Verify")}
             </Button>
             {navigator.clipboard && (
               <Button
@@ -250,7 +267,7 @@ const LoginComponent = () => {
                 type="button"
                 onClick={handleClipboardPaste}
               >
-                Paste
+                {t("auth.paste", "Paste")}
               </Button>
             )}
             <Button
@@ -259,7 +276,7 @@ const LoginComponent = () => {
               type="reset"
               onClick={() => setOtpCode("")}
             >
-              Clear
+              {t("common.clear", "Clear")}
             </Button>
           </Form.Group>
         </Form>

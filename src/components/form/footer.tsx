@@ -1,7 +1,8 @@
 import { Modal, Button } from "react-bootstrap";
-import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import { FooterProps } from "../../utils/interface";
-import ModalSubmitButton from "../form/submit";
+import { USER_ACCESS_LEVELS } from "../../utils/constants";
+import { useTranslation } from "react-i18next";
+import ModalSubmitButton from "./submit";
 import ComponentAuthorizer from "../navigation/authorizer";
 
 const ModalFooter = ({
@@ -10,14 +11,16 @@ const ModalFooter = ({
   userAccessLevel = USER_ACCESS_LEVELS.CONDUCTOR.CODE,
   requiredAcLForSave = USER_ACCESS_LEVELS.CONDUCTOR.CODE,
   isSaving = false,
-  submitLabel = "Save",
+  submitLabel,
   disableSubmitBtn = false,
   children
 }: FooterProps) => {
+  const { t } = useTranslation();
+
   return (
     <Modal.Footer className="justify-content-around">
       <Button variant="secondary" onClick={handleClick}>
-        Close
+        {t("common.close")}
       </Button>
       {children}
       <ComponentAuthorizer
@@ -30,8 +33,8 @@ const ModalFooter = ({
       >
         <ModalSubmitButton
           isSaving={isSaving}
-          btnLabel={submitLabel}
           disabled={disableSubmitBtn}
+          btnLabel={submitLabel ? submitLabel : t("common.save", "Save")}
         />
       </ComponentAuthorizer>
     </Modal.Footer>

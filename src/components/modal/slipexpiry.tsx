@@ -4,14 +4,18 @@ import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import ModalFooter from "../form/footer";
 import { ExpiryButtonProp } from "../../utils/interface";
 import Countdown from "react-countdown";
+import { useTranslation } from "react-i18next";
 
 const ShowExpiry = NiceModal.create(({ endtime }: ExpiryButtonProp) => {
   const modal = useModal();
+  const { t } = useTranslation();
 
   return (
     <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
       <Modal.Header style={{ display: "flex", justifyContent: "center" }}>
-        <Modal.Title>Link Expiration Timer</Modal.Title>
+        <Modal.Title>
+          {t("assignments.linkExpirationTimer", "Link Expiration Timer")}
+        </Modal.Title>
       </Modal.Header>
       <Modal.Body className="text-center">
         <Countdown
@@ -21,13 +25,38 @@ const ShowExpiry = NiceModal.create(({ endtime }: ExpiryButtonProp) => {
           intervalDelay={100}
           precision={3}
           renderer={(props) => {
-            const daysDisplay = props.days !== 0 ? <>{props.days} d </> : <></>;
+            const daysDisplay =
+              props.days !== 0 ? (
+                <>
+                  {props.days} {t("common.daysShort", "d")}{" "}
+                </>
+              ) : (
+                <></>
+              );
             const hoursDisplay =
-              props.hours !== 0 ? <>{props.hours} h </> : <></>;
+              props.hours !== 0 ? (
+                <>
+                  {props.hours} {t("common.hoursShort", "h")}{" "}
+                </>
+              ) : (
+                <></>
+              );
             const minsDisplay =
-              props.minutes !== 0 ? <>{props.minutes} m </> : <></>;
+              props.minutes !== 0 ? (
+                <>
+                  {props.minutes} {t("common.minutesShort", "m")}{" "}
+                </>
+              ) : (
+                <></>
+              );
             const secondsDisplay =
-              props.seconds !== 0 ? <>{props.seconds} s </> : <></>;
+              props.seconds !== 0 ? (
+                <>
+                  {props.seconds} {t("common.secondsShort", "s")}{" "}
+                </>
+              ) : (
+                <></>
+              );
             return (
               <div>
                 {daysDisplay}

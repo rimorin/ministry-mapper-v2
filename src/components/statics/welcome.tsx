@@ -1,8 +1,11 @@
 import { memo } from "react";
 import { Container, Card } from "react-bootstrap";
 import { WelcomeProps } from "../../utils/interface";
+import { useTranslation } from "react-i18next";
 
 const Welcome = memo(({ name }: WelcomeProps) => {
+  const { t } = useTranslation();
+
   return (
     <Container className="container-main">
       <Card className="card-main" style={{ width: "100%" }}>
@@ -13,10 +16,10 @@ const Welcome = memo(({ name }: WelcomeProps) => {
         />
         <Card.Body>
           <Card.Title className="text-center">
-            Welcome {name || "To Ministry Mapper"}
+            {t("auth.welcome")} {name || t("auth.welcomeDefault")}
           </Card.Title>
           <Card.Text className="text-justify">
-            Please select a territory from the above listing.
+            {t("territory.selectTerritory")}
           </Card.Text>
         </Card.Body>
       </Card>

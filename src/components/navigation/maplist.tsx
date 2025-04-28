@@ -27,6 +27,7 @@ import {
   DropDirections
 } from "../../utils/interface";
 import { Policy } from "../../utils/policies";
+import { useTranslation } from "react-i18next";
 
 const GetMapGeolocation = lazy(() => import("../modal/getlocation"));
 const ChangeMapGeoLocation = lazy(() => import("../modal/changegeolocation"));
@@ -69,6 +70,7 @@ const MapListing: React.FC<MapListingProps> = ({
   setAccordionKeys,
   isReadonly
 }) => {
+  const { t } = useTranslation();
   const [dropDirections, setDropDirections] = useState<DropDirections>({});
   const handleDropdownDirection = useCallback(
     (
@@ -147,7 +149,9 @@ const MapListing: React.FC<MapListingProps> = ({
                           });
                         }}
                       >
-                        {mapViews.get(currentMapId) ? "List View" : "Map View"}
+                        {mapViews.get(currentMapId)
+                          ? t("navigation.listView", "List View")
+                          : t("navigation.mapView", "Map View")}
                       </Button>
                     )}
 
@@ -172,7 +176,7 @@ const MapListing: React.FC<MapListingProps> = ({
                         );
                       }}
                     >
-                      Direction
+                      {t("navigation.direction", "Direction")}
                     </Button>
                     <MessageButtonGroup
                       key={`message-btn-${currentMapId}`}
@@ -203,7 +207,7 @@ const MapListing: React.FC<MapListingProps> = ({
                                   />{" "}
                                 </>
                               )}{" "}
-                            Address
+                            {t("address.address", "Address")}
                           </>
                         }
                         drop={dropDirections[currentMapId]}
@@ -225,7 +229,7 @@ const MapListing: React.FC<MapListingProps> = ({
                             )
                           }
                         >
-                          Change Location
+                          {t("address.changeLocation", "Change Location")}
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() =>
@@ -239,7 +243,7 @@ const MapListing: React.FC<MapListingProps> = ({
                             )
                           }
                         >
-                          Change Map Number
+                          {t("address.changeMapNumber", "Change Map Number")}
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => {
@@ -251,7 +255,7 @@ const MapListing: React.FC<MapListingProps> = ({
                             toggleAddressTerritoryListing();
                           }}
                         >
-                          Change Territory
+                          {t("address.changeTerritory", "Change Territory")}
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() =>
@@ -265,7 +269,7 @@ const MapListing: React.FC<MapListingProps> = ({
                             )
                           }
                         >
-                          Rename
+                          {t("address.changeName", "Rename")}
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => {
@@ -276,11 +280,14 @@ const MapListing: React.FC<MapListingProps> = ({
                             });
                           }}
                         >
-                          Add{" "}
-                          {addressElement.type === TERRITORY_TYPES.SINGLE_STORY
-                            ? "Property"
-                            : "Unit"}{" "}
-                          No.
+                          {t(
+                            addressElement.type === TERRITORY_TYPES.SINGLE_STORY
+                              ? "address.addProperty"
+                              : "address.addUnit",
+                            addressElement.type === TERRITORY_TYPES.SINGLE_STORY
+                              ? "Add Property No."
+                              : "Add Unit No."
+                          )}
                         </Dropdown.Item>
                         {(!addressElement.type ||
                           addressElement.type ===
@@ -290,7 +297,7 @@ const MapListing: React.FC<MapListingProps> = ({
                               addFloorToMap(currentMapId, true);
                             }}
                           >
-                            Add Higher Floor
+                            {t("address.addHigherFloor", "Add Higher Floor")}
                           </Dropdown.Item>
                         )}
                         {(!addressElement.type ||
@@ -301,13 +308,17 @@ const MapListing: React.FC<MapListingProps> = ({
                               addFloorToMap(currentMapId);
                             }}
                           >
-                            Add Lower Floor
+                            {t("address.addLowerFloor", "Add Lower Floor")}
                           </Dropdown.Item>
                         )}
                         <Dropdown.Item
                           onClick={() => {
                             const confirmReset = window.confirm(
-                              `⚠️ WARNING: Resetting all property statuses of "${currentMapName}" will reset all statuses. This action cannot be undone. Proceed?`
+                              t(
+                                "address.resetWarning",
+                                '⚠️ WARNING: Resetting all property statuses of "{{name}}" will reset all statuses. This action cannot be undone. Proceed?',
+                                { name: currentMapName }
+                              )
                             );
 
                             if (confirmReset) {
@@ -315,12 +326,16 @@ const MapListing: React.FC<MapListingProps> = ({
                             }
                           }}
                         >
-                          Reset Status
+                          {t("address.resetStatus", "Reset Status")}
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() => {
                             const confirmDelete = window.confirm(
-                              `⚠️ WARNING: Deleting map "${currentMapName}" will remove it completely. This action cannot be undone. Proceed?`
+                              t(
+                                "address.deleteWarning",
+                                '⚠️ WARNING: Deleting map "{{name}}" will remove it completely. This action cannot be undone. Proceed?',
+                                { name: currentMapName }
+                              )
                             );
 
                             if (confirmDelete) {
@@ -328,7 +343,7 @@ const MapListing: React.FC<MapListingProps> = ({
                             }
                           }}
                         >
-                          Delete
+                          {t("address.delete", "Delete")}
                         </Dropdown.Item>
                       </DropdownButton>
                     </ComponentAuthorizer>

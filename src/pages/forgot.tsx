@@ -1,11 +1,13 @@
 import { useContext, useRef, useState } from "react";
 import { Form, Button, Spinner, FloatingLabel } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 
 import errorHandler from "../utils/helpers/errorhandler";
 import { StateContext } from "../components/utils/context";
 import { requestPasswordReset } from "../utils/pocketbase";
 
 const ForgotComponent = () => {
+  const { t } = useTranslation();
   const [loginEmail, setLoginEmail] = useState("");
   const [validated, setValidated] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -26,7 +28,11 @@ const ForgotComponent = () => {
     try {
       setIsProcessing(true);
       await requestPasswordReset(loginEmail);
-      alert(`Password reset email sent to ${loginEmail}.`);
+      alert(
+        t("auth.passwordResetSent", "Password reset email sent to {{email}}.", {
+          email: loginEmail
+        })
+      );
     } catch (error) {
       errorHandler(error);
     } finally {
@@ -43,20 +49,25 @@ const ForgotComponent = () => {
         className="responsive-width"
       >
         <Form.Group className="mb-3 text-center">
-          <h1>Forgotten your password ?</h1>
+          <h1>{t("auth.forgottenPassword", "Forgotten your password?")}</h1>
         </Form.Group>
         <Form.Group className="mb-3 text-center">
           <span>
-            Enter your email address below and we will send you a link to reset
-            your password.
+            {t(
+              "auth.resetInstructions",
+              "Enter your email address below and we will send you a link to reset your password."
+            )}
           </span>
         </Form.Group>
         <Form.Group className="my-3" controlId="formBasicEmail">
-          <FloatingLabel controlId="formBasicEmail" label="Email address">
+          <FloatingLabel
+            controlId="formBasicEmail"
+            label={t("auth.emailAddress", "Email address")}
+          >
             <Form.Control
               ref={formRef}
               type="email"
-              placeholder="Email Address"
+              placeholder={t("auth.enterEmail", "Email Address")}
               value={loginEmail}
               required
               onChange={(e) => {
@@ -64,7 +75,7 @@ const ForgotComponent = () => {
               }}
             />
             <Form.Control.Feedback type="invalid">
-              Please enter a valid email.
+              {t("auth.validEmailRequired", "Please enter a valid email.")}
             </Form.Control.Feedback>
           </FloatingLabel>
         </Form.Group>
@@ -80,7 +91,7 @@ const ForgotComponent = () => {
                 />{" "}
               </>
             )}
-            Continue
+            {t("auth.continue", "Continue")}
           </Button>
           <Button
             className="mx-2"
@@ -91,18 +102,18 @@ const ForgotComponent = () => {
               setValidated(false);
             }}
           >
-            Clear
+            {t("common.clear", "Clear")}
           </Button>
         </Form.Group>
         <Form.Group className="text-center" controlId="formBasicButton">
           <hr />
           <p>
-            Already have an account?{" "}
+            {t("auth.alreadyHaveAccount", "Already have an account?")}{" "}
             <span
               style={{ cursor: "pointer", color: "blue" }}
               onClick={() => setFrontPageMode("login")}
             >
-              Sign In
+              {t("auth.signIn", "Sign In")}
             </span>
           </p>
         </Form.Group>

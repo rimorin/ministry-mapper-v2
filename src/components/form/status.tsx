@@ -1,8 +1,11 @@
 import { Form, ToggleButtonGroup, ToggleButton } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { STATUS_CODES } from "../../utils/constants";
 import { FormProps } from "../../utils/interface";
 
 const HHStatusField = ({ handleGroupChange, changeValue }: FormProps) => {
+  const { t } = useTranslation();
+
   return (
     <Form.Group
       className="mb-1 text-center"
@@ -21,7 +24,7 @@ const HHStatusField = ({ handleGroupChange, changeValue }: FormProps) => {
           value={STATUS_CODES.DEFAULT}
           className="fluid-button"
         >
-          Not Done
+          {t("address.notDone", "Not Done")}
         </ToggleButton>
         <ToggleButton
           id="status-tb-1"
@@ -29,7 +32,7 @@ const HHStatusField = ({ handleGroupChange, changeValue }: FormProps) => {
           value={STATUS_CODES.DONE}
           className="fluid-button"
         >
-          Done
+          {t("address.done", "Done")}
         </ToggleButton>
         <ToggleButton
           id="status-tb-2"
@@ -37,7 +40,7 @@ const HHStatusField = ({ handleGroupChange, changeValue }: FormProps) => {
           value={STATUS_CODES.NOT_HOME}
           className="fluid-button"
         >
-          Not Home
+          {t("address.notHome", "Not Home")}
         </ToggleButton>
         <ToggleButton
           id="status-tb-4"
@@ -45,7 +48,7 @@ const HHStatusField = ({ handleGroupChange, changeValue }: FormProps) => {
           value={STATUS_CODES.DO_NOT_CALL}
           className="fluid-button"
         >
-          DNC
+          {t("address.dnc", "DNC")}
         </ToggleButton>
         <ToggleButton
           id="status-tb-5"
@@ -53,7 +56,7 @@ const HHStatusField = ({ handleGroupChange, changeValue }: FormProps) => {
           value={STATUS_CODES.INVALID}
           className="fluid-button"
         >
-          Invalid
+          {t("address.invalid", "Invalid")}
         </ToggleButton>
       </ToggleButtonGroup>
     </Form.Group>
