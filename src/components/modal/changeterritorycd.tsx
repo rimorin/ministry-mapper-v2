@@ -2,6 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
@@ -17,6 +18,7 @@ const ChangeTerritoryCode = NiceModal.create(
     territoryCode,
     territoryId
   }: ChangeTerritoryCodeModalProps) => {
+    const { t } = useTranslation();
     const [newTerritoryCode, setNewTerritoryCode] = useState(territoryCode);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -44,13 +46,20 @@ const ChangeTerritoryCode = NiceModal.create(
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
-          <Modal.Title>Change Territory Code</Modal.Title>
+          <Modal.Title>
+            {t("territory.changeCode", "Change Territory Code")}
+          </Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.CHANGE_TERRITORY_CODE} />
         </Modal.Header>
         <Form onSubmit={handleUpdateTerritoryCode}>
           <Modal.Body>
             <Form.Group className="mb-3">
-              <Form.Label htmlFor="userid">Existing Territory Code</Form.Label>
+              <Form.Label htmlFor="userid">
+                {t(
+                  "territory.existingTerritoryCode",
+                  "Existing Territory Code"
+                )}
+              </Form.Label>
               <Form.Control
                 readOnly
                 id="existingcode"
@@ -58,7 +67,7 @@ const ChangeTerritoryCode = NiceModal.create(
               />
             </Form.Group>
             <GenericInputField
-              label="New Territory Code"
+              label={t("territory.newTerritoryCode", "New Territory Code")}
               name="code"
               handleChange={(event: ChangeEvent<HTMLElement>) => {
                 const { value } = event.target as HTMLInputElement;
@@ -69,7 +78,10 @@ const ChangeTerritoryCode = NiceModal.create(
               }}
               changeValue={newTerritoryCode}
               required={true}
-              placeholder={"Territory code. For eg, M01, W12, etc."}
+              placeholder={t(
+                "territory.codeExample",
+                "Territory code. For eg, M01, W12, etc."
+              )}
             />
           </Modal.Body>
           <ModalFooter

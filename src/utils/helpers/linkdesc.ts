@@ -1,18 +1,29 @@
 import { LINK_TYPES } from "../constants";
+import i18n from "../../i18n";
 
 const LinkTypeDescription = (linkType: string) => {
-  let linkDescription = "";
+  let linkTranslationKey = "";
+
   switch (linkType) {
     case LINK_TYPES.PERSONAL:
-      linkDescription = "Personal";
+      linkTranslationKey = "links.personal";
       break;
     case LINK_TYPES.ASSIGNMENT:
-      linkDescription = "Assign";
+      linkTranslationKey = "links.assignment";
       break;
     default:
-      linkDescription = "View";
+      linkTranslationKey = "links.view";
   }
-  return linkDescription;
+
+  // Use i18n.t directly since this is not a React component
+  return i18n.t(linkTranslationKey, {
+    defaultValue:
+      linkType === LINK_TYPES.PERSONAL
+        ? "Personal"
+        : linkType === LINK_TYPES.ASSIGNMENT
+          ? "Assign"
+          : "View"
+  });
 };
 
 export default LinkTypeDescription;

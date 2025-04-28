@@ -7,6 +7,7 @@ import {
 } from "../../utils/constants";
 import { addressDetails } from "../../utils/interface";
 import { Policy } from "../../utils/policies";
+import { useTranslation } from "react-i18next";
 
 import ModalManager from "@ebay/nice-modal-react";
 import SuspenseComponent from "../utils/suspense";
@@ -65,6 +66,7 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   const mapId = addressElement.id;
   const isAdmin = policy.userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
   const unreadMsgCount = useUnreadMessages(mapId);
+  const { t } = useTranslation();
 
   return (
     <>
@@ -85,7 +87,7 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
             })
           }
         >
-          Messages
+          {t("messages.messages", "Messages")}
         </Button>
         {isAdmin && unreadMsgCount > 0 && (
           <Button size="sm" variant="outline-primary">

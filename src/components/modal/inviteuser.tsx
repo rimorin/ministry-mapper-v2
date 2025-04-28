@@ -2,6 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import { UserModalProps } from "../../utils/interface";
@@ -23,6 +24,7 @@ const InviteUser = NiceModal.create(
     congregation = "",
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE
   }: UserModalProps) => {
+    const { t } = useTranslation();
     const [userRole, setUserRole] = useState(USER_ACCESS_LEVELS.READ_ONLY.CODE);
     const [userId, setUserId] = useState("");
     const [isSaving, setIsSaving] = useState(false);
@@ -41,7 +43,7 @@ const InviteUser = NiceModal.create(
         setIsSaving(true);
         try {
           if (userId === email) {
-            alert("Please do not invite yourself.");
+            alert(t("user.dontInviteSelf", "Please do not invite yourself."));
             return;
           }
           if (
@@ -50,7 +52,12 @@ const InviteUser = NiceModal.create(
               `user="${userId}" && congregation="${congregation}"`
             )
           ) {
-            alert("This user is already part of the congregation.");
+            alert(
+              t(
+                "user.alreadyInCongregation",
+                "This user is already part of the congregation."
+              )
+            );
             return;
           }
 
@@ -65,12 +72,24 @@ const InviteUser = NiceModal.create(
               requestKey: `create-role-${userId}-${congregation}`
             }
           );
-          let roleDisplay = USER_ACCESS_LEVELS.READ_ONLY.DISPLAY;
-          if (userRole === USER_ACCESS_LEVELS.CONDUCTOR.CODE)
-            roleDisplay = USER_ACCESS_LEVELS.CONDUCTOR.DISPLAY;
-          if (userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE)
-            roleDisplay = USER_ACCESS_LEVELS.TERRITORY_SERVANT.DISPLAY;
-          alert(`Granted ${roleDisplay} access to user.`);
+
+          // Get the translated role display name based on the user's role
+          let roleName;
+          if (userRole === USER_ACCESS_LEVELS.READ_ONLY.CODE) {
+            roleName = t("user.roles.readOnly", "Read Only");
+          } else if (userRole === USER_ACCESS_LEVELS.CONDUCTOR.CODE) {
+            roleName = t("user.roles.conductor", "Conductor");
+          } else if (userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE) {
+            roleName = t("user.roles.administrator", "Administrator");
+          } else if (userRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
+            roleName = t("user.roles.noAccess", "No Access");
+          }
+
+          alert(
+            t("user.accessGranted", "Granted {{role}} access to user.", {
+              role: roleName
+            })
+          );
           modal.hide();
         } catch (error) {
           errorHandler(error);
@@ -93,14 +112,17 @@ const InviteUser = NiceModal.create(
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
-          <Modal.Title>Invite User</Modal.Title>
+          <Modal.Title>{t("user.inviteUser", "Invite User")}</Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.INVITE_USER} />
         </Modal.Header>
         <Form onSubmit={handleUserDetails}>
           <Modal.Body>
             <AsyncSelect
               className="mb-3"
-              placeholder="Search for user by name or email"
+              placeholder={t(
+                "user.searchByNameOrEmail",
+                "Search for user by name or email"
+              )}
               styles={{
                 menu: (provided) => ({ ...provided, zIndex: 9999 })
               }}
@@ -126,7 +148,7 @@ const InviteUser = NiceModal.create(
             handleClick={modal.hide}
             userAccessLevel={footerSaveAcl}
             isSaving={isSaving}
-            submitLabel="Invite"
+            submitLabel={t("user.invite", "Invite")}
           />
         </Form>
       </Modal>

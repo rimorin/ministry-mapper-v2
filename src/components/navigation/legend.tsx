@@ -2,43 +2,38 @@ import { memo } from "react";
 import { Offcanvas, Table } from "react-bootstrap";
 import { LegendProps } from "../../utils/interface";
 import NotHomeIcon from "../table/nothome";
+import { useTranslation } from "react-i18next";
 
 const Legend = memo(({ showLegend, hideFunction }: LegendProps) => {
+  const { t } = useTranslation();
+
   return (
     <Offcanvas show={showLegend} onHide={hideFunction}>
       <Offcanvas.Header closeButton>
-        <Offcanvas.Title>Legend</Offcanvas.Title>
+        <Offcanvas.Title>{t("navigation.legend")}</Offcanvas.Title>
       </Offcanvas.Header>
       <Offcanvas.Body>
         <Table>
           <thead>
             <tr>
-              <th>Symbol</th>
-              <th>Description</th>
+              <th>{t("common.symbol")}</th>
+              <th>{t("common.description")}</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td className="text-center align-middle">✅</td>
-              <td>Contacted successfully.</td>
+              <td>{t("address.done")}</td>
             </tr>
             <tr>
               <td className="text-center align-middle">🚫</td>
-              <td>Do not contact.</td>
+              <td>{t("address.doNotCall")}</td>
             </tr>
             <tr>
               <td className="text-center align-middle">
                 <NotHomeIcon />
               </td>
-              <td>Not at home.</td>
-            </tr>
-            <tr>
-              <td className="text-center align-middle">✖️</td>
-              <td>Address does not exist.</td>
-            </tr>
-            <tr>
-              <td className="text-center align-middle">🗒️</td>
-              <td>Additional home info.</td>
+              <td>{t("address.notHome")}</td>
             </tr>
           </tbody>
         </Table>

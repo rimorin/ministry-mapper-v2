@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap";
 
 import { AuthRecord, RecordModel } from "pocketbase";
+import { useTranslation } from "react-i18next";
 
 import {
   valuesDetails,
@@ -51,6 +52,7 @@ import useVisibilityChange from "../components/utils/visibilitychange";
 import MapListing from "../components/navigation/maplist";
 import MapView from "../components/navigation/mapview";
 import ModeToggle from "../components/navigation/maptoggle";
+import LanguageSelector from "../i18n/LanguageSelector";
 import {
   cleanupSession,
   deleteDataById,
@@ -89,6 +91,7 @@ const ChangeTerritoryCode = lazy(
 );
 
 function Admin({ user }: adminProps) {
+  const { t } = useTranslation();
   const userId = user?.id as string;
   const userName = user?.name as string;
   const userEmail = user?.email as string;
@@ -179,7 +182,11 @@ function Admin({ user }: adminProps) {
       await deleteDataById("territories", selectedTerritoryId, {
         requestKey: `territory-del-${congregationCode}-${selectedTerritoryCode}`
       });
-      alert(`Deleted territory, ${selectedTerritoryCode}.`);
+      alert(
+        t("territory.deleteSuccess", "Deleted territory, {{code}}.", {
+          code: selectedTerritoryCode
+        })
+      );
       window.location.reload();
     } catch (error) {
       errorHandler(error);
@@ -195,7 +202,8 @@ function Admin({ user }: adminProps) {
         await deleteDataById("maps", mapId, {
           requestKey: `map-del-${mapId}`
         });
-        if (showAlert) alert(`Deleted address, ${name}.`);
+        if (showAlert)
+          alert(t("map.deleteSuccess", "Deleted address, {{name}}.", { name }));
       } catch (error) {
         errorHandler(error);
       } finally {
@@ -356,7 +364,15 @@ function Admin({ user }: adminProps) {
           ) as addressDetails[]
         );
         alert(
-          `Changed territory of ${details.name} from ${selectedTerritoryCode} to ${newTerritoryCode}.`
+          t(
+            "territory.changeSuccess",
+            "Changed territory of {{name}} from {{oldCode}} to {{newCode}}.",
+            {
+              name: details.name,
+              oldCode: selectedTerritoryCode,
+              newCode: newTerritoryCode
+            }
+          )
         );
       } catch (error) {
         errorHandler(error);
@@ -403,7 +419,7 @@ function Admin({ user }: adminProps) {
       });
 
       if (assignments.length === 0) {
-        alert("No assignments found.");
+        alert(t("assignments.noAssignmentsFound", "No assignments found."));
         return;
       }
 
@@ -477,7 +493,7 @@ function Admin({ user }: adminProps) {
       });
 
       if (!congDetails) {
-        alert("Congregation not found.");
+        alert(t("congregation.notFound", "Congregation not found."));
         return;
       }
 
@@ -719,7 +735,7 @@ function Admin({ user }: adminProps) {
                 variant="outline-primary"
                 onClick={toggleCongregationListing}
               >
-                Select Congregation
+                {t("congregation.selectCongregation", "Select Congregation")}
               </Button>
             )}
             {congregationTerritoryList &&
@@ -741,7 +757,7 @@ function Admin({ user }: adminProps) {
                       {selectedTerritoryCode}
                     </>
                   ) : (
-                    "Select Territory"
+                    t("territory.selectTerritory", "Select Territory")
                   )}
                 </Button>
               )}
@@ -761,7 +777,7 @@ function Admin({ user }: adminProps) {
                     })
                   }
                 >
-                  Create Territory
+                  {t("territory.createTerritory", "Create Territory")}
                 </Button>
               </ComponentAuthorizer>
             )}
@@ -777,10 +793,11 @@ function Admin({ user }: adminProps) {
                   title={
                     isProcessingTerritory ? (
                       <>
-                        <Spinner size="sm" /> Territory
+                        <Spinner size="sm" />{" "}
+                        {t("territory.territory", "Territory")}
                       </>
                     ) : (
-                      "Territory"
+                      t("territory.territory", "Territory")
                     )
                   }
                 >
@@ -792,7 +809,7 @@ function Admin({ user }: adminProps) {
                       })
                     }
                   >
-                    Create New
+                    {t("territory.createNew", "Create New")}
                   </Dropdown.Item>
                   <Dropdown.Item
                     onClick={() =>
@@ -819,7 +836,7 @@ function Admin({ user }: adminProps) {
                       })
                     }
                   >
-                    Change Code
+                    {t("territory.changeCode", "Change Code")}
                   </Dropdown.Item>
                   <Dropdown.Item
                     onClick={() =>
@@ -846,12 +863,16 @@ function Admin({ user }: adminProps) {
                       })
                     }
                   >
-                    Change Name
+                    {t("territory.changeName", "Change Name")}
                   </Dropdown.Item>
                   <Dropdown.Item
                     onClick={() => {
                       const confirmDelete = window.confirm(
-                        `⚠️ WARNING: Deleting territory "${selectedTerritoryCode}" will remove all associated maps and assignments. This action cannot be undone. Proceed?`
+                        t(
+                          "territory.deleteWarning",
+                          '⚠️ WARNING: Deleting territory "{{code}}" will remove all associated maps and assignments. This action cannot be undone. Proceed?',
+                          { code: selectedTerritoryCode }
+                        )
                       );
 
                       if (confirmDelete) {
@@ -859,12 +880,16 @@ function Admin({ user }: adminProps) {
                       }
                     }}
                   >
-                    Delete Current
+                    {t("territory.deleteCurrent", "Delete Current")}
                   </Dropdown.Item>
                   <Dropdown.Item
                     onClick={() => {
                       const confirmReset = window.confirm(
-                        `⚠️ WARNING: Resetting territory "${selectedTerritoryCode}" will reset the status of all addresses. This action cannot be undone. Proceed?`
+                        t(
+                          "territory.resetWarning",
+                          '⚠️ WARNING: Resetting territory "{{code}}" will reset the status of all addresses. This action cannot be undone. Proceed?',
+                          { code: selectedTerritoryCode }
+                        )
                       );
 
                       if (confirmReset) {
@@ -872,7 +897,7 @@ function Admin({ user }: adminProps) {
                       }
                     }}
                   >
-                    Reset status
+                    {t("territory.resetStatus", "Reset status")}
                   </Dropdown.Item>
                 </DropdownButton>
               </ComponentAuthorizer>
@@ -886,7 +911,7 @@ function Admin({ user }: adminProps) {
                   className="dropdown-btn"
                   variant="outline-primary"
                   size="sm"
-                  title="New Map"
+                  title={t("map.newMap", "New Map")}
                   align="end"
                 >
                   <Dropdown.Item
@@ -900,7 +925,7 @@ function Admin({ user }: adminProps) {
                       })
                     }
                   >
-                    Multi-story
+                    {t("map.multiStory", "Multi-story")}
                   </Dropdown.Item>
                   <Dropdown.Item
                     onClick={() =>
@@ -913,7 +938,7 @@ function Admin({ user }: adminProps) {
                       })
                     }
                   >
-                    Single-Story
+                    {t("map.singleStory", "Single-Story")}
                   </Dropdown.Item>
                 </DropdownButton>
               </ComponentAuthorizer>
@@ -938,7 +963,7 @@ function Admin({ user }: adminProps) {
                         />{" "}
                       </>
                     )}{" "}
-                    Congregation
+                    {t("congregation.congregation", "Congregation")}
                   </>
                 }
                 align={{ lg: "end" }}
@@ -957,7 +982,7 @@ function Admin({ user }: adminProps) {
                     )
                   }
                 >
-                  Settings
+                  {t("congregation.settings", "Settings")}
                 </Dropdown.Item>
                 <Dropdown.Item
                   onClick={() =>
@@ -969,10 +994,10 @@ function Admin({ user }: adminProps) {
                     )
                   }
                 >
-                  Household Options
+                  {t("congregation.householdOptions", "Household Options")}
                 </Dropdown.Item>
                 <Dropdown.Item onClick={async () => await getUsers()}>
-                  Manage Users
+                  {t("user.manageUsers", "Manage Users")}
                 </Dropdown.Item>
                 <Dropdown.Item
                   onClick={() => {
@@ -983,7 +1008,7 @@ function Admin({ user }: adminProps) {
                     });
                   }}
                 >
-                  Invite User
+                  {t("user.inviteUser", "Invite User")}
                 </Dropdown.Item>
               </DropdownButton>
             </ComponentAuthorizer>
@@ -1003,7 +1028,7 @@ function Admin({ user }: adminProps) {
                       />{" "}
                     </>
                   )}{" "}
-                  Account
+                  {t("user.account", "Account")}
                 </>
               }
               align={{ lg: "end" }}
@@ -1015,7 +1040,7 @@ function Admin({ user }: adminProps) {
                   });
                 }}
               >
-                Profile
+                {t("user.profile", "Profile")}
               </Dropdown.Item>
               <ComponentAuthorizer
                 requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
@@ -1026,19 +1051,27 @@ function Admin({ user }: adminProps) {
                     getAssignments(congregationCode, getUser("id") as string)
                   }
                 >
-                  Assignments
+                  {t("assignments.assignments", "Assignments")}
                 </Dropdown.Item>
               </ComponentAuthorizer>
               <Dropdown.Item
                 onClick={async () => {
                   await requestPasswordReset();
-                  alert("Password reset email sent.");
+                  alert(
+                    t(
+                      "auth.passwordResetConfirmation",
+                      "Password reset email sent."
+                    )
+                  );
                 }}
               >
-                Change Password
+                {t("auth.changePassword", "Change Password")}
               </Dropdown.Item>
-              <Dropdown.Item onClick={logoutUser}>Logout</Dropdown.Item>
+              <Dropdown.Item onClick={logoutUser}>
+                {t("auth.logout", "Logout")}
+              </Dropdown.Item>
             </DropdownButton>
+            <LanguageSelector />
           </Navbar.Collapse>
         </Container>
       </Navbar>

@@ -2,6 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import ModalFooter from "../form/footer";
@@ -16,6 +17,7 @@ const ChangeMapCode = NiceModal.create(
     mapId,
     mapCode
   }: ChangeAddressMapCodeModalProps) => {
+    const { t } = useTranslation();
     const [newMapCode, setNewMapCode] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -24,7 +26,7 @@ const ChangeMapCode = NiceModal.create(
       event.preventDefault();
 
       if (newMapCode === mapCode) {
-        alert("Please enter a new map number");
+        alert(t("map.enterNewMapNumber", "Please enter a new map number"));
         return;
       }
       setIsSaving(true);
@@ -47,18 +49,22 @@ const ChangeMapCode = NiceModal.create(
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
-          <Modal.Title>Change Map Number</Modal.Title>
+          <Modal.Title>
+            {t("address.changeMapNumber", "Change Map Number")}
+          </Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.CHANGE_TERRITORY_CODE} />
         </Modal.Header>
         <Form onSubmit={handleUpdateMapCode}>
           <Modal.Body>
             <Form.Group className="mb-3">
-              <Form.Label htmlFor="userid">Existing Map Number</Form.Label>
+              <Form.Label htmlFor="userid">
+                {t("map.existingMapNumber", "Existing Map Number")}
+              </Form.Label>
               <Form.Control readOnly id="existingcode" defaultValue={mapCode} />
             </Form.Group>
             <GenericInputField
               inputType="number"
-              label="New Map Number"
+              label={t("map.newMapNumber", "New Map Number")}
               name="refNo"
               handleChange={(e: ChangeEvent<HTMLElement>) => {
                 const { value } = e.target as HTMLInputElement;
@@ -72,7 +78,7 @@ const ChangeMapCode = NiceModal.create(
             handleClick={modal.hide}
             userAccessLevel={footerSaveAcl}
             isSaving={isSaving}
-            submitLabel="Change"
+            submitLabel={t("common.change", "Change")}
           />
         </Form>
       </Modal>

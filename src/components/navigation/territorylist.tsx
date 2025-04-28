@@ -3,6 +3,7 @@ import { Offcanvas, ListGroup } from "react-bootstrap";
 import { TERRITORY_SELECTOR_VIEWPORT_HEIGHT } from "../../utils/constants";
 import { TerritoryListingProps } from "../../utils/interface";
 import AggregationBadge from "./aggrbadge";
+import { useTranslation } from "react-i18next";
 
 const TerritoryListing = memo(
   ({
@@ -13,6 +14,7 @@ const TerritoryListing = memo(
     territories,
     hideSelectedTerritory = false
   }: TerritoryListingProps) => {
+    const { t } = useTranslation();
     const currentTerritories = territories
       ? hideSelectedTerritory
         ? territories.filter((element) => element.code !== selectedTerritory)
@@ -26,7 +28,7 @@ const TerritoryListing = memo(
         style={{ height: TERRITORY_SELECTOR_VIEWPORT_HEIGHT }}
       >
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>Select Territory</Offcanvas.Title>
+          <Offcanvas.Title>{t("territory.selectTerritory")}</Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <ListGroup onSelect={handleSelect}>
@@ -36,16 +38,15 @@ const TerritoryListing = memo(
                   action
                   key={`list-group-item-${element.code}`}
                   eventKey={element.id}
-                  active={selectedTerritory === element.code}
-                  className="d-flex justify-content-between align-items-start"
                 >
-                  <>
-                    {element.code} - {element.name}
-                  </>
-                  <AggregationBadge
-                    aggregate={element.aggregates}
-                    width="3rem"
-                  />
+                  <div
+                    style={{ justifyContent: "space-between", display: "flex" }}
+                  >
+                    <span className="fw-bold">
+                      {element.code}: {element.name}
+                    </span>
+                    <AggregationBadge aggregate={element.aggregates} />
+                  </div>
                 </ListGroup.Item>
               ))}
           </ListGroup>

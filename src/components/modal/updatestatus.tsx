@@ -2,6 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, ChangeEvent, useCallback } from "react";
 import { Modal, Form, Collapse, Button } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import {
   USER_ACCESS_LEVELS,
   STATUS_CODES,
@@ -30,6 +31,7 @@ import { deleteDataById, updateDataById } from "../../utils/pocketbase";
 
 const UpdateUnitStatus = NiceModal.create(
   ({ addressData, unitDetails, policy }: UpdateAddressStatusModalProps) => {
+    const { t } = useTranslation();
     const status = unitDetails?.status;
     const addressId = unitDetails?.id || "";
     const origin = policy.origin;
@@ -185,7 +187,7 @@ const UpdateUnitStatus = NiceModal.create(
               }}
             >
               <GenericTextAreaField
-                label="Notes"
+                label={t("address.notes", "Notes")}
                 name="note"
                 handleChange={(e: ChangeEvent<HTMLElement>) => {
                   const { value } = e.target as HTMLInputElement;
@@ -202,7 +204,7 @@ const UpdateUnitStatus = NiceModal.create(
                 <>
                   <GenericInputField
                     inputType="number"
-                    label="Territory Sequence"
+                    label={t("address.territorySequence", "Territory Sequence")}
                     name="sequence"
                     handleChange={(e: ChangeEvent<HTMLElement>) => {
                       const { value } = e.target as HTMLInputElement;
@@ -216,9 +218,12 @@ const UpdateUnitStatus = NiceModal.create(
             )}
             {addressData?.type === TERRITORY_TYPES.SINGLE_STORY && (
               <GenericInputField
-                label="Address Coordinates"
+                label={t("address.coordinates", "Address Coordinates")}
                 name="location"
-                placeholder="Click to select on map"
+                placeholder={t(
+                  "address.clickToSelectOnMap",
+                  "Click to select on map"
+                )}
                 handleClick={() => {
                   ModalManager.show(ChangeMapGeolocation, {
                     coordinates: coordinates || addressData?.coordinates,
@@ -242,14 +247,19 @@ const UpdateUnitStatus = NiceModal.create(
                 // This input is primarily updated through map selection via handleClick,
                 // but React requires an onChange handler when a value prop is provided
                 handleChange={() => {}}
-                information="Latitude and Longitude of the address."
+                information={t(
+                  "address.coordinatesDescription",
+                  "Latitude and Longitude of the address."
+                )}
               />
             )}
             {unitDetails?.updated && unitDetails?.updatedBy && (
               <div className="text-center text-muted">
                 <small>
-                  Updated by {unitDetails?.updatedBy} on{" "}
-                  {DateFormat(unitDetails?.updated)}
+                  {t("address.updatedByOn", "Updated by {{user}} on {{date}}", {
+                    user: unitDetails?.updatedBy,
+                    date: DateFormat(unitDetails?.updated)
+                  })}
                 </small>
               </div>
             )}
@@ -270,7 +280,14 @@ const UpdateUnitStatus = NiceModal.create(
                     variant="secondary"
                     onClick={() => {
                       const confirmDelete = window.confirm(
-                        `⚠️ WARNING: Deleting property number "${unitDetails?.number}" of "${addressData?.name}". This action cannot be undone. Proceed?`
+                        t(
+                          "address.deletePropertyWarning",
+                          '⚠️ WARNING: Deleting property number "{{number}}" of "{{name}}". This action cannot be undone. Proceed?',
+                          {
+                            number: unitDetails?.number,
+                            name: addressData?.name
+                          }
+                        )
                       );
                       if (confirmDelete) {
                         handleDeleteProperty();
@@ -278,7 +295,7 @@ const UpdateUnitStatus = NiceModal.create(
                       }
                     }}
                   >
-                    Delete
+                    {t("common.delete", "Delete")}
                   </Button>
                 </ComponentAuthorizer>
               </>
@@ -291,7 +308,7 @@ const UpdateUnitStatus = NiceModal.create(
                 type="button"
                 onClick={() => setHhNote("")}
               >
-                Clear Note
+                {t("address.clearNote", "Clear Note")}
               </Button>
             )}
           </ModalFooter>

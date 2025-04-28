@@ -1,4 +1,5 @@
 import { Button, Table } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { territoryMultiProps } from "../../utils/interface";
 import AddressStatus from "./address";
 import {
@@ -17,6 +18,7 @@ const PublicTerritoryTable = ({
   handleFloorDelete,
   handleUnitNoUpdate
 }: territoryMultiProps) => {
+  const { t } = useTranslation();
   const moreThanOneFloor = floors.length > 1;
   return (
     <div className={policy.isFromAdmin() ? "sticky-body-admin" : "sticky-body"}>
@@ -33,7 +35,7 @@ const PublicTerritoryTable = ({
               scope="col"
               className="text-center align-middle sticky-left-cell"
             >
-              lvl/unit
+              {t("table.levelUnit", "lvl/unit")}
             </th>
             {floors &&
               floors?.[0]?.units.map((item, index) => (
@@ -73,7 +75,7 @@ const PublicTerritoryTable = ({
                         onClick={handleFloorDelete}
                         data-floor={item.floor}
                       >
-                        🗑️
+                        {t("table.deleteFloor", "🗑️")}
                       </Button>
                     </ComponentAuthorizer>
                   )}

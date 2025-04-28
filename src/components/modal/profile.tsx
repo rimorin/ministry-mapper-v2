@@ -1,4 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import { useTranslation } from "react-i18next";
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
@@ -9,6 +10,7 @@ import { UpdateProfileModalProps } from "../../utils/interface";
 import { updateDataById } from "../../utils/pocketbase";
 
 const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
+  const { t } = useTranslation();
   const modal = useModal();
 
   const [isSaving, setIsSaving] = useState(false);
@@ -28,7 +30,7 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
           requestKey: `update-name-${user?.id}`
         }
       );
-      alert("Profile updated.");
+      alert(t("profile.updateSuccess"));
       modal.hide();
     } catch (error) {
       errorHandler(error);
@@ -40,12 +42,12 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
   return (
     <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
       <Modal.Header>
-        <Modal.Title>My Profile</Modal.Title>
+        <Modal.Title>{t("profile.title")}</Modal.Title>
       </Modal.Header>
       <Form onSubmit={UpdateProfile}>
         <Modal.Body>
           <Form.Group className="mb-3">
-            <Form.Label htmlFor="userid">Email</Form.Label>
+            <Form.Label htmlFor="userid">{t("auth.emailAddress")}</Form.Label>
             <Form.Control
               readOnly
               disabled
@@ -54,7 +56,7 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
             />
           </Form.Group>
           <Form.Group className="mb-3">
-            <Form.Label htmlFor="userid">Name</Form.Label>
+            <Form.Label htmlFor="userid">{t("auth.name")}</Form.Label>
             <Form.Control
               id="userid"
               defaultValue={username}
@@ -67,9 +69,9 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
         </Modal.Body>
         <ModalFooter
           handleClick={modal.hide}
-          userAccessLevel={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
+          userAccessLevel={USER_ACCESS_LEVELS.READ_ONLY.CODE}
           isSaving={isSaving}
-          submitLabel="Update"
+          submitLabel={t("profile.updateButton")}
         />
       </Form>
     </Modal>

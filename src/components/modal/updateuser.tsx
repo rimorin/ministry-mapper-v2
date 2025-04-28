@@ -1,4 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import { useTranslation } from "react-i18next";
 
 import { useState, FormEvent, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
@@ -17,6 +18,7 @@ const UpdateUser = NiceModal.create(
     role = USER_ACCESS_LEVELS.NO_ACCESS.CODE,
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE
   }: UserModalProps) => {
+    const { t } = useTranslation();
     const [userRole, setUserRole] = useState(role);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -53,7 +55,7 @@ const UpdateUser = NiceModal.create(
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
-          <Modal.Title>Update {name} Role</Modal.Title>
+          <Modal.Title>{t("user.updateRole", { name })}</Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.MANAGE_USERS} />
         </Modal.Header>
         <Form onSubmit={handleUserDetails}>
