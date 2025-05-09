@@ -25,7 +25,8 @@
     "secondsShort": "வி",
     "Messages": "செய்திகள்",
     "Directions": "திசைகள்",
-    "Expiry": "காலாவதி"
+    "Expiry": "காலாவதி",
+    "name": "பெயர்"
   },
   "auth": {
     "signIn": "உள்நுழை",

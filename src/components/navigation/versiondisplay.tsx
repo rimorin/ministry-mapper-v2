@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, memo } from "react";
 import { useTranslation } from "react-i18next";
 
 const VersionDisplay: FC = () => {
@@ -16,4 +16,4 @@ const VersionDisplay: FC = () => {
   );
 };
 
-export default VersionDisplay;
+export default memo(VersionDisplay);

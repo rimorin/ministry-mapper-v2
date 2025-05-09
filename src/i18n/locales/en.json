@@ -25,7 +25,8 @@
     "secondsShort": "s",
     "Messages": "Messages",
     "Directions": "Directions",
-    "Expiry": "Expiry"
+    "Expiry": "Expiry",
+    "name": "Name"
   },
   "auth": {
     "signIn": "Sign In",

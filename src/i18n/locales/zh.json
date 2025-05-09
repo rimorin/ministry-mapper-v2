@@ -25,7 +25,8 @@
     "secondsShort": "秒",
     "Messages": "消息",
     "Directions": "方向指引",
-    "Expiry": "到期"
+    "Expiry": "到期",
+    "name": "姓名"
   },
   "auth": {
     "signIn": "登录",

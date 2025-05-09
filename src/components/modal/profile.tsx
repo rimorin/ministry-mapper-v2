@@ -69,7 +69,7 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
         </Modal.Body>
         <ModalFooter
           handleClick={modal.hide}
-          userAccessLevel={USER_ACCESS_LEVELS.READ_ONLY.CODE}
+          userAccessLevel={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
           isSaving={isSaving}
           submitLabel={t("profile.updateButton")}
         />

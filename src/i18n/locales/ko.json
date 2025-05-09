@@ -25,7 +25,8 @@
     "secondsShort": "초",
     "Messages": "메시지",
     "Directions": "방향",
-    "Expiry": "만료"
+    "Expiry": "만료",
+    "name": "이름"
   },
   "auth": {
     "signIn": "로그인",

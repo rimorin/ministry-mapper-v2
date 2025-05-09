@@ -25,7 +25,8 @@
     "secondsShort": "d",
     "Messages": "Pesan",
     "Directions": "Petunjuk Arah",
-    "Expiry": "Kedaluwarsa"
+    "Expiry": "Kedaluwarsa",
+    "name": "Nama"
   },
   "auth": {
     "signIn": "Masuk",

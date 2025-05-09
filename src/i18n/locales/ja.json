@@ -25,7 +25,8 @@
     "secondsShort": "秒",
     "Messages": "メッセージ",
     "Directions": "方向",
-    "Expiry": "期限"
+    "Expiry": "期限",
+    "name": "名前"
   },
   "auth": {
     "signIn": "ログイン",

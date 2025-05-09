@@ -25,7 +25,8 @@
     "secondsShort": "s",
     "Messages": "Mesej",
     "Directions": "Arah",
-    "Expiry": "Tamat"
+    "Expiry": "Tamat",
+    "name": "Nama"
   },
   "auth": {
     "signIn": "Log Masuk",
