@@ -117,7 +117,8 @@
     "invalidSequence": "Invalid sequence",
     "clickToSelectLocation": "Click to select location",
     "existingMapNumber": "Existing Map Number",
-    "newMapNumber": "New Map Number"
+    "newMapNumber": "New Map Number",
+    "deleteSuccess": "Deleted address, {{name}}."
   },
   "address": {
     "address": "Address",

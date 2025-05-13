@@ -262,7 +262,8 @@
     "invalidSequence": "Urutan tidak valid",
     "clickToSelectLocation": "Klik untuk memilih lokasi",
     "existingMapNumber": "Nomor Peta yang Ada",
-    "newMapNumber": "Nomor Peta Baru"
+    "newMapNumber": "Nomor Peta Baru",
+    "deleteSuccess": "Alamat dihapus, {{name}}."
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper sedang dalam pemeliharaan.",

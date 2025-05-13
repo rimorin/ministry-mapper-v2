@@ -262,7 +262,8 @@
     "invalidSequence": "தவறான வரிசை",
     "clickToSelectLocation": "இடத்தைத் தேர்ந்தெடுக்க கிளிக் செய்யவும்",
     "existingMapNumber": "தற்போதைய வரைபட எண்",
-    "newMapNumber": "புதிய வரைபட எண்"
+    "newMapNumber": "புதிய வரைபட எண்",
+    "deleteSuccess": "முகவரி நீக்கப்பட்டது, {{name}}."
   },
   "maintenance": {
     "maintenanceMode": "மினிஸ்ட்ரி மேப்பர் தற்போது பராமரிப்பில் உள்ளது.",

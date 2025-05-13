@@ -117,7 +117,8 @@
     "invalidSequence": "无效的序列",
     "clickToSelectLocation": "点击选择位置",
     "existingMapNumber": "现有地图编号",
-    "newMapNumber": "新地图编号"
+    "newMapNumber": "新地图编号",
+    "deleteSuccess": "地址已删除, {{name}}."
   },
   "address": {
     "address": "地址",

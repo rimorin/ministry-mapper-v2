@@ -117,7 +117,8 @@
     "invalidSequence": "Urutan tidak sah",
     "clickToSelectLocation": "Klik untuk pilih lokasi",
     "existingMapNumber": "Nombor Peta Sedia Ada",
-    "newMapNumber": "Nombor Peta Baru"
+    "newMapNumber": "Nombor Peta Baru",
+    "deleteSuccess": "Alamat dipadam, {{name}}."
   },
   "address": {
     "address": "Alamat",
