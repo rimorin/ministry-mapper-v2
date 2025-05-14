@@ -1,5 +1,12 @@
-import { useContext, useEffect, useState, lazy, Suspense } from "react";
-import { Button, Container, Navbar } from "react-bootstrap";
+import {
+  useContext,
+  useEffect,
+  useState,
+  lazy,
+  Suspense,
+  useCallback
+} from "react";
+import { Button, Container, Navbar, Image } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { MINISTRY_MAPPER_WIKI_PAGE } from "../utils/constants";
 import NavBarBranding from "../components/navigation/branding";
@@ -10,6 +17,8 @@ import VerificationPage from "../components/navigation/verification";
 import { AuthModel } from "pocketbase";
 import Loader from "../components/statics/loader";
 import LanguageSelector from "../i18n/LanguageSelector";
+import { LanguageContext } from "../i18n/LanguageContext";
+import useUIState from "../hooks/admin/uiManagement";
 const { VITE_ABOUT_URL } = import.meta.env;
 
 const AboutURL = (VITE_ABOUT_URL || MINISTRY_MAPPER_WIKI_PAGE) as string;
@@ -22,8 +31,21 @@ const Admin = lazy(() => import("./admin"));
 const FrontPage = () => {
   const { t } = useTranslation();
   const context = useContext(StateContext);
+  const { currentLanguage, changeLanguage, languageOptions } =
+    useContext(LanguageContext);
+
+  const { showLanguageSelector, toggleLanguageSelector } = useUIState();
   const [loginUser, setLoginUser] = useState<AuthModel>(getUser() as AuthModel);
   const { frontPageMode } = context;
+
+  const handleLanguageSelect = useCallback((language: string) => {
+    changeLanguage(language);
+    toggleLanguageSelector();
+  }, []);
+
+  const handleOpenAbout = useCallback(() => {
+    window.open(AboutURL);
+  }, []);
 
   useEffect(() => {
     authListener((model: AuthModel) => {
@@ -59,6 +81,13 @@ const FrontPage = () => {
     <>
       <div className="d-flex flex-column" style={{ minHeight: "99vh" }}>
         <Navbar bg="light">
+          <LanguageSelector
+            showListing={showLanguageSelector}
+            hideFunction={toggleLanguageSelector}
+            handleSelect={handleLanguageSelect}
+            currentLanguage={currentLanguage}
+            languageOptions={languageOptions}
+          />
           <Container fluid>
             <NavBarBranding naming="" />
             <div className="d-flex">
@@ -66,13 +95,23 @@ const FrontPage = () => {
                 className="m-1"
                 size="sm"
                 variant="outline-primary"
-                onClick={() => window.open(AboutURL)}
+                onClick={handleOpenAbout}
               >
                 {t("navigation.about", "About")}
               </Button>
-              <div className="m-1">
-                <LanguageSelector />
-              </div>
+              <Button
+                className="m-1"
+                size="sm"
+                variant="outline-primary"
+                onClick={toggleLanguageSelector}
+              >
+                <Image
+                  src="https://assets.ministry-mapper.com/language.svg"
+                  alt="Language"
+                  width={16}
+                  height={16}
+                />
+              </Button>
             </div>
           </Container>
         </Navbar>

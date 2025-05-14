@@ -25,7 +25,8 @@
     "secondsShort": "秒",
     "Messages": "消息",
     "Directions": "方向指引",
-    "Expiry": "到期"
+    "Expiry": "到期",
+    "name": "姓名"
   },
   "auth": {
     "signIn": "登录",
@@ -116,7 +117,8 @@
     "invalidSequence": "无效的序列",
     "clickToSelectLocation": "点击选择位置",
     "existingMapNumber": "现有地图编号",
-    "newMapNumber": "新地图编号"
+    "newMapNumber": "新地图编号",
+    "deleteSuccess": "地址已删除, {{name}}."
   },
   "address": {
     "address": "地址",

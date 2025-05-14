@@ -1,57 +1,30 @@
-import React, { useContext, useState } from "react";
-import { Button, Offcanvas, Image, ListGroup } from "react-bootstrap";
-import { LanguageContext } from "./LanguageContext";
+import { memo } from "react";
+import { ListGroup, Offcanvas } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { TERRITORY_SELECTOR_VIEWPORT_HEIGHT } from "../utils/constants";
-
-interface LanguageSelectorOffcanvasProps {
-  variant?: string; // Optional prop for button variant
-  buttonSize?: "sm" | "lg"; // Optional prop for button size
-  showText?: boolean; // Whether to show text beside the icon
+interface LanguageListingProps {
+  showListing: boolean;
+  hideFunction: () => void;
+  handleSelect: (language: string) => void;
+  currentLanguage: string;
+  languageOptions: Array<{ label: string; value: string }>;
 }
 
-const LanguageSelector: React.FC<LanguageSelectorOffcanvasProps> = ({
-  variant = "outline-primary",
-  buttonSize = "sm",
-  showText = true
-}) => {
-  const { t } = useTranslation();
-  const { currentLanguage, changeLanguage, languageOptions } =
-    useContext(LanguageContext);
-  const [show, setShow] = useState(false);
+const LanguageListing = memo(
+  ({
+    showListing,
+    hideFunction,
+    handleSelect,
+    currentLanguage,
+    languageOptions = []
+  }: LanguageListingProps) => {
+    const { t } = useTranslation();
 
-  const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
-
-  const handleLanguageChange = (language: string) => {
-    changeLanguage(language);
-    handleClose();
-  };
-
-  const currentLanguageLabel =
-    languageOptions.find((option) => option.value === currentLanguage)?.label ||
-    "English";
-
-  return (
-    <>
-      <Button
-        variant={variant}
-        size={buttonSize}
-        onClick={handleShow}
-        className="d-flex align-items-center"
-      >
-        <Image
-          src="https://assets.ministry-mapper.com/language.svg"
-          alt="Language"
-          width="16"
-          height="16"
-        />
-        {showText && <span className="ms-1">{currentLanguageLabel}</span>}
-      </Button>
+    return (
       <Offcanvas
-        show={show}
-        onHide={handleClose}
         placement="bottom"
+        show={showListing}
+        onHide={hideFunction}
         style={{ height: TERRITORY_SELECTOR_VIEWPORT_HEIGHT }}
       >
         <Offcanvas.Header closeButton>
@@ -66,7 +39,7 @@ const LanguageSelector: React.FC<LanguageSelectorOffcanvasProps> = ({
                 key={option.value}
                 action
                 active={currentLanguage === option.value}
-                onClick={() => handleLanguageChange(option.value)}
+                onClick={() => handleSelect(option.value)}
                 className="d-flex align-items-center"
               >
                 <div
@@ -77,15 +50,14 @@ const LanguageSelector: React.FC<LanguageSelectorOffcanvasProps> = ({
                   }}
                 >
                   <span className="fw-bold">{option.label}</span>
-                  {currentLanguage === option.value && <span>✓</span>}
                 </div>
               </ListGroup.Item>
             ))}
           </ListGroup>
         </Offcanvas.Body>
       </Offcanvas>
-    </>
-  );
-};
+    );
+  }
+);
 
-export default LanguageSelector;
+export default LanguageListing;

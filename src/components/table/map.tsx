@@ -12,10 +12,7 @@ import {
   territoryTableProps,
   unitDetails
 } from "../../utils/interface";
-import ModalManager from "@ebay/nice-modal-react";
 import PrivateTerritoryTable from "./privatetable";
-import SuspenseComponent from "../utils/suspense";
-import ZeroPad from "../../utils/helpers/zeropad";
 import PublicTerritoryTable from "./publictable";
 import TerritoryMapView from "./mapmode";
 import errorHandler from "../../utils/helpers/errorhandler";
@@ -28,6 +25,7 @@ import {
   callFunction
 } from "../../utils/pocketbase";
 import { useTranslation } from "react-i18next";
+import modalManagement from "../../hooks/modalManagement";
 const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
 const UpdateUnit = lazy(() => import("../modal/updateunit"));
 
@@ -124,7 +122,9 @@ const MainTable = ({
   const mapId = addressDetails?.id;
   const mapName = addressDetails?.name;
   const userRole = policy?.userRole || USER_ACCESS_LEVELS.PUBLISHER.CODE;
+  const mapType = addressDetails?.type;
   const { t } = useTranslation();
+  const { showModal } = modalManagement();
   const addresses = useAddresses(mapId, assignmentId);
 
   const deleteAddressFloor = useCallback(
@@ -144,38 +144,28 @@ const MainTable = ({
     [mapId]
   );
 
-  const updateAddressCode = useCallback(
-    async (unitDetails: unitDetails | undefined, maxUnitLength: number) => {
-      if (!unitDetails) return;
-      if (userRole !== USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE) return;
-      const unitNo = unitDetails.number || "";
-      const sequence = unitDetails.sequence;
-      ModalManager.show(SuspenseComponent(UpdateUnit), {
-        mapId: mapId,
-        mapName: mapName,
-        unitNo: unitNo || "",
-        unitLength: Number(length),
-        unitSequence: sequence === undefined ? undefined : Number(sequence),
-        unitDisplay: ZeroPad(unitNo, maxUnitLength)
+  const handleEditUnit = useCallback(
+    (addressId: string) => {
+      showModal(UpdateUnit, {
+        addressId,
+        mapId,
+        footerSaveAcl: userRole,
+        unitType: mapType
       });
     },
-    [mapId, mapName, userRole]
+    [mapType, userRole, mapId]
   );
 
-  const updateUnitStatus = useCallback(
-    async (unitDetails: unitDetails | undefined) => {
+  const handleUpdateUnitStatus = useCallback(
+    (unitDetails?: unitDetails) => {
       if (!unitDetails) return;
-      try {
-        ModalManager.show(SuspenseComponent(UpdateUnitStatus), {
-          unitDetails,
-          addressData: addressDetails,
-          policy
-        });
-      } catch (error) {
-        console.error("Error updating unit status", error);
-      }
+      showModal(UpdateUnitStatus, {
+        addressData: addressDetails,
+        unitDetails,
+        policy: policy
+      });
     },
-    [mapId]
+    [addressDetails, policy]
   );
 
   const getIdFromEvent = useCallback(
@@ -210,7 +200,7 @@ const MainTable = ({
           '⚠️ WARNING: Deleting floor {{floor}} of "{{name}}". This action cannot be undone. Proceed?',
           {
             floor: floor,
-            name: addressDetails?.name
+            name: mapName
           }
         )
       );
@@ -219,7 +209,7 @@ const MainTable = ({
         deleteAddressFloor(floor);
       }
     },
-    [addressDetails?.name, deleteAddressFloor]
+    [mapName]
   );
 
   const organizeAddresses = useCallback(
@@ -263,7 +253,7 @@ const MainTable = ({
   if (floorList.length === 0) {
     return <div className="text-center p-2">Loading...</div>;
   }
-  if (addressDetails?.type == TERRITORY_TYPES.SINGLE_STORY) {
+  if (mapType == TERRITORY_TYPES.SINGLE_STORY) {
     if (mapView) {
       return (
         <TerritoryMapView
@@ -271,7 +261,7 @@ const MainTable = ({
           houses={floorList[0] || []}
           policy={policy}
           handleHouseUpdate={(event) =>
-            updateUnitStatus(getUnitDetails(event, addresses))
+            handleUpdateUnitStatus(getUnitDetails(event, addresses))
           }
         />
       );
@@ -281,7 +271,7 @@ const MainTable = ({
         addressDetails={addressDetails}
         houses={floorList[0] || []}
         handleHouseUpdate={(event) =>
-          updateUnitStatus(getUnitDetails(event, addresses))
+          handleUpdateUnitStatus(getUnitDetails(event, addresses))
         }
         policy={policy}
       />
@@ -295,14 +285,14 @@ const MainTable = ({
       addressDetails={addressDetails}
       maxUnitLength={maxUnitLength}
       handleUnitStatusUpdate={(event) =>
-        updateUnitStatus(getUnitDetails(event, addresses))
+        handleUpdateUnitStatus(getUnitDetails(event, addresses))
       }
       handleFloorDelete={(event) => {
         const { floor } = event.currentTarget.dataset;
         handleFloorDelete(Number(floor));
       }}
       handleUnitNoUpdate={(event) =>
-        updateAddressCode(getUnitDetails(event, addresses), maxUnitLength)
+        handleEditUnit(getUnitDetails(event, addresses)?.id || "")
       }
     />
   );

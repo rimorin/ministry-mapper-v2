@@ -25,7 +25,8 @@
     "secondsShort": "s",
     "Messages": "Messages",
     "Directions": "Directions",
-    "Expiry": "Expiry"
+    "Expiry": "Expiry",
+    "name": "Name"
   },
   "auth": {
     "signIn": "Sign In",
@@ -116,7 +117,8 @@
     "invalidSequence": "Invalid sequence",
     "clickToSelectLocation": "Click to select location",
     "existingMapNumber": "Existing Map Number",
-    "newMapNumber": "New Map Number"
+    "newMapNumber": "New Map Number",
+    "deleteSuccess": "Deleted address, {{name}}."
   },
   "address": {
     "address": "Address",

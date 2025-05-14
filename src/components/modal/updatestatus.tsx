@@ -1,6 +1,6 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
-import { useState, FormEvent, ChangeEvent, useCallback } from "react";
+import { useState, FormEvent, ChangeEvent, useCallback, lazy } from "react";
 import { Modal, Form, Collapse, Button } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
@@ -10,9 +10,9 @@ import {
   NOT_HOME_STATUS_CODES,
   MIN_START_FLOOR
 } from "../../utils/constants";
-import ModalManager from "@ebay/nice-modal-react";
 import errorHandler from "../../utils/helpers/errorhandler";
 import {
+  latlongInterface,
   SelectProps,
   UpdateAddressStatusModalProps
 } from "../../utils/interface";
@@ -25,13 +25,16 @@ import GenericTextAreaField from "../form/textarea";
 import ModalUnitTitle from "../form/title";
 import HHTypeField from "../form/household";
 import ComponentAuthorizer from "../navigation/authorizer";
-import ChangeMapGeolocation from "./changegeolocation";
 import DateFormat from "../../utils/helpers/dateformat";
 import { deleteDataById, updateDataById } from "../../utils/pocketbase";
+import modalManagement from "../../hooks/modalManagement";
+const ChangeMapGeolocation = lazy(() => import("./changegeolocation"));
 
 const UpdateUnitStatus = NiceModal.create(
   ({ addressData, unitDetails, policy }: UpdateAddressStatusModalProps) => {
+    const modal = useModal();
     const { t } = useTranslation();
+    const { showModal } = modalManagement();
     const status = unitDetails?.status;
     const addressId = unitDetails?.id || "";
     const origin = policy.origin;
@@ -61,7 +64,6 @@ const UpdateUnitStatus = NiceModal.create(
         ? `${defaultCoordinates?.lat}, ${defaultCoordinates?.lng}`
         : ""
     );
-    const modal = useModal();
 
     const handleDeleteProperty = useCallback(async () => {
       setIsSaving(true);
@@ -113,6 +115,88 @@ const UpdateUnitStatus = NiceModal.create(
         coordinates
       ]
     );
+
+    const handleMapCoordinatesClick = useCallback(async () => {
+      const result = await showModal(ChangeMapGeolocation, {
+        coordinates,
+        isNew: true,
+        origin: origin,
+        name: addressData?.name
+      });
+      const newCoordinates = result as latlongInterface;
+      if (newCoordinates) {
+        setLocation(`${newCoordinates.lat}, ${newCoordinates.lng}`);
+        setCoordinates(newCoordinates);
+      }
+    }, [coordinates]);
+
+    const handleConfirmDelete = useCallback(() => {
+      const confirmDelete = window.confirm(
+        t(
+          "address.deletePropertyWarning",
+          '⚠️ WARNING: Deleting property number "{{number}}" of "{{name}}". This action cannot be undone. Proceed?',
+          {
+            number: unitDetails?.number,
+            name: addressData?.name
+          }
+        )
+      );
+      if (confirmDelete) {
+        handleDeleteProperty();
+      }
+    }, []);
+
+    const handleClearNote = useCallback(() => {
+      setHhNote("");
+    }, []);
+
+    const handleStatusChange = useCallback((toggleValue: string) => {
+      let dnctime = undefined;
+      setIsNotHome(false);
+      setIsDnc(false);
+      if (toggleValue === STATUS_CODES.NOT_HOME) {
+        setIsNotHome(true);
+      } else if (toggleValue === STATUS_CODES.DO_NOT_CALL) {
+        setIsDnc(true);
+        dnctime = new Date().getTime();
+      }
+      setHhNhcount(NOT_HOME_STATUS_CODES.DEFAULT);
+      setHhDnctime(dnctime);
+      setUnitStatus(toggleValue);
+    }, []);
+
+    const handleNotHomeCountChange = useCallback((toggleValue: string) => {
+      setHhNhcount(toggleValue);
+    }, []);
+
+    const handleDncDateChange = useCallback((date: unknown) => {
+      const dateValue = date as Date;
+      setHhDnctime(dateValue.getTime());
+    }, []);
+
+    const handleNoteChange = useCallback((e: ChangeEvent<HTMLElement>) => {
+      const { value } = e.target as HTMLInputElement;
+      setHhNote(value);
+    }, []);
+
+    const handleSequenceChange = useCallback((e: ChangeEvent<HTMLElement>) => {
+      const { value } = e.target as HTMLInputElement;
+      const parsedValue = parseInt(value);
+      setUnitSequence(parsedValue);
+    }, []);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleHHTypeChange = useCallback((option: any) => {
+      setHhtype(
+        option.map((opt: SelectProps) => {
+          return {
+            id: opt.value,
+            code: opt.label
+          };
+        })
+      );
+    }, []);
+
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <ModalUnitTitle
@@ -124,30 +208,14 @@ const UpdateUnitStatus = NiceModal.create(
         <Form onSubmit={handleSubmitClick}>
           <Modal.Body>
             <HHStatusField
-              handleGroupChange={(toggleValue) => {
-                let dnctime = undefined;
-                setIsNotHome(false);
-                setIsDnc(false);
-                if (toggleValue === STATUS_CODES.NOT_HOME) {
-                  setIsNotHome(true);
-                } else if (toggleValue === STATUS_CODES.DO_NOT_CALL) {
-                  setIsDnc(true);
-                  dnctime = new Date().getTime();
-                }
-                setHhNhcount(NOT_HOME_STATUS_CODES.DEFAULT);
-                setHhDnctime(dnctime);
-                setUnitStatus(toggleValue);
-              }}
+              handleGroupChange={handleStatusChange}
               changeValue={unitStatus}
             />
             <Collapse in={isDnc}>
               <div className="text-center">
                 <DncDateField
                   changeDate={hhDnctime}
-                  handleDateChange={(date) => {
-                    const dateValue = date as Date;
-                    setHhDnctime(dateValue.getTime());
-                  }}
+                  handleDateChange={handleDncDateChange}
                 />
               </div>
             </Collapse>
@@ -155,24 +223,12 @@ const UpdateUnitStatus = NiceModal.create(
               <div className="text-center">
                 <HHNotHomeField
                   changeValue={hhNhcount}
-                  handleGroupChange={(toggleValue) => {
-                    setHhNhcount(toggleValue);
-                  }}
+                  handleGroupChange={handleNotHomeCountChange}
                 />
               </div>
             </Collapse>
             <HHTypeField
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              handleChange={(option: any) =>
-                setHhtype(
-                  option.map((opt: SelectProps) => {
-                    return {
-                      id: opt.value,
-                      code: opt.label
-                    };
-                  })
-                )
-              }
+              handleChange={handleHHTypeChange}
               changeValue={hhType}
               options={policy.options.map((option) => {
                 return {
@@ -189,10 +245,7 @@ const UpdateUnitStatus = NiceModal.create(
               <GenericTextAreaField
                 label={t("address.notes", "Notes")}
                 name="note"
-                handleChange={(e: ChangeEvent<HTMLElement>) => {
-                  const { value } = e.target as HTMLInputElement;
-                  setHhNote(value);
-                }}
+                handleChange={handleNoteChange}
                 changeValue={hhNote}
               />
             </div>
@@ -206,11 +259,7 @@ const UpdateUnitStatus = NiceModal.create(
                     inputType="number"
                     label={t("address.territorySequence", "Territory Sequence")}
                     name="sequence"
-                    handleChange={(e: ChangeEvent<HTMLElement>) => {
-                      const { value } = e.target as HTMLInputElement;
-                      const parsedValue = parseInt(value);
-                      setUnitSequence(parsedValue);
-                    }}
+                    handleChange={handleSequenceChange}
                     changeValue={unitSequence.toString()}
                   />
                 </>
@@ -224,23 +273,7 @@ const UpdateUnitStatus = NiceModal.create(
                   "address.clickToSelectOnMap",
                   "Click to select on map"
                 )}
-                handleClick={() => {
-                  ModalManager.show(ChangeMapGeolocation, {
-                    coordinates: coordinates || addressData?.coordinates,
-                    isNew: true,
-                    origin: origin,
-                    name: addressData?.name
-                  }).then((result) => {
-                    const coordinates = result as {
-                      lat: number;
-                      lng: number;
-                    };
-                    if (coordinates) {
-                      setLocation(`${coordinates.lat}, ${coordinates.lng}`);
-                      setCoordinates(coordinates);
-                    }
-                  });
-                }}
+                handleClick={handleMapCoordinatesClick}
                 changeValue={location}
                 required={false}
                 // Empty handleChange added to satisfy React's controlled component pattern
@@ -276,25 +309,7 @@ const UpdateUnitStatus = NiceModal.create(
                   requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
                   userPermission={policy.userRole}
                 >
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      const confirmDelete = window.confirm(
-                        t(
-                          "address.deletePropertyWarning",
-                          '⚠️ WARNING: Deleting property number "{{number}}" of "{{name}}". This action cannot be undone. Proceed?',
-                          {
-                            number: unitDetails?.number,
-                            name: addressData?.name
-                          }
-                        )
-                      );
-                      if (confirmDelete) {
-                        handleDeleteProperty();
-                        modal.hide();
-                      }
-                    }}
-                  >
+                  <Button variant="secondary" onClick={handleConfirmDelete}>
                     {t("common.delete", "Delete")}
                   </Button>
                 </ComponentAuthorizer>
@@ -306,7 +321,7 @@ const UpdateUnitStatus = NiceModal.create(
               <Button
                 variant="secondary"
                 type="button"
-                onClick={() => setHhNote("")}
+                onClick={handleClearNote}
               >
                 {t("address.clearNote", "Clear Note")}
               </Button>

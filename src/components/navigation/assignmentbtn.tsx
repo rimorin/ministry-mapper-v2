@@ -1,6 +1,5 @@
 import React, { lazy, useCallback, useEffect } from "react";
 import { ButtonGroup, Button, Spinner, Badge } from "react-bootstrap";
-import ModalManager from "@ebay/nice-modal-react";
 import { useTranslation } from "react-i18next";
 import {
   UNSUPPORTED_BROWSER_MSG,
@@ -8,7 +7,6 @@ import {
   USER_ACCESS_LEVELS,
   PB_FIELDS
 } from "../../utils/constants";
-import SuspenseComponent from "../utils/suspense";
 import { addressDetails } from "../../utils/interface";
 import { LinkSession, Policy } from "../../utils/policies";
 import errorHandler from "../../utils/helpers/errorhandler";
@@ -23,6 +21,7 @@ import {
   setupRealtimeListener,
   createData
 } from "../../utils/pocketbase";
+import modalManagement from "../../hooks/modalManagement";
 const ConfirmSlipDetails = lazy(
   () => import("../../components/modal/slipdetails")
 );
@@ -113,6 +112,7 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   userId
 }) => {
   const { t } = useTranslation();
+  const { showModal } = modalManagement();
   const [isSettingPersonalLink, setIsSettingPersonalLink] =
     React.useState(false);
   const [isSettingNormalLink, setIsSettingNormalLink] = React.useState(false);
@@ -126,14 +126,11 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
       return;
     }
     try {
-      const linkReturn = await ModalManager.show(
-        SuspenseComponent(ConfirmSlipDetails),
-        {
-          addressName: addressElement.name,
-          userAccessLevel: policy.userRole,
-          isPersonalSlip: linkType === LINK_TYPES.PERSONAL
-        }
-      );
+      const linkReturn = await showModal(ConfirmSlipDetails, {
+        addressName: addressElement.name,
+        userAccessLevel: policy.userRole,
+        isPersonalSlip: linkType === LINK_TYPES.PERSONAL
+      });
 
       const linkObject = linkReturn as Record<string, unknown>;
       const expiryHrs = (
@@ -206,7 +203,7 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   const handleAssignmentsButtonClick = (linkType: string) => {
     const assignments =
       linkType === LINK_TYPES.PERSONAL ? personalLinks : normalLinks;
-    ModalManager.show(SuspenseComponent(GetAssignments), {
+    showModal(GetAssignments, {
       assignments: Array.from(assignments.values()),
       assignmentType: linkType,
       assignmentTerritory: addressElement.name

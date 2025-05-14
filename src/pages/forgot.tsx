@@ -16,6 +16,15 @@ const ForgotComponent = () => {
 
   const { setFrontPageMode } = useContext(StateContext);
 
+  const handleClearForm = () => {
+    setLoginEmail("");
+    setValidated(false);
+  };
+
+  const handleNavigateToLogin = () => {
+    setFrontPageMode("login");
+  };
+
   const handleForgotPassword = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
@@ -97,10 +106,7 @@ const ForgotComponent = () => {
             className="mx-2"
             variant="outline-primary"
             type="reset"
-            onClick={() => {
-              setLoginEmail("");
-              setValidated(false);
-            }}
+            onClick={handleClearForm}
           >
             {t("common.clear", "Clear")}
           </Button>
@@ -111,7 +117,7 @@ const ForgotComponent = () => {
             {t("auth.alreadyHaveAccount", "Already have an account?")}{" "}
             <span
               style={{ cursor: "pointer", color: "blue" }}
-              onClick={() => setFrontPageMode("login")}
+              onClick={handleNavigateToLogin}
             >
               {t("auth.signIn", "Sign In")}
             </span>

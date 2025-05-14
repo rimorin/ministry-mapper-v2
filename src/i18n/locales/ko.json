@@ -25,7 +25,8 @@
     "secondsShort": "초",
     "Messages": "메시지",
     "Directions": "방향",
-    "Expiry": "만료"
+    "Expiry": "만료",
+    "name": "이름"
   },
   "auth": {
     "signIn": "로그인",
@@ -116,7 +117,8 @@
     "invalidSequence": "잘못된 순서",
     "clickToSelectLocation": "위치 선택하려면 클릭",
     "existingMapNumber": "기존 맵 번호",
-    "newMapNumber": "새 맵 번호"
+    "newMapNumber": "새 맵 번호",
+    "deleteSuccess": "주소가 삭제되었습니다, {{name}}."
   },
   "address": {
     "address": "주소",
