@@ -9,10 +9,9 @@ import { addressDetails } from "../../utils/interface";
 import { Policy } from "../../utils/policies";
 import { useTranslation } from "react-i18next";
 
-import ModalManager from "@ebay/nice-modal-react";
-import SuspenseComponent from "../utils/suspense";
 import useVisibilityChange from "../utils/visibilitychange";
 import { getList, setupRealtimeListener } from "../../utils/pocketbase";
+import modalManagement from "../../hooks/modalManagement";
 const UpdateMapMessages = lazy(() => import("../modal/mapmessages"));
 
 interface PersonalButtonGroupProps {
@@ -64,9 +63,23 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   policy
 }) => {
   const mapId = addressElement.id;
-  const isAdmin = policy.userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
+  const userRole = policy.userRole;
+  const isAdmin = userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
+  const msgType = isAdmin ? MESSAGE_TYPES.ADMIN : MESSAGE_TYPES.CONDUCTOR;
+  const { showModal } = modalManagement();
   const unreadMsgCount = useUnreadMessages(mapId);
   const { t } = useTranslation();
+
+  const handleMessagesClick = useCallback(() => {
+    showModal(UpdateMapMessages, {
+      name: addressElement.name,
+      mapId: mapId,
+      helpLink: WIKI_CATEGORIES.PUBLISHER_ADDRESS_FEEDBACK,
+      footerSaveAcl: userRole,
+      policy: policy,
+      messageType: msgType
+    });
+  }, [mapId, userRole]);
 
   return (
     <>
@@ -75,17 +88,7 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
           key={`assign-personal-${mapId}`}
           size="sm"
           variant="outline-primary"
-          onClick={() =>
-            ModalManager.show(SuspenseComponent(UpdateMapMessages), {
-              name: addressElement.name,
-              mapId: mapId,
-              policy: policy,
-              helpLink: WIKI_CATEGORIES.CONDUCTOR_ADDRESS_FEEDBACK,
-              messageType: isAdmin
-                ? MESSAGE_TYPES.ADMIN
-                : MESSAGE_TYPES.CONDUCTOR
-            })
-          }
+          onClick={handleMessagesClick}
         >
           {t("messages.messages", "Messages")}
         </Button>

@@ -25,8 +25,9 @@ import GenericTextAreaField from "../form/textarea";
 import HelpButton from "../navigation/help";
 import ChangeMapGeolocation from "./changegeolocation";
 
-import ModalManager from "@ebay/nice-modal-react";
 import { callFunction } from "../../utils/pocketbase";
+import modalManagement from "../../hooks/modalManagement";
+
 const NewPublicAddress = NiceModal.create(
   ({
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE,
@@ -34,7 +35,9 @@ const NewPublicAddress = NiceModal.create(
     territoryCode,
     origin
   }: NewPublicAddressModalProps) => {
+    const modal = useModal();
     const { t } = useTranslation();
+    const { showModal } = modalManagement();
     const [mapCode, setMapCode] = useState("");
     const [name, setName] = useState("");
     const [sequence, setSequence] = useState("");
@@ -44,7 +47,6 @@ const NewPublicAddress = NiceModal.create(
       DEFAULT_COORDINATES.Singapore
     );
     const [isSaving, setIsSaving] = useState(false);
-    const modal = useModal();
 
     const modalDescription = t("map.mapNumber");
 
@@ -85,6 +87,20 @@ const NewPublicAddress = NiceModal.create(
         setIsSaving(false);
       }
     };
+
+    const handleLocationSelect = async () => {
+      const result = await showModal(ChangeMapGeolocation, {
+        coordinates: coordinates,
+        origin: origin,
+        isNew: true
+      });
+      const newCoordinates = result as latlongInterface;
+      if (newCoordinates) {
+        setLocation(`${newCoordinates.lat}, ${newCoordinates.lng}`);
+        setCoordinates(newCoordinates);
+      }
+    };
+
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
@@ -126,19 +142,7 @@ const NewPublicAddress = NiceModal.create(
               label={t("map.mapCoordinates")}
               name="location"
               placeholder={t("map.clickToSelectLocation")}
-              handleClick={() => {
-                ModalManager.show(ChangeMapGeolocation, {
-                  coordinates: coordinates,
-                  origin: origin,
-                  isNew: true
-                }).then((result) => {
-                  const coordinates = result as { lat: number; lng: number };
-                  if (coordinates) {
-                    setLocation(`${coordinates.lat}, ${coordinates.lng}`);
-                    setCoordinates(coordinates);
-                  }
-                });
-              }}
+              handleClick={handleLocationSelect}
               changeValue={location}
               required={true}
               handleChange={() => {}}

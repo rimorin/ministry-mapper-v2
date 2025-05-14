@@ -24,6 +24,7 @@ import {
   deleteDataById,
   getList,
   setupRealtimeListener,
+  unsubscriber,
   updateDataById
 } from "../../utils/pocketbase";
 
@@ -91,7 +92,10 @@ const useMessages = (mapId: string, assignmentId?: string) => {
       },
       msgSubheader
     );
-  }, [mapId]);
+    return () => {
+      unsubscriber(["messages"]);
+    };
+  }, [mapId, assignmentId]);
 
   useVisibilityChange(fetchFeedbacks);
 
@@ -141,7 +145,7 @@ const UpdateMapMessages = NiceModal.create(
           setIsSaving(false);
         }
       },
-      [feedback, isAdmin]
+      [feedback]
     );
 
     return (

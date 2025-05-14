@@ -14,9 +14,7 @@ import { Policy } from "../utils/policies";
 import Legend from "../components/navigation/legend";
 import Loader from "../components/statics/loader";
 import InvalidPage from "../components/statics/invalidpage";
-import SuspenseComponent from "../components/utils/suspense";
 import MainTable from "../components/table/map";
-import ModalManager from "@ebay/nice-modal-react";
 import errorHandler from "../utils/helpers/errorhandler";
 import {
   TERRITORY_TYPES,
@@ -34,6 +32,7 @@ import { useParams } from "wouter";
 import useVisibilityChange from "../components/utils/visibilitychange";
 import { LanguageContext } from "../i18n/LanguageContext";
 import LanguageSelector from "../i18n/LanguageSelector";
+import modalManagement from "../hooks/modalManagement";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 const UpdateMapMessages = lazy(() => import("../components/modal/mapmessages"));
 const ShowExpiry = lazy(() => import("../components/modal/slipexpiry"));
@@ -41,7 +40,8 @@ const ShowExpiry = lazy(() => import("../components/modal/slipexpiry"));
 const Map = () => {
   const { id } = useParams();
   const { t } = useTranslation();
-  const { currentLanguage, languageOptions } = useContext(LanguageContext);
+  const { currentLanguage, changeLanguage, languageOptions } =
+    useContext(LanguageContext);
   const [isLinkExpired, setIsLinkExpired] = useState(false);
   const [tokenEndTime, setTokenEndTime] = useState(0);
   const [showLegend, setShowLegend] = useState(false);
@@ -57,9 +57,61 @@ const Map = () => {
     `${id}-readPinnedMessages`,
     "false"
   );
+  const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+
+  const { showModal } = modalManagement();
 
   const toggleLegend = useCallback(() => {
     setShowLegend((prevShowLegend) => !prevShowLegend);
+  }, []);
+
+  const toggleLanguageSelector = useCallback(() => {
+    setShowLanguageSelector(
+      (prevShowLanguageSelector) => !prevShowLanguageSelector
+    );
+  }, []);
+
+  const handleMessageClick = useCallback(() => {
+    if (hasPinnedMessages) {
+      setReadPinnedMessages("true");
+    }
+    showModal(UpdateMapMessages, {
+      name: mapDetails?.name,
+      mapId: mapDetails?.id,
+      helpLink: WIKI_CATEGORIES.PUBLISHER_ADDRESS_FEEDBACK,
+      policy: policy,
+      messageType: MESSAGE_TYPES.PUBLISHER,
+      assignmentId: id
+    });
+  }, [
+    hasPinnedMessages,
+    readPinnedMessages,
+    mapDetails?.name,
+    mapDetails?.id,
+    id
+  ]);
+
+  const toggleMapView = useCallback(() => {
+    setMapView((prevMapView) => !prevMapView);
+  }, []);
+
+  const showLocationModal = useCallback(() => {
+    showModal(GetMapGeolocation, {
+      coordinates: coordinates,
+      name: mapDetails?.name,
+      origin: policy.origin
+    });
+  }, [coordinates, policy.origin, mapDetails?.name]);
+
+  const showExpiryModal = useCallback(() => {
+    showModal(ShowExpiry, {
+      endtime: tokenEndTime
+    });
+  }, [tokenEndTime]);
+
+  const handleLanguageSelect = useCallback((language: string) => {
+    changeLanguage(language);
+    toggleLanguageSelector();
   }, []);
 
   const checkPinnedMessages = useCallback(
@@ -197,7 +249,7 @@ const Map = () => {
     configureHeader(id);
     getMapData(id);
     return () => {
-      unsubscriber(["maps", "addresses", "messages"]);
+      unsubscriber(["maps", "addresses"]);
     };
   }, [id]);
   useVisibilityChange(() => getMapData(id));
@@ -211,6 +263,13 @@ const Map = () => {
   return (
     <>
       <Legend showLegend={showLegend} hideFunction={toggleLegend} />
+      <LanguageSelector
+        showListing={showLanguageSelector}
+        hideFunction={toggleLanguageSelector}
+        handleSelect={handleLanguageSelect}
+        currentLanguage={currentLanguage}
+        languageOptions={languageOptions}
+      />
       <Navbar bg="light" expand="sm">
         <Container fluid>
           <Navbar.Brand
@@ -254,19 +313,7 @@ const Map = () => {
         <Nav className="w-100 justify-content-between mx-4">
           <Nav.Item
             className={`text-center nav-item-hover`}
-            onClick={() => {
-              if (hasPinnedMessages) {
-                setReadPinnedMessages("true");
-              }
-              ModalManager.show(SuspenseComponent(UpdateMapMessages), {
-                name: mapDetails?.name,
-                mapId: mapDetails?.id,
-                helpLink: WIKI_CATEGORIES.PUBLISHER_ADDRESS_FEEDBACK,
-                policy: policy,
-                messageType: MESSAGE_TYPES.PUBLISHER,
-                assignmentId: id
-              });
-            }}
+            onClick={handleMessageClick}
           >
             <Image
               src="https://assets.ministry-mapper.com/feedback.svg"
@@ -282,9 +329,7 @@ const Map = () => {
           {mapDetails?.type === TERRITORY_TYPES.SINGLE_STORY && (
             <Nav.Item
               className="text-center nav-item-hover"
-              onClick={() => {
-                setMapView((prevMapView) => !prevMapView);
-              }}
+              onClick={toggleMapView}
             >
               {mapView ? (
                 <>
@@ -311,13 +356,7 @@ const Map = () => {
           )}
           <Nav.Item
             className="text-center nav-item-hover"
-            onClick={() => {
-              ModalManager.show(SuspenseComponent(GetMapGeolocation), {
-                coordinates: coordinates,
-                name: mapDetails?.name,
-                origin: policy.origin
-              });
-            }}
+            onClick={showLocationModal}
           >
             <Image
               src="https://assets.ministry-mapper.com/maplocation.svg"
@@ -327,11 +366,7 @@ const Map = () => {
           </Nav.Item>
           <Nav.Item
             className="text-center nav-item-hover"
-            onClick={() => {
-              ModalManager.show(SuspenseComponent(ShowExpiry), {
-                endtime: tokenEndTime
-              });
-            }}
+            onClick={showExpiryModal}
           >
             <Image
               src="https://assets.ministry-mapper.com/time.svg"
@@ -339,22 +374,16 @@ const Map = () => {
             />
             <div className="small">{t("common.Expiry", "Expiry")}</div>
           </Nav.Item>
-          {currentLanguage && (
-            <Nav.Item className="text-center nav-item-hover">
-              <LanguageSelector
-                buttonSize="sm"
-                variant="link"
-                showText={false}
-              />
-              <div className="small">
-                {
-                  languageOptions.find(
-                    (option) => option.value === currentLanguage
-                  )?.label
-                }
-              </div>
-            </Nav.Item>
-          )}
+          <Nav.Item
+            className="text-center nav-item-hover"
+            onClick={toggleLanguageSelector}
+          >
+            <Image
+              src="https://assets.ministry-mapper.com/language.svg"
+              alt="Language"
+            />
+            <div className="small">{currentLanguage}</div>
+          </Nav.Item>
         </Nav>
       </Navbar>
     </>

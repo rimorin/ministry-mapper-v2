@@ -25,7 +25,8 @@
     "secondsShort": "秒",
     "Messages": "メッセージ",
     "Directions": "方向",
-    "Expiry": "期限"
+    "Expiry": "期限",
+    "name": "名前"
   },
   "auth": {
     "signIn": "ログイン",
@@ -116,7 +117,8 @@
     "invalidSequence": "無効な順序",
     "clickToSelectLocation": "クリックして位置選択",
     "existingMapNumber": "既存マップ番号",
-    "newMapNumber": "新規マップ番号"
+    "newMapNumber": "新規マップ番号",
+    "deleteSuccess": "住所が削除されました, {{name}}."
   },
   "address": {
     "address": "住所",

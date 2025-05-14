@@ -18,16 +18,16 @@ import AssignmentButtonGroup from "./assignmentbtn";
 import MessageButtonGroup from "./messagebtn";
 import ComponentAuthorizer from "./authorizer";
 import MainTable from "../table/map";
-import ModalManager from "@ebay/nice-modal-react";
-import SuspenseComponent from "../utils/suspense";
 import { getUser } from "../../utils/pocketbase";
 import {
   addressDetails,
   DropDirection,
-  DropDirections
+  DropDirections,
+  latlongInterface
 } from "../../utils/interface";
 import { Policy } from "../../utils/policies";
 import { useTranslation } from "react-i18next";
+import modalManagement from "../../hooks/modalManagement";
 
 const GetMapGeolocation = lazy(() => import("../modal/getlocation"));
 const ChangeMapGeoLocation = lazy(() => import("../modal/changegeolocation"));
@@ -71,7 +71,10 @@ const MapListing: React.FC<MapListingProps> = ({
   isReadonly
 }) => {
   const { t } = useTranslation();
+  const { showModal } = modalManagement();
   const [dropDirections, setDropDirections] = useState<DropDirections>({});
+  const policyOrigin = policy.origin;
+
   const handleDropdownDirection = useCallback(
     (
       event: MouseEvent<HTMLElement, globalThis.MouseEvent>,
@@ -92,6 +95,120 @@ const MapListing: React.FC<MapListingProps> = ({
     },
     []
   );
+
+  const handleToggleMapView = useCallback((mapId: string) => {
+    setMapViews((prev) => {
+      const updatedMapViews = new Map(prev);
+      updatedMapViews.set(mapId, !updatedMapViews.get(mapId));
+      return updatedMapViews;
+    });
+  }, []);
+
+  const handleShowGetLocation = useCallback(
+    (addressElement: addressDetails) => {
+      showModal(GetMapGeolocation, {
+        coordinates: addressElement.coordinates,
+        name: addressElement.name,
+        origin: policyOrigin
+      });
+    },
+    [policyOrigin]
+  );
+
+  const handleShowChangeLocation = useCallback(
+    (mapId: string, currentMapName: string, coordinates: latlongInterface) => {
+      showModal(ChangeMapGeoLocation, {
+        footerSaveAcl: userAccessLevel,
+        mapId,
+        coordinates,
+        origin: policyOrigin,
+        name: currentMapName
+      });
+    },
+    [policyOrigin]
+  );
+
+  const handleShowChangeMapCode = useCallback(
+    (mapId: string, mapCode: string) => {
+      showModal(ChangeMapCode, {
+        footerSaveAcl: userAccessLevel,
+        mapId,
+        mapCode
+      });
+    },
+    []
+  );
+
+  const handleChangeTerritory = useCallback(
+    (mapId: string, mapName: string) => {
+      setValues({
+        ...values,
+        map: mapId,
+        name: mapName
+      });
+      toggleAddressTerritoryListing();
+    },
+    []
+  );
+
+  const handleShowChangeName = useCallback((mapId: string, mapName: string) => {
+    showModal(ChangeAddressName, {
+      footerSaveAcl: userAccessLevel,
+      mapId,
+      name: mapName
+    });
+  }, []);
+
+  const handleShowAddUnit = useCallback(
+    (mapId: string, addressElement: addressDetails) => {
+      showModal(NewUnit, {
+        footerSaveAcl: userAccessLevel,
+        mapId,
+        addressData: addressElement
+      });
+    },
+    []
+  );
+
+  const handleAddHigherFloor = useCallback((mapId: string) => {
+    addFloorToMap(mapId, true);
+  }, []);
+
+  const handleAddLowerFloor = useCallback(
+    (mapId: string) => {
+      addFloorToMap(mapId);
+    },
+    [addFloorToMap]
+  );
+
+  const handleResetMap = useCallback((mapId: string, mapName: string) => {
+    const confirmReset = window.confirm(
+      t(
+        "address.resetWarning",
+        '⚠️ WARNING: Resetting all property statuses of "{{name}}" will reset all statuses. This action cannot be undone. Proceed?',
+        { name: mapName }
+      )
+    );
+
+    if (confirmReset) {
+      resetMap(mapId);
+    }
+  }, []);
+
+  const handleDeleteMap = useCallback((mapId: string, mapName: string) => {
+    const confirmDelete = window.confirm(
+      t(
+        "address.deleteWarning",
+        '⚠️ WARNING: Deleting map "{{name}}" will remove it completely. This action cannot be undone. Proceed?',
+        { name: mapName }
+      )
+    );
+
+    if (confirmDelete) {
+      deleteMap(mapId, mapName, true);
+    }
+  }, []);
+
   return (
     <Accordion
       activeKey={isReadonly ? undefined : accordingKeys}
@@ -138,16 +255,7 @@ const MapListing: React.FC<MapListingProps> = ({
                         size="sm"
                         variant="outline-primary"
                         className="m-1"
-                        onClick={() => {
-                          setMapViews((prev) => {
-                            const updatedMapViews = new Map(prev);
-                            updatedMapViews.set(
-                              currentMapId,
-                              !updatedMapViews.get(currentMapId)
-                            );
-                            return updatedMapViews;
-                          });
-                        }}
+                        onClick={() => handleToggleMapView(currentMapId)}
                       >
                         {mapViews.get(currentMapId)
                           ? t("navigation.listView", "List View")
@@ -165,16 +273,7 @@ const MapListing: React.FC<MapListingProps> = ({
                       size="sm"
                       variant="outline-primary"
                       className="m-1"
-                      onClick={() => {
-                        ModalManager.show(
-                          SuspenseComponent(GetMapGeolocation),
-                          {
-                            coordinates: addressElement.coordinates,
-                            name: currentMapName,
-                            origin: policy.origin
-                          }
-                        );
-                      }}
+                      onClick={() => handleShowGetLocation(addressElement)}
                     >
                       {t("navigation.direction", "Direction")}
                     </Button>
@@ -217,15 +316,10 @@ const MapListing: React.FC<MapListingProps> = ({
                       >
                         <Dropdown.Item
                           onClick={() =>
-                            ModalManager.show(
-                              SuspenseComponent(ChangeMapGeoLocation),
-                              {
-                                footerSaveAcl: userAccessLevel,
-                                mapId: currentMapId,
-                                coordinates: addressElement.coordinates,
-                                origin: policy.origin,
-                                name: currentMapName
-                              }
+                            handleShowChangeLocation(
+                              currentMapId,
+                              currentMapName,
+                              addressElement.coordinates
                             )
                           }
                         >
@@ -233,52 +327,32 @@ const MapListing: React.FC<MapListingProps> = ({
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() =>
-                            ModalManager.show(
-                              SuspenseComponent(ChangeMapCode),
-                              {
-                                footerSaveAcl: userAccessLevel,
-                                mapId: currentMapId,
-                                mapCode: currentMapCode
-                              }
+                            handleShowChangeMapCode(
+                              currentMapId,
+                              currentMapCode
                             )
                           }
                         >
                           {t("address.changeMapNumber", "Change Map Number")}
                         </Dropdown.Item>
                         <Dropdown.Item
-                          onClick={() => {
-                            setValues({
-                              ...values,
-                              map: currentMapId,
-                              name: currentMapName
-                            });
-                            toggleAddressTerritoryListing();
-                          }}
+                          onClick={() =>
+                            handleChangeTerritory(currentMapId, currentMapName)
+                          }
                         >
                           {t("address.changeTerritory", "Change Territory")}
                         </Dropdown.Item>
                         <Dropdown.Item
                           onClick={() =>
-                            ModalManager.show(
-                              SuspenseComponent(ChangeAddressName),
-                              {
-                                footerSaveAcl: userAccessLevel,
-                                mapId: currentMapId,
-                                name: currentMapName
-                              }
-                            )
+                            handleShowChangeName(currentMapId, currentMapName)
                           }
                         >
                           {t("address.changeName", "Rename")}
                         </Dropdown.Item>
                         <Dropdown.Item
-                          onClick={() => {
-                            ModalManager.show(SuspenseComponent(NewUnit), {
-                              footerSaveAcl: userAccessLevel,
-                              mapId: currentMapId,
-                              addressData: addressElement
-                            });
-                          }}
+                          onClick={() =>
+                            handleShowAddUnit(currentMapId, addressElement)
+                          }
                         >
                           {t(
                             addressElement.type === TERRITORY_TYPES.SINGLE_STORY
@@ -293,9 +367,7 @@ const MapListing: React.FC<MapListingProps> = ({
                           addressElement.type ===
                             TERRITORY_TYPES.MULTIPLE_STORIES) && (
                           <Dropdown.Item
-                            onClick={() => {
-                              addFloorToMap(currentMapId, true);
-                            }}
+                            onClick={() => handleAddHigherFloor(currentMapId)}
                           >
                             {t("address.addHigherFloor", "Add Higher Floor")}
                           </Dropdown.Item>
@@ -304,44 +376,22 @@ const MapListing: React.FC<MapListingProps> = ({
                           addressElement.type ===
                             TERRITORY_TYPES.MULTIPLE_STORIES) && (
                           <Dropdown.Item
-                            onClick={() => {
-                              addFloorToMap(currentMapId);
-                            }}
+                            onClick={() => handleAddLowerFloor(currentMapId)}
                           >
                             {t("address.addLowerFloor", "Add Lower Floor")}
                           </Dropdown.Item>
                         )}
                         <Dropdown.Item
-                          onClick={() => {
-                            const confirmReset = window.confirm(
-                              t(
-                                "address.resetWarning",
-                                '⚠️ WARNING: Resetting all property statuses of "{{name}}" will reset all statuses. This action cannot be undone. Proceed?',
-                                { name: currentMapName }
-                              )
-                            );
-
-                            if (confirmReset) {
-                              resetMap(currentMapId);
-                            }
-                          }}
+                          onClick={() =>
+                            handleResetMap(currentMapId, currentMapName)
+                          }
                         >
                           {t("address.resetStatus", "Reset Status")}
                         </Dropdown.Item>
                         <Dropdown.Item
-                          onClick={() => {
-                            const confirmDelete = window.confirm(
-                              t(
-                                "address.deleteWarning",
-                                '⚠️ WARNING: Deleting map "{{name}}" will remove it completely. This action cannot be undone. Proceed?',
-                                { name: currentMapName }
-                              )
-                            );
-
-                            if (confirmDelete) {
-                              deleteMap(currentMapId, currentMapName, true);
-                            }
-                          }}
+                          onClick={() =>
+                            handleDeleteMap(currentMapId, currentMapName)
+                          }
                         >
                           {t("address.delete", "Delete")}
                         </Dropdown.Item>

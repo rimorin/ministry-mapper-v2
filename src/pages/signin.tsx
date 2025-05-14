@@ -108,6 +108,30 @@ const LoginComponent = () => {
     }
   }, []);
 
+  const handleClearLogin = useCallback(() => {
+    setLoginPassword("");
+    setLoginEmail("");
+    setOtpCode("");
+    setValidated(false);
+  }, []);
+
+  const handleNavigateSignup = useCallback(() => {
+    setFrontPageMode("signup");
+  }, []);
+
+  const handleNavigateForgot = useCallback(() => {
+    setFrontPageMode("forgot");
+  }, []);
+
+  const handleResendOtp = useCallback(async () => {
+    await handleOtpRequest(processEmail(loginEmail));
+    alert(t("auth.otpSentAlert", "OTP sent to your email"));
+  }, [loginEmail]);
+
+  const handleClearOtpCode = useCallback(() => {
+    setOtpCode("");
+  }, []);
+
   return (
     <>
       {!otpSessionId ? (
@@ -161,7 +185,7 @@ const LoginComponent = () => {
             </Form.Control.Feedback>
             <div className="text-end">
               <Form.Text
-                onClick={() => setFrontPageMode("forgot")}
+                onClick={handleNavigateForgot}
                 className="text-underline"
                 muted
               >
@@ -187,12 +211,7 @@ const LoginComponent = () => {
               className="mx-2"
               variant="outline-primary"
               type="reset"
-              onClick={() => {
-                setLoginPassword("");
-                setLoginEmail("");
-                setOtpCode("");
-                setValidated(false);
-              }}
+              onClick={handleClearLogin}
             >
               {t("common.clear", "Clear")}
             </Button>
@@ -203,7 +222,7 @@ const LoginComponent = () => {
               {t("auth.noAccountQuestion", "Don't have an account?")}{" "}
               <span
                 style={{ cursor: "pointer", color: "blue" }}
-                onClick={() => setFrontPageMode("signup")}
+                onClick={handleNavigateSignup}
               >
                 {t("auth.signUp", "Sign Up")}
               </span>
@@ -235,10 +254,7 @@ const LoginComponent = () => {
             </FloatingLabel>
             <div className="text-end">
               <Form.Text
-                onClick={async () => {
-                  await handleOtpRequest(processEmail(loginEmail));
-                  alert(t("auth.otpSentAlert", "OTP sent to your email"));
-                }}
+                onClick={handleResendOtp}
                 className="text-underline"
                 muted
               >
@@ -274,7 +290,7 @@ const LoginComponent = () => {
               className="mx-2"
               variant="outline-primary"
               type="reset"
-              onClick={() => setOtpCode("")}
+              onClick={handleClearOtpCode}
             >
               {t("common.clear", "Clear")}
             </Button>

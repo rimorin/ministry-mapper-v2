@@ -83,6 +83,10 @@ const SignupComponent = () => {
     setValidated(false);
   }, []);
 
+  const handleNavigateToLogin = useCallback(() => {
+    setFrontPageMode("login");
+  }, []);
+
   return (
     <Form
       noValidate
@@ -212,7 +216,7 @@ const SignupComponent = () => {
           {t("auth.alreadyHaveAccount", "Already have an account?")}{" "}
           <span
             style={{ cursor: "pointer", color: "blue" }}
-            onClick={() => setFrontPageMode("login")}
+            onClick={handleNavigateToLogin}
           >
             {t("auth.signIn", "Sign In")}
           </span>

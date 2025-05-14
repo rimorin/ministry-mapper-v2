@@ -1,39 +1,43 @@
 import "../css/admin.css";
 
-import { useEffect, useState, useCallback, useMemo, lazy, useRef } from "react";
+import { useEffect, useCallback, useContext, lazy } from "react";
 import {
   Button,
   Container,
   Dropdown,
   DropdownButton,
   Navbar,
-  Spinner
+  Spinner,
+  Image
 } from "react-bootstrap";
 
-import { AuthRecord, RecordModel } from "pocketbase";
+import { AuthRecord } from "pocketbase";
 import { useTranslation } from "react-i18next";
 
 import {
   valuesDetails,
-  territoryDetails,
-  addressDetails,
   adminProps,
-  userDetails,
-  CongregationAccessObject
+  addressDetails,
+  territoryDetails,
+  userDetails
 } from "../utils/interface";
 import { LinkSession, Policy } from "../utils/policies";
 import {
-  DEFAULT_SELF_DESTRUCT_HOURS,
   USER_ACCESS_LEVELS,
-  PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY,
-  TERRITORY_TYPES,
   DEFAULT_CONGREGATION_MAX_TRIES,
-  DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
-  DEFAULT_COORDINATES,
-  PB_FIELDS
+  DEFAULT_SELF_DESTRUCT_HOURS,
+  PB_FIELDS,
+  DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION
 } from "../utils/constants";
 import errorHandler from "../utils/helpers/errorhandler";
 
+// Import custom hooks
+import useTerritoryManagement from "../hooks/admin/territoryManagement";
+import useMapManagement from "../hooks/admin/mapManagement";
+import useCongregationManagement from "../hooks/admin/congManagement";
+import useUIState from "../hooks/admin/uiManagement";
+
+// Import components
 import TerritoryListing from "../components/navigation/territorylist";
 import UserListing from "../components/navigation/userlist";
 import NavBarBranding from "../components/navigation/branding";
@@ -44,10 +48,7 @@ import BackToTopButton from "../components/navigation/backtotop";
 import Loader from "../components/statics/loader";
 import Welcome from "../components/statics/welcome";
 import SuspenseComponent from "../components/utils/suspense";
-import ModalManager from "@ebay/nice-modal-react";
-import useLocalStorage from "../utils/helpers/storage";
 import CongListing from "../components/navigation/conglist";
-import getCongregationUsers from "../utils/helpers/getcongregationusers";
 import useVisibilityChange from "../components/utils/visibilitychange";
 import MapListing from "../components/navigation/maplist";
 import MapView from "../components/navigation/mapview";
@@ -55,7 +56,6 @@ import ModeToggle from "../components/navigation/maptoggle";
 import LanguageSelector from "../i18n/LanguageSelector";
 import {
   cleanupSession,
-  deleteDataById,
   callFunction,
   getList,
   getDataById,
@@ -64,6 +64,8 @@ import {
   requestPasswordReset,
   unsubscriber
 } from "../utils/pocketbase";
+import { LanguageContext } from "../i18n/LanguageContext";
+import modalManagement from "../hooks/modalManagement";
 
 const UnauthorizedPage = SuspenseComponent(
   lazy(() => import("../components/statics/unauth"))
@@ -95,317 +97,123 @@ function Admin({ user }: adminProps) {
   const userId = user?.id as string;
   const userName = user?.name as string;
   const userEmail = user?.email as string;
-  const [congregationCode, setCongregationCode] = useState<string>("");
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isProcessingTerritory, setIsProcessingTerritory] =
-    useState<boolean>(false);
-  const [processingMap, setProcessingMap] = useState<{
-    isProcessing: boolean;
-    mapId: string | null;
-  }>({ isProcessing: false, mapId: null });
 
-  const [isUnauthorised, setIsUnauthorised] = useState<boolean>(false);
-  const [showBkTopButton, setShowBkTopButton] = useState(false);
-  const [showTerritoryListing, setShowTerritoryListing] =
-    useState<boolean>(false);
-  const [showUserListing, setShowUserListing] = useState<boolean>(false);
-  const [showCongregationListing, setShowCongregationListing] =
-    useState<boolean>(false);
-  const [isShowingUserListing, setIsShowingUserListing] =
-    useState<boolean>(false);
-  const [congregationUsers, setCongregationUsers] = useState(
-    new Map<string, userDetails>()
-  );
-  const [showChangeAddressTerritory, setShowChangeAddressTerritory] =
-    useState<boolean>(false);
-  const [congregationName, setCongregationName] = useState<string>("");
-  const [values, setValues] = useState<object>({});
-  const [territories, setTerritories] = useState(
-    new Map<string, territoryDetails>()
-  );
-  const [sortedAddressList, setSortedAddressList] = useState<
-    Array<addressDetails>
-  >([]);
-  const [selectedTerritoryId, setSelectedTerritoryId] = useState<string>("");
-  const [selectedTerritoryCode, setSelectedTerritoryCode] = useState<string>();
-  const [selectedTerritoryName, setSelectedTerritoryName] = useState<string>();
-  const [accordingKeys, setAccordionKeys] = useState<Array<string>>([]);
-  const [userAccessLevel, setUserAccessLevel] = useState<string>();
-  const [defaultExpiryHours, setDefaultExpiryHours] = useState<number>(
-    DEFAULT_SELF_DESTRUCT_HOURS
-  );
-  const [policy, setPolicy] = useState<Policy>(new Policy());
-  const [isAssignmentLoading, setIsAssignmentLoading] =
-    useState<boolean>(false);
-  const [userCongregationAccesses, setUserCongregationAccesses] = useState<
-    CongregationAccessObject[]
-  >([]);
+  const {
+    processingMap,
+    sortedAddressList,
+    setSortedAddressList,
+    accordingKeys,
+    setAccordionKeys,
+    mapViews,
+    setMapViews,
+    isMapView,
+    setIsMapView,
+    deleteMap,
+    addFloorToMap,
+    resetMap,
+    processMapRecord
+  } = useMapManagement();
 
-  const congregationAccess = useRef<Record<string, string>>({});
-  // create a useRef to store maps view mode if true/false
-  const [mapViews, setMapViews] = useState<Map<string, boolean>>(new Map());
+  const {
+    congregationName,
+    setCongregationName,
+    congregationUsers,
+    setCongregationUsers,
+    showCongregationListing,
+    showUserListing,
+    isShowingUserListing,
+    toggleCongregationListing,
+    toggleUserListing,
+    getUsers,
+    userAccessLevel,
+    setUserAccessLevel,
+    defaultExpiryHours,
+    setDefaultExpiryHours,
+    policy,
+    setPolicy,
+    userCongregationAccesses,
+    setUserCongregationAccesses,
+    congregationCode,
+    setCongregationCode,
+    congregationCodeCache,
+    setCongregationCodeCache,
+    congregationAccess,
+    handleCongregationSelect
+  } = useCongregationManagement({ userId });
 
-  const [congregationCodeCache, setCongregationCodeCache] = useLocalStorage(
-    "congregationCode",
-    ""
-  );
+  const {
+    selectedTerritory,
+    setSelectedTerritory,
+    territories,
+    setTerritories,
+    showTerritoryListing,
+    toggleTerritoryListing,
+    handleTerritorySelect,
+    deleteTerritory,
+    resetTerritory,
+    processCongregationTerritories,
+    congregationTerritoryList,
+    isProcessingTerritory,
+    territoryCodeCache,
+    setTerritoryCodeCache,
+    clearTerritorySelection
+  } = useTerritoryManagement({ congregationCode });
 
-  const [territoryCodeCache, setTerritoryCodeCache] = useLocalStorage(
-    "territoryCode",
-    ""
-  );
+  const {
+    showBkTopButton,
+    isLoading,
+    setIsLoading,
+    isUnauthorised,
+    setIsUnauthorised,
+    showChangeAddressTerritory,
+    showLanguageSelector,
+    values,
+    setValues,
+    isAssignmentLoading,
+    setIsAssignmentLoading,
+    handleScroll,
+    toggleAddressTerritoryListing,
+    toggleLanguageSelector
+  } = useUIState();
 
-  const [isMapView, setIsMapView] = useLocalStorage("mapView", false);
+  const { showModal } = modalManagement();
 
-  const getUsers = useCallback(async () => {
-    try {
-      setIsShowingUserListing(true);
-      setCongregationUsers(
-        await getCongregationUsers(congregationCode, userId)
-      );
-      toggleUserListing();
-    } catch (error) {
-      errorHandler(error);
-    } finally {
-      setIsShowingUserListing(false);
-    }
-  }, [congregationCode]);
+  const { currentLanguage, changeLanguage, languageOptions } =
+    useContext(LanguageContext);
 
   const logoutUser = useCallback(() => cleanupSession(), []);
 
-  const deleteTerritory = useCallback(async () => {
-    if (!selectedTerritoryId) return;
-    setIsProcessingTerritory(true);
-    try {
-      // kill all subscriptions before deleting
-      unsubscriber(["maps", "addresses", "messages", "assignments"]);
-      await deleteDataById("territories", selectedTerritoryId, {
-        requestKey: `territory-del-${congregationCode}-${selectedTerritoryCode}`
-      });
-      alert(
-        t("territory.deleteSuccess", "Deleted territory, {{code}}.", {
-          code: selectedTerritoryCode
-        })
-      );
-      window.location.reload();
-    } catch (error) {
-      errorHandler(error);
-    } finally {
-      setIsProcessingTerritory(false);
-    }
-  }, [selectedTerritoryCode, congregationCode]);
-
-  const deleteMap = useCallback(
-    async (mapId: string, name: string, showAlert: boolean) => {
-      setProcessingMap({ isProcessing: true, mapId: mapId });
-      try {
-        await deleteDataById("maps", mapId, {
-          requestKey: `map-del-${mapId}`
-        });
-        if (showAlert)
-          alert(t("map.deleteSuccess", "Deleted address, {{name}}.", { name }));
-      } catch (error) {
-        errorHandler(error);
-      } finally {
-        setProcessingMap({ isProcessing: false, mapId: null });
-      }
-    },
-    [selectedTerritoryCode, congregationCode]
-  );
-
-  const addFloorToMap = useCallback(
-    async (mapId: string, higherFloor = false) => {
-      setProcessingMap({ isProcessing: true, mapId: mapId });
-      try {
-        await callFunction("/map/floor/add", {
-          method: "POST",
-          body: {
-            map: mapId,
-            add_higher: higherFloor
-          }
-        });
-      } catch (error) {
-        errorHandler(error);
-      } finally {
-        setProcessingMap({ isProcessing: false, mapId: null });
-      }
-    },
-    []
-  );
-
-  const resetTerritory = useCallback(async () => {
-    if (!selectedTerritoryCode) return;
-    setIsProcessingTerritory(true);
-    try {
-      await callFunction("/territory/reset", {
-        method: "POST",
-        body: {
-          territory: selectedTerritoryId
-        }
-      });
-    } catch (error) {
-      errorHandler(error);
-    } finally {
-      setIsProcessingTerritory(false);
-    }
-  }, [selectedTerritoryCode, selectedTerritoryId]);
-
-  const resetMap = useCallback(async (mapId: string) => {
-    setProcessingMap({ isProcessing: true, mapId: mapId });
-    try {
-      await callFunction("/map/reset", {
-        method: "POST",
-        body: {
-          map: mapId
-        }
-      });
-    } catch (error) {
-      errorHandler(error);
-    } finally {
-      setProcessingMap({ isProcessing: false, mapId: null });
-    }
-  }, []);
-
-  const processCongregationTerritories = useCallback(
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (congregationTerritories: any) => {
-      const territoryList = new Map<string, territoryDetails>();
-      try {
-        if (!congregationTerritories) return territoryList;
-        for (const territory in congregationTerritories) {
-          const name = congregationTerritories[territory]["description"];
-          const id = congregationTerritories[territory]["id"];
-          const code = congregationTerritories[territory]["code"];
-          const progress = congregationTerritories[territory]["progress"];
-          territoryList.set(id, {
-            id: id,
-            code: code,
-            name: name,
-            aggregates: progress
-          });
-        }
-      } catch (error) {
-        console.error("Error processing congregation territories: ", error);
-      }
-      return territoryList;
-    },
-    []
-  );
-
-  const handleTerritorySelect = useCallback(
-    (eventKey: string | null) => {
-      setSelectedTerritoryId(eventKey as string);
-      setTerritoryCodeCache(eventKey as string);
-      toggleTerritoryListing();
-    },
-    // Reset cache when the territory dropdown is selected
-
-    [showTerritoryListing]
-  );
-
-  const toggleTerritoryListing = useCallback(() => {
-    setShowTerritoryListing(!showTerritoryListing);
-  }, [showTerritoryListing]);
-
   const handleUserSelect = useCallback(
-    (userKey: string | null) => {
+    async (userKey: string | null) => {
       if (!userKey) return;
       const details = congregationUsers.get(userKey);
       if (!details) return;
-      ModalManager.show(SuspenseComponent(UpdateUser), {
+      const updatedRole = await showModal(UpdateUser, {
         uid: userKey,
         congregation: congregationCode,
         footerSaveAcl: userAccessLevel,
         name: details.name,
         role: details.role
-      }).then((updatedRole) => {
-        setCongregationUsers((existingUsers) => {
-          if (updatedRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
-            existingUsers.delete(userKey);
-            return new Map<string, userDetails>(existingUsers);
-          }
-          details.role = updatedRole as string;
-          return new Map<string, userDetails>(
-            existingUsers.set(userKey, details)
-          );
-        });
+      });
+
+      setCongregationUsers((existingUsers) => {
+        if (updatedRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
+          existingUsers.delete(userKey);
+          return new Map<string, userDetails>(existingUsers);
+        }
+        details.role = updatedRole as string;
+        return new Map<string, userDetails>(
+          existingUsers.set(userKey, details)
+        );
       });
     },
     [congregationUsers, congregationCode, userAccessLevel]
   );
 
-  const toggleUserListing = useCallback(() => {
-    setShowUserListing(!showUserListing);
-  }, [showUserListing]);
-
-  const toggleCongregationListing = useCallback(() => {
-    setShowCongregationListing(!showCongregationListing);
-  }, [showCongregationListing]);
-
-  const handleAddressTerritorySelect = useCallback(
-    async (newTerritoryId: string | null) => {
-      const details = values as valuesDetails;
-      const mapId = details.map as string;
-      const newTerritoryCode = territories.get(newTerritoryId as string)?.code;
-      setProcessingMap({ isProcessing: true, mapId: mapId });
-      try {
-        toggleAddressTerritoryListing();
-        await callFunction("/map/territory/update", {
-          method: "POST",
-          body: {
-            map: mapId,
-            new_territory: newTerritoryId,
-            old_territory: selectedTerritoryId
-          }
-        });
-        setSortedAddressList(
-          sortedAddressList.filter(
-            (address) => address.id !== mapId
-          ) as addressDetails[]
-        );
-        alert(
-          t(
-            "territory.changeSuccess",
-            "Changed territory of {{name}} from {{oldCode}} to {{newCode}}.",
-            {
-              name: details.name,
-              oldCode: selectedTerritoryCode,
-              newCode: newTerritoryCode
-            }
-          )
-        );
-      } catch (error) {
-        errorHandler(error);
-      } finally {
-        setProcessingMap({ isProcessing: false, mapId: null });
-      }
-    },
-    [showChangeAddressTerritory, selectedTerritoryCode, values]
-  );
-
-  const toggleAddressTerritoryListing = useCallback(() => {
-    setShowChangeAddressTerritory(!showChangeAddressTerritory);
-  }, [showChangeAddressTerritory]);
-
-  const congregationTerritoryList = useMemo(
-    () => Array.from(territories.values()),
-    [territories]
-  );
-
-  const handleCongregationSelect = useCallback(
-    async (newCongCode: string | null) => {
-      const congregationCode = newCongCode as string;
-      setCongregationCodeCache(congregationCode);
-      setCongregationCode(congregationCode);
-      setCongregationName("");
-      setSelectedTerritoryId("");
-      setTerritoryCodeCache("");
-      setSelectedTerritoryCode("");
-      setSelectedTerritoryName("");
-      toggleCongregationListing();
-    },
-    [showCongregationListing]
-  );
+  const handleLanguageSelect = useCallback((lang: string) => {
+    changeLanguage(lang);
+    toggleLanguageSelector();
+  }, []);
 
   const getAssignments = useCallback(async (code: string, uid: string) => {
     setIsAssignmentLoading(true);
@@ -427,8 +235,7 @@ function Admin({ user }: adminProps) {
       assignments.forEach((link) => {
         linkListing.push(new LinkSession(link, link.id));
       });
-
-      ModalManager.show(SuspenseComponent(GetAssignments), {
+      showModal(GetAssignments, {
         assignments: linkListing,
         congregation: code
       });
@@ -436,6 +243,43 @@ function Admin({ user }: adminProps) {
       setIsAssignmentLoading(false);
     }
   }, []);
+
+  const handleAddressTerritorySelect = useCallback(
+    async (newTerritoryId: string | null) => {
+      const details = values as valuesDetails;
+      const mapId = details.map as string;
+      const newTerritoryCode = territories.get(newTerritoryId as string)?.code;
+
+      try {
+        toggleAddressTerritoryListing();
+        await callFunction("/map/territory/update", {
+          method: "POST",
+          body: {
+            map: mapId,
+            new_territory: newTerritoryId,
+            old_territory: selectedTerritory.id
+          }
+        });
+        setSortedAddressList(
+          sortedAddressList.filter((address) => address.id !== mapId)
+        );
+        alert(
+          t(
+            "territory.changeSuccess",
+            "Changed territory of {{name}} from {{oldCode}} to {{newCode}}.",
+            {
+              name: details.name,
+              oldCode: selectedTerritory.code,
+              newCode: newTerritoryCode
+            }
+          )
+        );
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
+    [selectedTerritory.id, selectedTerritory.code]
+  );
 
   const fetchData = useCallback(async () => {
     const userRoles = await getList("roles", {
@@ -451,15 +295,14 @@ function Admin({ user }: adminProps) {
       return;
     }
 
-    const congregationAccesses: CongregationAccessObject[] = userRoles.map(
-      (record) => {
-        return {
-          code: record.expand?.congregation.id,
-          access: record.role,
-          name: record.expand?.congregation.name
-        };
-      }
-    );
+    const congregationAccesses = userRoles.map((record) => {
+      return {
+        code: record.expand?.congregation.id,
+        access: record.role,
+        name: record.expand?.congregation.name
+      };
+    });
+
     congregationAccess.current = congregationAccesses.reduce(
       (acc, { code, access }) => {
         acc[code] = access;
@@ -480,104 +323,98 @@ function Admin({ user }: adminProps) {
       setCongregationCodeCache("");
     }
     setCongregationCode(initialSelectedCode);
-  }, []);
+  }, [userId, userEmail]);
 
-  const handleScroll = useCallback(() => {
-    setShowBkTopButton(window.scrollY > PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY);
-  }, []);
+  const fetchCongregationData = useCallback(async (code: string) => {
+    const congDetails = await getDataById("congregations", code, {
+      requestKey: `congregation-${code}`
+    });
 
-  const fetchCongregationData = useCallback(
-    async (congregationCode: string) => {
-      const congDetails = await getDataById("congregations", congregationCode, {
-        requestKey: `congregation-${congregationCode}`
-      });
+    if (!congDetails) {
+      alert(t("congregation.notFound", "Congregation not found."));
+      return;
+    }
 
-      if (!congDetails) {
-        alert(t("congregation.notFound", "Congregation not found."));
-        return;
-      }
+    const congOptions = await getList("options", {
+      filter: `congregation="${code}"`,
+      requestKey: `congregation-options-${code}`,
+      fields: PB_FIELDS.CONGREGATION_OPTIONS,
+      sort: "sequence"
+    });
 
-      const congOptions = await getList("options", {
-        filter: `congregation="${congregationCode}"`,
-        requestKey: `congregation-options-${congregationCode}`,
-        fields: PB_FIELDS.CONGREGATION_OPTIONS,
-        sort: "sequence"
-      });
-
-      setCongregationName(congDetails.name);
-      document.title = congDetails.name;
-      setDefaultExpiryHours(
+    setCongregationName(congDetails.name);
+    document.title = congDetails.name;
+    setDefaultExpiryHours(
+      congDetails.expiry_hours || DEFAULT_SELF_DESTRUCT_HOURS
+    );
+    setPolicy(
+      new Policy(
+        getUser("name") as string,
+        congOptions?.map((option) => {
+          return {
+            id: option.id,
+            code: option.code,
+            description: option.description,
+            isCountable: option.is_countable,
+            isDefault: option.is_default,
+            sequence: option.sequence
+          };
+        }),
+        congDetails.max_tries || DEFAULT_CONGREGATION_MAX_TRIES,
+        congDetails.origin || DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
+        congregationAccess.current[code],
         congDetails.expiry_hours || DEFAULT_SELF_DESTRUCT_HOURS
-      );
-      setPolicy(
-        new Policy(
-          getUser("name") as string,
-          congOptions?.map((option: RecordModel) => {
-            return {
-              id: option.id,
-              code: option.code,
-              description: option.description,
-              isCountable: option.is_countable,
-              isDefault: option.is_default,
-              sequence: option.sequence
-            };
-          }),
-          congDetails.max_tries || DEFAULT_CONGREGATION_MAX_TRIES,
-          congDetails.origin || DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
-          congregationAccess.current[congregationCode],
-          congDetails.expiry_hours || DEFAULT_SELF_DESTRUCT_HOURS
-        )
-      );
+      )
+    );
 
-      const territoryDetails = await getList("territories", {
-        filter: `congregation="${congregationCode}"`,
-        requestKey: `territories-${congregationCode}`,
+    const territoryDetails = await getList("territories", {
+      filter: `congregation="${code}"`,
+      requestKey: `territories-${code}`,
+      sort: "code",
+      fields: PB_FIELDS.TERRITORIES
+    });
+    const territoryMap = processCongregationTerritories(territoryDetails);
+    setTerritories(territoryMap);
+
+    if (territoryCodeCache && territoryMap.has(territoryCodeCache)) {
+      setSelectedTerritory((prev) => ({
+        ...prev,
+        id: territoryCodeCache
+      }));
+    } else {
+      setTerritoryCodeCache("");
+    }
+
+    setIsLoading(false);
+  }, []);
+
+  const setupAddresses = useCallback(
+    async (territoryId: string) => {
+      if (!territoryId) return;
+      const maps = await getList("maps", {
+        filter: `territory="${territoryId}"`,
+        requestKey: null,
         sort: "code",
-        fields: PB_FIELDS.TERRITORIES
+        fields: PB_FIELDS.MAPS
       });
-      const territoryMap = processCongregationTerritories(territoryDetails);
-      setTerritories(territoryMap);
-
-      if (territoryCodeCache && territoryMap.has(territoryCodeCache)) {
-        setSelectedTerritoryId(territoryCodeCache);
-      } else {
-        setTerritoryCodeCache("");
-      }
-
-      setIsLoading(false);
+      const newMapViews = new Map<string, boolean>();
+      const newAccordionKeys = [] as Array<string>;
+      const sortedMaps = maps.map((map) => {
+        const mapId = map.id;
+        newMapViews.set(mapId, isMapView);
+        newAccordionKeys.push(mapId);
+        return processMapRecord(map);
+      });
+      setSortedAddressList(sortedMaps);
+      setAccordionKeys(newAccordionKeys);
+      setMapViews(newMapViews);
     },
-    []
+    [isMapView]
   );
 
-  const processMapRecord = useCallback((mapRecord: RecordModel) => {
-    return {
-      id: mapRecord.id,
-      type: mapRecord.type || TERRITORY_TYPES.MULTIPLE_STORIES,
-      location: mapRecord.location || "",
-      aggregates: {
-        display: mapRecord.progress + "%",
-        value: mapRecord.progress,
-        notDone: mapRecord.aggregates?.notDone || 0,
-        notHome: mapRecord.aggregates?.notHome || 0
-      },
-      mapId: mapRecord.code,
-      name: mapRecord.description,
-      coordinates: mapRecord.coordinates || DEFAULT_COORDINATES.Singapore
-    } as addressDetails;
-  }, []);
-
-  const setupAddresses = useCallback(async (territoryId: string) => {
-    if (!territoryId) return;
-    const maps = await getList("maps", {
-      filter: `territory="${territoryId}"`,
-      requestKey: null,
-      sort: "code",
-      fields: PB_FIELDS.MAPS
-    });
-    const sortedMaps = maps.map((map) => processMapRecord(map));
-    setSortedAddressList(sortedMaps);
-    setAccordionKeys(sortedMaps.map((address) => address.id));
-    setMapViews(new Map(sortedMaps.map((address) => [address.id, false])));
+  const toggleCongregation = useCallback((selectedCode: string | null) => {
+    handleCongregationSelect(selectedCode);
+    clearTerritorySelection();
   }, []);
 
   useEffect(() => {
@@ -631,18 +468,21 @@ function Admin({ user }: adminProps) {
   }, [congregationCode]);
 
   useEffect(() => {
-    if (!selectedTerritoryId) return;
-    setupAddresses(selectedTerritoryId);
-    const selectedTerritoryData = territories.get(selectedTerritoryId);
-    setSelectedTerritoryName(selectedTerritoryData?.name);
-    setSelectedTerritoryCode(selectedTerritoryData?.code);
+    if (!selectedTerritory.id) return;
+    setupAddresses(selectedTerritory.id);
+    const selectedTerritoryData = territories.get(selectedTerritory.id);
+    setSelectedTerritory((prev) => ({
+      ...prev,
+      code: selectedTerritoryData?.code,
+      name: selectedTerritoryData?.name
+    }));
     setupRealtimeListener(
       "maps",
       (data) => {
         const mapId = data.record.id;
         const dataAction = data.action;
         setSortedAddressList((prevList) => {
-          let updatedList = [] as addressDetails[];
+          let updatedList = [] as Array<addressDetails>;
           if (dataAction === "update") {
             updatedList = prevList.map((map) => {
               if (map.id === mapId) {
@@ -651,10 +491,7 @@ function Admin({ user }: adminProps) {
               return map;
             });
           } else if (dataAction === "create") {
-            updatedList = [
-              ...prevList,
-              processMapRecord(data.record)
-            ] as addressDetails[];
+            updatedList = [...prevList, processMapRecord(data.record)];
           } else if (dataAction === "delete") {
             updatedList = prevList.filter((address) => address.id !== mapId);
           }
@@ -666,7 +503,7 @@ function Admin({ user }: adminProps) {
         }
       },
       {
-        filter: `territory="${selectedTerritoryId}"`,
+        filter: `territory="${selectedTerritory.id}"`,
         requestKey: null,
         fields: PB_FIELDS.MAPS
       }
@@ -675,9 +512,9 @@ function Admin({ user }: adminProps) {
       unsubscriber(["addresses", "maps", "assignments", "messages"]);
       setSortedAddressList([]);
     };
-  }, [selectedTerritoryId]);
+  }, [selectedTerritory.id]);
 
-  useVisibilityChange(() => setupAddresses(selectedTerritoryId));
+  useVisibilityChange(() => setupAddresses(selectedTerritory.id));
 
   if (isLoading) return <Loader />;
   if (isUnauthorised) {
@@ -691,14 +528,14 @@ function Admin({ user }: adminProps) {
       <TerritoryListing
         showListing={showTerritoryListing}
         territories={congregationTerritoryList}
-        selectedTerritory={selectedTerritoryCode}
+        selectedTerritory={selectedTerritory.code}
         hideFunction={toggleTerritoryListing}
         handleSelect={handleTerritorySelect}
       />
       <TerritoryListing
         showListing={showChangeAddressTerritory}
         territories={congregationTerritoryList}
-        selectedTerritory={selectedTerritoryCode}
+        selectedTerritory={selectedTerritory.code}
         hideFunction={toggleAddressTerritoryListing}
         handleSelect={handleAddressTerritorySelect}
         hideSelectedTerritory={true}
@@ -714,7 +551,14 @@ function Admin({ user }: adminProps) {
         congregations={userCongregationAccesses}
         currentCongCode={congregationCode}
         hideFunction={toggleCongregationListing}
-        handleSelect={handleCongregationSelect}
+        handleSelect={toggleCongregation}
+      />
+      <LanguageSelector
+        showListing={showLanguageSelector}
+        hideFunction={toggleLanguageSelector}
+        handleSelect={handleLanguageSelect}
+        currentLanguage={currentLanguage}
+        languageOptions={languageOptions}
       />
       <Navbar bg="light" variant="light" expand="lg">
         <Container fluid>
@@ -746,22 +590,22 @@ function Admin({ user }: adminProps) {
                   variant="outline-primary"
                   onClick={toggleTerritoryListing}
                 >
-                  {selectedTerritoryCode ? (
+                  {selectedTerritory.code ? (
                     <>
                       <AggregationBadge
                         aggregate={
-                          territories.get(selectedTerritoryId as string)
+                          territories.get(selectedTerritory.id as string)
                             ?.aggregates || 0
                         }
                       />
-                      {selectedTerritoryCode}
+                      {selectedTerritory.code}
                     </>
                   ) : (
                     t("territory.selectTerritory", "Select Territory")
                   )}
                 </Button>
               )}
-            {!selectedTerritoryCode && policy.hasOptions() && (
+            {!selectedTerritory.code && policy.hasOptions() && (
               <ComponentAuthorizer
                 requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
                 userPermission={userAccessLevel}
@@ -771,7 +615,7 @@ function Admin({ user }: adminProps) {
                   size="sm"
                   variant="outline-primary"
                   onClick={() =>
-                    ModalManager.show(SuspenseComponent(NewTerritoryCode), {
+                    showModal(NewTerritoryCode, {
                       footerSaveAcl: userAccessLevel,
                       congregation: congregationCode
                     })
@@ -781,7 +625,7 @@ function Admin({ user }: adminProps) {
                 </Button>
               </ComponentAuthorizer>
             )}
-            {selectedTerritoryCode && policy.hasOptions() && (
+            {selectedTerritory.code && policy.hasOptions() && (
               <ComponentAuthorizer
                 requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
                 userPermission={userAccessLevel}
@@ -803,7 +647,7 @@ function Admin({ user }: adminProps) {
                 >
                   <Dropdown.Item
                     onClick={() =>
-                      ModalManager.show(SuspenseComponent(NewTerritoryCode), {
+                      showModal(NewTerritoryCode, {
                         footerSaveAcl: userAccessLevel,
                         congregation: congregationCode
                       })
@@ -812,56 +656,54 @@ function Admin({ user }: adminProps) {
                     {t("territory.createNew", "Create New")}
                   </Dropdown.Item>
                   <Dropdown.Item
-                    onClick={() =>
-                      ModalManager.show(
-                        SuspenseComponent(ChangeTerritoryCode),
-                        {
-                          footerSaveAcl: userAccessLevel,
-                          congregation: congregationCode,
-                          territoryCode: selectedTerritoryCode,
-                          territoryId: selectedTerritoryId
-                        }
-                      ).then((updatedCode) => {
-                        setSelectedTerritoryCode(updatedCode as string);
-                        setTerritories(
-                          new Map<string, territoryDetails>(
-                            Array.from(territories).map(([key, value]) => {
-                              if (key === selectedTerritoryId) {
-                                value.code = updatedCode as string;
-                              }
-                              return [key, value];
-                            })
-                          )
-                        );
-                      })
-                    }
+                    onClick={async () => {
+                      const updatedCode = await showModal(ChangeTerritoryCode, {
+                        footerSaveAcl: userAccessLevel,
+                        congregation: congregationCode,
+                        territoryCode: selectedTerritory.code,
+                        territoryId: selectedTerritory.id
+                      });
+                      setSelectedTerritory((prev) => ({
+                        ...prev,
+                        code: updatedCode as string
+                      }));
+                      setTerritories(
+                        new Map<string, territoryDetails>(
+                          Array.from(territories).map(([key, value]) => {
+                            if (key === selectedTerritory.id) {
+                              value.code = updatedCode as string;
+                            }
+                            return [key, value];
+                          })
+                        )
+                      );
+                    }}
                   >
                     {t("territory.changeCode", "Change Code")}
                   </Dropdown.Item>
                   <Dropdown.Item
-                    onClick={() =>
-                      ModalManager.show(
-                        SuspenseComponent(ChangeTerritoryName),
-                        {
-                          footerSaveAcl: userAccessLevel,
-                          congregation: congregationCode,
-                          territoryCode: selectedTerritoryId,
-                          name: selectedTerritoryName
-                        }
-                      ).then((updatedName) => {
-                        setSelectedTerritoryName(updatedName as string);
-                        setTerritories(
-                          new Map<string, territoryDetails>(
-                            Array.from(territories).map(([key, value]) => {
-                              if (key === selectedTerritoryId) {
-                                value.name = updatedName as string;
-                              }
-                              return [key, value];
-                            })
-                          )
-                        );
-                      })
-                    }
+                    onClick={async () => {
+                      const updatedName = await showModal(ChangeTerritoryName, {
+                        footerSaveAcl: userAccessLevel,
+                        congregation: congregationCode,
+                        territoryCode: selectedTerritory.id,
+                        name: selectedTerritory.name
+                      });
+                      setSelectedTerritory((prev) => ({
+                        ...prev,
+                        name: updatedName as string
+                      }));
+                      setTerritories(
+                        new Map<string, territoryDetails>(
+                          Array.from(territories).map(([key, value]) => {
+                            if (key === selectedTerritory.id) {
+                              value.name = updatedName as string;
+                            }
+                            return [key, value];
+                          })
+                        )
+                      );
+                    }}
                   >
                     {t("territory.changeName", "Change Name")}
                   </Dropdown.Item>
@@ -871,7 +713,7 @@ function Admin({ user }: adminProps) {
                         t(
                           "territory.deleteWarning",
                           '⚠️ WARNING: Deleting territory "{{code}}" will remove all associated maps and assignments. This action cannot be undone. Proceed?',
-                          { code: selectedTerritoryCode }
+                          { code: selectedTerritory.code }
                         )
                       );
 
@@ -888,7 +730,7 @@ function Admin({ user }: adminProps) {
                         t(
                           "territory.resetWarning",
                           '⚠️ WARNING: Resetting territory "{{code}}" will reset the status of all addresses. This action cannot be undone. Proceed?',
-                          { code: selectedTerritoryCode }
+                          { code: selectedTerritory.code }
                         )
                       );
 
@@ -902,7 +744,7 @@ function Admin({ user }: adminProps) {
                 </DropdownButton>
               </ComponentAuthorizer>
             )}
-            {selectedTerritoryCode && policy.hasOptions() && (
+            {selectedTerritory.code && policy.hasOptions() && (
               <ComponentAuthorizer
                 requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
                 userPermission={userAccessLevel}
@@ -916,10 +758,10 @@ function Admin({ user }: adminProps) {
                 >
                   <Dropdown.Item
                     onClick={() =>
-                      ModalManager.show(SuspenseComponent(NewSingleMap), {
+                      showModal(NewSingleMap, {
                         footerSaveAcl: userAccessLevel,
                         congregation: congregationCode,
-                        territoryCode: selectedTerritoryId,
+                        territoryCode: selectedTerritory.id,
                         defaultType: policy.defaultType,
                         origin: policy.origin
                       })
@@ -929,10 +771,10 @@ function Admin({ user }: adminProps) {
                   </Dropdown.Item>
                   <Dropdown.Item
                     onClick={() =>
-                      ModalManager.show(SuspenseComponent(NewMultiMap), {
+                      showModal(NewMultiMap, {
                         footerSaveAcl: userAccessLevel,
                         congregation: congregationCode,
-                        territoryCode: selectedTerritoryId,
+                        territoryCode: selectedTerritory.id,
                         defaultType: policy.defaultType,
                         origin: policy.origin
                       })
@@ -970,28 +812,22 @@ function Admin({ user }: adminProps) {
               >
                 <Dropdown.Item
                   onClick={() =>
-                    ModalManager.show(
-                      SuspenseComponent(UpdateCongregationSettings),
-                      {
-                        currentName: congregationName,
-                        currentCongregation: congregationCode,
-                        currentMaxTries:
-                          policy?.maxTries || DEFAULT_CONGREGATION_MAX_TRIES,
-                        currentDefaultExpiryHrs: defaultExpiryHours
-                      }
-                    )
+                    showModal(UpdateCongregationSettings, {
+                      currentName: congregationName,
+                      currentCongregation: congregationCode,
+                      currentMaxTries:
+                        policy?.maxTries || DEFAULT_CONGREGATION_MAX_TRIES,
+                      currentDefaultExpiryHrs: defaultExpiryHours
+                    })
                   }
                 >
                   {t("congregation.settings", "Settings")}
                 </Dropdown.Item>
                 <Dropdown.Item
                   onClick={() =>
-                    ModalManager.show(
-                      SuspenseComponent(UpdateCongregationOptions),
-                      {
-                        currentCongregation: congregationCode
-                      }
-                    )
+                    showModal(UpdateCongregationOptions, {
+                      currentCongregation: congregationCode
+                    })
                   }
                 >
                   {t("congregation.householdOptions", "Household Options")}
@@ -1001,7 +837,7 @@ function Admin({ user }: adminProps) {
                 </Dropdown.Item>
                 <Dropdown.Item
                   onClick={() => {
-                    ModalManager.show(SuspenseComponent(InviteUser), {
+                    showModal(InviteUser, {
                       email: getUser("email") as string,
                       congregation: congregationCode,
                       footerSaveAcl: userAccessLevel
@@ -1035,7 +871,7 @@ function Admin({ user }: adminProps) {
             >
               <Dropdown.Item
                 onClick={() => {
-                  ModalManager.show(SuspenseComponent(GetProfile), {
+                  showModal(GetProfile, {
                     user: getUser() as AuthRecord
                   });
                 }}
@@ -1071,21 +907,33 @@ function Admin({ user }: adminProps) {
                 {t("auth.logout", "Logout")}
               </Dropdown.Item>
             </DropdownButton>
-            <LanguageSelector />
+            <Button
+              className="m-1"
+              size="sm"
+              variant="outline-primary"
+              onClick={toggleLanguageSelector}
+            >
+              <Image
+                src="https://assets.ministry-mapper.com/language.svg"
+                alt="Language"
+                width={16}
+                height={16}
+              />
+            </Button>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      {!selectedTerritoryCode && <Welcome name={userName} />}
-      <TerritoryHeader name={selectedTerritoryName} />
+      {!selectedTerritory.code && <Welcome name={userName} />}
+      <TerritoryHeader name={selectedTerritory.name} />
       {isMapView ? (
         <MapView
-          key={`mapview-${selectedTerritoryId}`}
+          key={`mapview-${selectedTerritory.id}`}
           sortedAddressList={sortedAddressList}
           policy={policy}
         />
       ) : (
         <MapListing
-          key={`maplist-${selectedTerritoryId}`}
+          key={`maplist-${selectedTerritory.id}`}
           sortedAddressList={sortedAddressList}
           accordingKeys={accordingKeys}
           setAccordionKeys={setAccordionKeys}
@@ -1103,7 +951,7 @@ function Admin({ user }: adminProps) {
           toggleAddressTerritoryListing={toggleAddressTerritoryListing}
         />
       )}
-      {selectedTerritoryCode && (
+      {selectedTerritory.code && (
         <>
           <ModeToggle
             onClick={() => {
