@@ -26,6 +26,7 @@ import {
 } from "../../utils/pocketbase";
 import { useTranslation } from "react-i18next";
 import modalManagement from "../../hooks/modalManagement";
+import ZeroPad from "../../utils/helpers/zeropad";
 const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
 const UpdateUnit = lazy(() => import("../modal/updateunit"));
 
@@ -145,12 +146,18 @@ const MainTable = ({
   );
 
   const handleEditUnit = useCallback(
-    (addressId: string) => {
+    (unitDetails?: unitDetails) => {
+      if (userRole !== USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE) return;
+      const unitNo = unitDetails?.number || "";
+      const sequence = unitDetails?.sequence;
+      const totalUnits = unitDetails?.totalunits || 1;
       showModal(UpdateUnit, {
-        addressId,
         mapId,
-        footerSaveAcl: userRole,
-        unitType: mapType
+        mapName,
+        unitNo,
+        unitSequence: sequence,
+        unitDisplay: ZeroPad(unitNo, maxUnitLength),
+        totalUnits
       });
     },
     [mapType, userRole, mapId]
@@ -189,7 +196,7 @@ const MainTable = ({
       const id = getIdFromEvent(event) || "";
       return addresses.get(id);
     },
-    [getIdFromEvent]
+    []
   );
 
   const handleFloorDelete = useCallback(
@@ -291,9 +298,14 @@ const MainTable = ({
         const { floor } = event.currentTarget.dataset;
         handleFloorDelete(Number(floor));
       }}
-      handleUnitNoUpdate={(event) =>
-        handleEditUnit(getUnitDetails(event, addresses)?.id || "")
-      }
+      handleUnitNoUpdate={(event) => {
+        const details = getUnitDetails(event, addresses);
+        if (!details) return;
+        details.totalunits = Number(
+          event.currentTarget.dataset.totalunits || 1
+        );
+        handleEditUnit(details);
+      }}
     />
   );
 };
