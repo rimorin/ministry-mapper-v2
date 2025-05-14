@@ -17,7 +17,7 @@ const UpdateUnit = NiceModal.create(
     mapName,
     unitNo,
     unitSequence,
-    unitLength,
+    totalUnits,
     unitDisplay
   }: UpdateUnitModalProps) => {
     const { t } = useTranslation();
@@ -100,7 +100,7 @@ const UpdateUnit = NiceModal.create(
             <Button
               variant="secondary"
               onClick={() => {
-                const hasOnlyOneUnitNumber = unitLength === 1;
+                const hasOnlyOneUnitNumber = totalUnits === 1;
                 if (hasOnlyOneUnitNumber) {
                   alert(t("unit.requireOneUnitValidation"));
                   return;

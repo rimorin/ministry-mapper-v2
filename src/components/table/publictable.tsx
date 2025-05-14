@@ -23,6 +23,8 @@ const PublicTerritoryTable = memo(
   }: territoryMultiProps) => {
     const { t } = useTranslation();
     const moreThanOneFloor = floors.length > 1;
+    const floorDetails = floors?.[0];
+    const totalUnits = floorDetails?.units?.length || 1;
     return (
       <div
         className={policy.isFromAdmin() ? "sticky-body-admin" : "sticky-body"}
@@ -43,14 +45,16 @@ const PublicTerritoryTable = memo(
                 {t("table.levelUnit", "lvl/unit")}
               </th>
               {floors &&
-                floors?.[0]?.units.map((item, index) => (
+                floorDetails &&
+                floorDetails.units.map((item, index) => (
                   <th
                     key={`${index}-${item.number}`}
                     scope="col"
                     className="text-center align-middle"
                     onClick={handleUnitNoUpdate}
                     data-id={item.id}
-                    data-floor={floors?.[0]?.floor}
+                    data-floor={floorDetails.floor}
+                    data-totalunits={totalUnits}
                   >
                     {ZeroPad(item.number, maxUnitLength)}
                   </th>

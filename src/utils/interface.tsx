@@ -48,6 +48,7 @@ export interface unitDetails {
   coordinates?: latlongInterface;
   updated?: number;
   updatedBy?: string;
+  totalunits?: number;
 }
 
 export interface nothomeProps {
@@ -505,7 +506,7 @@ export interface UpdateUnitModalProps
     congregationInterface {
   mapName: string;
   unitSequence: number | undefined;
-  unitLength: number;
+  totalUnits: number;
   unitNo: string;
   unitDisplay: string;
   addressData: addressDetails;
