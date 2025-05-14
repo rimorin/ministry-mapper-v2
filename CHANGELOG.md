@@ -1,3 +1,10 @@
+## [1.4.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.4.1...v1.4.2) (2025-05-14)
+
+
+### Bug Fixes
+
+* update unit no modal attributes ([2391a4f](https://github.com/rimorin/ministry-mapper-v2/commit/2391a4f5b0a996f62d944214ee74cc4d63e809b5))
+
 ## [1.4.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.4.0...v1.4.1) (2025-04-28)
 
 
