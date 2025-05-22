@@ -1,8 +1,9 @@
 import { useEffect, useRef } from "react";
-import { ListGroup, Button } from "react-bootstrap";
+import { ListGroup } from "react-bootstrap";
 import { Message } from "../../utils/interface";
 import { Policy } from "../../utils/policies";
 import { MESSAGE_TYPES, USER_ACCESS_LEVELS } from "../../utils/constants";
+import GenericButton from "./button";
 
 const FeedbackList = ({
   feedbacks,
@@ -56,36 +57,33 @@ const FeedbackList = ({
               {isAdmin ? (
                 <>
                   {!fb.read && (
-                    <Button
+                    <GenericButton
+                      label="✅"
                       size="sm"
                       variant="outline-success"
                       className="me-1"
                       onClick={() => handleRead(fb.id)}
-                    >
-                      ✅
-                    </Button>
+                    />
                   )}
                   {fb.read && fb.type === MESSAGE_TYPES.ADMIN && (
-                    <Button
+                    <GenericButton
+                      label={fb.pinned ? "📌" : "📍"}
                       size="sm"
                       variant={
                         fb.pinned ? "outline-primary" : "outline-secondary"
                       }
                       className="me-1"
                       onClick={() => handlePin(fb.id, !fb.pinned)}
-                    >
-                      {fb.pinned ? "📌" : "📍"}
-                    </Button>
+                    />
                   )}
                   {fb.read && (
-                    <Button
+                    <GenericButton
+                      label="🗑️"
                       size="sm"
                       variant="outline-warning"
                       className="me-1"
                       onClick={() => handleDelete(fb.id)}
-                    >
-                      🗑️
-                    </Button>
+                    />
                   )}
                 </>
               ) : (

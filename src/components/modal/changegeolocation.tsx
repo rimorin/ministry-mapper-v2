@@ -1,7 +1,7 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, useCallback, useEffect } from "react";
-import { Modal, Form, Button, Spinner } from "react-bootstrap";
+import { Modal, Form, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
@@ -16,6 +16,7 @@ import { ControlPanel } from "../utils/mapinfopanel";
 import { MapCurrentTarget } from "../utils/mapcurrenttarget";
 import CurrentLocationMarker from "../statics/currentlocator";
 import { updateDataById } from "../../utils/pocketbase";
+import GenericButton from "../navigation/button";
 
 const ChangeMapGeolocation = NiceModal.create(
   ({
@@ -172,22 +173,30 @@ const ChangeMapGeolocation = NiceModal.create(
             </Map>
           </Modal.Body>
           <Modal.Footer className="justify-content-around">
-            <Button variant="secondary" onClick={() => modal.hide()}>
-              {t("common.close", "Close")}
-            </Button>
-            <Button variant="primary" type="submit">
-              {isSaving && (
+            <GenericButton
+              variant="secondary"
+              onClick={() => modal.remove()}
+              label={t("common.cancel", "Cancel")}
+            />
+            <GenericButton
+              type="submit"
+              variant="primary"
+              label={
                 <>
-                  <Spinner
-                    as="span"
-                    animation="border"
-                    size="sm"
-                    aria-hidden="true"
-                  />{" "}
+                  {isSaving && (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      aria-hidden="true"
+                    />
+                  )}{" "}
+                  {isNew
+                    ? t("common.select", "Select")
+                    : t("common.save", "Save")}
                 </>
-              )}
-              {isNew ? t("common.select", "Select") : t("common.save", "Save")}
-            </Button>
+              }
+            />
           </Modal.Footer>
         </Form>
       </Modal>

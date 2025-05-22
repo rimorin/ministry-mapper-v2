@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { Modal, ListGroup, Button } from "react-bootstrap";
+import { Modal, ListGroup } from "react-bootstrap";
 import {
   WIKI_CATEGORIES,
   LINK_SELECTOR_VIEWPORT_HEIGHT,
@@ -14,6 +14,7 @@ import { useCallback, useEffect, useState } from "react";
 import { AssignmentModalProps } from "../../utils/interface";
 import { deleteDataById } from "../../utils/pocketbase";
 import { useTranslation } from "react-i18next";
+import GenericButton from "../navigation/button";
 
 const GetAssignments = NiceModal.create(
   ({
@@ -107,7 +108,7 @@ const GetAssignments = NiceModal.create(
                       )}
                     </div>
                   </div>
-                  <Button
+                  <GenericButton
                     variant="outline-warning"
                     className="me-1"
                     onClick={async (event) => {
@@ -119,11 +120,12 @@ const GetAssignments = NiceModal.create(
                         )
                       );
                     }}
-                    data-linkid={assignment.id}
-                    data-postal={assignment.mapId}
-                  >
-                    🗑️
-                  </Button>
+                    dataAttributes={{
+                      linkid: assignment.id,
+                      postal: assignment.mapId
+                    }}
+                    label="🗑️"
+                  />
                 </ListGroup.Item>
               );
             })}

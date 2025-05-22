@@ -1,7 +1,7 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent, ChangeEvent, useCallback, lazy } from "react";
-import { Modal, Form, Collapse, Button } from "react-bootstrap";
+import { Modal, Form, Collapse } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
   USER_ACCESS_LEVELS,
@@ -28,6 +28,7 @@ import ComponentAuthorizer from "../navigation/authorizer";
 import DateFormat from "../../utils/helpers/dateformat";
 import { deleteDataById, updateDataById } from "../../utils/pocketbase";
 import modalManagement from "../../hooks/modalManagement";
+import GenericButton from "../navigation/button";
 const ChangeMapGeolocation = lazy(() => import("./changegeolocation"));
 
 const UpdateUnitStatus = NiceModal.create(
@@ -309,22 +310,22 @@ const UpdateUnitStatus = NiceModal.create(
                   requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
                   userPermission={policy.userRole}
                 >
-                  <Button variant="secondary" onClick={handleConfirmDelete}>
-                    {t("common.delete", "Delete")}
-                  </Button>
+                  <GenericButton
+                    variant="secondary"
+                    onClick={handleConfirmDelete}
+                    label={t("common.delete", "Delete")}
+                  />
                 </ComponentAuthorizer>
               </>
             ) : (
               <></>
             )}
             {hhNote && (
-              <Button
+              <GenericButton
                 variant="secondary"
-                type="button"
                 onClick={handleClearNote}
-              >
-                {t("address.clearNote", "Clear Note")}
-              </Button>
+                label={t("address.clearNote", "Clear Note")}
+              />
             )}
           </ModalFooter>
         </Form>

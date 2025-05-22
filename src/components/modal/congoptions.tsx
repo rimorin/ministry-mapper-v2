@@ -11,7 +11,6 @@ import {
   Form,
   Modal,
   Table,
-  Button,
   Badge,
   OverlayTrigger,
   Tooltip
@@ -27,6 +26,7 @@ import {
 import GenericInputField from "../form/input";
 import ModalSubmitButton from "../form/submit";
 import { callFunction, getList } from "../../utils/pocketbase";
+import GenericButton from "../navigation/button";
 
 const UpdateCongregationOptions = NiceModal.create(
   ({ currentCongregation }: UpdateCongregationOptionsModalProps) => {
@@ -376,10 +376,11 @@ const UpdateCongregationOptions = NiceModal.create(
                             />
                           </td>
                           <td align="center" valign="middle">
-                            <Button
+                            <GenericButton
                               size="sm"
                               variant="outline-warning"
                               className="me-1"
+                              label="🗑️"
                               onClick={() => {
                                 const newOptions = [...options];
                                 if (newOptions.length === 1) {
@@ -402,9 +403,7 @@ const UpdateCongregationOptions = NiceModal.create(
                                 }
                                 setOptions(newOptions);
                               }}
-                            >
-                              🗑️
-                            </Button>
+                            />
                           </td>
                         </tr>
                       )
@@ -413,10 +412,12 @@ const UpdateCongregationOptions = NiceModal.create(
             </Table>
           </Modal.Body>
           <Modal.Footer className="justify-content-around">
-            <Button variant="secondary" onClick={modal.hide}>
-              {t("common.close", "Close")}
-            </Button>
-            <Button
+            <GenericButton
+              variant="secondary"
+              onClick={() => modal.hide()}
+              label={t("common.close", "Close")}
+            />
+            <GenericButton
               variant="secondary"
               onClick={() => {
                 const newOptions = [...options];
@@ -437,9 +438,8 @@ const UpdateCongregationOptions = NiceModal.create(
                 setOptions(newOptions);
                 setNewOptionAdded(true);
               }}
-            >
-              {t("congregation.newOption", "New Option")}
-            </Button>
+              label={t("congregation.newOption", "New Option")}
+            />
             <ModalSubmitButton isSaving={isSaving} />
           </Modal.Footer>
         </Form>

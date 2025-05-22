@@ -1,9 +1,10 @@
-import { Modal, Button } from "react-bootstrap";
+import { Modal } from "react-bootstrap";
 import { FooterProps } from "../../utils/interface";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import { useTranslation } from "react-i18next";
 import ModalSubmitButton from "./submit";
 import ComponentAuthorizer from "../navigation/authorizer";
+import GenericButton from "../navigation/button";
 
 const ModalFooter = ({
   handleClick,
@@ -19,9 +20,11 @@ const ModalFooter = ({
 
   return (
     <Modal.Footer className="justify-content-around">
-      <Button variant="secondary" onClick={handleClick}>
-        {t("common.close")}
-      </Button>
+      <GenericButton
+        variant="secondary"
+        onClick={handleClick}
+        label={t("common.cancel")}
+      />
       {children}
       <ComponentAuthorizer
         requiredPermission={

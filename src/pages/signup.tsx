@@ -1,5 +1,5 @@
 import { useContext, useState, useCallback } from "react";
-import { Form, Button, Spinner, FloatingLabel } from "react-bootstrap";
+import { Form, Spinner, FloatingLabel } from "react-bootstrap";
 import PasswordChecklist from "react-password-checklist";
 import { useTranslation } from "react-i18next";
 
@@ -7,6 +7,7 @@ import errorHandler from "../utils/helpers/errorhandler";
 import { PASSWORD_POLICY, MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
 import { StateContext } from "../components/utils/context";
 import { createData, verifyEmail } from "../utils/pocketbase";
+import GenericButton from "../components/navigation/button";
 const { VITE_PRIVACY_URL, VITE_TERMS_URL } = import.meta.env;
 
 const SignupComponent = () => {
@@ -189,26 +190,31 @@ const SignupComponent = () => {
         </p>
       </Form.Group>
       <Form.Group className="text-center" controlId="formBasicButton">
-        <Button
+        <GenericButton
           variant="outline-primary"
           className={`m-2 ${!isPasswordValid && "disabled"}`}
           type="submit"
-        >
-          {isCreating && (
+          label={
             <>
-              <Spinner size="sm" />{" "}
+              {isCreating && (
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  aria-hidden="true"
+                />
+              )}{" "}
+              {t("auth.signUp", "Sign Up")}
             </>
-          )}
-          {t("auth.signUp", "Sign Up")}
-        </Button>
-        <Button
-          className="mx-2"
+          }
+        />
+        <GenericButton
           variant="outline-primary"
+          className="mx-2"
           type="reset"
+          label={t("common.clear", "Clear")}
           onClick={resetCreationForm}
-        >
-          {t("common.clear", "Clear")}
-        </Button>
+        />
       </Form.Group>
       <Form.Group className="text-center" controlId="formBasicButton">
         <hr />
