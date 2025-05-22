@@ -1,6 +1,6 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useState, useEffect } from "react";
-import { Button, ButtonGroup, Modal } from "react-bootstrap";
+import { ButtonGroup, Modal } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
 import HelpButton from "../navigation/help";
@@ -12,6 +12,7 @@ import { Map, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
 import { MapCurrentTarget } from "../utils/mapcurrenttarget";
 import ModalFooter from "../form/footer";
 import getDirection from "../../utils/helpers/directiongenerator";
+import GenericButton from "../navigation/button";
 
 const GetMapGeolocation = NiceModal.create(
   ({ coordinates, origin, name }: GetMapGeolocationModalProps) => {
@@ -142,18 +143,17 @@ const GetMapGeolocation = NiceModal.create(
           handleClick={() => modal.hide()}
           requiredAcLForSave={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
         >
-          <Button
+          <GenericButton
             variant="secondary"
             onClick={() => {
               window.open(getDirection(coordinates), "_blank");
             }}
-          >
-            {t("navigation.openMaps", "Open Maps")}
-          </Button>
+            label={t("navigation.openMaps", "Open Maps")}
+          />
           <ButtonGroup
             aria-label={t("navigation.transportModes", "Transport modes")}
           >
-            <Button
+            <GenericButton
               variant={
                 travelMode === google.maps.TravelMode.WALKING
                   ? "primary"
@@ -161,10 +161,9 @@ const GetMapGeolocation = NiceModal.create(
               }
               aria-label={t("navigation.walkMode", "Walk mode")}
               onClick={() => setTravelMode(google.maps.TravelMode.WALKING)}
-            >
-              🚶
-            </Button>
-            <Button
+              label="🚶"
+            />
+            <GenericButton
               variant={
                 travelMode === google.maps.TravelMode.DRIVING
                   ? "primary"
@@ -172,10 +171,9 @@ const GetMapGeolocation = NiceModal.create(
               }
               aria-label={t("navigation.driveMode", "Drive mode")}
               onClick={() => setTravelMode(google.maps.TravelMode.DRIVING)}
-            >
-              🚗
-            </Button>
-            <Button
+              label="🚗"
+            />
+            <GenericButton
               variant={
                 travelMode === google.maps.TravelMode.TRANSIT
                   ? "primary"
@@ -183,9 +181,8 @@ const GetMapGeolocation = NiceModal.create(
               }
               aria-label={t("navigation.transitMode", "Transit mode")}
               onClick={() => setTravelMode(google.maps.TravelMode.TRANSIT)}
-            >
-              🚌
-            </Button>
+              label="🚌"
+            />
           </ButtonGroup>
         </ModalFooter>
       </Modal>

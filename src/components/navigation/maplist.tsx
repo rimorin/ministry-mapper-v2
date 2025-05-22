@@ -1,10 +1,7 @@
 import React, { lazy, MouseEvent, useCallback, useState } from "react";
 import {
   Accordion,
-  Button,
   Container,
-  Dropdown,
-  DropdownButton,
   Navbar,
   ProgressBar,
   Spinner
@@ -28,6 +25,8 @@ import {
 import { Policy } from "../../utils/policies";
 import { useTranslation } from "react-i18next";
 import modalManagement from "../../hooks/modalManagement";
+import GenericButton from "./button";
+import { GenericDropdownButton, GenericDropdownItem } from "./dropdownbutton";
 
 const GetMapGeolocation = lazy(() => import("../modal/getlocation"));
 const ChangeMapGeoLocation = lazy(() => import("../modal/changegeolocation"));
@@ -251,16 +250,17 @@ const MapListing: React.FC<MapListingProps> = ({
                 <Navbar bg="light" expand="lg" key={`navbar-${currentMapId}`}>
                   <Container fluid className="justify-content-end">
                     {currentMapType === TERRITORY_TYPES.SINGLE_STORY && (
-                      <Button
+                      <GenericButton
                         size="sm"
                         variant="outline-primary"
                         className="m-1"
                         onClick={() => handleToggleMapView(currentMapId)}
-                      >
-                        {mapViews.get(currentMapId)
-                          ? t("navigation.listView", "List View")
-                          : t("navigation.mapView", "Map View")}
-                      </Button>
+                        label={
+                          mapViews.get(currentMapId)
+                            ? t("navigation.listView", "List View")
+                            : t("navigation.mapView", "Map View")
+                        }
+                      />
                     )}
 
                     <AssignmentButtonGroup
@@ -269,14 +269,13 @@ const MapListing: React.FC<MapListingProps> = ({
                       policy={policy}
                       userId={getUser("id") as string}
                     />
-                    <Button
+                    <GenericButton
                       size="sm"
                       variant="outline-primary"
                       className="m-1"
                       onClick={() => handleShowGetLocation(addressElement)}
-                    >
-                      {t("navigation.direction", "Direction")}
-                    </Button>
+                      label={t("navigation.direction", "Direction")}
+                    />
                     <MessageButtonGroup
                       key={`message-btn-${currentMapId}`}
                       addressElement={addressElement}
@@ -288,12 +287,12 @@ const MapListing: React.FC<MapListingProps> = ({
                       }
                       userPermission={userAccessLevel}
                     >
-                      <DropdownButton
+                      <GenericDropdownButton
                         className="dropdown-btn"
                         align="end"
                         variant="outline-primary"
                         size="sm"
-                        title={
+                        label={
                           <>
                             {processingMap.isProcessing &&
                               processingMap.mapId === currentMapId && (
@@ -314,7 +313,7 @@ const MapListing: React.FC<MapListingProps> = ({
                           handleDropdownDirection(e, currentMapId)
                         }
                       >
-                        <Dropdown.Item
+                        <GenericDropdownItem
                           onClick={() =>
                             handleShowChangeLocation(
                               currentMapId,
@@ -324,8 +323,8 @@ const MapListing: React.FC<MapListingProps> = ({
                           }
                         >
                           {t("address.changeLocation", "Change Location")}
-                        </Dropdown.Item>
-                        <Dropdown.Item
+                        </GenericDropdownItem>
+                        <GenericDropdownItem
                           onClick={() =>
                             handleShowChangeMapCode(
                               currentMapId,
@@ -334,22 +333,22 @@ const MapListing: React.FC<MapListingProps> = ({
                           }
                         >
                           {t("address.changeMapNumber", "Change Map Number")}
-                        </Dropdown.Item>
-                        <Dropdown.Item
+                        </GenericDropdownItem>
+                        <GenericDropdownItem
                           onClick={() =>
                             handleChangeTerritory(currentMapId, currentMapName)
                           }
                         >
                           {t("address.changeTerritory", "Change Territory")}
-                        </Dropdown.Item>
-                        <Dropdown.Item
+                        </GenericDropdownItem>
+                        <GenericDropdownItem
                           onClick={() =>
                             handleShowChangeName(currentMapId, currentMapName)
                           }
                         >
                           {t("address.changeName", "Rename")}
-                        </Dropdown.Item>
-                        <Dropdown.Item
+                        </GenericDropdownItem>
+                        <GenericDropdownItem
                           onClick={() =>
                             handleShowAddUnit(currentMapId, addressElement)
                           }
@@ -362,40 +361,40 @@ const MapListing: React.FC<MapListingProps> = ({
                               ? "Add Property No."
                               : "Add Unit No."
                           )}
-                        </Dropdown.Item>
+                        </GenericDropdownItem>
                         {(!addressElement.type ||
                           addressElement.type ===
                             TERRITORY_TYPES.MULTIPLE_STORIES) && (
-                          <Dropdown.Item
+                          <GenericDropdownItem
                             onClick={() => handleAddHigherFloor(currentMapId)}
                           >
                             {t("address.addHigherFloor", "Add Higher Floor")}
-                          </Dropdown.Item>
+                          </GenericDropdownItem>
                         )}
                         {(!addressElement.type ||
                           addressElement.type ===
                             TERRITORY_TYPES.MULTIPLE_STORIES) && (
-                          <Dropdown.Item
+                          <GenericDropdownItem
                             onClick={() => handleAddLowerFloor(currentMapId)}
                           >
                             {t("address.addLowerFloor", "Add Lower Floor")}
-                          </Dropdown.Item>
+                          </GenericDropdownItem>
                         )}
-                        <Dropdown.Item
+                        <GenericDropdownItem
                           onClick={() =>
                             handleResetMap(currentMapId, currentMapName)
                           }
                         >
                           {t("address.resetStatus", "Reset Status")}
-                        </Dropdown.Item>
-                        <Dropdown.Item
+                        </GenericDropdownItem>
+                        <GenericDropdownItem
                           onClick={() =>
                             handleDeleteMap(currentMapId, currentMapName)
                           }
                         >
                           {t("address.delete", "Delete")}
-                        </Dropdown.Item>
-                      </DropdownButton>
+                        </GenericDropdownItem>
+                      </GenericDropdownButton>
                     </ComponentAuthorizer>
                   </Container>
                 </Navbar>

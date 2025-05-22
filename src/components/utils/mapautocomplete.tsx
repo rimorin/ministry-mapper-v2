@@ -5,14 +5,9 @@ import {
   useMap,
   useMapsLibrary
 } from "@vis.gl/react-google-maps";
-import {
-  Button,
-  Container,
-  Form,
-  InputGroup,
-  ListGroup
-} from "react-bootstrap";
+import { Container, Form, InputGroup, ListGroup } from "react-bootstrap";
 import { DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION } from "../../utils/constants";
+import GenericButton from "../navigation/button";
 
 interface Props {
   onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
@@ -128,15 +123,14 @@ export const GmapAutocomplete = ({
         }}
       >
         <InputGroup>
-          <Button
+          <GenericButton
             variant="outline-secondary"
             onClick={() => {
               setInputValue("");
               setPredictionResults([]);
             }}
-          >
-            🗑️
-          </Button>
+            label="🗑️"
+          />
           <Form.Control
             type="text"
             placeholder="Search for a place"

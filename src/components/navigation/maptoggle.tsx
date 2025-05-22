@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import GenericButton from "./button";
 
 const ModeToggle = ({
   onClick,
@@ -17,9 +18,11 @@ const ModeToggle = ({
     : t("navigation.mapView", "Map View");
 
   return (
-    <button onClick={onClick} className="mode-toggle-button">
-      <img src={imgSrc} alt={imgAlt} width={24} height={24} />
-    </button>
+    <GenericButton
+      onClick={onClick}
+      className="mode-toggle-button"
+      label={<img src={imgSrc} alt={imgAlt} width={24} height={24} />}
+    />
   );
 };
 

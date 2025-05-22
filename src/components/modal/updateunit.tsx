@@ -2,7 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useTranslation } from "react-i18next";
 
 import { useState, FormEvent, ChangeEvent } from "react";
-import { Modal, Form, Button } from "react-bootstrap";
+import { Modal, Form } from "react-bootstrap";
 import { WIKI_CATEGORIES } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import { UpdateUnitModalProps } from "../../utils/interface";
@@ -10,6 +10,7 @@ import GenericInputField from "../form/input";
 import ModalSubmitButton from "../form/submit";
 import HelpButton from "../navigation/help";
 import { callFunction } from "../../utils/pocketbase";
+import GenericButton from "../navigation/button";
 
 const UpdateUnit = NiceModal.create(
   ({
@@ -94,10 +95,12 @@ const UpdateUnit = NiceModal.create(
             />
           </Modal.Body>
           <Modal.Footer className="justify-content-around">
-            <Button variant="secondary" onClick={() => modal.hide()}>
-              {t("common.close")}
-            </Button>
-            <Button
+            <GenericButton
+              variant="secondary"
+              onClick={() => modal.hide()}
+              label={t("common.close")}
+            />
+            <GenericButton
               variant="secondary"
               onClick={() => {
                 const hasOnlyOneUnitNumber = totalUnits === 1;
@@ -113,9 +116,8 @@ const UpdateUnit = NiceModal.create(
                   modal.hide();
                 }
               }}
-            >
-              {t("unit.deleteUnitButton")}
-            </Button>
+              label={t("unit.deleteUnitButton")}
+            />
             <ModalSubmitButton isSaving={isSaving} />
           </Modal.Footer>
         </Form>

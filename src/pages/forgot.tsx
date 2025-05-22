@@ -1,10 +1,11 @@
 import { useContext, useRef, useState } from "react";
-import { Form, Button, Spinner, FloatingLabel } from "react-bootstrap";
+import { Form, Spinner, FloatingLabel } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 import errorHandler from "../utils/helpers/errorhandler";
 import { StateContext } from "../components/utils/context";
 import { requestPasswordReset } from "../utils/pocketbase";
+import GenericButton from "../components/navigation/button";
 
 const ForgotComponent = () => {
   const { t } = useTranslation();
@@ -89,27 +90,31 @@ const ForgotComponent = () => {
           </FloatingLabel>
         </Form.Group>
         <Form.Group className="text-center" controlId="formBasicButton">
-          <Button variant="outline-primary" className="m-2" type="submit">
-            {isProcessing && (
-              <>
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  aria-hidden="true"
-                />{" "}
-              </>
-            )}
-            {t("auth.continue", "Continue")}
-          </Button>
-          <Button
-            className="mx-2"
+          <GenericButton
             variant="outline-primary"
+            className="m-2"
+            type="submit"
+            label={
+              <>
+                {isProcessing && (
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    aria-hidden="true"
+                  />
+                )}{" "}
+                {t("auth.continue", "Continue")}
+              </>
+            }
+          />
+          <GenericButton
+            variant="outline-primary"
+            className="mx-2"
             type="reset"
+            label={t("common.clear", "Clear")}
             onClick={handleClearForm}
-          >
-            {t("common.clear", "Clear")}
-          </Button>
+          />
         </Form.Group>
         <Form.Group className="text-center" controlId="formBasicButton">
           <hr />

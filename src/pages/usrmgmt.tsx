@@ -1,7 +1,6 @@
 import {
   Navbar,
   Container,
-  Button,
   Form,
   FloatingLabel,
   Spinner
@@ -14,6 +13,7 @@ import PasswordChecklist from "react-password-checklist";
 import { confirmPasswordReset, confirmVerification } from "../utils/pocketbase";
 import { useSearch } from "wouter";
 import { useTranslation } from "react-i18next";
+import GenericButton from "../components/navigation/button";
 
 const MODE_RESET_PASSWORD = "resetPassword";
 const MODE_VERIFY_EMAIL = "verifyEmail";
@@ -158,26 +158,31 @@ const UserManagementComponent = () => {
               />
             </Form.Group>
             <Form.Group className="text-center" controlId="formBasicButton">
-              <Button
-                variant="primary"
-                type="submit"
-                disabled={!isLoginPasswordOk}
-              >
-                {isResetting && (
-                  <>
-                    <Spinner size="sm" />{" "}
-                  </>
-                )}
-                {t("common.submit", "Submit")}
-              </Button>
-              <Button
-                className="mx-2"
+              <GenericButton
                 variant="outline-primary"
+                className={`m-2 ${!isLoginPasswordOk && "disabled"}`}
+                type="submit"
+                label={
+                  <>
+                    {isResetting && (
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        aria-hidden="true"
+                      />
+                    )}{" "}
+                    {t("common.submit", "Submit")}
+                  </>
+                }
+              />
+              <GenericButton
+                variant="outline-primary"
+                className="mx-2"
                 type="reset"
+                label={t("common.clear", "Clear")}
                 onClick={() => resetCreationForm()}
-              >
-                {t("common.clear", "Clear")}
-              </Button>
+              />
             </Form.Group>
           </Form>
         </>

@@ -1,4 +1,4 @@
-import { Button, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { territoryMultiProps } from "../../utils/interface";
 import AddressStatus from "./address";
@@ -7,9 +7,10 @@ import {
   DEFAULT_FLOOR_PADDING,
   USER_ACCESS_LEVELS
 } from "../../utils/constants";
-import ComponentAuthorizer from "../navigation/authorizer";
 import ZeroPad from "../../utils/helpers/zeropad";
 import { memo } from "react";
+import GenericButton from "../navigation/button";
+import ComponentAuthorizer from "../navigation/authorizer";
 
 const PublicTerritoryTable = memo(
   ({
@@ -77,15 +78,14 @@ const PublicTerritoryTable = memo(
                         }
                         userPermission={policy?.userRole}
                       >
-                        <Button
+                        <GenericButton
                           size="sm"
                           variant="outline-warning"
                           className="me-1"
                           onClick={handleFloorDelete}
-                          data-floor={item.floor}
-                        >
-                          {t("table.deleteFloor", "🗑️")}
-                        </Button>
+                          dataAttributes={{ floor: item.floor.toString() }}
+                          label={t("table.deleteFloor", "🗑️")}
+                        />
                       </ComponentAuthorizer>
                     )}
                     {ZeroPad(item.floor.toString(), DEFAULT_FLOOR_PADDING)}

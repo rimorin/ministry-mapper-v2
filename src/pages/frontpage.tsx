@@ -6,7 +6,7 @@ import {
   Suspense,
   useCallback
 } from "react";
-import { Button, Container, Navbar, Image } from "react-bootstrap";
+import { Container, Navbar, Image } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { MINISTRY_MAPPER_WIKI_PAGE } from "../utils/constants";
 import NavBarBranding from "../components/navigation/branding";
@@ -19,6 +19,7 @@ import Loader from "../components/statics/loader";
 import LanguageSelector from "../i18n/LanguageSelector";
 import { LanguageContext } from "../i18n/LanguageContext";
 import useUIState from "../hooks/admin/uiManagement";
+import GenericButton from "../components/navigation/button";
 const { VITE_ABOUT_URL } = import.meta.env;
 
 const AboutURL = (VITE_ABOUT_URL || MINISTRY_MAPPER_WIKI_PAGE) as string;
@@ -91,27 +92,27 @@ const FrontPage = () => {
           <Container fluid>
             <NavBarBranding naming="" />
             <div className="d-flex">
-              <Button
+              <GenericButton
                 className="m-1"
                 size="sm"
                 variant="outline-primary"
                 onClick={handleOpenAbout}
-              >
-                {t("navigation.about", "About")}
-              </Button>
-              <Button
+                label={t("navigation.about", "About")}
+              />
+              <GenericButton
                 className="m-1"
                 size="sm"
                 variant="outline-primary"
                 onClick={toggleLanguageSelector}
-              >
-                <Image
-                  src="https://assets.ministry-mapper.com/language.svg"
-                  alt="Language"
-                  width={16}
-                  height={16}
-                />
-              </Button>
+                label={
+                  <Image
+                    src="https://assets.ministry-mapper.com/language.svg"
+                    alt="Language"
+                    width={16}
+                    height={16}
+                  />
+                }
+              />
             </div>
           </Container>
         </Navbar>

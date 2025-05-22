@@ -1,5 +1,5 @@
 import { useCallback, useContext, useRef, useState } from "react";
-import { Form, Button, Spinner, FloatingLabel } from "react-bootstrap";
+import { Form, Spinner, FloatingLabel } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
   authenticateEmailAndPassword,
@@ -9,6 +9,7 @@ import {
 
 import errorHandler from "../utils/helpers/errorhandler";
 import { StateContext } from "../components/utils/context";
+import GenericButton from "../components/navigation/button";
 
 const LoginComponent = () => {
   const { t } = useTranslation();
@@ -194,27 +195,31 @@ const LoginComponent = () => {
             </div>
           </Form.Group>
           <Form.Group className="text-center" controlId="formBasicButton">
-            <Button
+            <GenericButton
               variant="outline-primary"
               className="m-2"
               type="submit"
-              disabled={isLogin}
-            >
-              {isLogin && (
+              label={
                 <>
-                  <Spinner size="sm" />{" "}
+                  {isLogin && (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      aria-hidden="true"
+                    />
+                  )}{" "}
+                  {t("auth.signIn", "Sign In")}
                 </>
-              )}
-              {t("auth.signIn", "Sign In")}
-            </Button>
-            <Button
-              className="mx-2"
+              }
+            />
+            <GenericButton
               variant="outline-primary"
+              className="mx-2"
               type="reset"
+              label={t("common.clear", "Clear")}
               onClick={handleClearLogin}
-            >
-              {t("common.clear", "Clear")}
-            </Button>
+            />
           </Form.Group>
           <Form.Group className="text-center" controlId="formBasicButton">
             <hr />
@@ -263,37 +268,40 @@ const LoginComponent = () => {
             </div>
           </Form.Group>
           <Form.Group className="text-center" controlId="formBasicButton">
-            <Button
+            <GenericButton
               variant="outline-primary"
               className="m-2"
               type="submit"
               disabled={isLogin}
-            >
-              {isLogin && (
+              label={
                 <>
-                  <Spinner size="sm" />{" "}
+                  {isLogin && (
+                    <Spinner
+                      as="span"
+                      animation="border"
+                      size="sm"
+                      aria-hidden="true"
+                    />
+                  )}{" "}
+                  {t("auth.verify", "Verify")}
                 </>
-              )}
-              {t("auth.verify", "Verify")}
-            </Button>
+              }
+            />
             {navigator.clipboard && (
-              <Button
+              <GenericButton
                 className="mx-2"
                 variant="outline-primary"
-                type="button"
+                label={t("auth.paste", "Paste")}
                 onClick={handleClipboardPaste}
-              >
-                {t("auth.paste", "Paste")}
-              </Button>
+              />
             )}
-            <Button
+            <GenericButton
               className="mx-2"
               variant="outline-primary"
               type="reset"
+              label={t("common.clear", "Clear")}
               onClick={handleClearOtpCode}
-            >
-              {t("common.clear", "Clear")}
-            </Button>
+            />
           </Form.Group>
         </Form>
       )}
