@@ -258,7 +258,7 @@ const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = memo(
         >
           <ButtonGroup className="m-1">
             <GenericButton
-              key={`assign-personal-${mapId}`}
+              key={`assign-normal-${mapId}`}
               size="sm"
               variant="outline-primary"
               onClick={() => handleButtonClick(LINK_TYPES.ASSIGNMENT)}
