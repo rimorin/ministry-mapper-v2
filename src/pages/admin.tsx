@@ -1,15 +1,7 @@
 import "../css/admin.css";
 
 import { useEffect, useCallback, useContext, lazy } from "react";
-import {
-  Button,
-  Container,
-  Dropdown,
-  DropdownButton,
-  Navbar,
-  Spinner,
-  Image
-} from "react-bootstrap";
+import { Container, Navbar, Spinner, Image } from "react-bootstrap";
 
 import { AuthRecord } from "pocketbase";
 import { useTranslation } from "react-i18next";
@@ -66,6 +58,11 @@ import {
 } from "../utils/pocketbase";
 import { LanguageContext } from "../i18n/LanguageContext";
 import modalManagement from "../hooks/modalManagement";
+import GenericButton from "../components/navigation/button";
+import {
+  GenericDropdownButton,
+  GenericDropdownItem
+} from "../components/navigation/dropdownbutton";
 
 const UnauthorizedPage = SuspenseComponent(
   lazy(() => import("../components/statics/unauth"))
@@ -417,6 +414,53 @@ function Admin({ user }: adminProps) {
     clearTerritorySelection();
   }, []);
 
+  const handleShowCongregationSettings = useCallback(() => {
+    showModal(UpdateCongregationSettings, {
+      currentName: congregationName,
+      currentCongregation: congregationCode,
+      currentMaxTries: policy?.maxTries || DEFAULT_CONGREGATION_MAX_TRIES,
+      currentDefaultExpiryHrs: defaultExpiryHours
+    });
+  }, [
+    congregationName,
+    congregationCode,
+    policy?.maxTries,
+    defaultExpiryHours
+  ]);
+
+  const handleShowCongregationOptions = useCallback(() => {
+    showModal(UpdateCongregationOptions, {
+      currentCongregation: congregationCode
+    });
+  }, [congregationCode]);
+
+  const handleManageUsers = useCallback(async () => {
+    await getUsers();
+  }, []);
+
+  const handleInviteUser = useCallback(() => {
+    showModal(InviteUser, {
+      email: getUser("email") as string,
+      congregation: congregationCode,
+      footerSaveAcl: userAccessLevel
+    });
+  }, [congregationCode, userAccessLevel]);
+
+  const handleShowProfile = useCallback(() => {
+    showModal(GetProfile, {
+      user: getUser() as AuthRecord
+    });
+  }, []);
+
+  const handleShowAssignments = useCallback(() => {
+    getAssignments(congregationCode, getUser("id") as string);
+  }, [congregationCode]);
+
+  const handlePasswordReset = useCallback(async () => {
+    await requestPasswordReset();
+    alert(t("auth.passwordResetConfirmation", "Password reset email sent."));
+  }, []);
+
   useEffect(() => {
     fetchData();
     window.addEventListener("scroll", handleScroll);
@@ -573,44 +617,47 @@ function Admin({ user }: adminProps) {
             className="justify-content-end mt-1"
           >
             {userCongregationAccesses.length > 1 && (
-              <Button
+              <GenericButton
                 className="m-1"
                 size="sm"
                 variant="outline-primary"
                 onClick={toggleCongregationListing}
-              >
-                {t("congregation.selectCongregation", "Select Congregation")}
-              </Button>
+                label={t(
+                  "congregation.selectCongregation",
+                  "Select Congregation"
+                )}
+              />
             )}
             {congregationTerritoryList &&
               congregationTerritoryList.length > 0 && (
-                <Button
+                <GenericButton
                   className="m-1"
                   size="sm"
                   variant="outline-primary"
                   onClick={toggleTerritoryListing}
-                >
-                  {selectedTerritory.code ? (
-                    <>
-                      <AggregationBadge
-                        aggregate={
-                          territories.get(selectedTerritory.id as string)
-                            ?.aggregates || 0
-                        }
-                      />
-                      {selectedTerritory.code}
-                    </>
-                  ) : (
-                    t("territory.selectTerritory", "Select Territory")
-                  )}
-                </Button>
+                  label={
+                    selectedTerritory.code ? (
+                      <>
+                        <AggregationBadge
+                          aggregate={
+                            territories.get(selectedTerritory.id as string)
+                              ?.aggregates || 0
+                          }
+                        />
+                        {selectedTerritory.code}
+                      </>
+                    ) : (
+                      t("territory.selectTerritory", "Select Territory")
+                    )
+                  }
+                />
               )}
             {!selectedTerritory.code && policy.hasOptions() && (
               <ComponentAuthorizer
                 requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
                 userPermission={userAccessLevel}
               >
-                <Button
+                <GenericButton
                   className="m-1"
                   size="sm"
                   variant="outline-primary"
@@ -620,9 +667,8 @@ function Admin({ user }: adminProps) {
                       congregation: congregationCode
                     })
                   }
-                >
-                  {t("territory.createTerritory", "Create Territory")}
-                </Button>
+                  label={t("territory.createTerritory", "Create Territory")}
+                />
               </ComponentAuthorizer>
             )}
             {selectedTerritory.code && policy.hasOptions() && (
@@ -630,11 +676,11 @@ function Admin({ user }: adminProps) {
                 requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
                 userPermission={userAccessLevel}
               >
-                <DropdownButton
+                <GenericDropdownButton
                   className="dropdown-btn"
                   variant="outline-primary"
                   size="sm"
-                  title={
+                  label={
                     isProcessingTerritory ? (
                       <>
                         <Spinner size="sm" />{" "}
@@ -645,7 +691,7 @@ function Admin({ user }: adminProps) {
                     )
                   }
                 >
-                  <Dropdown.Item
+                  <GenericDropdownItem
                     onClick={() =>
                       showModal(NewTerritoryCode, {
                         footerSaveAcl: userAccessLevel,
@@ -654,8 +700,8 @@ function Admin({ user }: adminProps) {
                     }
                   >
                     {t("territory.createNew", "Create New")}
-                  </Dropdown.Item>
-                  <Dropdown.Item
+                  </GenericDropdownItem>
+                  <GenericDropdownItem
                     onClick={async () => {
                       const updatedCode = await showModal(ChangeTerritoryCode, {
                         footerSaveAcl: userAccessLevel,
@@ -680,8 +726,8 @@ function Admin({ user }: adminProps) {
                     }}
                   >
                     {t("territory.changeCode", "Change Code")}
-                  </Dropdown.Item>
-                  <Dropdown.Item
+                  </GenericDropdownItem>
+                  <GenericDropdownItem
                     onClick={async () => {
                       const updatedName = await showModal(ChangeTerritoryName, {
                         footerSaveAcl: userAccessLevel,
@@ -706,8 +752,8 @@ function Admin({ user }: adminProps) {
                     }}
                   >
                     {t("territory.changeName", "Change Name")}
-                  </Dropdown.Item>
-                  <Dropdown.Item
+                  </GenericDropdownItem>
+                  <GenericDropdownItem
                     onClick={() => {
                       const confirmDelete = window.confirm(
                         t(
@@ -723,8 +769,8 @@ function Admin({ user }: adminProps) {
                     }}
                   >
                     {t("territory.deleteCurrent", "Delete Current")}
-                  </Dropdown.Item>
-                  <Dropdown.Item
+                  </GenericDropdownItem>
+                  <GenericDropdownItem
                     onClick={() => {
                       const confirmReset = window.confirm(
                         t(
@@ -740,8 +786,8 @@ function Admin({ user }: adminProps) {
                     }}
                   >
                     {t("territory.resetStatus", "Reset status")}
-                  </Dropdown.Item>
-                </DropdownButton>
+                  </GenericDropdownItem>
+                </GenericDropdownButton>
               </ComponentAuthorizer>
             )}
             {selectedTerritory.code && policy.hasOptions() && (
@@ -749,14 +795,14 @@ function Admin({ user }: adminProps) {
                 requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
                 userPermission={userAccessLevel}
               >
-                <DropdownButton
+                <GenericDropdownButton
                   className="dropdown-btn"
                   variant="outline-primary"
                   size="sm"
-                  title={t("map.newMap", "New Map")}
+                  label={t("map.newMap", "New Map")}
                   align="end"
                 >
-                  <Dropdown.Item
+                  <GenericDropdownItem
                     onClick={() =>
                       showModal(NewSingleMap, {
                         footerSaveAcl: userAccessLevel,
@@ -768,8 +814,8 @@ function Admin({ user }: adminProps) {
                     }
                   >
                     {t("map.multiStory", "Multi-story")}
-                  </Dropdown.Item>
-                  <Dropdown.Item
+                  </GenericDropdownItem>
+                  <GenericDropdownItem
                     onClick={() =>
                       showModal(NewMultiMap, {
                         footerSaveAcl: userAccessLevel,
@@ -781,19 +827,19 @@ function Admin({ user }: adminProps) {
                     }
                   >
                     {t("map.singleStory", "Single-Story")}
-                  </Dropdown.Item>
-                </DropdownButton>
+                  </GenericDropdownItem>
+                </GenericDropdownButton>
               </ComponentAuthorizer>
             )}
             <ComponentAuthorizer
               requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
               userPermission={userAccessLevel}
             >
-              <DropdownButton
+              <GenericDropdownButton
                 className="dropdown-btn"
                 size="sm"
                 variant="outline-primary"
-                title={
+                label={
                   <>
                     {isShowingUserListing && (
                       <>
@@ -810,49 +856,25 @@ function Admin({ user }: adminProps) {
                 }
                 align={{ lg: "end" }}
               >
-                <Dropdown.Item
-                  onClick={() =>
-                    showModal(UpdateCongregationSettings, {
-                      currentName: congregationName,
-                      currentCongregation: congregationCode,
-                      currentMaxTries:
-                        policy?.maxTries || DEFAULT_CONGREGATION_MAX_TRIES,
-                      currentDefaultExpiryHrs: defaultExpiryHours
-                    })
-                  }
-                >
+                <GenericDropdownItem onClick={handleShowCongregationSettings}>
                   {t("congregation.settings", "Settings")}
-                </Dropdown.Item>
-                <Dropdown.Item
-                  onClick={() =>
-                    showModal(UpdateCongregationOptions, {
-                      currentCongregation: congregationCode
-                    })
-                  }
-                >
+                </GenericDropdownItem>
+                <GenericDropdownItem onClick={handleShowCongregationOptions}>
                   {t("congregation.householdOptions", "Household Options")}
-                </Dropdown.Item>
-                <Dropdown.Item onClick={async () => await getUsers()}>
+                </GenericDropdownItem>
+                <GenericDropdownItem onClick={handleManageUsers}>
                   {t("user.manageUsers", "Manage Users")}
-                </Dropdown.Item>
-                <Dropdown.Item
-                  onClick={() => {
-                    showModal(InviteUser, {
-                      email: getUser("email") as string,
-                      congregation: congregationCode,
-                      footerSaveAcl: userAccessLevel
-                    });
-                  }}
-                >
+                </GenericDropdownItem>
+                <GenericDropdownItem onClick={handleInviteUser}>
                   {t("user.inviteUser", "Invite User")}
-                </Dropdown.Item>
-              </DropdownButton>
+                </GenericDropdownItem>
+              </GenericDropdownButton>
             </ComponentAuthorizer>
-            <DropdownButton
+            <GenericDropdownButton
               className="dropdown-btn"
               size="sm"
               variant="outline-primary"
-              title={
+              label={
                 <>
                   {isAssignmentLoading && (
                     <>
@@ -869,57 +891,38 @@ function Admin({ user }: adminProps) {
               }
               align={{ lg: "end" }}
             >
-              <Dropdown.Item
-                onClick={() => {
-                  showModal(GetProfile, {
-                    user: getUser() as AuthRecord
-                  });
-                }}
-              >
+              <GenericDropdownItem onClick={handleShowProfile}>
                 {t("user.profile", "Profile")}
-              </Dropdown.Item>
+              </GenericDropdownItem>
               <ComponentAuthorizer
                 requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
                 userPermission={userAccessLevel}
               >
-                <Dropdown.Item
-                  onClick={() =>
-                    getAssignments(congregationCode, getUser("id") as string)
-                  }
-                >
+                <GenericDropdownItem onClick={handleShowAssignments}>
                   {t("assignments.assignments", "Assignments")}
-                </Dropdown.Item>
+                </GenericDropdownItem>
               </ComponentAuthorizer>
-              <Dropdown.Item
-                onClick={async () => {
-                  await requestPasswordReset();
-                  alert(
-                    t(
-                      "auth.passwordResetConfirmation",
-                      "Password reset email sent."
-                    )
-                  );
-                }}
-              >
+              <GenericDropdownItem onClick={handlePasswordReset}>
                 {t("auth.changePassword", "Change Password")}
-              </Dropdown.Item>
-              <Dropdown.Item onClick={logoutUser}>
+              </GenericDropdownItem>
+              <GenericDropdownItem onClick={logoutUser}>
                 {t("auth.logout", "Logout")}
-              </Dropdown.Item>
-            </DropdownButton>
-            <Button
+              </GenericDropdownItem>
+            </GenericDropdownButton>
+            <GenericButton
               className="m-1"
               size="sm"
               variant="outline-primary"
               onClick={toggleLanguageSelector}
-            >
-              <Image
-                src="https://assets.ministry-mapper.com/language.svg"
-                alt="Language"
-                width={16}
-                height={16}
-              />
-            </Button>
+              label={
+                <Image
+                  src="https://assets.ministry-mapper.com/language.svg"
+                  alt="Language"
+                  width={16}
+                  height={16}
+                />
+              }
+            />
           </Navbar.Collapse>
         </Container>
       </Navbar>

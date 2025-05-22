@@ -172,7 +172,7 @@ const MainTable = ({
         policy: policy
       });
     },
-    [addressDetails, policy]
+    [addressDetails.id]
   );
 
   const getIdFromEvent = useCallback(
@@ -195,6 +195,29 @@ const MainTable = ({
     ) => {
       const id = getIdFromEvent(event) || "";
       return addresses.get(id);
+    },
+    []
+  );
+
+  const getTotalUnitsFromEvent = useCallback(
+    (event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>) => {
+      if ("domEvent" in event) {
+        // Handle Google Maps event
+        const domEvent = event.domEvent.target as HTMLElement;
+        return domEvent.dataset.totalunits || "1";
+      }
+      // Handle React event
+      return event.currentTarget.dataset.totalunits || "1";
+    },
+    []
+  );
+
+  const handleUnitNoUpdate = useCallback(
+    (event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>) => {
+      const details = getUnitDetails(event, addresses);
+      if (!details) return;
+      details.totalunits = Number(getTotalUnitsFromEvent(event));
+      handleEditUnit(details);
     },
     []
   );
@@ -256,6 +279,35 @@ const MainTable = ({
     []
   );
 
+  const handleHouseUpdate = useCallback(
+    (event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>) => {
+      handleUpdateUnitStatus(getUnitDetails(event, addresses));
+    },
+    [addresses]
+  );
+
+  const handleUnitStatusUpdate = useCallback(
+    (event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>) => {
+      handleUpdateUnitStatus(getUnitDetails(event, addresses));
+    },
+    [addresses]
+  );
+
+  const handleFloorDeleteEvent = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      const { floor } = event.currentTarget.dataset;
+      handleFloorDelete(Number(floor));
+    },
+    []
+  );
+
+  const handleUnitNoUpdateEvent = useCallback(
+    (event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>) => {
+      handleUnitNoUpdate(event);
+    },
+    []
+  );
+
   const { floorList, maxUnitLength } = organizeAddresses(addresses);
   if (floorList.length === 0) {
     return <div className="text-center p-2">Loading...</div>;
@@ -267,9 +319,7 @@ const MainTable = ({
           addressDetails={addressDetails}
           houses={floorList[0] || []}
           policy={policy}
-          handleHouseUpdate={(event) =>
-            handleUpdateUnitStatus(getUnitDetails(event, addresses))
-          }
+          handleHouseUpdate={handleHouseUpdate}
         />
       );
     }
@@ -277,9 +327,7 @@ const MainTable = ({
       <PrivateTerritoryTable
         addressDetails={addressDetails}
         houses={floorList[0] || []}
-        handleHouseUpdate={(event) =>
-          handleUpdateUnitStatus(getUnitDetails(event, addresses))
-        }
+        handleHouseUpdate={handleHouseUpdate}
         policy={policy}
       />
     );
@@ -291,21 +339,9 @@ const MainTable = ({
       policy={policy}
       addressDetails={addressDetails}
       maxUnitLength={maxUnitLength}
-      handleUnitStatusUpdate={(event) =>
-        handleUpdateUnitStatus(getUnitDetails(event, addresses))
-      }
-      handleFloorDelete={(event) => {
-        const { floor } = event.currentTarget.dataset;
-        handleFloorDelete(Number(floor));
-      }}
-      handleUnitNoUpdate={(event) => {
-        const details = getUnitDetails(event, addresses);
-        if (!details) return;
-        details.totalunits = Number(
-          event.currentTarget.dataset.totalunits || 1
-        );
-        handleEditUnit(details);
-      }}
+      handleUnitStatusUpdate={handleUnitStatusUpdate}
+      handleFloorDelete={handleFloorDeleteEvent}
+      handleUnitNoUpdate={handleUnitNoUpdateEvent}
     />
   );
 };

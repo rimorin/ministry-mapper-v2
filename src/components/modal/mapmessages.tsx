@@ -24,7 +24,6 @@ import {
   deleteDataById,
   getList,
   setupRealtimeListener,
-  unsubscriber,
   updateDataById
 } from "../../utils/pocketbase";
 
@@ -92,9 +91,6 @@ const useMessages = (mapId: string, assignmentId?: string) => {
       },
       msgSubheader
     );
-    return () => {
-      unsubscriber(["messages"]);
-    };
   }, [mapId, assignmentId]);
 
   useVisibilityChange(fetchFeedbacks);
