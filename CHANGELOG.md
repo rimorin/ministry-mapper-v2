@@ -1,3 +1,10 @@
+## [1.4.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.4.2...v1.4.3) (2025-05-22)
+
+
+### Performance Improvements
+
+* implement memo components ([#50](https://github.com/rimorin/ministry-mapper-v2/issues/50)) ([ead286f](https://github.com/rimorin/ministry-mapper-v2/commit/ead286fa792be4aeab3496f2732e8a85ec859576))
+
 ## [1.4.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.4.1...v1.4.2) (2025-05-14)
 
 
