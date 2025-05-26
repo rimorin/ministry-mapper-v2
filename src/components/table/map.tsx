@@ -212,15 +212,14 @@ const MainTable = ({
     []
   );
 
-  const handleUnitNoUpdate = useCallback(
-    (event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>) => {
-      const details = getUnitDetails(event, addresses);
-      if (!details) return;
-      details.totalunits = Number(getTotalUnitsFromEvent(event));
-      handleEditUnit(details);
-    },
-    []
-  );
+  const handleUnitNoUpdate = (
+    event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>
+  ) => {
+    const details = getUnitDetails(event, addresses);
+    if (!details) return;
+    details.totalunits = Number(getTotalUnitsFromEvent(event));
+    handleEditUnit(details);
+  };
 
   const handleFloorDelete = useCallback(
     async (floor: number) => {
@@ -279,19 +278,11 @@ const MainTable = ({
     []
   );
 
-  const handleHouseUpdate = useCallback(
-    (event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>) => {
-      handleUpdateUnitStatus(getUnitDetails(event, addresses));
-    },
-    [addresses]
-  );
-
-  const handleUnitStatusUpdate = useCallback(
-    (event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>) => {
-      handleUpdateUnitStatus(getUnitDetails(event, addresses));
-    },
-    [addresses]
-  );
+  const handleHouseUpdate = (
+    event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>
+  ) => {
+    handleUpdateUnitStatus(getUnitDetails(event, addresses));
+  };
 
   const handleFloorDeleteEvent = useCallback(
     (event: React.MouseEvent<HTMLElement>) => {
@@ -301,12 +292,11 @@ const MainTable = ({
     []
   );
 
-  const handleUnitNoUpdateEvent = useCallback(
-    (event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>) => {
-      handleUnitNoUpdate(event);
-    },
-    []
-  );
+  const handleUnitNoUpdateEvent = (
+    event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>
+  ) => {
+    handleUnitNoUpdate(event);
+  };
 
   const { floorList, maxUnitLength } = organizeAddresses(addresses);
   if (floorList.length === 0) {
@@ -339,7 +329,7 @@ const MainTable = ({
       policy={policy}
       addressDetails={addressDetails}
       maxUnitLength={maxUnitLength}
-      handleUnitStatusUpdate={handleUnitStatusUpdate}
+      handleUnitStatusUpdate={handleHouseUpdate}
       handleFloorDelete={handleFloorDeleteEvent}
       handleUnitNoUpdate={handleUnitNoUpdateEvent}
     />
