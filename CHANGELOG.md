@@ -1,3 +1,10 @@
+## [1.4.4](https://github.com/rimorin/ministry-mapper-v2/compare/v1.4.3...v1.4.4) (2025-05-26)
+
+
+### Bug Fixes
+
+* house no update not working ([c28e008](https://github.com/rimorin/ministry-mapper-v2/commit/c28e00832f28bcfeaa98debb6184843fcc9ea6c8))
+
 ## [1.4.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.4.2...v1.4.3) (2025-05-22)
 
 
