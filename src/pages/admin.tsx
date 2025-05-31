@@ -436,7 +436,7 @@ function Admin({ user }: adminProps) {
 
   const handleManageUsers = useCallback(async () => {
     await getUsers();
-  }, []);
+  }, [congregationCode]);
 
   const handleInviteUser = useCallback(() => {
     showModal(InviteUser, {
