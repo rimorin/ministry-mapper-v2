@@ -1,3 +1,10 @@
+## [1.4.5](https://github.com/rimorin/ministry-mapper-v2/compare/v1.4.4...v1.4.5) (2025-05-31)
+
+
+### Bug Fixes
+
+* useCallback dep for manage users ([4898abc](https://github.com/rimorin/ministry-mapper-v2/commit/4898abcca9a20c155e30bf5aceaf8f6ab41c585e))
+
 ## [1.4.4](https://github.com/rimorin/ministry-mapper-v2/compare/v1.4.3...v1.4.4) (2025-05-26)
 
 
