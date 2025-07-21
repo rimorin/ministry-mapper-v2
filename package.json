@@ -3,6 +3,9 @@
   "version": "1.4.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {
     "@ebay/nice-modal-react": "^1.2.13",
     "@sentry/react": "^9.40.0",
