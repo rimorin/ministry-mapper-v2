@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.4.5...v1.5.0) (2025-07-21)
+
+
+### Features
+
+* add node 22+ requirement to engine ([#51](https://github.com/rimorin/ministry-mapper-v2/issues/51)) ([e5af173](https://github.com/rimorin/ministry-mapper-v2/commit/e5af1730881c9566afb1712ac4e214ddffcd0f0d))
+
 ## [1.4.5](https://github.com/rimorin/ministry-mapper-v2/compare/v1.4.4...v1.4.5) (2025-05-31)
 
 
