@@ -1,3 +1,10 @@
+## [1.5.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.5.0...v1.5.1) (2025-07-31)
+
+
+### Bug Fixes
+
+* callback dep with territory update ([#52](https://github.com/rimorin/ministry-mapper-v2/issues/52)) ([fdfd7c9](https://github.com/rimorin/ministry-mapper-v2/commit/fdfd7c9c8c177f6bfee0ea2863104f468d9b45c0))
+
 # [1.5.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.4.5...v1.5.0) (2025-07-21)
 
 
