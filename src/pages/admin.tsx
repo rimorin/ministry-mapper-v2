@@ -275,7 +275,7 @@ function Admin({ user }: adminProps) {
         errorHandler(error);
       }
     },
-    [selectedTerritory.id, selectedTerritory.code]
+    [values, selectedTerritory.id, selectedTerritory.code]
   );
 
   const fetchData = useCallback(async () => {
