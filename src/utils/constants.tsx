@@ -194,6 +194,71 @@ const PB_FIELDS = {
   MAPS: "id, code, description, type, location, progress, coordinates, aggregates"
 };
 
+const SPEED_DIAL = {
+  DIMENSIONS: {
+    FAB_SIZE: {
+      WIDTH: "56px",
+      HEIGHT: "56px"
+    },
+    ACTION_SIZE: {
+      WIDTH: "48px",
+      HEIGHT: "48px"
+    },
+    MOBILE_FAB_SIZE: {
+      WIDTH: "48px",
+      HEIGHT: "48px"
+    },
+    MOBILE_ACTION_SIZE: {
+      WIDTH: "40px",
+      HEIGHT: "40px"
+    }
+  },
+  SPACING: {
+    ACTION_DISTANCE: 60,
+    CENTER_OFFSET: 4 // (56 - 48) / 2
+  },
+  STYLES: {
+    Z_INDEX: 1050,
+    OPACITY: 0.9,
+    BACKDROP_OPACITY: 0.1,
+    BOX_SHADOW: {
+      FAB: "0 4px 12px rgba(0,0,0,0.15)",
+      ACTION: "0 2px 8px rgba(0,0,0,0.15)",
+      HOVER_FAB: "0 6px 16px rgba(0, 0, 0, 0.2)",
+      HOVER_ACTION: "0 4px 12px rgba(0, 0, 0, 0.2)"
+    }
+  },
+  TRANSITIONS: {
+    DURATION: "0.2s",
+    EASING: "ease-in-out",
+    STAGGER_DELAY: 0.05
+  },
+  TRANSFORM: {
+    SCALE: {
+      NORMAL: 1,
+      HOVER: 1.1,
+      ACTIVE_FAB: 0.95,
+      ACTIVE_ACTION: 0.9,
+      CLOSED: 0
+    },
+    ROTATION: {
+      CLOSED: "0deg",
+      OPEN: "45deg"
+    }
+  },
+  DEFAULTS: {
+    DIRECTION: "up" as const,
+    VARIANT: "primary",
+    POSITION: {
+      bottom: "30px",
+      left: "25px"
+    },
+    ICON_URL: "https://assets.ministry-mapper.com/plus.svg",
+    ICON_SIZE: 24
+  },
+  MOBILE_BREAKPOINT: 768
+};
+
 export {
   UNSUPPORTED_BROWSER_MSG,
   STATUS_CODES,
@@ -235,5 +300,6 @@ export {
   DEFAULT_UNIT_PADDING,
   MESSAGE_TYPES,
   PB_SECURITY_HEADER_KEY,
-  PB_FIELDS
+  PB_FIELDS,
+  SPEED_DIAL
 };
