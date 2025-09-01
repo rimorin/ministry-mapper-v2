@@ -1,6 +1,6 @@
 import { AuthModel } from "pocketbase";
 import { LinkSession, Policy } from "./policies";
-import { Value } from "react-calendar/dist/cjs/shared/types";
+import { Value } from "sass";
 export interface userInterface {
   user: AuthModel;
 }
@@ -527,4 +527,41 @@ export interface Message {
   created: Date;
   created_by: string;
   type: string;
+}
+
+export interface GeneratedMapModalProps {
+  territoryId: string;
+  linkId?: string;
+  mapName?: string;
+  progress?: number;
+  notDone?: number;
+  notHome?: number;
+  assignees?: string[];
+  coordinates?: latlongInterface;
+  origin?: latlongInterface;
+}
+
+export interface SpeedDialAction {
+  icon: React.ReactNode;
+  label: string;
+  onClick: () => void;
+  disabled?: boolean;
+  variant?: string;
+  keepOpen?: boolean;
+}
+
+export interface SpeedDialProps {
+  icon?: React.ReactNode;
+  actions: SpeedDialAction[];
+  direction?: "up" | "down" | "left" | "right";
+  className?: string;
+  size?: "sm" | "lg";
+  variant?: string;
+  keepOpenOnAction?: boolean;
+  position?: {
+    bottom?: string;
+    right?: string;
+    top?: string;
+    left?: string;
+  };
 }

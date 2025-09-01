@@ -36,7 +36,6 @@ import NavBarBranding from "../components/navigation/branding";
 import AggregationBadge from "../components/navigation/aggrbadge";
 import ComponentAuthorizer from "../components/navigation/authorizer";
 import TerritoryHeader from "../components/navigation/territoryheader";
-import BackToTopButton from "../components/navigation/backtotop";
 import Loader from "../components/statics/loader";
 import Welcome from "../components/statics/welcome";
 import SuspenseComponent from "../components/utils/suspense";
@@ -44,7 +43,7 @@ import CongListing from "../components/navigation/conglist";
 import useVisibilityChange from "../components/utils/visibilitychange";
 import MapListing from "../components/navigation/maplist";
 import MapView from "../components/navigation/mapview";
-import ModeToggle from "../components/navigation/maptoggle";
+import SpeedDial from "../components/navigation/speeddial";
 import LanguageSelector from "../i18n/LanguageSelector";
 import {
   cleanupSession,
@@ -63,6 +62,8 @@ import {
   GenericDropdownButton,
   GenericDropdownItem
 } from "../components/navigation/dropdownbutton";
+import BackToTopButton from "../components/navigation/backtotop";
+import ModeToggle from "../components/navigation/maptoggle";
 
 const UnauthorizedPage = SuspenseComponent(
   lazy(() => import("../components/statics/unauth"))
@@ -87,6 +88,9 @@ const ChangeTerritoryName = lazy(
 );
 const ChangeTerritoryCode = lazy(
   () => import("../components/modal/changeterritorycd")
+);
+const GeneratedMapModal = lazy(
+  () => import("../components/modal/generatedmap")
 );
 
 function Admin({ user }: adminProps) {
@@ -240,6 +244,18 @@ function Admin({ user }: adminProps) {
       setIsAssignmentLoading(false);
     }
   }, []);
+
+  const handleGenerateTerritoryMap = useCallback(async () => {
+    setIsAssignmentLoading(true);
+    try {
+      // Open modal to get publisher input first
+      showModal(GeneratedMapModal, {
+        territoryId: selectedTerritory.id
+      });
+    } finally {
+      setIsAssignmentLoading(false);
+    }
+  }, [selectedTerritory.id]);
 
   const handleAddressTerritorySelect = useCallback(
     async (newTerritoryId: string | null) => {
@@ -874,21 +890,7 @@ function Admin({ user }: adminProps) {
               className="dropdown-btn"
               size="sm"
               variant="outline-primary"
-              label={
-                <>
-                  {isAssignmentLoading && (
-                    <>
-                      <Spinner
-                        as="span"
-                        animation="border"
-                        size="sm"
-                        aria-hidden="true"
-                      />{" "}
-                    </>
-                  )}{" "}
-                  {t("user.account", "Account")}
-                </>
-              }
+              label={t("user.account", "Account")}
               align={{ lg: "end" }}
             >
               <GenericDropdownItem onClick={handleShowProfile}>
@@ -956,11 +958,37 @@ function Admin({ user }: adminProps) {
       )}
       {selectedTerritory.code && (
         <>
-          <ModeToggle
-            onClick={() => {
-              setIsMapView(!isMapView);
-            }}
-            isMapView={isMapView}
+          <SpeedDial
+            actions={[
+              {
+                icon: <ModeToggle isMapView={isMapView} />,
+                label: isMapView
+                  ? t("navigation.listView")
+                  : t("navigation.mapView"),
+                onClick: () => setIsMapView(!isMapView)
+              },
+              {
+                icon: isAssignmentLoading ? (
+                  <Spinner
+                    as="span"
+                    animation="border"
+                    size="sm"
+                    aria-hidden="true"
+                  />
+                ) : (
+                  <img
+                    src={"https://assets.ministry-mapper.com/stars.svg"}
+                    alt="stars"
+                    width={24}
+                    height={24}
+                  />
+                ),
+                label: t("navigation.generateLink"),
+                onClick: handleGenerateTerritoryMap,
+                keepOpen: true
+              }
+            ]}
+            direction="up"
           />
           <BackToTopButton showButton={showBkTopButton} />
         </>
