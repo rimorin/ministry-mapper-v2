@@ -1,5 +1,7 @@
 import { MapControl, ControlPosition } from "@vis.gl/react-google-maps";
 import { Image } from "react-bootstrap";
+import { getAssetUrl } from "../../utils/helpers/assetpath";
+
 interface MapControlProps {
   onClick: () => void;
   isLocating?: boolean;
@@ -12,7 +14,7 @@ export const MapCurrentTarget: React.FC<MapControlProps> = ({
   return (
     <MapControl position={ControlPosition.INLINE_END_BLOCK_END}>
       <Image
-        src="https://assets.ministry-mapper.com/target.svg"
+        src={getAssetUrl("target.svg")}
         alt="Current target"
         style={{
           cursor: "pointer",

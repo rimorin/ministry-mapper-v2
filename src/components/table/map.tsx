@@ -17,7 +17,7 @@ import PublicTerritoryTable from "./publictable";
 import TerritoryMapView from "./mapmode";
 import errorHandler from "../../utils/helpers/errorhandler";
 
-import useVisibilityChange from "../utils/visibilitychange";
+import useVisibilityChange from "../../hooks/visibilityManagement";
 import { RecordModel, RecordSubscribeOptions } from "pocketbase";
 import {
   getList,

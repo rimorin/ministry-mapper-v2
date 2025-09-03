@@ -49,7 +49,7 @@ const PublicTerritoryTable = memo(
                 floorDetails &&
                 floorDetails.units.map((item, index) => (
                   <th
-                    key={`${index}-${item.number}`}
+                    key={`th-${index}-${item.number}`}
                     scope="col"
                     className="text-center align-middle"
                     onClick={handleUnitNoUpdate}
@@ -65,7 +65,7 @@ const PublicTerritoryTable = memo(
           <tbody>
             {floors &&
               floors.map((item, index) => (
-                <tr key={`row-${index}`} className="inline-row">
+                <tr key={`row-${index}-${item.floor}`} className="inline-row">
                   <th
                     className="sticky-left-cell text-center align-middle"
                     key={`${index}-${item.floor}`}
@@ -101,7 +101,7 @@ const PublicTerritoryTable = memo(
                       data-id={element.id}
                       data-floor={item.floor}
                       data-unitno={element.number}
-                      key={`${item.floor}-${element.number}`}
+                      key={`td-${item.floor}-${element.number}`}
                     >
                       <AddressStatus
                         type={element.type}

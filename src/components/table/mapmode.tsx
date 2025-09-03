@@ -3,7 +3,7 @@ import { DEFAULT_AGGREGATES, DEFAULT_COORDINATES } from "../../utils/constants";
 import { AdvancedMarker, Map } from "@vis.gl/react-google-maps";
 import { useEffect, useState, useMemo } from "react";
 import HouseStatus from "./house";
-import { MapCurrentTarget } from "../utils/mapcurrenttarget";
+import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import CurrentLocationMarker from "../statics/currentlocator";
 const TerritoryMapView = ({
   houses,
@@ -39,7 +39,7 @@ const TerritoryMapView = ({
 
       return (
         <AdvancedMarker
-          key={`house-${index}`}
+          key={`housemark-${element.id}-${index}`}
           position={element.coordinates}
           draggable={false}
           onClick={handleHouseUpdate}

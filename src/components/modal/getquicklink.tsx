@@ -1,6 +1,6 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useState, useEffect } from "react";
-import { ButtonGroup, Modal, Badge, Form } from "react-bootstrap";
+import { Modal, Badge, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
   USER_ACCESS_LEVELS,
@@ -18,16 +18,16 @@ import {
   useMap,
   useMapsLibrary
 } from "@vis.gl/react-google-maps";
-import { MapCurrentTarget } from "../utils/mapcurrenttarget";
+import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import ModalFooter from "../form/footer";
-import GenericButton from "../navigation/button";
 import GenericInputField from "../form/input";
 import errorHandler from "../../utils/helpers/errorhandler";
 import assignmentMessage from "../../utils/helpers/assignmentmsg";
+import TravelModeButtons from "../map/travelmodebtn";
 
 import { callFunction } from "../../utils/pocketbase";
 
-const GeneratedMapModal = NiceModal.create(
+const QuickLinkModal = NiceModal.create(
   ({
     territoryId,
     linkId,
@@ -348,53 +348,12 @@ const GeneratedMapModal = NiceModal.create(
                       </div>
                     </MapControl>
                     <MapControl
-                      position={ControlPosition.INLINE_END_BLOCK_START}
+                      position={ControlPosition.INLINE_START_BLOCK_END}
                     >
-                      <div className="bg-white rounded-3 shadow-lg border p-2 m-2 ms-2">
-                        <ButtonGroup
-                          aria-label={t("navigation.transportModes")}
-                        >
-                          <GenericButton
-                            size="sm"
-                            variant={
-                              travelMode === google.maps.TravelMode.WALKING
-                                ? "primary"
-                                : "outline-primary"
-                            }
-                            aria-label={t("navigation.walkMode")}
-                            onClick={() =>
-                              setTravelMode(google.maps.TravelMode.WALKING)
-                            }
-                            label="🚶"
-                          />
-                          <GenericButton
-                            size="sm"
-                            variant={
-                              travelMode === google.maps.TravelMode.DRIVING
-                                ? "primary"
-                                : "outline-primary"
-                            }
-                            aria-label={t("navigation.driveMode")}
-                            onClick={() =>
-                              setTravelMode(google.maps.TravelMode.DRIVING)
-                            }
-                            label="🚗"
-                          />
-                          <GenericButton
-                            size="sm"
-                            variant={
-                              travelMode === google.maps.TravelMode.TRANSIT
-                                ? "primary"
-                                : "outline-primary"
-                            }
-                            aria-label={t("navigation.transitMode")}
-                            onClick={() =>
-                              setTravelMode(google.maps.TravelMode.TRANSIT)
-                            }
-                            label="🚌"
-                          />
-                        </ButtonGroup>
-                      </div>
+                      <TravelModeButtons
+                        travelMode={travelMode}
+                        onTravelModeChange={setTravelMode}
+                      />
                     </MapControl>
                   </Map>
                 ) : null}
@@ -415,4 +374,4 @@ const GeneratedMapModal = NiceModal.create(
   }
 );
 
-export default GeneratedMapModal;
+export default QuickLinkModal;

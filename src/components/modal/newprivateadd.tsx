@@ -90,7 +90,7 @@ const NewPrivateAddress = NiceModal.create(
       const result = await showModal(ChangeMapGeolocation, {
         coordinates: coordinates,
         origin: origin,
-        isNew: true
+        isSelectOnly: true
       });
       const newCoordinates = result as latlongInterface;
       if (newCoordinates) {

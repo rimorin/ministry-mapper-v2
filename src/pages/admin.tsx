@@ -5,6 +5,7 @@ import { Container, Navbar, Spinner, Image } from "react-bootstrap";
 
 import { AuthRecord } from "pocketbase";
 import { useTranslation } from "react-i18next";
+import { getAssetUrl } from "../utils/helpers/assetpath";
 
 import {
   valuesDetails,
@@ -27,7 +28,7 @@ import errorHandler from "../utils/helpers/errorhandler";
 import useTerritoryManagement from "../hooks/admin/territoryManagement";
 import useMapManagement from "../hooks/admin/mapManagement";
 import useCongregationManagement from "../hooks/admin/congManagement";
-import useUIState from "../hooks/admin/uiManagement";
+import useUIState from "../hooks/uiManagement";
 
 // Import components
 import TerritoryListing from "../components/navigation/territorylist";
@@ -40,7 +41,7 @@ import Loader from "../components/statics/loader";
 import Welcome from "../components/statics/welcome";
 import SuspenseComponent from "../components/utils/suspense";
 import CongListing from "../components/navigation/conglist";
-import useVisibilityChange from "../components/utils/visibilitychange";
+import useVisibilityChange from "../hooks/visibilityManagement";
 import MapListing from "../components/navigation/maplist";
 import MapView from "../components/navigation/mapview";
 import SpeedDial from "../components/navigation/speeddial";
@@ -89,9 +90,7 @@ const ChangeTerritoryName = lazy(
 const ChangeTerritoryCode = lazy(
   () => import("../components/modal/changeterritorycd")
 );
-const GeneratedMapModal = lazy(
-  () => import("../components/modal/generatedmap")
-);
+const QuickLinkModal = lazy(() => import("../components/modal/getquicklink"));
 
 function Admin({ user }: adminProps) {
   const { t } = useTranslation();
@@ -249,7 +248,7 @@ function Admin({ user }: adminProps) {
     setIsAssignmentLoading(true);
     try {
       // Open modal to get publisher input first
-      showModal(GeneratedMapModal, {
+      showModal(QuickLinkModal, {
         territoryId: selectedTerritory.id
       });
     } finally {
@@ -918,7 +917,7 @@ function Admin({ user }: adminProps) {
               onClick={toggleLanguageSelector}
               label={
                 <Image
-                  src="https://assets.ministry-mapper.com/language.svg"
+                  src={getAssetUrl("language.svg")}
                   alt="Language"
                   width={16}
                   height={16}
@@ -976,8 +975,8 @@ function Admin({ user }: adminProps) {
                     aria-hidden="true"
                   />
                 ) : (
-                  <img
-                    src={"https://assets.ministry-mapper.com/stars.svg"}
+                  <Image
+                    src={getAssetUrl("stars.svg")}
                     alt="stars"
                     width={24}
                     height={24}

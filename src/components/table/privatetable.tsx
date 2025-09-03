@@ -1,5 +1,5 @@
 import { territorySingleProps } from "../../utils/interface";
-import { DEFAULT_AGGREGATES, USER_ACCESS_LEVELS } from "../../utils/constants";
+import { DEFAULT_AGGREGATES } from "../../utils/constants";
 
 import { Row, Col, Card } from "react-bootstrap";
 import AddressStatus from "./address";
@@ -20,8 +20,8 @@ const PrivateTerritoryTable = ({
     >
       <Row xs={4} className="g-1">
         {houses &&
-          houses.units.map((element, index) => (
-            <Col key={`house-column-${index}`}>
+          houses.units.map((element) => (
+            <Col key={`house-column-${element.id}`}>
               <Card bg="light" text="dark">
                 <Card.Body
                   style={{

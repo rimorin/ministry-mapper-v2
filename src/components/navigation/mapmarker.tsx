@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { AdvancedMarker } from "@vis.gl/react-google-maps";
-import CircularProgress from "../utils/circularprogress";
+import CircularProgress from "../map/circularprogress";
 import { addressDetails } from "../../utils/interface";
 import { LINK_TYPES } from "../../utils/constants";
 import {

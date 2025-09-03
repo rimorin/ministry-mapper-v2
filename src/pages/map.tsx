@@ -11,6 +11,7 @@ import {
 import { Container, Image, Nav, Navbar } from "react-bootstrap";
 import { addressDetails, latlongInterface } from "../utils/interface";
 import { Policy } from "../utils/policies";
+import { getAssetUrl } from "../utils/helpers/assetpath";
 import Legend from "../components/navigation/legend";
 import Loader from "../components/statics/loader";
 import InvalidPage from "../components/statics/invalidpage";
@@ -29,7 +30,7 @@ import "../css/slip.css";
 import { RecordModel } from "pocketbase";
 import useLocalStorage from "../utils/helpers/storage";
 import { useParams } from "wouter";
-import useVisibilityChange from "../components/utils/visibilitychange";
+import useVisibilityChange from "../hooks/visibilityManagement";
 import { LanguageContext } from "../i18n/LanguageContext";
 import LanguageSelector from "../i18n/LanguageSelector";
 import modalManagement from "../hooks/modalManagement";
@@ -277,8 +278,8 @@ const Map = () => {
             style={{ width: "100%", marginRight: 0 }}
           >
             <div style={{ flex: 0, textAlign: "left", marginRight: 10 }}>
-              <img
-                src="https://assets.ministry-mapper.com/favicon-32x32.png"
+              <Image
+                src={getAssetUrl("favicon-32x32.png")}
                 alt=""
                 width="32"
                 height="32"
@@ -292,7 +293,7 @@ const Map = () => {
             </div>
             <div style={{ flex: 0, textAlign: "right", marginLeft: 10 }}>
               <Image
-                src="https://assets.ministry-mapper.com/information.svg"
+                src={getAssetUrl("information.svg")}
                 alt="Legend"
                 onClick={toggleLegend}
               />
@@ -316,7 +317,7 @@ const Map = () => {
             onClick={handleMessageClick}
           >
             <Image
-              src="https://assets.ministry-mapper.com/feedback.svg"
+              src={getAssetUrl("feedback.svg")}
               alt="Feedback"
               className={
                 hasPinnedMessages && readPinnedMessages === "false"
@@ -333,20 +334,14 @@ const Map = () => {
             >
               {mapView ? (
                 <>
-                  <Image
-                    src="https://assets.ministry-mapper.com/gridmode.svg"
-                    alt="Grid"
-                  />
+                  <Image src={getAssetUrl("gridmode.svg")} alt="Grid" />
                   <div className="small">
                     {t("navigation.listView", "List View")}
                   </div>
                 </>
               ) : (
                 <>
-                  <Image
-                    src="https://assets.ministry-mapper.com/mapmode.svg"
-                    alt="Map"
-                  />
+                  <Image src={getAssetUrl("mapmode.svg")} alt="Map" />
                   <div className="small">
                     {t("navigation.mapView", "Map View")}
                   </div>
@@ -358,30 +353,21 @@ const Map = () => {
             className="text-center nav-item-hover"
             onClick={showLocationModal}
           >
-            <Image
-              src="https://assets.ministry-mapper.com/maplocation.svg"
-              alt="Location"
-            />
+            <Image src={getAssetUrl("maplocation.svg")} alt="Location" />
             <div className="small">{t("common.Directions", "Directions")}</div>
           </Nav.Item>
           <Nav.Item
             className="text-center nav-item-hover"
             onClick={showExpiryModal}
           >
-            <Image
-              src="https://assets.ministry-mapper.com/time.svg"
-              alt="Expiry"
-            />
+            <Image src={getAssetUrl("time.svg")} alt="Expiry" />
             <div className="small">{t("common.Expiry", "Expiry")}</div>
           </Nav.Item>
           <Nav.Item
             className="text-center nav-item-hover"
             onClick={toggleLanguageSelector}
           >
-            <Image
-              src="https://assets.ministry-mapper.com/language.svg"
-              alt="Language"
-            />
+            <Image src={getAssetUrl("language.svg")} alt="Language" />
             <div className="small">{currentLanguage}</div>
           </Nav.Item>
         </Nav>
