@@ -1,6 +1,7 @@
 import { memo } from "react";
 import { nothomeProps } from "../../utils/interface";
 import { Image } from "react-bootstrap";
+import { getAssetUrl } from "../../utils/helpers/assetpath";
 
 const NotHomeIcon = memo(({ nhcount, classProp }: nothomeProps) => {
   let parentClass = "parent-nothome";
@@ -10,7 +11,7 @@ const NotHomeIcon = memo(({ nhcount, classProp }: nothomeProps) => {
       <div className="container-nothome">
         <Image
           fluid
-          src="https://assets.ministry-mapper.com/envelope.svg"
+          src={getAssetUrl("envelope.svg")}
           className="nothome-envelope"
         />
         {nhcount && <div className="badge-nothome">{nhcount}</div>}

@@ -1,5 +1,6 @@
 import { Container, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { getAssetUrl } from "../../utils/helpers/assetpath";
 
 const NotFoundPage = () => {
   const { t } = useTranslation();
@@ -10,7 +11,7 @@ const NotFoundPage = () => {
         <Card.Img
           alt={t("branding.logo", "Ministry Mapper logo")}
           className="mm-logo"
-          src="https://assets.ministry-mapper.com/android-chrome-192x192.png"
+          src={getAssetUrl("android-chrome-192x192.png")}
         />
         <Card.Body>
           <Card.Title className="text-center">

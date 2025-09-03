@@ -1,18 +1,24 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useState, useEffect } from "react";
-import { ButtonGroup, Modal } from "react-bootstrap";
+import { Image, Modal } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
+import { WIKI_CATEGORIES } from "../../utils/constants";
+import { getAssetUrl } from "../../utils/helpers/assetpath";
 import HelpButton from "../navigation/help";
 import {
   GetMapGeolocationModalProps,
   latlongInterface
 } from "../../utils/interface";
-import { Map, useMap, useMapsLibrary } from "@vis.gl/react-google-maps";
-import { MapCurrentTarget } from "../utils/mapcurrenttarget";
-import ModalFooter from "../form/footer";
+import {
+  ControlPosition,
+  Map,
+  MapControl,
+  useMap,
+  useMapsLibrary
+} from "@vis.gl/react-google-maps";
+import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import getDirection from "../../utils/helpers/directiongenerator";
-import GenericButton from "../navigation/button";
+import TravelModeButtons from "../map/travelmodebtn";
 
 const GetMapGeolocation = NiceModal.create(
   ({ coordinates, origin, name }: GetMapGeolocationModalProps) => {
@@ -107,12 +113,8 @@ const GetMapGeolocation = NiceModal.create(
     }, []);
 
     return (
-      <Modal
-        {...bootstrapDialog(modal)}
-        fullscreen
-        onHide={() => modal.remove()}
-      >
-        <Modal.Header>
+      <Modal {...bootstrapDialog(modal)} fullscreen>
+        <Modal.Header closeButton>
           <Modal.Title>
             {t("address.locationWithName", "{{name}} Location", { name })}
           </Modal.Title>
@@ -133,58 +135,34 @@ const GetMapGeolocation = NiceModal.create(
             streetViewControl={false}
             gestureHandling="greedy"
           >
+            <MapControl position={ControlPosition.INLINE_END_BLOCK_END}>
+              <Image
+                src={getAssetUrl("gmaps.svg")}
+                alt={t("navigation.openMaps")}
+                width={24}
+                height={24}
+                style={{
+                  cursor: "pointer",
+                  marginRight: "20px",
+                  marginTop: "15px"
+                }}
+                onClick={() => {
+                  window.open(getDirection(coordinates), "_blank");
+                }}
+              />
+            </MapControl>
             <MapCurrentTarget
               isLocating={isCalculating}
               onClick={() => setCurrentCenter(coordinates)}
             />
+            <MapControl position={ControlPosition.INLINE_START_BLOCK_END}>
+              <TravelModeButtons
+                travelMode={travelMode}
+                onTravelModeChange={setTravelMode}
+              />
+            </MapControl>
           </Map>
         </Modal.Body>
-        <ModalFooter
-          handleClick={() => modal.hide()}
-          requiredAcLForSave={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
-        >
-          <GenericButton
-            variant="secondary"
-            onClick={() => {
-              window.open(getDirection(coordinates), "_blank");
-            }}
-            label={t("navigation.openMaps", "Open Maps")}
-          />
-          <ButtonGroup
-            aria-label={t("navigation.transportModes", "Transport modes")}
-          >
-            <GenericButton
-              variant={
-                travelMode === google.maps.TravelMode.WALKING
-                  ? "primary"
-                  : "secondary"
-              }
-              aria-label={t("navigation.walkMode", "Walk mode")}
-              onClick={() => setTravelMode(google.maps.TravelMode.WALKING)}
-              label="🚶"
-            />
-            <GenericButton
-              variant={
-                travelMode === google.maps.TravelMode.DRIVING
-                  ? "primary"
-                  : "secondary"
-              }
-              aria-label={t("navigation.driveMode", "Drive mode")}
-              onClick={() => setTravelMode(google.maps.TravelMode.DRIVING)}
-              label="🚗"
-            />
-            <GenericButton
-              variant={
-                travelMode === google.maps.TravelMode.TRANSIT
-                  ? "primary"
-                  : "secondary"
-              }
-              aria-label={t("navigation.transitMode", "Transit mode")}
-              onClick={() => setTravelMode(google.maps.TravelMode.TRANSIT)}
-              label="🚌"
-            />
-          </ButtonGroup>
-        </ModalFooter>
       </Modal>
     );
   }

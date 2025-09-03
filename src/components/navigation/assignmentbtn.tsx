@@ -15,7 +15,7 @@ import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import ComponentAuthorizer from "./authorizer";
 import addHours from "../../utils/helpers/addhours";
 import { RecordModel } from "pocketbase";
-import useVisibilityChange from "../utils/visibilitychange";
+import useVisibilityChange from "../../hooks/visibilityManagement";
 import {
   getList,
   setupRealtimeListener,

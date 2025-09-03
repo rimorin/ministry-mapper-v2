@@ -18,7 +18,7 @@ import {
   USER_ACCESS_LEVELS
 } from "../../utils/constants";
 import { RecordModel, RecordSubscribeOptions } from "pocketbase";
-import useVisibilityChange from "../utils/visibilitychange";
+import useVisibilityChange from "../../hooks/visibilityManagement";
 import {
   createData,
   deleteDataById,
