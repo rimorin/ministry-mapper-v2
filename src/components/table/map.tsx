@@ -44,7 +44,7 @@ const useAddresses = (mapId: string, assignmentId?: string) => {
       type: address.expand?.type,
       status: address.status,
       nhcount: address.not_home_tries || NOT_HOME_STATUS_CODES.DEFAULT,
-      dnctime: address.dnctime || null,
+      dnctime: address.dnc_time || null,
       sequence: address.sequence,
       floor: address.floor,
       updated: address.updated,
