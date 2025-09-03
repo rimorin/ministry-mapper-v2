@@ -1,3 +1,10 @@
+## [1.5.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.5.1...v1.5.2) (2025-09-03)
+
+
+### Bug Fixes
+
+* unable to retrieve dnc time in update modal ([#56](https://github.com/rimorin/ministry-mapper-v2/issues/56)) ([578f9dc](https://github.com/rimorin/ministry-mapper-v2/commit/578f9dcb903cd4dd616b18ad776b6f9f8bb5dac8))
+
 ## [1.5.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.5.0...v1.5.1) (2025-07-31)
 
 
