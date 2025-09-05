@@ -1,3 +1,10 @@
+## [1.5.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.5.2...v1.5.3) (2025-09-05)
+
+
+### Bug Fixes
+
+* broken gmaps rendering for empty add coordinates ([#57](https://github.com/rimorin/ministry-mapper-v2/issues/57)) ([1070d39](https://github.com/rimorin/ministry-mapper-v2/commit/1070d3970b0e21a186d0babebf7feab2519a76c1))
+
 ## [1.5.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.5.1...v1.5.2) (2025-09-03)
 
 
