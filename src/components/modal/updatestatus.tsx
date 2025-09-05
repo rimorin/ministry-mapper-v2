@@ -119,7 +119,8 @@ const UpdateUnitStatus = NiceModal.create(
 
     const handleMapCoordinatesClick = useCallback(async () => {
       const result = await showModal(ChangeMapGeolocation, {
-        coordinates,
+        // set coordinates to address coordinates if available, otherwise use map coordinates
+        coordinates: coordinates || addressData?.coordinates,
         isNew: true,
         origin: origin,
         name: addressData?.name
