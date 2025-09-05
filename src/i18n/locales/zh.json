@@ -93,7 +93,12 @@
     "codeExample": "区域代码。例如，M01，W12等。",
     "nameExample": "区域的名称。例如，801-810, 伍德兰兹大道。",
     "codeAlreadyExists": "区域代码已存在。",
-    "createdSuccess": "已创建区域，{{name}}。"
+    "createdSuccess": "已创建区域，{{name}}。",
+    "notDone": "未访问",
+    "notHome": "不在家",
+    "completed": "已完成",
+    "assignees": "指派人员",
+    "publisherPlaceholder": "输入传道员姓名"
   },
   "map": {
     "newMap": "新地图",
@@ -263,7 +268,8 @@
     "driveMode": "驾驶模式",
     "transitMode": "公交模式",
     "transportModes": "交通模式",
-    "openMaps": "打开地图"
+    "openMaps": "打开地图",
+    "generateLink": "快速链接"
   },
   "maintenance": {
     "maintenanceMode": "传道地图正在进行维护。",
@@ -334,5 +340,14 @@
     "number": "密码必须包含数字。",
     "capital": "密码必须包含大写字母。",
     "match": "两次输入的密码必须相同。"
+  },
+  "admin": {
+    "quickLink": "快速链接",
+    "generatedMap": "生成的地图",
+    "confirm": "确认"
+  },
+  "generatedMap": {
+    "info": "根据位置、工作负荷和进度获取到最近可用区域地图的快速链接。",
+    "share": "分配"
   }
 }

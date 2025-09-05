@@ -93,7 +93,12 @@
     "codeExample": "区域コード。例：M01、W12など。",
     "nameExample": "区域の名前。例：801-810、ウッドランドドライブ。",
     "codeAlreadyExists": "区域コードが既に存在します。",
-    "createdSuccess": "区域「{{name}}」を作成しました。"
+    "createdSuccess": "区域「{{name}}」を作成しました。",
+    "notDone": "未訪問",
+    "notHome": "不在",
+    "completed": "完了",
+    "assignees": "担当者",
+    "publisherPlaceholder": "奉仕者名を入力"
   },
   "map": {
     "newMap": "新規マップ",
@@ -262,7 +267,8 @@
     "driveMode": "車モード",
     "transitMode": "公共交通機関",
     "transportModes": "移動モード",
-    "openMaps": "マップ表示"
+    "openMaps": "マップ表示",
+    "generateLink": "クイックリンク"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapperはメンテナンス中です。",
@@ -328,5 +334,14 @@
     "number": "パスワードには数字を含める必要があります。",
     "capital": "パスワードには大文字を含める必要があります。",
     "match": "パスワードが一致する必要があります。"
+  },
+  "admin": {
+    "quickLink": "クイックリンク",
+    "generatedMap": "生成されたマップ",
+    "confirm": "確認"
+  },
+  "generatedMap": {
+    "info": "場所、ワークロード、進捗に基づいて、利用可能な最寄りの区域マップへのクイックリンクを取得します。",
+    "share": "割り当て"
   }
 }

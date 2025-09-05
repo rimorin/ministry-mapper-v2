@@ -93,7 +93,12 @@
     "codeExample": "Kode wilayah. Misalnya, M01, W12, dll.",
     "nameExample": "Nama wilayah. Misalnya, 801-810, Woodlands Drive.",
     "codeAlreadyExists": "Kode wilayah sudah ada.",
-    "createdSuccess": "Wilayah {{name}} berhasil dibuat."
+    "createdSuccess": "Wilayah {{name}} berhasil dibuat.",
+    "notDone": "Belum Selesai",
+    "notHome": "Tidak Ada di Rumah",
+    "completed": "Selesai",
+    "assignees": "Yang Ditugaskan",
+    "publisherPlaceholder": "Masukkan nama pemberita"
   },
   "address": {
     "address": "Alamat",
@@ -238,7 +243,8 @@
     "driveMode": "Mode Mengemudi",
     "transitMode": "Mode Transit",
     "transportModes": "Mode Transportasi",
-    "openMaps": "Buka Peta"
+    "openMaps": "Buka Peta",
+    "generateLink": "Tautan Cepat"
   },
   "map": {
     "newMap": "Peta Baru",
@@ -335,5 +341,14 @@
     "number": "Kata sandi harus mengandung angka.",
     "capital": "Kata sandi harus mengandung huruf besar.",
     "match": "Kata sandi harus sama."
+  },
+  "admin": {
+    "quickLink": "Tautan Cepat",
+    "generatedMap": "Peta yang Dihasilkan",
+    "confirm": "Konfirmasi"
+  },
+  "generatedMap": {
+    "info": "Dapatkan tautan cepat ke peta wilayah terdekat yang tersedia berdasarkan lokasi, beban kerja, dan kemajuan.",
+    "share": "Tugaskan"
   }
 }

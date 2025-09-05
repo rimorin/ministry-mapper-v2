@@ -36,9 +36,25 @@ const UpdateUnitStatus = NiceModal.create(
     const modal = useModal();
     const { t } = useTranslation();
     const { showModal } = modalManagement();
-    const status = unitDetails?.status;
+
+    const unitNumber = unitDetails?.number || "";
+    const unitFloor = unitDetails?.floor || MIN_START_FLOOR;
+    const addressName = addressData?.name || "";
+    const addressType = addressData?.type;
     const addressId = unitDetails?.id || "";
-    const origin = policy.origin;
+    const status = unitDetails?.status;
+    const isSingleStory = addressType === TERRITORY_TYPES.SINGLE_STORY;
+
+    // DRY: Extract coordinate validation logic
+    const hasValidCoordinates = (
+      coords: latlongInterface | undefined
+    ): coords is latlongInterface => !!coords && !!coords.lat && !!coords.lng;
+
+    const defaultCoordinates = unitDetails?.coordinates;
+    const validDefaultCoords = hasValidCoordinates(defaultCoordinates)
+      ? defaultCoordinates
+      : undefined;
+
     const [isNotHome, setIsNotHome] = useState(
       status === STATUS_CODES.NOT_HOME
     );
@@ -54,15 +70,10 @@ const UpdateUnitStatus = NiceModal.create(
     const [unitSequence, setUnitSequence] = useState<number>(
       unitDetails?.sequence
     );
-    const defaultCoordinates = unitDetails?.coordinates;
-    const [coordinates, setCoordinates] = useState(
-      defaultCoordinates && defaultCoordinates.lat && defaultCoordinates.lng
-        ? defaultCoordinates
-        : undefined
-    );
+    const [coordinates, setCoordinates] = useState(validDefaultCoords);
     const [location, setLocation] = useState(
-      defaultCoordinates && defaultCoordinates.lat && defaultCoordinates.lng
-        ? `${defaultCoordinates?.lat}, ${defaultCoordinates?.lng}`
+      validDefaultCoords
+        ? `${validDefaultCoords.lat}, ${validDefaultCoords.lng}`
         : ""
     );
 
@@ -78,7 +89,7 @@ const UpdateUnitStatus = NiceModal.create(
       } finally {
         setIsSaving(false);
       }
-    }, []);
+    }, [addressId]);
 
     const handleSubmitClick = useCallback(
       async (event: FormEvent<HTMLElement>) => {
@@ -113,24 +124,25 @@ const UpdateUnitStatus = NiceModal.create(
         hhNhcount,
         hhDnctime,
         unitSequence,
-        coordinates
+        coordinates,
+        addressId,
+        policy.userName
       ]
     );
 
     const handleMapCoordinatesClick = useCallback(async () => {
       const result = await showModal(ChangeMapGeolocation, {
-        // set coordinates to address coordinates if available, otherwise use map coordinates
         coordinates: coordinates || addressData?.coordinates,
-        isNew: true,
-        origin: origin,
-        name: addressData?.name
+        isSelectOnly: true,
+        origin: policy.origin,
+        name: addressName
       });
       const newCoordinates = result as latlongInterface;
       if (newCoordinates) {
         setLocation(`${newCoordinates.lat}, ${newCoordinates.lng}`);
         setCoordinates(newCoordinates);
       }
-    }, [coordinates]);
+    }, [coordinates, addressData?.coordinates, policy.origin, addressName]);
 
     const handleConfirmDelete = useCallback(() => {
       const confirmDelete = window.confirm(
@@ -138,15 +150,15 @@ const UpdateUnitStatus = NiceModal.create(
           "address.deletePropertyWarning",
           '⚠️ WARNING: Deleting property number "{{number}}" of "{{name}}". This action cannot be undone. Proceed?',
           {
-            number: unitDetails?.number,
-            name: addressData?.name
+            number: unitNumber,
+            name: addressName
           }
         )
       );
       if (confirmDelete) {
         handleDeleteProperty();
       }
-    }, []);
+    }, [t, unitNumber, addressName, handleDeleteProperty]);
 
     const handleClearNote = useCallback(() => {
       setHhNote("");
@@ -202,10 +214,10 @@ const UpdateUnitStatus = NiceModal.create(
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <ModalUnitTitle
-          unit={unitDetails?.number || ""}
-          floor={unitDetails?.floor || MIN_START_FLOOR}
-          type={addressData?.type}
-          name={addressData?.name || ""}
+          unit={unitNumber}
+          floor={unitFloor}
+          type={addressType}
+          name={addressName}
         />
         <Form onSubmit={handleSubmitClick}>
           <Modal.Body>
@@ -232,18 +244,12 @@ const UpdateUnitStatus = NiceModal.create(
             <HHTypeField
               handleChange={handleHHTypeChange}
               changeValue={hhType}
-              options={policy.options.map((option) => {
-                return {
-                  label: option.description,
-                  value: option.id
-                };
-              })}
+              options={policy.options.map((option) => ({
+                label: option.description,
+                value: option.id
+              }))}
             />
-            <div
-              style={{
-                position: "relative"
-              }}
-            >
+            <div style={{ position: "relative" }}>
               <GenericTextAreaField
                 label={t("address.notes", "Notes")}
                 name="note"
@@ -251,23 +257,21 @@ const UpdateUnitStatus = NiceModal.create(
                 changeValue={hhNote}
               />
             </div>
-            {addressData?.type === TERRITORY_TYPES.SINGLE_STORY && (
+            {isSingleStory && (
               <ComponentAuthorizer
                 requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
                 userPermission={policy.userRole}
               >
-                <>
-                  <GenericInputField
-                    inputType="number"
-                    label={t("address.territorySequence", "Territory Sequence")}
-                    name="sequence"
-                    handleChange={handleSequenceChange}
-                    changeValue={unitSequence.toString()}
-                  />
-                </>
+                <GenericInputField
+                  inputType="number"
+                  label={t("address.territorySequence", "Territory Sequence")}
+                  name="sequence"
+                  handleChange={handleSequenceChange}
+                  changeValue={unitSequence.toString()}
+                />
               </ComponentAuthorizer>
             )}
-            {addressData?.type === TERRITORY_TYPES.SINGLE_STORY && (
+            {isSingleStory && (
               <GenericInputField
                 label={t("address.coordinates", "Address Coordinates")}
                 name="location"
@@ -304,22 +308,17 @@ const UpdateUnitStatus = NiceModal.create(
             isSaving={isSaving}
             userAccessLevel={policy.userRole}
           >
-            {addressData?.type &&
-            addressData?.type === TERRITORY_TYPES.SINGLE_STORY ? (
-              <>
-                <ComponentAuthorizer
-                  requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
-                  userPermission={policy.userRole}
-                >
-                  <GenericButton
-                    variant="secondary"
-                    onClick={handleConfirmDelete}
-                    label={t("common.delete", "Delete")}
-                  />
-                </ComponentAuthorizer>
-              </>
-            ) : (
-              <></>
+            {isSingleStory && (
+              <ComponentAuthorizer
+                requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
+                userPermission={policy.userRole}
+              >
+                <GenericButton
+                  variant="secondary"
+                  onClick={handleConfirmDelete}
+                  label={t("common.delete", "Delete")}
+                />
+              </ComponentAuthorizer>
             )}
             {hhNote && (
               <GenericButton

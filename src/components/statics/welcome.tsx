@@ -2,6 +2,7 @@ import { memo } from "react";
 import { Container, Card } from "react-bootstrap";
 import { WelcomeProps } from "../../utils/interface";
 import { useTranslation } from "react-i18next";
+import { getAssetUrl } from "../../utils/helpers/assetpath";
 
 const Welcome = memo(({ name }: WelcomeProps) => {
   const { t } = useTranslation();
@@ -12,7 +13,7 @@ const Welcome = memo(({ name }: WelcomeProps) => {
         <Card.Img
           alt="Ministry Mapper main logo"
           className="mm-main-image"
-          src="https://assets.ministry-mapper.com/logo.png"
+          src={getAssetUrl("logo.png")}
         />
         <Card.Body>
           <Card.Title className="text-center">

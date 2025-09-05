@@ -9,6 +9,7 @@ import {
 import { Container, Navbar, Image } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { MINISTRY_MAPPER_WIKI_PAGE } from "../utils/constants";
+import { getAssetUrl } from "../utils/helpers/assetpath";
 import NavBarBranding from "../components/navigation/branding";
 import { StateContext } from "../components/utils/context";
 import { authListener, getUser } from "../utils/pocketbase";
@@ -18,7 +19,7 @@ import { AuthModel } from "pocketbase";
 import Loader from "../components/statics/loader";
 import LanguageSelector from "../i18n/LanguageSelector";
 import { LanguageContext } from "../i18n/LanguageContext";
-import useUIState from "../hooks/admin/uiManagement";
+import useUIState from "../hooks/uiManagement";
 import GenericButton from "../components/navigation/button";
 const { VITE_ABOUT_URL } = import.meta.env;
 
@@ -106,7 +107,7 @@ const FrontPage = () => {
                 onClick={toggleLanguageSelector}
                 label={
                   <Image
-                    src="https://assets.ministry-mapper.com/language.svg"
+                    src={getAssetUrl("language.svg")}
                     alt="Language"
                     width={16}
                     height={16}

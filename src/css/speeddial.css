@@ -1,0 +1,84 @@
+/* SpeedDial CSS Variables */
+:root {
+  --speed-dial-fab-size: 56px;
+  --speed-dial-action-size: 48px;
+  --speed-dial-mobile-fab-size: 48px;
+  --speed-dial-mobile-action-size: 40px;
+  --speed-dial-fab-font-size: 24px;
+  --speed-dial-action-font-size: 16px;
+  --speed-dial-mobile-fab-font-size: 20px;
+  --speed-dial-mobile-action-font-size: 14px;
+  --speed-dial-transition: all 0.2s ease-in-out;
+  --speed-dial-hover-scale: 1.1;
+  --speed-dial-active-scale-fab: 0.95;
+  --speed-dial-active-scale-action: 0.9;
+  --speed-dial-font-weight: 300;
+  --speed-dial-box-shadow-fab: 0 6px 16px rgba(0, 0, 0, 0.2);
+  --speed-dial-box-shadow-action: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.speed-dial {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.speed-dial-fab {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  font-size: var(--speed-dial-fab-font-size) !important;
+  font-weight: var(--speed-dial-font-weight) !important;
+  transition: var(--speed-dial-transition) !important;
+}
+
+.speed-dial-fab:hover {
+  transform: scale(var(--speed-dial-hover-scale)) !important;
+  box-shadow: var(--speed-dial-box-shadow-fab) !important;
+}
+
+.speed-dial-fab:active {
+  transform: scale(var(--speed-dial-active-scale-fab)) !important;
+}
+
+.speed-dial-action {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  font-size: var(--speed-dial-action-font-size) !important;
+  transition: var(--speed-dial-transition) !important;
+}
+
+.speed-dial-action:hover {
+  transform: scale(var(--speed-dial-hover-scale)) !important;
+  box-shadow: var(--speed-dial-box-shadow-action) !important;
+}
+
+.speed-dial-action:active {
+  transform: scale(var(--speed-dial-active-scale-action)) !important;
+}
+
+.speed-dial-action-open {
+  pointer-events: auto;
+}
+
+.speed-dial-backdrop {
+  pointer-events: auto;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .speed-dial-fab {
+    width: var(--speed-dial-mobile-fab-size) !important;
+    height: var(--speed-dial-mobile-fab-size) !important;
+    font-size: var(--speed-dial-mobile-fab-font-size) !important;
+  }
+
+  .speed-dial-action {
+    width: var(--speed-dial-mobile-action-size) !important;
+    height: var(--speed-dial-mobile-action-size) !important;
+    font-size: var(--speed-dial-mobile-action-font-size) !important;
+  }
+}
