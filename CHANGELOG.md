@@ -1,3 +1,10 @@
+# [1.6.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.5.3...v1.6.0) (2025-09-07)
+
+
+### Features
+
+* implement terrtory quick link feature ([#54](https://github.com/rimorin/ministry-mapper-v2/issues/54)) ([d722ea5](https://github.com/rimorin/ministry-mapper-v2/commit/d722ea56f7df006bb10f3f25ab85b27d80c5648e))
+
 ## [1.5.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.5.2...v1.5.3) (2025-09-05)
 
 
