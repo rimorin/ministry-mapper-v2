@@ -4,6 +4,7 @@ import UseAnotherButton from "./useanother";
 import { useCallback, useState } from "react";
 import errorHandler from "../../utils/helpers/errorhandler";
 import { useTranslation } from "react-i18next";
+import { getAssetUrl } from "../../utils/helpers/assetpath";
 
 import { cleanupSession, verifyEmail } from "../../utils/pocketbase";
 
@@ -37,7 +38,7 @@ const VerificationPage = ({ user }: userInterface) => {
         <Card.Img
           alt={t("branding.logo", "Ministry Mapper logo")}
           className="mm-logo"
-          src="https://assets.ministry-mapper.com/android-chrome-192x192.png"
+          src={getAssetUrl("android-chrome-192x192.png")}
         />
         <Card.Body>
           <Card.Title className="text-center">

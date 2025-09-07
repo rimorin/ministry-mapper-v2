@@ -93,7 +93,12 @@
     "codeExample": "구역 코드. 예: M01, W12 등.",
     "nameExample": "구역 이름. 예: 801-810, 우드랜드 드라이브.",
     "codeAlreadyExists": "구역 코드가 이미 존재합니다.",
-    "createdSuccess": "{{name}} 구역이 생성되었습니다."
+    "createdSuccess": "{{name}} 구역이 생성되었습니다.",
+    "notDone": "미방문",
+    "notHome": "부재",
+    "completed": "완료",
+    "assignees": "담당자",
+    "publisherPlaceholder": "전도인 이름 입력"
   },
   "map": {
     "newMap": "새 맵",
@@ -262,7 +267,8 @@
     "driveMode": "운전 모드",
     "transitMode": "대중교통 모드",
     "transportModes": "이동 모드",
-    "openMaps": "맵 열기"
+    "openMaps": "맵 열기",
+    "generateLink": "퀵 링크"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper는 현재 유지보수 중입니다.",
@@ -328,5 +334,14 @@
     "number": "비밀번호에는 숫자가 포함되어야 합니다.",
     "capital": "비밀번호에는 대문자가 포함되어야 합니다.",
     "match": "비밀번호가 일치해야 합니다."
+  },
+  "admin": {
+    "quickLink": "퀵 링크",
+    "generatedMap": "생성된 맵",
+    "confirm": "확인"
+  },
+  "generatedMap": {
+    "info": "위치, 작업량, 진행 상황을 기반으로 가장 가까운 이용 가능한 구역 맵에 대한 퀵 링크를 얻으세요.",
+    "share": "공유"
   }
 }

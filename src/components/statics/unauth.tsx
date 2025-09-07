@@ -2,6 +2,7 @@ import { Container, Card } from "react-bootstrap";
 import { SignInDifferentProps } from "../../utils/interface";
 import UseAnotherButton from "../navigation/useanother";
 import { useTranslation } from "react-i18next";
+import { getAssetUrl } from "../../utils/helpers/assetpath";
 
 const UnauthorizedPage = ({ handleClick, name }: SignInDifferentProps) => {
   const { t } = useTranslation();
@@ -12,7 +13,7 @@ const UnauthorizedPage = ({ handleClick, name }: SignInDifferentProps) => {
         <Card.Img
           alt={t("branding.logo", "Ministry Mapper logo")}
           className="mm-logo"
-          src="https://assets.ministry-mapper.com/android-chrome-192x192.png"
+          src={getAssetUrl("android-chrome-192x192.png")}
         />
         <Card.Body>
           <Card.Title className="text-center">

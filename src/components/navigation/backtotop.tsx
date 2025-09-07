@@ -2,6 +2,7 @@ import { memo } from "react";
 import { Fade, Image } from "react-bootstrap";
 import { backToTopProp } from "../../utils/interface";
 import { useTranslation } from "react-i18next";
+import { getAssetUrl } from "../../utils/helpers/assetpath";
 
 const BackToTopButton = memo(({ showButton }: backToTopProp) => {
   const { t } = useTranslation();
@@ -18,7 +19,7 @@ const BackToTopButton = memo(({ showButton }: backToTopProp) => {
         className="back-to-top"
       >
         <Image
-          src="https://assets.ministry-mapper.com/top-arrow.svg"
+          src={getAssetUrl("top-arrow.svg")}
           alt={t("navigation.backToTop", "Back to top")}
         />
       </div>

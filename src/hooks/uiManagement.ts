@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY } from "../../utils/constants";
+import { PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY } from "../utils/constants";
 
 export default function useUIState() {
   const [showBkTopButton, setShowBkTopButton] = useState(false);

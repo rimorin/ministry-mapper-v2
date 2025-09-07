@@ -9,7 +9,7 @@ import { addressDetails } from "../../utils/interface";
 import { Policy } from "../../utils/policies";
 import { useTranslation } from "react-i18next";
 
-import useVisibilityChange from "../utils/visibilitychange";
+import useVisibilityChange from "../../hooks/visibilityManagement";
 import { getList, setupRealtimeListener } from "../../utils/pocketbase";
 import modalManagement from "../../hooks/modalManagement";
 import GenericButton from "./button";

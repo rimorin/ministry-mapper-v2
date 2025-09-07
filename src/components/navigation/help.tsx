@@ -2,6 +2,7 @@ import { memo } from "react";
 import { HelpButtonProps } from "../../utils/interface";
 import { Image } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { getAssetUrl } from "../../utils/helpers/assetpath";
 
 const HelpButton = memo(
   ({ link, isWarningButton = false }: HelpButtonProps) => {
@@ -9,7 +10,7 @@ const HelpButton = memo(
 
     return (
       <Image
-        src="https://assets.ministry-mapper.com/question.svg"
+        src={getAssetUrl("question.svg")}
         alt={t("navigation.help", "Help")}
         className={`help-button ${isWarningButton ? "warning-help-button" : ""}`}
         onClick={() => window.open(link)}

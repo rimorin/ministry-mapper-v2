@@ -11,9 +11,9 @@ import {
   latlongInterface
 } from "../../utils/interface";
 import { AdvancedMarker, Map, MapMouseEvent } from "@vis.gl/react-google-maps";
-import { GmapAutocomplete } from "../utils/mapautocomplete";
-import { ControlPanel } from "../utils/mapinfopanel";
-import { MapCurrentTarget } from "../utils/mapcurrenttarget";
+import { GmapAutocomplete } from "../map/mapautocomplete";
+import { ControlPanel } from "../map/mapinfopanel";
+import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import CurrentLocationMarker from "../statics/currentlocator";
 import { updateDataById } from "../../utils/pocketbase";
 import GenericButton from "../navigation/button";
@@ -24,7 +24,7 @@ const ChangeMapGeolocation = NiceModal.create(
     name = "",
     coordinates,
     origin,
-    isNew = false
+    isSelectOnly = false
   }: ConfigureAddressCoordinatesModalProps) => {
     const { t } = useTranslation();
     const [addressLocation, setAddressLocation] =
@@ -56,7 +56,7 @@ const ChangeMapGeolocation = NiceModal.create(
       event.preventDefault();
       setIsSaving(true);
       try {
-        if (!isNew) {
+        if (!isSelectOnly) {
           await updateDataById(
             "maps",
             mapId,
@@ -112,7 +112,7 @@ const ChangeMapGeolocation = NiceModal.create(
       >
         <Modal.Header>
           <Modal.Title>
-            {isNew
+            {isSelectOnly
               ? t("common.select", "Select")
               : t("common.change", "Change")}{" "}
             {t("address.location", "Location")}
@@ -191,7 +191,7 @@ const ChangeMapGeolocation = NiceModal.create(
                       aria-hidden="true"
                     />
                   )}{" "}
-                  {isNew
+                  {isSelectOnly
                     ? t("common.select", "Select")
                     : t("common.save", "Save")}
                 </>

@@ -415,7 +415,7 @@ export interface ConfigureAddressCoordinatesModalProps
     coordinatesInterface,
     nameInterface,
     originInterface {
-  isNew: boolean;
+  isSelectOnly: boolean;
 }
 
 export interface GetMapGeolocationModalProps

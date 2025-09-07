@@ -93,7 +93,12 @@
     "codeExample": "Territory code. For eg, M01, W12, etc.",
     "nameExample": "Name of the territory. For eg, 801-810, Woodlands Drive.",
     "codeAlreadyExists": "Territory code already exists.",
-    "createdSuccess": "Created territory, {{name}}."
+    "createdSuccess": "Created territory, {{name}}.",
+    "notDone": "Not Done",
+    "notHome": "Not Home",
+    "completed": "Completed",
+    "assignees": "Assignees",
+    "publisherPlaceholder": "Enter publisher name"
   },
   "map": {
     "newMap": "New Map",
@@ -263,7 +268,8 @@
     "driveMode": "Drive mode",
     "transitMode": "Transit mode",
     "transportModes": "Transport modes",
-    "openMaps": "Open Maps"
+    "openMaps": "Open Maps",
+    "generateLink": "Quick Link"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper is currently down for maintenance.",
@@ -329,5 +335,14 @@
     "number": "Password must contain numbers.",
     "capital": "Password must contain uppercase letters.",
     "match": "Passwords must match."
+  },
+  "admin": {
+    "quickLink": "Quick Link",
+    "generatedMap": "Generated Map",
+    "confirm": "Confirm"
+  },
+  "generatedMap": {
+    "info": "Get a quick link to the nearest available territory map based on location, workload, and progress.",
+    "share": "Share"
   }
 }
