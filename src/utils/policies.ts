@@ -89,6 +89,9 @@ export class Policy {
   hasOptions(): boolean {
     return this.options.length > 0;
   }
+  getOptionMap(): Map<string, HHOptionProps> {
+    return new Map(this.options.map((option) => [option.id, option]));
+  }
 }
 
 export class LinkSession {

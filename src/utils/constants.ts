@@ -183,7 +183,7 @@ const PB_FIELDS = {
   ASSIGNMENT_LINKS:
     "id, map, expiry_date, publisher, expand.map.description, expand.map.type, expand.map.location, expand.map.coordinates, expand.map.progress, expand.map.expand.congregation.max_tries, expand.map.expand.congregation.origin, expand.map.expand.congregation.expiry_hours, expand.map.expand.congregation.id",
   ADDRESSES:
-    "id, code, coordinates, notes, type, status, not_home_tries, dnc_time, sequence, floor, updated, updated_by, expand.type.id, expand.type.code",
+    "id, code, coordinates, notes, type, status, not_home_tries, dnc_time, sequence, floor, updated, updated_by",
   ROLES: "id, role, expand.congregation.id, expand.congregation.name",
   CONGREGATION_ROLES:
     "id, role, expand.user.name, expand.user.email, expand.user.verified",
