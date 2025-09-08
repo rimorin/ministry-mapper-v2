@@ -9,6 +9,7 @@ import {
 } from "../../utils/constants";
 import {
   floorDetails,
+  HHOptionProps,
   territoryTableProps,
   unitDetails
 } from "../../utils/interface";
@@ -30,34 +31,42 @@ import ZeroPad from "../../utils/helpers/zeropad";
 const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
 const UpdateUnit = lazy(() => import("../modal/updateunit"));
 
-const useAddresses = (mapId: string, assignmentId?: string) => {
+const useAddresses = (
+  mapId: string,
+  options: Map<string, HHOptionProps>,
+  assignmentId?: string
+) => {
   const [addresses, setAddresses] = useState<Map<string, unitDetails>>(
     new Map()
   );
 
   const createUnitDetails = useCallback(
-    (address: RecordModel) => ({
+    (address: RecordModel): unitDetails => ({
       id: address.id,
       coordinates: address.coordinates,
       number: address.code,
       note: address.notes,
-      type: address.expand?.type,
+      type: Array.isArray(address.type)
+        ? address.type.map((type: string) => ({
+            id: type,
+            code: options.get(type)?.code ?? ""
+          }))
+        : [],
       status: address.status,
-      nhcount: address.not_home_tries || NOT_HOME_STATUS_CODES.DEFAULT,
-      dnctime: address.dnc_time || null,
+      nhcount: address.not_home_tries ?? NOT_HOME_STATUS_CODES.DEFAULT,
+      dnctime: address.dnc_time ?? null,
       sequence: address.sequence,
       floor: address.floor,
       updated: address.updated,
       updatedBy: address.updated_by
     }),
-    []
+    [options]
   );
 
   const fetchAddressData = useCallback(async () => {
     if (!mapId) return;
     const addresses = await getList("addresses", {
       filter: `map="${mapId}"`,
-      expand: "type",
       requestKey: null,
       fields: PB_FIELDS.ADDRESSES
     });
@@ -75,7 +84,6 @@ const useAddresses = (mapId: string, assignmentId?: string) => {
     if (!mapId) return;
     const subOptions = {
       filter: `map="${mapId}"`,
-      expand: "type",
       requestKey: null,
       fields: PB_FIELDS.ADDRESSES
     } as RecordSubscribeOptions;
@@ -126,7 +134,7 @@ const MainTable = ({
   const mapType = addressDetails?.type;
   const { t } = useTranslation();
   const { showModal } = modalManagement();
-  const addresses = useAddresses(mapId, assignmentId);
+  const addresses = useAddresses(mapId, policy.getOptionMap(), assignmentId);
 
   const deleteAddressFloor = useCallback(
     async (floor: number) => {
