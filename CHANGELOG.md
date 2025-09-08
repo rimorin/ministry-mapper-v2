@@ -1,3 +1,10 @@
+## [1.6.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.6.0...v1.6.1) (2025-09-08)
+
+
+### Performance Improvements
+
+* improve add query by removing expand ([fd8f40d](https://github.com/rimorin/ministry-mapper-v2/commit/fd8f40d29e60796d118bdd8798900824b2f1a931))
+
 # [1.6.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.5.3...v1.6.0) (2025-09-07)
 
 
