@@ -1,9 +1,9 @@
-.sticky-body {
+.map-body {
   max-height: 75dvh;
   overflow-y: auto;
 }
 
-.map-body {
+.gmap-body {
   height: 75dvh;
   width: 100%;
   position: relative;

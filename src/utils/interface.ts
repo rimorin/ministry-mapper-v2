@@ -565,3 +565,57 @@ export interface SpeedDialProps {
     left?: string;
   };
 }
+
+// Map listing component interfaces
+export interface MapListingProps {
+  sortedAddressList: addressDetails[];
+  mapViews: Map<string, boolean>;
+  setMapViews: React.Dispatch<React.SetStateAction<Map<string, boolean>>>;
+  processingMap: { isProcessing: boolean; mapId: string | null };
+  policy: Policy;
+  userAccessLevel: string;
+  setValues: React.Dispatch<React.SetStateAction<object>>;
+  toggleAddressTerritoryListing: () => void;
+  addFloorToMap: (mapId: string, higherFloor?: boolean) => Promise<void>;
+  resetMap: (mapId: string) => Promise<void>;
+  deleteMap: (mapId: string, name: string, showAlert: boolean) => Promise<void>;
+  values: object;
+  accordingKeys: string[];
+  setAccordionKeys: React.Dispatch<React.SetStateAction<string[]>>;
+  isReadonly: boolean;
+}
+
+export interface MapRowProps {
+  sortedAddressList: addressDetails[];
+  mapViews: Map<string, boolean>;
+  processingMap: { isProcessing: boolean; mapId: string | null };
+  policy: Policy;
+  userAccessLevel: string;
+  accordingKeys: string[];
+  isReadonly: boolean;
+  dropDirections: DropDirections;
+  handlers: {
+    handleDropdownDirection: (
+      event: React.MouseEvent<HTMLElement, globalThis.MouseEvent>,
+      dropdownId: string
+    ) => void;
+    handleToggleMapView: (mapId: string) => void;
+    handleShowGetLocation: (addressElement: addressDetails) => void;
+    handleShowChangeLocation: (
+      mapId: string,
+      currentMapName: string,
+      coordinates: latlongInterface
+    ) => void;
+    handleShowChangeMapCode: (mapId: string, mapCode: string) => void;
+    handleChangeTerritory: (mapId: string, mapName: string) => void;
+    handleShowChangeName: (mapId: string, mapName: string) => void;
+    handleShowAddUnit: (mapId: string, addressElement: addressDetails) => void;
+    handleAddHigherFloor: (mapId: string) => void;
+    handleAddLowerFloor: (mapId: string) => void;
+    handleResetMap: (mapId: string, mapName: string) => void;
+    handleDeleteMap: (mapId: string, mapName: string) => void;
+    handleToggleMapExpansion: (mapId: string) => void;
+  };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  t: any;
+}

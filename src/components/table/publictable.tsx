@@ -27,9 +27,7 @@ const PublicTerritoryTable = memo(
     const floorDetails = floors?.[0];
     const totalUnits = floorDetails?.units?.length || 1;
     return (
-      <div
-        className={policy.isFromAdmin() ? "sticky-body-admin" : "sticky-body"}
-      >
+      <div className={policy.isFromAdmin() ? "map-body-admin" : "map-body"}>
         <Table
           bordered
           striped

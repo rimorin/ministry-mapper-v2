@@ -92,7 +92,7 @@ const TerritoryMapView = ({
   }, [houses, policy, aggregates, handleHouseUpdate]);
 
   return (
-    <div className={policy.isFromAdmin() ? "map-body-admin" : "map-body"}>
+    <div className={policy.isFromAdmin() ? "map-body-admin" : "gmap-body"}>
       <Map
         mapId={`map-houses-${mapId}`}
         center={center}

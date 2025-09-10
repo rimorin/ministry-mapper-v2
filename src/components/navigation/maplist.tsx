@@ -1,11 +1,5 @@
-import React, { lazy, MouseEvent, useCallback, useState } from "react";
-import {
-  Accordion,
-  Container,
-  Navbar,
-  ProgressBar,
-  Spinner
-} from "react-bootstrap";
+import React, { lazy, useCallback, useState, useEffect, useMemo } from "react";
+import { Container, Navbar, ProgressBar, Spinner } from "react-bootstrap";
 import {
   USER_ACCESS_LEVELS,
   TERRITORY_TYPES,
@@ -20,13 +14,17 @@ import {
   addressDetails,
   DropDirection,
   DropDirections,
-  latlongInterface
+  latlongInterface,
+  MapListingProps,
+  MapRowProps
 } from "../../utils/interface";
-import { Policy } from "../../utils/policies";
+
 import { useTranslation } from "react-i18next";
 import modalManagement from "../../hooks/modalManagement";
 import GenericButton from "./button";
 import { GenericDropdownButton, GenericDropdownItem } from "./dropdownbutton";
+import { List, type RowComponentProps } from "react-window";
+import "../../css/virtualmaps.css";
 
 const GetMapGeolocation = lazy(() => import("../modal/getlocation"));
 const ChangeMapGeoLocation = lazy(() => import("../modal/changegeolocation"));
@@ -34,22 +32,221 @@ const ChangeMapCode = lazy(() => import("../modal/changemapcd"));
 const ChangeAddressName = lazy(() => import("../modal/changeaddname"));
 const NewUnit = lazy(() => import("../modal/newunit"));
 
-interface MapListingProps {
-  sortedAddressList: addressDetails[];
-  mapViews: Map<string, boolean>;
-  setMapViews: React.Dispatch<React.SetStateAction<Map<string, boolean>>>;
-  processingMap: { isProcessing: boolean; mapId: string | null };
-  policy: Policy;
-  userAccessLevel: string;
-  setValues: React.Dispatch<React.SetStateAction<object>>;
-  toggleAddressTerritoryListing: () => void;
-  addFloorToMap: (mapId: string, higherFloor?: boolean) => Promise<void>;
-  resetMap: (mapId: string) => Promise<void>;
-  deleteMap: (mapId: string, name: string, showAlert: boolean) => Promise<void>;
-  values: object;
-  accordingKeys: string[];
-  setAccordionKeys: React.Dispatch<React.SetStateAction<string[]>>;
-  isReadonly: boolean;
+function MapRow({
+  index,
+  style,
+  sortedAddressList,
+  mapViews,
+  processingMap,
+  policy,
+  userAccessLevel,
+  accordingKeys,
+  isReadonly,
+  dropDirections,
+  handlers,
+  t
+}: RowComponentProps<MapRowProps>) {
+  const addressElement = sortedAddressList[index];
+  const {
+    handleDropdownDirection,
+    handleToggleMapView,
+    handleShowGetLocation,
+    handleShowChangeLocation,
+    handleShowChangeMapCode,
+    handleChangeTerritory,
+    handleShowChangeName,
+    handleShowAddUnit,
+    handleAddHigherFloor,
+    handleAddLowerFloor,
+    handleResetMap,
+    handleDeleteMap,
+    handleToggleMapExpansion
+  } = handlers;
+
+  const {
+    id: mapId,
+    mapId: mapCode,
+    name: mapName,
+    type: mapType
+  } = addressElement;
+  const completeValue =
+    addressElement.aggregates?.value || DEFAULT_AGGREGATES.value;
+  const completedPercent =
+    addressElement.aggregates?.display || DEFAULT_AGGREGATES.display;
+  const isExpanded = accordingKeys.includes(mapId);
+
+  return (
+    <div className="map-item border-0" style={style}>
+      {/* Map header */}
+      <div
+        className={`map-header ${isReadonly ? "" : "cursor-pointer"}`}
+        onClick={
+          !isReadonly ? () => handleToggleMapExpansion(mapId) : undefined
+        }
+        style={{ cursor: isReadonly ? "default" : "pointer" }}
+      >
+        <button
+          className={`map-toggle-button ${isExpanded ? "" : "collapsed"}`}
+          type="button"
+          disabled={isReadonly}
+        >
+          <span
+            className="fluid-bolding fluid-text"
+            style={{
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis"
+            }}
+          >
+            {mapName}
+          </span>
+        </button>
+      </div>
+
+      {/* Map content */}
+      {(isExpanded || isReadonly) && (
+        <div className="map-content collapse show">
+          <div className="map-content-body p-0">
+            <ProgressBar
+              style={{ borderRadius: 0 }}
+              now={completeValue}
+              label={completedPercent}
+            />
+            <Navbar bg="light" expand="lg" key={`navbar-${mapId}`}>
+              <Container fluid className="justify-content-end">
+                {mapType === TERRITORY_TYPES.SINGLE_STORY && (
+                  <GenericButton
+                    size="sm"
+                    variant="outline-primary"
+                    className="m-1"
+                    onClick={() => handleToggleMapView(mapId)}
+                    label={
+                      mapViews.get(mapId)
+                        ? t("navigation.listView", "List View")
+                        : t("navigation.mapView", "Map View")
+                    }
+                  />
+                )}
+
+                <AssignmentButtonGroup
+                  key={`assignment-btn-${mapId}`}
+                  addressElement={addressElement}
+                  policy={policy}
+                  userId={getUser("id") as string}
+                />
+                <GenericButton
+                  size="sm"
+                  variant="outline-primary"
+                  className="m-1"
+                  onClick={() => handleShowGetLocation(addressElement)}
+                  label={t("navigation.direction", "Direction")}
+                />
+                <MessageButtonGroup
+                  key={`message-btn-${mapId}`}
+                  addressElement={addressElement}
+                  policy={policy}
+                />
+                <ComponentAuthorizer
+                  requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
+                  userPermission={userAccessLevel}
+                >
+                  <GenericDropdownButton
+                    className="dropdown-btn"
+                    align="end"
+                    variant="outline-primary"
+                    size="sm"
+                    label={
+                      <>
+                        {processingMap.isProcessing &&
+                          processingMap.mapId === mapId && (
+                            <>
+                              <Spinner
+                                as="span"
+                                animation="border"
+                                size="sm"
+                                aria-hidden="true"
+                              />{" "}
+                            </>
+                          )}{" "}
+                        {t("address.address", "Address")}
+                      </>
+                    }
+                    drop={dropDirections[mapId]}
+                    onClick={(e) => handleDropdownDirection(e, mapId)}
+                  >
+                    <GenericDropdownItem
+                      onClick={() =>
+                        handleShowChangeLocation(
+                          mapId,
+                          mapName,
+                          addressElement.coordinates
+                        )
+                      }
+                    >
+                      {t("address.changeLocation", "Change Location")}
+                    </GenericDropdownItem>
+                    <GenericDropdownItem
+                      onClick={() => handleShowChangeMapCode(mapId, mapCode)}
+                    >
+                      {t("address.changeMapNumber", "Change Map Number")}
+                    </GenericDropdownItem>
+                    <GenericDropdownItem
+                      onClick={() => handleChangeTerritory(mapId, mapName)}
+                    >
+                      {t("address.changeTerritory", "Change Territory")}
+                    </GenericDropdownItem>
+                    <GenericDropdownItem
+                      onClick={() => handleShowChangeName(mapId, mapName)}
+                    >
+                      {t("address.changeName", "Rename")}
+                    </GenericDropdownItem>
+                    <GenericDropdownItem
+                      onClick={() => handleShowAddUnit(mapId, addressElement)}
+                    >
+                      {mapType === TERRITORY_TYPES.SINGLE_STORY
+                        ? t("address.addProperty", "Add Property No.")
+                        : t("address.addUnit", "Add Unit No.")}
+                    </GenericDropdownItem>
+                    {(!mapType ||
+                      mapType === TERRITORY_TYPES.MULTIPLE_STORIES) && (
+                      <>
+                        <GenericDropdownItem
+                          onClick={() => handleAddHigherFloor(mapId)}
+                        >
+                          {t("address.addHigherFloor", "Add Higher Floor")}
+                        </GenericDropdownItem>
+                        <GenericDropdownItem
+                          onClick={() => handleAddLowerFloor(mapId)}
+                        >
+                          {t("address.addLowerFloor", "Add Lower Floor")}
+                        </GenericDropdownItem>
+                      </>
+                    )}
+                    <GenericDropdownItem
+                      onClick={() => handleResetMap(mapId, mapName)}
+                    >
+                      {t("address.resetStatus", "Reset Status")}
+                    </GenericDropdownItem>
+                    <GenericDropdownItem
+                      onClick={() => handleDeleteMap(mapId, mapName)}
+                    >
+                      {t("address.delete", "Delete")}
+                    </GenericDropdownItem>
+                  </GenericDropdownButton>
+                </ComponentAuthorizer>
+              </Container>
+            </Navbar>
+            <MainTable
+              mapView={mapViews.get(mapId)}
+              key={`table-${mapId}`}
+              policy={policy}
+              addressDetails={addressElement}
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }
 
 const MapListing: React.FC<MapListingProps> = ({
@@ -72,11 +269,89 @@ const MapListing: React.FC<MapListingProps> = ({
   const { t } = useTranslation();
   const { showModal } = modalManagement();
   const [dropDirections, setDropDirections] = useState<DropDirections>({});
-  const policyOrigin = policy.origin;
+  const [screenSize, setScreenSize] = useState<"sm" | "md" | "lg">("lg");
 
+  // Track screen size for responsive height calculations
+  useEffect(() => {
+    const updateScreenSize = () => {
+      const width = window.innerWidth;
+      if (width <= 480) {
+        setScreenSize("sm");
+      } else if (width <= 768) {
+        setScreenSize("md");
+      } else {
+        setScreenSize("lg");
+      }
+    };
+
+    updateScreenSize();
+    window.addEventListener("resize", updateScreenSize);
+    window.addEventListener("orientationchange", updateScreenSize);
+
+    return () => {
+      window.removeEventListener("resize", updateScreenSize);
+      window.removeEventListener("orientationchange", updateScreenSize);
+    };
+  }, []);
+
+  // Calculate row height based on expansion state
+  const getRowHeight = useCallback(
+    (index: number): number => {
+      const addressElement = sortedAddressList[index];
+      if (!addressElement) return getHeaderHeight();
+
+      const isExpanded = accordingKeys.includes(addressElement.id);
+      return !isExpanded && !isReadonly
+        ? getHeaderHeight()
+        : calculateExpandedHeight();
+    },
+    [accordingKeys, isReadonly, sortedAddressList, screenSize]
+  );
+
+  const getHeaderHeight = useCallback((): number => {
+    switch (screenSize) {
+      case "sm":
+        return 48;
+      case "md":
+        return 52;
+      default:
+        return 58;
+    }
+  }, [screenSize]);
+
+  const calculateExpandedHeight = useCallback((): number => {
+    const headerHeight = getHeaderHeight();
+    const progressBarHeight = 6;
+    const navbarHeight =
+      screenSize === "sm" ? 44 : screenSize === "md" ? 48 : 56;
+
+    const getFixedTableHeight = (): number => {
+      switch (screenSize) {
+        case "sm":
+          return 420;
+        case "md":
+          return 450;
+        default:
+          return 500;
+      }
+    };
+
+    const contentPadding =
+      screenSize === "sm" ? 16 : screenSize === "md" ? 14 : 12;
+
+    return (
+      headerHeight +
+      progressBarHeight +
+      navbarHeight +
+      getFixedTableHeight() +
+      contentPadding
+    );
+  }, [getHeaderHeight, screenSize]);
+
+  // Event handlers
   const handleDropdownDirection = useCallback(
     (
-      event: MouseEvent<HTMLElement, globalThis.MouseEvent>,
+      event: React.MouseEvent<HTMLElement, globalThis.MouseEvent>,
       dropdownId: string
     ) => {
       const clickPositionY = event.clientY;
@@ -95,23 +370,26 @@ const MapListing: React.FC<MapListingProps> = ({
     []
   );
 
-  const handleToggleMapView = useCallback((mapId: string) => {
-    setMapViews((prev) => {
-      const updatedMapViews = new Map(prev);
-      updatedMapViews.set(mapId, !updatedMapViews.get(mapId));
-      return updatedMapViews;
-    });
-  }, []);
+  const handleToggleMapView = useCallback(
+    (mapId: string) => {
+      setMapViews((prev) => {
+        const updatedMapViews = new Map(prev);
+        updatedMapViews.set(mapId, !updatedMapViews.get(mapId));
+        return updatedMapViews;
+      });
+    },
+    [setMapViews]
+  );
 
   const handleShowGetLocation = useCallback(
     (addressElement: addressDetails) => {
       showModal(GetMapGeolocation, {
         coordinates: addressElement.coordinates,
         name: addressElement.name,
-        origin: policyOrigin
+        origin: policy.origin
       });
     },
-    [policyOrigin]
+    [policy.origin, showModal]
   );
 
   const handleShowChangeLocation = useCallback(
@@ -120,11 +398,11 @@ const MapListing: React.FC<MapListingProps> = ({
         footerSaveAcl: userAccessLevel,
         mapId,
         coordinates,
-        origin: policyOrigin,
+        origin: policy.origin,
         name: currentMapName
       });
     },
-    [policyOrigin]
+    [policy.origin, showModal, userAccessLevel]
   );
 
   const handleShowChangeMapCode = useCallback(
@@ -135,7 +413,7 @@ const MapListing: React.FC<MapListingProps> = ({
         mapCode
       });
     },
-    []
+    [showModal, userAccessLevel]
   );
 
   const handleChangeTerritory = useCallback(
@@ -147,16 +425,19 @@ const MapListing: React.FC<MapListingProps> = ({
       });
       toggleAddressTerritoryListing();
     },
-    []
+    [setValues, values, toggleAddressTerritoryListing]
   );
 
-  const handleShowChangeName = useCallback((mapId: string, mapName: string) => {
-    showModal(ChangeAddressName, {
-      footerSaveAcl: userAccessLevel,
-      mapId,
-      name: mapName
-    });
-  }, []);
+  const handleShowChangeName = useCallback(
+    (mapId: string, mapName: string) => {
+      showModal(ChangeAddressName, {
+        footerSaveAcl: userAccessLevel,
+        mapId,
+        name: mapName
+      });
+    },
+    [showModal, userAccessLevel]
+  );
 
   const handleShowAddUnit = useCallback(
     (mapId: string, addressElement: addressDetails) => {
@@ -166,12 +447,15 @@ const MapListing: React.FC<MapListingProps> = ({
         addressData: addressElement
       });
     },
-    []
+    [showModal, userAccessLevel]
   );
 
-  const handleAddHigherFloor = useCallback((mapId: string) => {
-    addFloorToMap(mapId, true);
-  }, []);
+  const handleAddHigherFloor = useCallback(
+    (mapId: string) => {
+      addFloorToMap(mapId, true);
+    },
+    [addFloorToMap]
+  );
 
   const handleAddLowerFloor = useCallback(
     (mapId: string) => {
@@ -180,236 +464,116 @@ const MapListing: React.FC<MapListingProps> = ({
     [addFloorToMap]
   );
 
-  const handleResetMap = useCallback((mapId: string, mapName: string) => {
-    const confirmReset = window.confirm(
-      t(
-        "address.resetWarning",
-        '⚠️ WARNING: Resetting all property statuses of "{{name}}" will reset all statuses. This action cannot be undone. Proceed?',
-        { name: mapName }
-      )
-    );
+  const handleResetMap = useCallback(
+    (mapId: string, mapName: string) => {
+      const confirmReset = window.confirm(
+        t(
+          "address.resetWarning",
+          '⚠️ WARNING: Resetting all property statuses of "{{name}}" will reset all statuses. This action cannot be undone. Proceed?',
+          { name: mapName }
+        )
+      );
 
-    if (confirmReset) {
-      resetMap(mapId);
-    }
-  }, []);
+      if (confirmReset) {
+        resetMap(mapId);
+      }
+    },
+    [resetMap, t]
+  );
 
-  const handleDeleteMap = useCallback((mapId: string, mapName: string) => {
-    const confirmDelete = window.confirm(
-      t(
-        "address.deleteWarning",
-        '⚠️ WARNING: Deleting map "{{name}}" will remove it completely. This action cannot be undone. Proceed?',
-        { name: mapName }
-      )
-    );
+  const handleDeleteMap = useCallback(
+    (mapId: string, mapName: string) => {
+      const confirmDelete = window.confirm(
+        t(
+          "address.deleteWarning",
+          '⚠️ WARNING: Deleting map "{{name}}" will remove it completely. This action cannot be undone. Proceed?',
+          { name: mapName }
+        )
+      );
 
-    if (confirmDelete) {
-      deleteMap(mapId, mapName, true);
-    }
-  }, []);
+      if (confirmDelete) {
+        deleteMap(mapId, mapName, true);
+      }
+    },
+    [deleteMap, t]
+  );
+
+  const handleToggleMapExpansion = useCallback(
+    (mapId: string) => {
+      setAccordionKeys((prevKeys) => {
+        if (prevKeys.includes(mapId)) {
+          return prevKeys.filter((key) => key !== mapId);
+        } else {
+          return [...prevKeys, mapId];
+        }
+      });
+    },
+    [setAccordionKeys]
+  );
+
+  const rowProps = useMemo(
+    () => ({
+      sortedAddressList,
+      mapViews,
+      processingMap,
+      policy,
+      userAccessLevel,
+      accordingKeys,
+      isReadonly,
+      dropDirections,
+      handlers: {
+        handleDropdownDirection,
+        handleToggleMapView,
+        handleShowGetLocation,
+        handleShowChangeLocation,
+        handleShowChangeMapCode,
+        handleChangeTerritory,
+        handleShowChangeName,
+        handleShowAddUnit,
+        handleAddHigherFloor,
+        handleAddLowerFloor,
+        handleResetMap,
+        handleDeleteMap,
+        handleToggleMapExpansion
+      },
+      t
+    }),
+    [
+      sortedAddressList,
+      mapViews,
+      processingMap,
+      policy,
+      userAccessLevel,
+      accordingKeys,
+      isReadonly,
+      dropDirections,
+      handleDropdownDirection,
+      handleToggleMapView,
+      handleShowGetLocation,
+      handleShowChangeLocation,
+      handleShowChangeMapCode,
+      handleChangeTerritory,
+      handleShowChangeName,
+      handleShowAddUnit,
+      handleAddHigherFloor,
+      handleAddLowerFloor,
+      handleResetMap,
+      handleDeleteMap,
+      handleToggleMapExpansion,
+      t
+    ]
+  );
 
   return (
-    <Accordion
-      activeKey={isReadonly ? undefined : accordingKeys}
-      onSelect={(eventKeys) => {
-        if (Array.isArray(eventKeys)) {
-          setAccordionKeys(
-            eventKeys.map((key) => {
-              return key.toString();
-            })
-          );
-        }
-      }}
-      alwaysOpen={!isReadonly}
-      flush
-    >
-      {sortedAddressList.map((addressElement) => {
-        const currentMapId = addressElement.id;
-        const currentMapCode = addressElement.mapId;
-        const currentMapName = addressElement.name;
-        const currentMapType = addressElement.type;
-        const completeValue =
-          addressElement.aggregates?.value || DEFAULT_AGGREGATES.value;
-        const completedPercent =
-          addressElement.aggregates?.display || DEFAULT_AGGREGATES.display;
-        return (
-          <Accordion.Item
-            key={`accordion-${currentMapId}`}
-            eventKey={currentMapId}
-          >
-            <Accordion.Header>
-              <span className="fluid-bolding fluid-text">{currentMapName}</span>
-            </Accordion.Header>
-            <Accordion.Body className="p-0">
-              <ProgressBar
-                style={{ borderRadius: 0 }}
-                now={completeValue}
-                label={completedPercent}
-              />
-              <div key={`div-${currentMapId}`}>
-                <Navbar bg="light" expand="lg" key={`navbar-${currentMapId}`}>
-                  <Container fluid className="justify-content-end">
-                    {currentMapType === TERRITORY_TYPES.SINGLE_STORY && (
-                      <GenericButton
-                        size="sm"
-                        variant="outline-primary"
-                        className="m-1"
-                        onClick={() => handleToggleMapView(currentMapId)}
-                        label={
-                          mapViews.get(currentMapId)
-                            ? t("navigation.listView", "List View")
-                            : t("navigation.mapView", "Map View")
-                        }
-                      />
-                    )}
-
-                    <AssignmentButtonGroup
-                      key={`assignment-btn-${currentMapId}`}
-                      addressElement={addressElement}
-                      policy={policy}
-                      userId={getUser("id") as string}
-                    />
-                    <GenericButton
-                      size="sm"
-                      variant="outline-primary"
-                      className="m-1"
-                      onClick={() => handleShowGetLocation(addressElement)}
-                      label={t("navigation.direction", "Direction")}
-                    />
-                    <MessageButtonGroup
-                      key={`message-btn-${currentMapId}`}
-                      addressElement={addressElement}
-                      policy={policy}
-                    />
-                    <ComponentAuthorizer
-                      requiredPermission={
-                        USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
-                      }
-                      userPermission={userAccessLevel}
-                    >
-                      <GenericDropdownButton
-                        className="dropdown-btn"
-                        align="end"
-                        variant="outline-primary"
-                        size="sm"
-                        label={
-                          <>
-                            {processingMap.isProcessing &&
-                              processingMap.mapId === currentMapId && (
-                                <>
-                                  <Spinner
-                                    as="span"
-                                    animation="border"
-                                    size="sm"
-                                    aria-hidden="true"
-                                  />{" "}
-                                </>
-                              )}{" "}
-                            {t("address.address", "Address")}
-                          </>
-                        }
-                        drop={dropDirections[currentMapId]}
-                        onClick={(e) =>
-                          handleDropdownDirection(e, currentMapId)
-                        }
-                      >
-                        <GenericDropdownItem
-                          onClick={() =>
-                            handleShowChangeLocation(
-                              currentMapId,
-                              currentMapName,
-                              addressElement.coordinates
-                            )
-                          }
-                        >
-                          {t("address.changeLocation", "Change Location")}
-                        </GenericDropdownItem>
-                        <GenericDropdownItem
-                          onClick={() =>
-                            handleShowChangeMapCode(
-                              currentMapId,
-                              currentMapCode
-                            )
-                          }
-                        >
-                          {t("address.changeMapNumber", "Change Map Number")}
-                        </GenericDropdownItem>
-                        <GenericDropdownItem
-                          onClick={() =>
-                            handleChangeTerritory(currentMapId, currentMapName)
-                          }
-                        >
-                          {t("address.changeTerritory", "Change Territory")}
-                        </GenericDropdownItem>
-                        <GenericDropdownItem
-                          onClick={() =>
-                            handleShowChangeName(currentMapId, currentMapName)
-                          }
-                        >
-                          {t("address.changeName", "Rename")}
-                        </GenericDropdownItem>
-                        <GenericDropdownItem
-                          onClick={() =>
-                            handleShowAddUnit(currentMapId, addressElement)
-                          }
-                        >
-                          {t(
-                            addressElement.type === TERRITORY_TYPES.SINGLE_STORY
-                              ? "address.addProperty"
-                              : "address.addUnit",
-                            addressElement.type === TERRITORY_TYPES.SINGLE_STORY
-                              ? "Add Property No."
-                              : "Add Unit No."
-                          )}
-                        </GenericDropdownItem>
-                        {(!addressElement.type ||
-                          addressElement.type ===
-                            TERRITORY_TYPES.MULTIPLE_STORIES) && (
-                          <GenericDropdownItem
-                            onClick={() => handleAddHigherFloor(currentMapId)}
-                          >
-                            {t("address.addHigherFloor", "Add Higher Floor")}
-                          </GenericDropdownItem>
-                        )}
-                        {(!addressElement.type ||
-                          addressElement.type ===
-                            TERRITORY_TYPES.MULTIPLE_STORIES) && (
-                          <GenericDropdownItem
-                            onClick={() => handleAddLowerFloor(currentMapId)}
-                          >
-                            {t("address.addLowerFloor", "Add Lower Floor")}
-                          </GenericDropdownItem>
-                        )}
-                        <GenericDropdownItem
-                          onClick={() =>
-                            handleResetMap(currentMapId, currentMapName)
-                          }
-                        >
-                          {t("address.resetStatus", "Reset Status")}
-                        </GenericDropdownItem>
-                        <GenericDropdownItem
-                          onClick={() =>
-                            handleDeleteMap(currentMapId, currentMapName)
-                          }
-                        >
-                          {t("address.delete", "Delete")}
-                        </GenericDropdownItem>
-                      </GenericDropdownButton>
-                    </ComponentAuthorizer>
-                  </Container>
-                </Navbar>
-                <MainTable
-                  mapView={mapViews.get(currentMapId)}
-                  key={`table-${currentMapId}`}
-                  policy={policy}
-                  addressDetails={addressElement}
-                />
-              </div>
-            </Accordion.Body>
-          </Accordion.Item>
-        );
-      })}
-    </Accordion>
+    <List
+      className="virtual-map-container map-container-flush"
+      style={{ height: "80dvh" }}
+      rowCount={sortedAddressList.length}
+      rowHeight={getRowHeight}
+      rowComponent={MapRow}
+      rowProps={rowProps}
+      overscanCount={2}
+    />
   );
 };
 
