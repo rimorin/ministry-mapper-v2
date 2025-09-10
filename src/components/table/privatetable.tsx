@@ -14,9 +14,7 @@ const PrivateTerritoryTable = ({
   return (
     <div
       key={`territory-table-${mapId}`}
-      className={`${
-        policy.isFromAdmin() ? "sticky-body-admin" : "sticky-body"
-      } p-2`}
+      className={`${policy.isFromAdmin() ? "map-body-admin" : "map-body"} p-2`}
     >
       <Row xs={4} className="g-1">
         {houses &&

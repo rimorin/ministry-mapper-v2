@@ -38,16 +38,34 @@
   top: 0.55rem;
 }
 
-.sticky-body-admin {
-  max-height: 45dvh;
-  overflow-y: auto;
+.map-body-admin {
+  height: 490px;
+  overflow: auto;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  border-radius: 0.375rem;
+  box-sizing: border-box;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
-.map-body-admin {
-  height: 60dvh;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
+@media (max-width: 768px) {
+  .map-body-admin {
+    height: 450px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-body-admin {
+    height: 400px;
+    font-size: 0.875rem;
+    overscroll-behavior: contain;
+  }
+}
+
+@media (max-width: 430px) {
+  .map-body-admin {
+    height: 360px;
+  }
 }
 
 .notification-glow {
@@ -58,9 +76,11 @@
   0% {
     box-shadow: 0 0 5px green;
   }
+
   50% {
     box-shadow: 0 0 20px green;
   }
+
   100% {
     box-shadow: 0 0 5px green;
   }
@@ -72,17 +92,19 @@
   position: relative;
   overflow: hidden;
 }
+
 .circular-progress-container {
   position: relative;
   display: inline-block;
-  border-radius: 50%; /* Ensure the container is circular */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+  border-radius: 50%;
+  /* Ensure the container is circular */
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  /* Add a subtle shadow */
 }
 
 .circular-progress {
-  transform: rotate(
-    -180deg
-  ); /* Rotate the entire SVG to start from 12 o'clock */
+  transform: rotate(-180deg);
+  /* Rotate the entire SVG to start from 12 o'clock */
 }
 
 .circular-progress-background {
@@ -94,8 +116,10 @@
   transition: stroke-dashoffset 0.35s;
   transform: rotate(0.25turn);
   transform-origin: center;
-  stroke: #007bff; /* Blue color for the progress highlight */
-  stroke-width: 4; /* Increase stroke width for better visibility */
+  stroke: #007bff;
+  /* Blue color for the progress highlight */
+  stroke-width: 4;
+  /* Increase stroke width for better visibility */
 }
 
 .circular-progress-center {
@@ -125,6 +149,7 @@
     stroke-width: 4;
     stroke-opacity: 0.5;
   }
+
   100% {
     stroke-width: 6;
     stroke-opacity: 1;
