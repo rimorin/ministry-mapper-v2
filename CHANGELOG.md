@@ -1,3 +1,10 @@
+# [1.7.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.6.1...v1.7.0) (2025-09-12)
+
+
+### Features
+
+* implement virtual listing for better performance ([d393dfe](https://github.com/rimorin/ministry-mapper-v2/commit/d393dfedc44ba685c6cc70dd878cfc86a664b046))
+
 ## [1.6.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.6.0...v1.6.1) (2025-09-08)
 
 
