@@ -3,77 +3,54 @@ import { useState, useEffect } from "react";
 import { Modal, Badge, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
-  USER_ACCESS_LEVELS,
-  UNSUPPORTED_BROWSER_MSG,
-  LINK_TYPES
-} from "../../utils/constants";
-import {
-  GeneratedMapModalProps,
-  latlongInterface
-} from "../../utils/interface";
-import {
   ControlPosition,
   Map,
   MapControl,
   useMap,
   useMapsLibrary
 } from "@vis.gl/react-google-maps";
+import {
+  USER_ACCESS_LEVELS,
+  UNSUPPORTED_BROWSER_MSG,
+  DEFAULT_COORDINATES
+} from "../../utils/constants";
+import { latlongInterface } from "../../utils/interface";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import errorHandler from "../../utils/helpers/errorhandler";
 import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import TravelModeButtons from "../map/travelmodebtn";
-
 import { callFunction } from "../../utils/pocketbase";
 
+interface QuickLinkModalProps {
+  territoryId: string;
+}
+
+interface MapDataType {
+  linkId: string;
+  mapName: string;
+  progress: number;
+  not_done: number;
+  not_home: number;
+  assignees: string[];
+  coordinates: latlongInterface;
+  origin: latlongInterface;
+}
+
 const QuickLinkModal = NiceModal.create(
-  ({
-    territoryId,
-    linkId,
-    mapName,
-    progress,
-    notDone,
-    notHome,
-    assignees,
-    origin,
-    coordinates
-  }: GeneratedMapModalProps) => {
+  ({ territoryId }: QuickLinkModalProps) => {
     const { t } = useTranslation();
     const modal = useModal();
 
-    // State management
-    const [isInputMode, setIsInputMode] = useState(!linkId); // Start in input mode if no linkId
+    const [isInputMode, setIsInputMode] = useState(true);
     const [publisher, setPublisher] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [isSharing, setIsSharing] = useState(false);
-    const [mapData, setMapData] = useState<{
-      linkId: string;
-      mapName: string;
-      progress: number;
-      not_done: number;
-      not_home: number;
-      assignees: string[];
-      coordinates: latlongInterface;
-      origin: latlongInterface;
-    } | null>(
-      linkId
-        ? {
-            linkId,
-            mapName: mapName!,
-            progress: progress!,
-            not_done: notDone!,
-            not_home: notHome!,
-            assignees: assignees!,
-            coordinates: coordinates!,
-            origin: origin!
-          }
-        : null
-    );
+    const [mapData, setMapData] = useState<MapDataType | null>(null);
 
-    // Map-related state
     const [currentCenter, setCurrentCenter] = useState<latlongInterface>(
-      coordinates || { lat: 0, lng: 0 }
+      DEFAULT_COORDINATES.Singapore
     );
     const [travelMode, setTravelMode] = useState<google.maps.TravelMode>(
       google.maps.TravelMode.WALKING
@@ -87,54 +64,47 @@ const QuickLinkModal = NiceModal.create(
     const [directionsRenderer, setDirectionsRenderer] =
       useState<google.maps.DirectionsRenderer>();
 
+    const getCurrentPosition = (): Promise<GeolocationPosition> => {
+      return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      });
+    };
+
     const handleSubmitPublisher = async (e: React.FormEvent) => {
       e.preventDefault();
       if (!publisher.trim()) return;
 
       setIsLoading(true);
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const { latitude, longitude } = position.coords;
-          try {
-            const linkData = await callFunction("/territory/link", {
-              method: "POST",
-              body: {
-                territory: territoryId,
-                publisher: publisher.trim(),
-                coordinates: {
-                  lat: latitude,
-                  lng: longitude
-                }
-              }
-            });
+      try {
+        const position = await getCurrentPosition();
+        const { latitude, longitude } = position.coords;
+        const origin = { lat: latitude, lng: longitude };
 
-            setMapData({
-              linkId: linkData.linkId,
-              mapName: linkData.mapName,
-              progress: linkData.progress,
-              not_done: linkData.not_done,
-              not_home: linkData.not_home,
-              assignees: linkData.assignees,
-              coordinates: linkData.coordinates,
-              origin: { lat: latitude, lng: longitude }
-            });
-            setCurrentCenter(linkData.coordinates);
-            setIsInputMode(false);
-          } catch (error) {
-            errorHandler(error, false);
-          } finally {
-            setIsLoading(false);
+        const linkData = await callFunction("/territory/link", {
+          method: "POST",
+          body: {
+            territory: territoryId,
+            publisher: publisher.trim(),
+            coordinates: origin
           }
-        },
-        () => {
+        });
+
+        setMapData({ ...linkData, origin });
+        setCurrentCenter(linkData.coordinates);
+        setIsInputMode(false);
+      } catch (error) {
+        if (error instanceof GeolocationPositionError) {
           alert(t("errors.unableToGetLocation"));
-          setIsLoading(false);
+        } else {
+          errorHandler(error, false);
         }
-      );
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     const shareTimedLink = async (
-      linktype: string,
+      linkId: string,
       title: string,
       body: string
     ) => {
@@ -142,40 +112,31 @@ const QuickLinkModal = NiceModal.create(
         alert(UNSUPPORTED_BROWSER_MSG);
         return;
       }
-      try {
-        const url = `map/${linkId}`;
-        const absoluteUrl = new URL(url, window.location.href);
-        await navigator.share({
-          title: title,
-          text: body,
-          url: absoluteUrl.toString()
-        });
-      } catch (error) {
-        if (error instanceof Error) {
-          // Ignore the error if the user aborts the share
-          if (error.name === "AbortError") {
-            return;
-          }
-        }
-        errorHandler(error, false);
-        throw error; // Re-throw to be caught by handleAssign
-      }
+
+      const url = new URL(`map/${linkId}`, window.location.href);
+      await navigator.share({
+        title,
+        text: body,
+        url: url.toString()
+      });
     };
 
     const handleAssign = async (e: React.FormEvent<HTMLFormElement>) => {
-      // disable default behavior
       e.preventDefault();
       if (!mapData || !publisher.trim()) return;
 
       setIsSharing(true);
       try {
         await shareTimedLink(
-          LINK_TYPES.ASSIGNMENT,
+          mapData.linkId,
           mapData.mapName,
           assignmentMessage(mapData.mapName)
         );
-        modal.remove(); // Close modal only on successful share
+        modal.remove();
       } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") {
+          return;
+        }
         errorHandler(error, false);
       } finally {
         setIsSharing(false);
@@ -185,12 +146,8 @@ const QuickLinkModal = NiceModal.create(
     useEffect(() => {
       if (!routesLibrary || !map || isInputMode || !mapData) return;
       setDirectionsService(new routesLibrary.DirectionsService());
-      setDirectionsRenderer(
-        new routesLibrary.DirectionsRenderer({
-          map
-        })
-      );
-    }, [routesLibrary, map, travelMode, isInputMode, mapData]);
+      setDirectionsRenderer(new routesLibrary.DirectionsRenderer({ map }));
+    }, [routesLibrary, map, isInputMode, mapData]);
 
     useEffect(() => {
       if (!directionsService || !directionsRenderer || isInputMode || !mapData)
@@ -201,13 +158,14 @@ const QuickLinkModal = NiceModal.create(
           const direction = await directionsService.route({
             origin: mapData.origin,
             destination: mapData.coordinates,
-            travelMode: travelMode,
+            travelMode,
             provideRouteAlternatives: false
           });
           directionsRenderer.setDirections(direction);
           setIsCalculating(false);
         } catch (error) {
-          console.error(error);
+          console.error("Error calculating directions:", error);
+          setIsCalculating(false);
         }
       };
 
@@ -271,7 +229,7 @@ const QuickLinkModal = NiceModal.create(
                   height: window.innerHeight < 700 ? "75dvh" : "80dvh"
                 }}
               >
-                {mapData ? (
+                {mapData && (
                   <Map
                     mapId="generated-territory-map"
                     clickableIcons={false}
@@ -294,7 +252,6 @@ const QuickLinkModal = NiceModal.create(
                         className="bg-white rounded-3 shadow-lg border p-3 mt-1"
                         style={{ minWidth: "280px" }}
                       >
-                        {/* Statistics Row */}
                         <div className="d-flex justify-content-center gap-3">
                           <div className="text-center">
                             <div className="fw-bold text-warning fs-5">
@@ -322,8 +279,7 @@ const QuickLinkModal = NiceModal.create(
                           </div>
                         </div>
 
-                        {/* Assignees Row */}
-                        {mapData.assignees && mapData.assignees.length > 0 && (
+                        {mapData.assignees.length > 0 && (
                           <div className="border-top pt-2 mt-2">
                             <div className="text-center">
                               <small className="text-muted fw-medium mb-2 d-block">
@@ -356,13 +312,14 @@ const QuickLinkModal = NiceModal.create(
                       />
                     </MapControl>
                   </Map>
-                ) : null}
+                )}
               </Modal.Body>
               {mapData && (
                 <ModalFooter
                   handleClick={() => modal.hide()}
                   submitLabel={t("generatedMap.share")}
                   isSaving={isSharing}
+                  disableSubmitBtn={isCalculating}
                   requiredAcLForSave={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
                 />
               )}
