@@ -1,11 +1,5 @@
 import React from "react";
-
-interface StateType {
-  frontPageMode: "login" | "signup" | "forgot";
-  setFrontPageMode: React.Dispatch<
-    React.SetStateAction<"login" | "signup" | "forgot">
-  >;
-}
+import { StateType } from "../../utils/interface";
 
 // Create a new context with a default value
 const StateContext = React.createContext<StateType>({

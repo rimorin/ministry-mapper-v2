@@ -1,11 +1,7 @@
 import { MapControl, ControlPosition } from "@vis.gl/react-google-maps";
 import { Image } from "react-bootstrap";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
-
-interface MapControlProps {
-  onClick: () => void;
-  isLocating?: boolean;
-}
+import { MapControlProps } from "../../utils/interface";
 
 export const MapCurrentTarget: React.FC<MapControlProps> = ({
   onClick,

@@ -2,13 +2,7 @@ import { memo } from "react";
 import { ListGroup, Offcanvas } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { TERRITORY_SELECTOR_VIEWPORT_HEIGHT } from "../utils/constants";
-interface LanguageListingProps {
-  showListing: boolean;
-  hideFunction: () => void;
-  handleSelect: (language: string) => void;
-  currentLanguage: string;
-  languageOptions: Array<{ label: string; value: string }>;
-}
+import { LanguageListingProps } from "../utils/interface";
 
 const LanguageListing = memo(
   ({

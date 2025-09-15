@@ -1,14 +1,14 @@
 import { useState, useCallback, useRef } from "react";
-import { userDetails, CongregationAccessObject } from "../../utils/interface";
+import {
+  userDetails,
+  CongregationAccessObject,
+  CongregationManagementOptions
+} from "../../utils/interface";
 import { Policy } from "../../utils/policies";
 import { DEFAULT_SELF_DESTRUCT_HOURS } from "../../utils/constants";
 import errorHandler from "../../utils/helpers/errorhandler";
 import getCongregationUsers from "../../utils/helpers/getcongregationusers";
 import useLocalStorage from "../../utils/helpers/storage";
-
-interface CongregationManagementOptions {
-  userId: string;
-}
 
 export default function useCongregationManagement({
   userId

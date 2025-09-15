@@ -1,16 +1,6 @@
-import { memo, MouseEventHandler, ReactNode } from "react";
+import { memo } from "react";
 import { Button } from "react-bootstrap";
-
-interface GenericButtonProps {
-  label: ReactNode;
-  size?: "sm" | "lg";
-  variant?: string;
-  className?: string;
-  onClick?: MouseEventHandler<HTMLButtonElement> | undefined;
-  type?: "button" | "submit" | "reset";
-  disabled?: boolean;
-  dataAttributes?: Record<string, string>;
-}
+import { GenericButtonProps } from "../../utils/interface";
 
 const GenericButton = memo(
   ({

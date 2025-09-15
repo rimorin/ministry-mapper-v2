@@ -8,16 +8,12 @@ import {
 import { Container, Form, InputGroup, ListGroup } from "react-bootstrap";
 import { DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION } from "../../utils/constants";
 import GenericButton from "../navigation/button";
-
-interface Props {
-  onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
-  origin: string;
-}
+import { GmapAutocompleteProps } from "../../utils/interface";
 
 export const GmapAutocomplete = ({
   onPlaceSelect,
   origin = DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION
-}: Props) => {
+}: GmapAutocompleteProps) => {
   const map = useMap();
   const places = useMapsLibrary("places");
 

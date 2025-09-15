@@ -1,15 +1,5 @@
 import React from "react";
-
-interface CircularProgressProps {
-  size: number;
-  progress: number; // Progress in percentage (0-100)
-  strokeWidth: number;
-  highlightColor: string;
-  backgroundColor: string;
-  hasAssignments: boolean;
-  hasPersonal: boolean;
-  children?: React.ReactNode;
-}
+import { CircularProgressProps } from "../../utils/interface";
 
 const CircularProgress: React.FC<CircularProgressProps> = ({
   size,

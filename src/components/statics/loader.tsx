@@ -1,9 +1,6 @@
 import { Container, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-
-interface LoaderProps {
-  suspended?: boolean;
-}
+import { LoaderProps } from "../../utils/interface";
 
 const Loader: React.FC<LoaderProps> = ({ suspended = false }) => {
   const { t } = useTranslation();
