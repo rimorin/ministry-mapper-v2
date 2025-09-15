@@ -1,11 +1,6 @@
 import { ControlPosition, MapControl } from "@vis.gl/react-google-maps";
 import { Card } from "react-bootstrap";
-
-interface ControlPanelProps {
-  lat: number;
-  lng: number;
-  name?: string;
-}
+import { ControlPanelProps } from "../../utils/interface";
 
 export const ControlPanel: React.FC<ControlPanelProps> = ({
   lat,

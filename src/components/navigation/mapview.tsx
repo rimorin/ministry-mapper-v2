@@ -7,20 +7,18 @@ import {
   MapControl
 } from "@vis.gl/react-google-maps";
 import CurrentLocationMarker from "../statics/currentlocator";
-import { addressDetails, latlongInterface } from "../../utils/interface";
-import { Policy } from "../../utils/policies";
+import {
+  addressDetails,
+  latlongInterface,
+  MapViewProps
+} from "../../utils/interface";
 import { Card, Table } from "react-bootstrap";
 import AddressMarker from "./mapmarker";
 import AssignmentButtonGroup from "./assignmentbtn";
 import { getUser } from "../../utils/pocketbase";
 import ComponentAuthorizer from "./authorizer";
 
-interface MapListingProps {
-  sortedAddressList: addressDetails[];
-  policy: Policy;
-}
-
-const MapView: React.FC<MapListingProps> = ({ sortedAddressList, policy }) => {
+const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
   const defaultCenter =
     sortedAddressList[0]?.coordinates || DEFAULT_COORDINATES;
   const [isLoading, setIsLoading] = useState<boolean>(true);

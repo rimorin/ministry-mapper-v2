@@ -1,29 +1,9 @@
-import { memo, ReactNode } from "react";
+import { memo } from "react";
 import { Dropdown, DropdownButton as BSDropdownButton } from "react-bootstrap";
-import { DropDirection } from "../../utils/interface";
-
-interface GenericDropdownButtonProps {
-  label: ReactNode;
-  className?: string;
-  align?:
-    | "start"
-    | "end"
-    | { sm: "start" | "end" }
-    | { md: "start" | "end" }
-    | { lg: "start" | "end" }
-    | { xl: "start" | "end" }
-    | { xxl: "start" | "end" };
-  variant?: string;
-  size?: "sm" | "lg";
-  drop?: DropDirection;
-  onClick?: (e: React.MouseEvent<HTMLElement>) => void;
-  children: ReactNode;
-}
-
-interface GenericDropdownItemProps {
-  onClick?: () => void;
-  children: ReactNode;
-}
+import {
+  GenericDropdownButtonProps,
+  GenericDropdownItemProps
+} from "../../utils/interface";
 
 const GenericDropdownButton = memo(
   ({

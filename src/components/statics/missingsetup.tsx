@@ -2,10 +2,7 @@ import { memo } from "react";
 import { Container, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
-
-interface MissingSetupPageProps {
-  message: string;
-}
+import { MissingSetupPageProps } from "../../utils/interface";
 
 const MissingSetupPage: React.FC<MissingSetupPageProps> = memo(
   ({ message }) => {

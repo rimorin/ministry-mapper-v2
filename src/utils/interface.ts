@@ -172,12 +172,6 @@ export interface SubmitBtnProps {
   disabled?: boolean;
 }
 
-export interface InstructionsProps {
-  instructions: string;
-  userAcl?: string;
-  handleSave: (event: React.MouseEvent<HTMLElement>) => void;
-}
-
 export interface LegendProps {
   showLegend: boolean;
   hideFunction?: () => void;
@@ -194,16 +188,6 @@ export interface TerritoryListingProps {
   territories?: territoryDetails[];
   hideSelectedTerritory?: boolean;
 }
-
-export interface LoginProps {
-  loginType: string;
-}
-
-export interface unitMaps {
-  [key: string]: object | number | string;
-}
-
-export interface RouteDetails extends nameInterface, mapInterface {}
 
 export interface AuthorizerProp {
   requiredPermission: string;
@@ -377,22 +361,11 @@ export interface ChangeAddressNameModalProps
     congregationInterface,
     mapInterface {}
 
-export interface ChangePasswordModalProps extends userInterface {
-  userAccessLevel: string | undefined;
-}
-
 export interface ChangeAddressMapCodeModalProps
   extends mapInterface,
     mapCodeInterface,
     footerInterface {
   territoryCode: string | undefined;
-}
-
-export interface ChangeAddressLocationModalProps
-  extends mapInterface,
-    congregationInterface,
-    footerInterface {
-  location: string | undefined;
 }
 
 export interface latlongInterface {
@@ -422,10 +395,6 @@ export interface GetMapGeolocationModalProps
   extends coordinatesInterface,
     originInterface,
     nameInterface {}
-
-export interface NewAddressCoordinatesModalProps
-  extends coordinatesInterface,
-    originInterface {}
 
 export interface ChangeTerritoryCodeModalProps
   extends congregationInterface,
@@ -618,4 +587,157 @@ export interface MapRowProps {
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: any;
+}
+
+// Component-specific interfaces
+
+export interface LoaderProps {
+  suspended?: boolean;
+}
+
+export interface GenericDropdownButtonProps {
+  label: React.ReactNode;
+  className?: string;
+  align?:
+    | "start"
+    | "end"
+    | { sm: "start" | "end" }
+    | { md: "start" | "end" }
+    | { lg: "start" | "end" }
+    | { xl: "start" | "end" }
+    | { xxl: "start" | "end" };
+  variant?: string;
+  size?: "sm" | "lg";
+  drop?: DropDirection;
+  onClick?: (e: React.MouseEvent<HTMLElement>) => void;
+  children: React.ReactNode;
+}
+
+export interface GenericDropdownItemProps {
+  onClick?: () => void;
+  children: React.ReactNode;
+}
+
+export interface GenericButtonProps {
+  label: React.ReactNode;
+  size?: "sm" | "lg";
+  variant?: string;
+  className?: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement> | undefined;
+  type?: "button" | "submit" | "reset";
+  disabled?: boolean;
+  dataAttributes?: Record<string, string>;
+}
+
+export interface MapViewProps {
+  sortedAddressList: addressDetails[];
+  policy: Policy;
+}
+
+export interface GmapAutocompleteProps {
+  onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
+  origin: string;
+}
+
+export interface MissingSetupPageProps {
+  message: string;
+}
+
+export interface MapControlProps {
+  onClick: () => void;
+  isLocating?: boolean;
+}
+
+export interface ControlPanelProps {
+  lat: number;
+  lng: number;
+  name?: string;
+}
+
+export interface TravelModeButtonsProps {
+  travelMode: google.maps.TravelMode;
+  onTravelModeChange: (travelMode: google.maps.TravelMode) => void;
+}
+
+export interface CircularProgressProps {
+  size: number;
+  progress: number;
+  strokeWidth: number;
+  highlightColor: string;
+  backgroundColor: string;
+  hasAssignments: boolean;
+  hasPersonal: boolean;
+  children?: React.ReactNode;
+}
+
+export interface PersonalButtonGroupProps {
+  addressElement: addressDetails;
+  policy: Policy;
+  userId: string;
+}
+
+export interface StateMiddlewareProps {
+  children: React.ReactElement;
+}
+
+export interface MaintenanceMiddlewareProps {
+  underMaintenance: boolean;
+  children: React.ReactElement;
+}
+
+export interface AddressMarkerProps {
+  addressElement: addressDetails;
+  isSelected: boolean;
+  onClick: () => void;
+}
+
+export interface MapsMiddlewareProps {
+  children: React.ReactElement;
+}
+
+export interface MainMiddlewareProps {
+  children: React.ReactElement;
+}
+
+export interface CombinedMiddlewareProps {
+  children: React.ReactElement;
+}
+
+// Language-related interfaces
+
+export type LanguageContextType = {
+  currentLanguage: string;
+  changeLanguage: (language: string) => void;
+  languageOptions: { value: string; label: string }[];
+};
+
+export interface LanguageProviderProps {
+  children: React.ReactNode;
+}
+
+export interface LanguageListingProps {
+  showListing: boolean;
+  hideFunction: () => void;
+  handleSelect: (language: string) => void;
+  currentLanguage: string;
+  languageOptions: Array<{ label: string; value: string }>;
+}
+
+// Hook interfaces
+
+export interface CongregationManagementOptions {
+  userId: string;
+}
+
+export interface TerritoryManagementOptions {
+  congregationCode: string;
+}
+
+// State management interfaces
+
+export interface StateType {
+  frontPageMode: "login" | "signup" | "forgot";
+  setFrontPageMode: React.Dispatch<
+    React.SetStateAction<"login" | "signup" | "forgot">
+  >;
 }
