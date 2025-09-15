@@ -1,3 +1,10 @@
+## [1.7.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.7.0...v1.7.1) (2025-09-15)
+
+
+### Bug Fixes
+
+* undefined linkId when generating QL ([e03cd45](https://github.com/rimorin/ministry-mapper-v2/commit/e03cd45e249860b3a1f952d71f51018eec75d1b9))
+
 # [1.7.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.6.1...v1.7.0) (2025-09-12)
 
 
