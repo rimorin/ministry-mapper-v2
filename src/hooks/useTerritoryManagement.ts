@@ -2,15 +2,15 @@ import { useState, useCallback, useMemo } from "react";
 import {
   territoryDetails,
   TerritoryManagementOptions
-} from "../../utils/interface";
+} from "../utils/interface";
 import {
   deleteDataById,
   callFunction,
   unsubscriber
-} from "../../utils/pocketbase";
+} from "../utils/pocketbase";
 import { useTranslation } from "react-i18next";
-import errorHandler from "../../utils/helpers/errorhandler";
-import useLocalStorage from "../../utils/helpers/storage";
+import errorHandler from "../utils/helpers/errorhandler";
+import useLocalStorage from "./useLocalStorage";
 
 export default function useTerritoryManagement({
   congregationCode

@@ -27,7 +27,7 @@ import HHTypeField from "../form/household";
 import ComponentAuthorizer from "../navigation/authorizer";
 import DateFormat from "../../utils/helpers/dateformat";
 import { deleteDataById, updateDataById } from "../../utils/pocketbase";
-import modalManagement from "../../hooks/modalManagement";
+import { useModalManagement } from "../../hooks/useModalManagement";
 import GenericButton from "../navigation/button";
 const ChangeMapGeolocation = lazy(() => import("./changegeolocation"));
 
@@ -35,7 +35,7 @@ const UpdateUnitStatus = NiceModal.create(
   ({ addressData, unitDetails, policy }: UpdateAddressStatusModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
-    const { showModal } = modalManagement();
+    const { showModal } = useModalManagement();
 
     const unitNumber = unitDetails?.number || "";
     const unitFloor = unitDetails?.floor || MIN_START_FLOOR;

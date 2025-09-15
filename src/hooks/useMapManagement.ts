@@ -1,11 +1,11 @@
 import { useState, useCallback } from "react";
-import { addressDetails } from "../../utils/interface";
-import { deleteDataById, callFunction } from "../../utils/pocketbase";
+import { addressDetails } from "../utils/interface";
+import { deleteDataById, callFunction } from "../utils/pocketbase";
 import { RecordModel } from "pocketbase";
-import { TERRITORY_TYPES, DEFAULT_COORDINATES } from "../../utils/constants";
+import { TERRITORY_TYPES, DEFAULT_COORDINATES } from "../utils/constants";
 import { useTranslation } from "react-i18next";
-import errorHandler from "../../utils/helpers/errorhandler";
-import useLocalStorage from "../../utils/helpers/storage";
+import errorHandler from "../utils/helpers/errorhandler";
+import useLocalStorage from "./useLocalStorage";
 
 export default function useMapManagement() {
   const { t } = useTranslation();

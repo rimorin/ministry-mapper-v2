@@ -18,7 +18,7 @@ import PublicTerritoryTable from "./publictable";
 import TerritoryMapView from "./mapmode";
 import errorHandler from "../../utils/helpers/errorhandler";
 
-import useVisibilityChange from "../../hooks/visibilityManagement";
+import useVisibilityChange from "../../hooks/useVisibilityManagement";
 import { RecordModel, RecordSubscribeOptions } from "pocketbase";
 import {
   getList,
@@ -26,7 +26,7 @@ import {
   callFunction
 } from "../../utils/pocketbase";
 import { useTranslation } from "react-i18next";
-import modalManagement from "../../hooks/modalManagement";
+import { useModalManagement } from "../../hooks/useModalManagement";
 import ZeroPad from "../../utils/helpers/zeropad";
 const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
 const UpdateUnit = lazy(() => import("../modal/updateunit"));
@@ -133,7 +133,7 @@ const MainTable = ({
   const userRole = policy?.userRole || USER_ACCESS_LEVELS.PUBLISHER.CODE;
   const mapType = addressDetails?.type;
   const { t } = useTranslation();
-  const { showModal } = modalManagement();
+  const { showModal } = useModalManagement();
   const addresses = useAddresses(mapId, policy.getOptionMap(), assignmentId);
 
   const deleteAddressFloor = useCallback(

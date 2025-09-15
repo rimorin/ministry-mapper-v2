@@ -28,12 +28,12 @@ import {
 } from "../utils/constants";
 import "../css/slip.css";
 import { RecordModel } from "pocketbase";
-import useLocalStorage from "../utils/helpers/storage";
+import useLocalStorage from "../hooks/useLocalStorage";
 import { useParams } from "wouter";
-import useVisibilityChange from "../hooks/visibilityManagement";
+import useVisibilityChange from "../hooks/useVisibilityManagement";
 import { LanguageContext } from "../i18n/LanguageContext";
 import LanguageSelector from "../i18n/LanguageSelector";
-import modalManagement from "../hooks/modalManagement";
+import { useModalManagement } from "../hooks/useModalManagement";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 const UpdateMapMessages = lazy(() => import("../components/modal/mapmessages"));
 const ShowExpiry = lazy(() => import("../components/modal/slipexpiry"));
@@ -60,7 +60,7 @@ const Map = () => {
   );
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
 
-  const { showModal } = modalManagement();
+  const { showModal } = useModalManagement();
 
   const toggleLegend = useCallback(() => {
     setShowLegend((prevShowLegend) => !prevShowLegend);

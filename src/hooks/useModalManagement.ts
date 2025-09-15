@@ -3,7 +3,7 @@ import { useCallback } from "react";
 import ModalManager from "@ebay/nice-modal-react";
 import SuspenseComponent from "../components/utils/suspense";
 
-export default function modalManagement() {
+export function useModalManagement() {
   const showModal = useCallback(
     (
       ModalComponent: React.LazyExoticComponent<any> | React.FC<any>,
@@ -24,5 +24,11 @@ export default function modalManagement() {
     []
   );
 
-  return { showModal };
+  const hideModal = useCallback((id: string) => {
+    return ModalManager.hide(id);
+  }, []);
+
+  return { showModal, hideModal };
 }
+
+export default useModalManagement;

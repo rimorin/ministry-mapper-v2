@@ -9,9 +9,9 @@ import { addressDetails } from "../../utils/interface";
 import { Policy } from "../../utils/policies";
 import { useTranslation } from "react-i18next";
 
-import useVisibilityChange from "../../hooks/visibilityManagement";
+import useVisibilityChange from "../../hooks/useVisibilityManagement";
 import { getList, setupRealtimeListener } from "../../utils/pocketbase";
-import modalManagement from "../../hooks/modalManagement";
+import { useModalManagement } from "../../hooks/useModalManagement";
 import GenericButton from "./button";
 const UpdateMapMessages = lazy(() => import("../modal/mapmessages"));
 
@@ -65,7 +65,7 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = memo(
     const userRole = policy.userRole;
     const isAdmin = userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
     const msgType = isAdmin ? MESSAGE_TYPES.ADMIN : MESSAGE_TYPES.CONDUCTOR;
-    const { showModal } = modalManagement();
+    const { showModal } = useModalManagement();
     const unreadMsgCount = useUnreadMessages(mapId);
     const { t } = useTranslation();
 
