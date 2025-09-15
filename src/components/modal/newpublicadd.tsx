@@ -26,7 +26,7 @@ import HelpButton from "../navigation/help";
 import ChangeMapGeolocation from "./changegeolocation";
 
 import { callFunction } from "../../utils/pocketbase";
-import modalManagement from "../../hooks/modalManagement";
+import { useModalManagement } from "../../hooks/useModalManagement";
 
 const NewPublicAddress = NiceModal.create(
   ({
@@ -37,7 +37,7 @@ const NewPublicAddress = NiceModal.create(
   }: NewPublicAddressModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
-    const { showModal } = modalManagement();
+    const { showModal } = useModalManagement();
     const [mapCode, setMapCode] = useState("");
     const [name, setName] = useState("");
     const [sequence, setSequence] = useState("");

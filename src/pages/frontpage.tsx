@@ -19,7 +19,7 @@ import { AuthModel } from "pocketbase";
 import Loader from "../components/statics/loader";
 import LanguageSelector from "../i18n/LanguageSelector";
 import { LanguageContext } from "../i18n/LanguageContext";
-import useUIState from "../hooks/uiManagement";
+import useUIState from "../hooks/useUIManagement";
 import GenericButton from "../components/navigation/button";
 const { VITE_ABOUT_URL } = import.meta.env;
 

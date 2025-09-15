@@ -20,7 +20,7 @@ import {
 } from "../../utils/interface";
 
 import { useTranslation } from "react-i18next";
-import modalManagement from "../../hooks/modalManagement";
+import { useModalManagement } from "../../hooks/useModalManagement";
 import GenericButton from "./button";
 import { GenericDropdownButton, GenericDropdownItem } from "./dropdownbutton";
 import { List, type RowComponentProps } from "react-window";
@@ -267,7 +267,7 @@ const MapListing: React.FC<MapListingProps> = ({
   isReadonly
 }) => {
   const { t } = useTranslation();
-  const { showModal } = modalManagement();
+  const { showModal } = useModalManagement();
   const [dropDirections, setDropDirections] = useState<DropDirections>({});
   const [screenSize, setScreenSize] = useState<"sm" | "md" | "lg">("lg");
 

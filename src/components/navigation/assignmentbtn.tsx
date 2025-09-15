@@ -15,13 +15,13 @@ import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import ComponentAuthorizer from "./authorizer";
 import addHours from "../../utils/helpers/addhours";
 import { RecordModel } from "pocketbase";
-import useVisibilityChange from "../../hooks/visibilityManagement";
+import useVisibilityChange from "../../hooks/useVisibilityManagement";
 import {
   getList,
   setupRealtimeListener,
   createData
 } from "../../utils/pocketbase";
-import modalManagement from "../../hooks/modalManagement";
+import { useModalManagement } from "../../hooks/useModalManagement";
 import GenericButton from "./button";
 const ConfirmSlipDetails = lazy(
   () => import("../../components/modal/slipdetails")
@@ -110,7 +110,7 @@ const useAssignments = (mapId: string) => {
 const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = memo(
   ({ addressElement, policy, userId }) => {
     const { t } = useTranslation();
-    const { showModal } = modalManagement();
+    const { showModal } = useModalManagement();
     const [isSettingPersonalLink, setIsSettingPersonalLink] =
       React.useState(false);
     const [isSettingNormalLink, setIsSettingNormalLink] = React.useState(false);

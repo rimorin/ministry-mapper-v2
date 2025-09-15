@@ -24,7 +24,7 @@ import GenericTextAreaField from "../form/textarea";
 import HelpButton from "../navigation/help";
 import ChangeMapGeolocation from "./changegeolocation";
 import { callFunction } from "../../utils/pocketbase";
-import modalManagement from "../../hooks/modalManagement";
+import { useModalManagement } from "../../hooks/useModalManagement";
 
 const NewPrivateAddress = NiceModal.create(
   ({
@@ -35,7 +35,7 @@ const NewPrivateAddress = NiceModal.create(
   }: NewPrivateAddressModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
-    const { showModal } = modalManagement();
+    const { showModal } = useModalManagement();
     const [mapCode, setMapCode] = useState("");
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");

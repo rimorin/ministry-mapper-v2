@@ -25,10 +25,10 @@ import {
 import errorHandler from "../utils/helpers/errorhandler";
 
 // Import custom hooks
-import useTerritoryManagement from "../hooks/admin/territoryManagement";
-import useMapManagement from "../hooks/admin/mapManagement";
-import useCongregationManagement from "../hooks/admin/congManagement";
-import useUIState from "../hooks/uiManagement";
+import useTerritoryManagement from "../hooks/useTerritoryManagement";
+import useMapManagement from "../hooks/useMapManagement";
+import useCongregationManagement from "../hooks/useCongManagement";
+import useUIState from "../hooks/useUIManagement";
 
 // Import components
 import TerritoryListing from "../components/navigation/territorylist";
@@ -41,7 +41,7 @@ import Loader from "../components/statics/loader";
 import Welcome from "../components/statics/welcome";
 import SuspenseComponent from "../components/utils/suspense";
 import CongListing from "../components/navigation/conglist";
-import useVisibilityChange from "../hooks/visibilityManagement";
+import useVisibilityChange from "../hooks/useVisibilityManagement";
 import MapListing from "../components/navigation/maplist";
 import MapView from "../components/navigation/mapview";
 import SpeedDial from "../components/navigation/speeddial";
@@ -57,7 +57,7 @@ import {
   unsubscriber
 } from "../utils/pocketbase";
 import { LanguageContext } from "../i18n/LanguageContext";
-import modalManagement from "../hooks/modalManagement";
+import { useModalManagement } from "../hooks/useModalManagement";
 import GenericButton from "../components/navigation/button";
 import {
   GenericDropdownButton,
@@ -176,7 +176,7 @@ function Admin({ user }: adminProps) {
     toggleLanguageSelector
   } = useUIState();
 
-  const { showModal } = modalManagement();
+  const { showModal } = useModalManagement();
 
   const { currentLanguage, changeLanguage, languageOptions } =
     useContext(LanguageContext);

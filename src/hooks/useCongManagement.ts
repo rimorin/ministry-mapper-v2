@@ -3,12 +3,12 @@ import {
   userDetails,
   CongregationAccessObject,
   CongregationManagementOptions
-} from "../../utils/interface";
-import { Policy } from "../../utils/policies";
-import { DEFAULT_SELF_DESTRUCT_HOURS } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
-import getCongregationUsers from "../../utils/helpers/getcongregationusers";
-import useLocalStorage from "../../utils/helpers/storage";
+} from "../utils/interface";
+import { Policy } from "../utils/policies";
+import { DEFAULT_SELF_DESTRUCT_HOURS } from "../utils/constants";
+import errorHandler from "../utils/helpers/errorhandler";
+import getCongregationUsers from "../utils/helpers/getcongregationusers";
+import useLocalStorage from "./useLocalStorage";
 
 export default function useCongregationManagement({
   userId
