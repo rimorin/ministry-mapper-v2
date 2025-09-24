@@ -29,46 +29,24 @@ export default defineConfig(() => {
       TurboConsole(),
       VitePWA({
         registerType: "autoUpdate",
-        manifest: false,
+        manifest: false, // Keep using public/site.webmanifest
         workbox: {
           globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
           runtimeCaching: [
+            // External assets only - remove script/style caching
             {
               urlPattern: ({ url }) =>
                 url.origin === "https://assets.ministry-mapper.com",
-              handler: "CacheFirst",
+              handler: "StaleWhileRevalidate",
               options: {
                 cacheName: "external-assets",
                 expiration: {
                   maxEntries: 50,
-                  maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
-                }
-              }
-            },
-            {
-              urlPattern: ({ request }) => request.destination === "script",
-              handler: "NetworkFirst",
-              options: {
-                cacheName: "cache-scripts",
-                networkTimeoutSeconds: 3,
-                expiration: {
-                  maxEntries: 100,
                   maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
                 }
               }
             },
-            {
-              urlPattern: ({ request }) => request.destination === "style",
-              handler: "NetworkFirst",
-              options: {
-                cacheName: "cache-styles",
-                networkTimeoutSeconds: 3,
-                expiration: {
-                  maxEntries: 100,
-                  maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
-                }
-              }
-            },
+            // Keep fonts as CacheFirst (they rarely change)
             {
               urlPattern: ({ request }) => request.destination === "font",
               handler: "CacheFirst",
@@ -80,6 +58,7 @@ export default defineConfig(() => {
                 }
               }
             }
+            // Google Maps caching is handled automatically
           ],
           navigateFallback: "/index.html",
           navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/]
