@@ -23,39 +23,56 @@ export default defineConfig(() => {
     server: {
       port: 3000
     },
-    plugins: [react(), visualizer(), TurboConsole(), VitePWA({
-      registerType: "autoUpdate",
-      manifest: false,
-      workbox: {
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-        runtimeCaching: [
-          {
-            urlPattern: /^https:\/\/assets\.ministry-mapper\.com\/.*/i,
-            handler: "CacheFirst",
-            options: {
-              cacheName: "external-assets",
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+    plugins: [
+      react(),
+      visualizer(),
+      TurboConsole(),
+      VitePWA({
+        registerType: "autoUpdate",
+        manifest: false,
+        workbox: {
+          globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+          runtimeCaching: [
+            {
+              urlPattern: ({ url }) =>
+                url.origin === "https://assets.ministry-mapper.com",
+              handler: "CacheFirst",
+              options: {
+                cacheName: "external-assets",
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+                }
+              }
+            },
+            {
+              urlPattern: ({ request }) => request.destination === "script",
+              handler: "StaleWhileRevalidate",
+              options: {
+                cacheName: "cache-scripts",
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+                }
+              }
+            },
+            {
+              urlPattern: ({ request }) => request.destination === "style",
+              handler: "StaleWhileRevalidate",
+              options: {
+                cacheName: "cache-styles",
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+                }
               }
             }
-          },
-          {
-            urlPattern: /^https:\/\/maps\.googleapis\.com\/.*/i,
-            handler: "StaleWhileRevalidate",
-            options: {
-              cacheName: "google-maps",
-              expiration: {
-                maxEntries: 20,
-                maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
-              }
-            }
-          }
-        ],
-        navigateFallback: "/index.html",
-        navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/]
-      }
-    })],
+          ],
+          navigateFallback: "/index.html",
+          navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/]
+        }
+      })
+    ],
     css: {
       preprocessorOptions: {
         scss: {
