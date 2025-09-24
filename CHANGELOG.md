@@ -1,3 +1,10 @@
+# [1.8.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.7.1...v1.8.0) (2025-09-24)
+
+
+### Features
+
+* pwa implementation ([e14b1ec](https://github.com/rimorin/ministry-mapper-v2/commit/e14b1ec36b466f8f088ebd77994d776b82edebc4))
+
 ## [1.7.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.7.0...v1.7.1) (2025-09-15)
 
 
