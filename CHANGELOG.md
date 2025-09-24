@@ -1,3 +1,10 @@
+## [1.8.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.8.0...v1.8.1) (2025-09-24)
+
+
+### Bug Fixes
+
+* pwa configuration for caching ([7ece233](https://github.com/rimorin/ministry-mapper-v2/commit/7ece2338b13989728118baedf6b3b7bc5b4ecc76))
+
 # [1.8.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.7.1...v1.8.0) (2025-09-24)
 
 
