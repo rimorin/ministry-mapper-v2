@@ -17,6 +17,7 @@ import AddressMarker from "./mapmarker";
 import AssignmentButtonGroup from "./assignmentbtn";
 import { getUser } from "../../utils/pocketbase";
 import ComponentAuthorizer from "./authorizer";
+import MapPlaceholder from "../statics/placeholder";
 
 const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
   const defaultCenter =
@@ -45,9 +46,9 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
     };
   }, [sortedAddressList]);
 
-  // if loading show a message else show the map
+  // if loading show a placeholder with the appropriate height
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <MapPlaceholder policy={policy} rows={6} columns={3} />;
   }
 
   if (sortedAddressList.length === 0) {

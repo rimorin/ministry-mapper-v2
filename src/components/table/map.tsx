@@ -17,6 +17,7 @@ import PrivateTerritoryTable from "./privatetable";
 import PublicTerritoryTable from "./publictable";
 import TerritoryMapView from "./mapmode";
 import errorHandler from "../../utils/helpers/errorhandler";
+import MapPlaceholder from "../statics/placeholder";
 
 import useVisibilityChange from "../../hooks/useVisibilityManagement";
 import { RecordModel, RecordSubscribeOptions } from "pocketbase";
@@ -308,7 +309,7 @@ const MainTable = ({
 
   const { floorList, maxUnitLength } = organizeAddresses(addresses);
   if (floorList.length === 0) {
-    return <div className="text-center p-2">Loading...</div>;
+    return <MapPlaceholder policy={policy} />;
   }
   if (mapType == TERRITORY_TYPES.SINGLE_STORY) {
     if (mapView) {

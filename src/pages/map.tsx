@@ -8,14 +8,15 @@ import {
   setupRealtimeListener,
   unsubscriber
 } from "../utils/pocketbase";
-import { Container, Image, Nav, Navbar } from "react-bootstrap";
+import { Image, Nav, Navbar } from "react-bootstrap";
 import { addressDetails, latlongInterface } from "../utils/interface";
 import { Policy } from "../utils/policies";
 import { getAssetUrl } from "../utils/helpers/assetpath";
 import Legend from "../components/navigation/legend";
-import Loader from "../components/statics/loader";
 import InvalidPage from "../components/statics/invalidpage";
 import MainTable from "../components/table/map";
+import MapPlaceholder from "../components/statics/placeholder";
+import TopNavbar from "../components/navigation/topnavbar";
 import errorHandler from "../utils/helpers/errorhandler";
 import {
   TERRITORY_TYPES,
@@ -255,7 +256,17 @@ const Map = () => {
   }, [id]);
   useVisibilityChange(() => getMapData(id));
 
-  if (isLoading) return <Loader />;
+  if (isLoading) {
+    return (
+      <>
+        <TopNavbar
+          title={t("common.Loading", "Loading...")}
+          onLegendClick={toggleLegend}
+        />
+        <MapPlaceholder policy={policy} />
+      </>
+    );
+  }
   if (isLinkExpired) {
     document.title = "Ministry Mapper";
     return <InvalidPage />;
@@ -271,36 +282,7 @@ const Map = () => {
         currentLanguage={currentLanguage}
         languageOptions={languageOptions}
       />
-      <Navbar bg="light" expand="sm">
-        <Container fluid>
-          <Navbar.Brand
-            className="brand-wrap d-flex align-items-center"
-            style={{ width: "100%", marginRight: 0 }}
-          >
-            <div style={{ flex: 0, textAlign: "left", marginRight: 10 }}>
-              <Image
-                src={getAssetUrl("favicon-32x32.png")}
-                alt=""
-                width="32"
-                height="32"
-                className="d-inline-block align-top"
-              />
-            </div>
-            <div style={{ flex: 1, textAlign: "left" }}>
-              <Navbar.Text className="fluid-bolding fluid-text">
-                {mapDetails?.name}
-              </Navbar.Text>
-            </div>
-            <div style={{ flex: 0, textAlign: "right", marginLeft: 10 }}>
-              <Image
-                src={getAssetUrl("information.svg")}
-                alt="Legend"
-                onClick={toggleLegend}
-              />
-            </div>
-          </Navbar.Brand>
-        </Container>
-      </Navbar>
+      <TopNavbar title={mapDetails?.name || ""} onLegendClick={toggleLegend} />
       {mapDetails && (
         <MainTable
           key={`link-map-${id}`}
