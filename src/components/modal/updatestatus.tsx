@@ -220,7 +220,12 @@ const UpdateUnitStatus = NiceModal.create(
           name={addressName}
         />
         <Form onSubmit={handleSubmitClick}>
-          <Modal.Body>
+          <Modal.Body
+            style={{
+              maxHeight: "70dvh",
+              overflowY: "auto"
+            }}
+          >
             <HHStatusField
               handleGroupChange={handleStatusChange}
               changeValue={unitStatus}
