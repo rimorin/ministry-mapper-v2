@@ -29,11 +29,13 @@ export default defineConfig(() => {
       TurboConsole(),
       VitePWA({
         registerType: "autoUpdate",
-        manifest: false, // Keep using public/site.webmanifest
+        manifest: false,
         workbox: {
           globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
+          skipWaiting: true,
+          clientsClaim: true,
+          cleanupOutdatedCaches: true,
           runtimeCaching: [
-            // External assets only - remove script/style caching
             {
               urlPattern: ({ url }) =>
                 url.origin === "https://assets.ministry-mapper.com",
@@ -42,23 +44,21 @@ export default defineConfig(() => {
                 cacheName: "external-assets",
                 expiration: {
                   maxEntries: 50,
-                  maxAgeSeconds: 60 * 60 * 24 * 7 // 7 days
+                  maxAgeSeconds: 60 * 60 * 24 * 7
                 }
               }
             },
-            // Keep fonts as CacheFirst (they rarely change)
             {
               urlPattern: ({ request }) => request.destination === "font",
               handler: "CacheFirst",
               options: {
-                cacheName: "cache-fonts",
+                cacheName: "fonts",
                 expiration: {
-                  maxEntries: 100,
-                  maxAgeSeconds: 60 * 60 * 24 * 30 // 30 days
+                  maxEntries: 30,
+                  maxAgeSeconds: 60 * 60 * 24 * 30
                 }
               }
             }
-            // Google Maps caching is handled automatically
           ],
           navigateFallback: "/index.html",
           navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/]
