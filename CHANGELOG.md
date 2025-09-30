@@ -1,3 +1,10 @@
+## [1.8.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.8.2...v1.8.3) (2025-09-30)
+
+
+### Bug Fixes
+
+* dup invite ([ca3e08f](https://github.com/rimorin/ministry-mapper-v2/commit/ca3e08fa607917cbdb7480fd8813dd2703518674))
+
 ## [1.8.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.8.1...v1.8.2) (2025-09-24)
 
 
