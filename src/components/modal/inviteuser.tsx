@@ -20,8 +20,8 @@ import {
 
 const InviteUser = NiceModal.create(
   ({
-    email,
-    congregation = "",
+    uid,
+    congregation,
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE
   }: UserModalProps) => {
     const { t } = useTranslation();
@@ -42,14 +42,17 @@ const InviteUser = NiceModal.create(
         event.preventDefault();
         setIsSaving(true);
         try {
-          if (userId === email) {
+          if (userId === uid) {
             alert(t("user.dontInviteSelf", "Please do not invite yourself."));
             return;
           }
           if (
             await getFirstItemOfList(
               "roles",
-              `user="${userId}" && congregation="${congregation}"`
+              `user="${userId}" && congregation="${congregation}"`,
+              {
+                requestKey: `check-role-${userId}-${congregation}`
+              }
             )
           ) {
             alert(

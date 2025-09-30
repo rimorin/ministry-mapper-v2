@@ -455,7 +455,7 @@ function Admin({ user }: adminProps) {
 
   const handleInviteUser = useCallback(() => {
     showModal(InviteUser, {
-      email: getUser("email") as string,
+      uid: userId,
       congregation: congregationCode,
       footerSaveAcl: userAccessLevel
     });
