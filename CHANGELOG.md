@@ -1,3 +1,10 @@
+## [1.9.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.9.0...v1.9.1) (2025-10-02)
+
+
+### Bug Fixes
+
+* address code deletion issue ([e7708d9](https://github.com/rimorin/ministry-mapper-v2/commit/e7708d9103f9ec333d42fab6beef50a1f7a74d1a))
+
 # [1.9.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.8.3...v1.9.0) (2025-10-02)
 
 
