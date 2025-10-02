@@ -362,11 +362,13 @@ const MapListing: React.FC<MapListingProps> = ({
       dropdownId: string
     ) => {
       const clickPositionY = event.clientY;
-      const dropdownHeight = 300;
+      const dropdownHeight = 350; // Estimated dropdown menu height with some buffer
       const windowInnerHeight = window.innerHeight;
+      const headerOffset = 60; // Account for any sticky headers or navbars
 
       let dropdownDirection: DropDirection = "down";
-      if (windowInnerHeight - clickPositionY < dropdownHeight) {
+      // Calculate if there's enough space below for the dropdown
+      if (windowInnerHeight - clickPositionY - headerOffset < dropdownHeight) {
         dropdownDirection = "up";
       }
       setDropDirections((prev) => ({

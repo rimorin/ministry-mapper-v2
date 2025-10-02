@@ -21,7 +21,7 @@
 .virtual-map-container .map-item {
   border: 1px solid var(--list-item-border-color);
   border-top: 0;
-  overflow: hidden;
+  overflow: visible; /* Changed from hidden to allow dropdowns to overflow */
   box-sizing: border-box;
   position: relative;
   width: 100%;
@@ -45,6 +45,7 @@
   background: linear-gradient(135deg, #cfe2ff 0%, #a8d1ff 100%);
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
   box-shadow: 0 2px 4px rgba(168, 209, 255, 0.3);
+  overflow: hidden; /* Keep header clipped to maintain rounded corners */
 }
 
 .virtual-map-container .map-toggle-button {
@@ -137,7 +138,7 @@
 .virtual-map-container .map-content {
   border-top: none;
   background-color: #fff;
-  overflow: hidden;
+  overflow: visible; /* Changed from hidden to allow dropdowns to overflow */
   position: relative;
   transition: all 0.2s ease-in-out;
   border-radius: 0 0 0.5rem 0.5rem;
@@ -149,7 +150,14 @@
   padding: 0;
   background-color: #f8f9fa;
   position: relative;
-  overflow: hidden;
+  overflow: visible; /* Changed to allow navbar dropdowns to overflow */
+}
+
+/* Ensure only the navbar container allows overflow, not the table */
+.virtual-map-container .map-content-body .navbar {
+  overflow: visible;
+  position: relative;
+  z-index: 10; /* Ensure navbar and its dropdowns appear above table */
 }
 
 .virtual-map-container .map-content-body .table-responsive {
