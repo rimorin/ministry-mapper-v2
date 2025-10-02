@@ -130,7 +130,9 @@
     "clickToSelectLocation": "위치 선택하려면 클릭",
     "existingMapNumber": "기존 맵 번호",
     "newMapNumber": "새 맵 번호",
-    "deleteSuccess": "주소가 삭제되었습니다, {{name}}."
+    "deleteSuccess": "주소가 삭제되었습니다, {{name}}.",
+    "updateMapSequence": "맵 순서 업데이트",
+    "dragToReorder": "카드를 드래그 앤 드롭하여 순서를 변경하세요"
   },
   "address": {
     "address": "주소",
@@ -151,6 +153,7 @@
     "changeLocation": "위치 변경",
     "changeMapNumber": "맵 번호 변경",
     "changeTerritory": "구역 변경",
+    "changeSequence": "순서 변경",
     "changeName": "이름 변경",
     "addProperty": "속성 번호 추가",
     "addUnit": "단위 번호 추가",
@@ -317,8 +320,6 @@
     "propertyNumberLabel": "속성 번호",
     "unitNumberLabel": "단위 번호",
     "updateTitle": "단위 {{unitDisplay}}",
-    "sequenceNumberLabel": "순서 번호",
-    "sequenceNumberPlaceholder": "선택적 단위 행 순서 번호",
     "requireOneUnitValidation": "구역에는 최소 1개의 단위 번호가 필요합니다.",
     "confirmDelete": "⚠️ 경고: \"{{mapName}}\"의 단위 번호 \"{{unitNo}}\"를 삭제합니다. 이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?",
     "deleteUnitButton": "단위 삭제"

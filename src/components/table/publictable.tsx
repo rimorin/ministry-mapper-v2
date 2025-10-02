@@ -20,12 +20,11 @@ const PublicTerritoryTable = memo(
     maxUnitLength,
     handleUnitStatusUpdate,
     handleFloorDelete,
-    handleUnitNoUpdate
+    handleUnitDelete
   }: territoryMultiProps) => {
     const { t } = useTranslation();
     const moreThanOneFloor = floors.length > 1;
     const floorDetails = floors?.[0];
-    const totalUnits = floorDetails?.units?.length || 1;
     return (
       <div className={policy.isFromAdmin() ? "map-body-admin" : "map-body"}>
         <Table
@@ -50,12 +49,25 @@ const PublicTerritoryTable = memo(
                     key={`th-${index}-${item.number}`}
                     scope="col"
                     className="text-center align-middle"
-                    onClick={handleUnitNoUpdate}
-                    data-id={item.id}
-                    data-floor={floorDetails.floor}
-                    data-totalunits={totalUnits}
                   >
-                    {ZeroPad(item.number, maxUnitLength)}
+                    <div className="d-inline-flex align-items-center">
+                      <ComponentAuthorizer
+                        requiredPermission={
+                          USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
+                        }
+                        userPermission={policy?.userRole}
+                      >
+                        <GenericButton
+                          size="sm"
+                          variant="outline-warning"
+                          className="me-1"
+                          onClick={handleUnitDelete}
+                          dataAttributes={{ unitno: item.number }}
+                          label={t("table.deleteUnit", "🗑️")}
+                        />
+                      </ComponentAuthorizer>
+                      <span>{ZeroPad(item.number, maxUnitLength)}</span>
+                    </div>
                   </th>
                 ))}
             </tr>
@@ -69,24 +81,28 @@ const PublicTerritoryTable = memo(
                     key={`${index}-${item.floor}`}
                     scope="row"
                   >
-                    {moreThanOneFloor && (
-                      <ComponentAuthorizer
-                        requiredPermission={
-                          USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
-                        }
-                        userPermission={policy?.userRole}
-                      >
-                        <GenericButton
-                          size="sm"
-                          variant="outline-warning"
-                          className="me-1"
-                          onClick={handleFloorDelete}
-                          dataAttributes={{ floor: item.floor.toString() }}
-                          label={t("table.deleteFloor", "🗑️")}
-                        />
-                      </ComponentAuthorizer>
-                    )}
-                    {ZeroPad(item.floor.toString(), DEFAULT_FLOOR_PADDING)}
+                    <div className="d-inline-flex align-items-center">
+                      {moreThanOneFloor && (
+                        <ComponentAuthorizer
+                          requiredPermission={
+                            USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
+                          }
+                          userPermission={policy?.userRole}
+                        >
+                          <GenericButton
+                            size="sm"
+                            variant="outline-warning"
+                            className="me-1"
+                            onClick={handleFloorDelete}
+                            dataAttributes={{ floor: item.floor.toString() }}
+                            label={t("table.deleteFloor", "🗑️")}
+                          />
+                        </ComponentAuthorizer>
+                      )}
+                      <span>
+                        {ZeroPad(item.floor.toString(), DEFAULT_FLOOR_PADDING)}
+                      </span>
+                    </div>
                   </th>
                   {item.units.map((element) => (
                     <td

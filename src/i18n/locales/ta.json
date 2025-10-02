@@ -126,6 +126,7 @@
     "changeLocation": "இடத்தை மாற்று",
     "changeMapNumber": "வரைபட எண்ணை மாற்று",
     "changeTerritory": "பிரதேசத்தை மாற்று",
+    "changeSequence": "வரிசையை மாற்று",
     "changeName": "மறுபெயரிடு",
     "addProperty": "சொத்து எண் சேர்",
     "addUnit": "அலகு எண் சேர்",
@@ -276,7 +277,9 @@
     "clickToSelectLocation": "இடத்தைத் தேர்ந்தெடுக்க கிளிக் செய்யவும்",
     "existingMapNumber": "தற்போதைய வரைபட எண்",
     "newMapNumber": "புதிய வரைபட எண்",
-    "deleteSuccess": "முகவரி நீக்கப்பட்டது, {{name}}."
+    "deleteSuccess": "முகவரி நீக்கப்பட்டது, {{name}}.",
+    "updateMapSequence": "வரைபட வரிசையை புதுப்பிக்கவும்",
+    "dragToReorder": "வரிசையை மாற்ற அட்டைகளை இழுத்து விடவும்"
   },
   "maintenance": {
     "maintenanceMode": "மினிஸ்ட்ரி மேப்பர் தற்போது பராமரிப்பில் உள்ளது.",
@@ -318,8 +321,6 @@
     "propertyNumberLabel": "சொத்து எண்",
     "unitNumberLabel": "அலகு எண்",
     "updateTitle": "அலகு {{unitDisplay}}",
-    "sequenceNumberLabel": "வரிசை எண்",
-    "sequenceNumberPlaceholder": "விருப்ப அலகு வரிசை எண்",
     "requireOneUnitValidation": "பிராந்தியத்திற்கு குறைந்தது 1 அலகு எண் தேவை.",
     "confirmDelete": "⚠️ எச்சரிக்கை: \"{{mapName}}\" இன் அலகு \"{{unitNo}}\" நீக்கப்படும். இதை திரும்பப்பெற முடியாது. தொடரவா?",
     "deleteUnitButton": "அலகு நீக்கு"
