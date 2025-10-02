@@ -238,7 +238,7 @@ export interface territoryMultiProps {
   maxUnitLength: number;
   handleUnitStatusUpdate: (event: React.MouseEvent<HTMLElement>) => void;
   handleFloorDelete?: (event: React.MouseEvent<HTMLElement>) => void;
-  handleUnitNoUpdate?: (event: React.MouseEvent<HTMLElement>) => void;
+  handleUnitDelete?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
 export interface territorySingleProps {
@@ -469,17 +469,6 @@ export interface UpdateAddressStatusModalProps {
   policy: Policy;
 }
 
-export interface UpdateUnitModalProps
-  extends mapInterface,
-    congregationInterface {
-  mapName: string;
-  unitSequence: number | undefined;
-  totalUnits: number;
-  unitNo: string;
-  unitDisplay: string;
-  addressData: addressDetails;
-}
-
 export interface AggregatesProps {
   value: number;
   display: string;
@@ -583,6 +572,7 @@ export interface MapRowProps {
     handleResetMap: (mapId: string, mapName: string) => void;
     handleDeleteMap: (mapId: string, mapName: string) => void;
     handleToggleMapExpansion: (mapId: string) => void;
+    handleSequenceUpdate: (mapId: string) => void;
   };
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   t: any;
@@ -740,3 +730,8 @@ export interface StateType {
     React.SetStateAction<"login" | "signup" | "forgot">
   >;
 }
+
+export interface MapSequenceUpdateModalProps
+  extends mapInterface,
+    congregationInterface,
+    footerInterface {}

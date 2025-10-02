@@ -1,0 +1,119 @@
+/* Drag and drop sortable styles */
+
+/* Modal body wrapper with max height and scroll */
+.sortable-modal-body {
+  max-height: 70dvh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sortable-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 0.5rem;
+}
+
+.sortable-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 100px;
+  padding: 1.25rem;
+  aspect-ratio: 1;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 0.75rem;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  transition: all 0.2s ease;
+  position: relative;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.sortable-item:hover {
+  border-color: #0d6efd;
+  box-shadow: 0 4px 12px rgba(13, 110, 253, 0.2);
+  transform: translateY(-2px);
+}
+
+.sortable-item:active {
+  cursor: grabbing;
+}
+
+.sortable-item-sequence {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  font-size: 0.75rem;
+  color: #fff;
+  background: #6c757d;
+  font-weight: 600;
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.sortable-item-code {
+  font-weight: 600;
+  font-size: 1.25rem;
+  color: #212529;
+  text-align: center;
+}
+
+.sortable-item-dragging {
+  opacity: 0.9;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  border-color: #0d6efd;
+  background: #fff;
+  transform: rotate(3deg) scale(1.05);
+  z-index: 1000;
+}
+
+.sortable-item-dragging .sortable-item-sequence {
+  background: #0d6efd;
+}
+
+/* Add instruction text styling */
+.sortable-instructions {
+  text-align: center;
+  color: #6c757d;
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: #e7f1ff;
+  border-radius: 0.5rem;
+  border-left: 3px solid #0d6efd;
+}
+
+.sortable-instructions img {
+  vertical-align: middle;
+}
+
+/* Custom scrollbar styling for better UX */
+.sortable-modal-body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.sortable-modal-body::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 4px;
+}
+
+.sortable-modal-body::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+.sortable-modal-body::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}

@@ -7,6 +7,8 @@
     "node": ">=22.0.0"
   },
   "dependencies": {
+    "@dnd-kit/core": "^6.3.1",
+    "@dnd-kit/sortable": "^10.0.0",
     "@ebay/nice-modal-react": "^1.2.13",
     "@sentry/react": "^10.15.0",
     "@vis.gl/react-google-maps": "^1.5.5",

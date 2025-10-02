@@ -67,9 +67,6 @@ const UpdateUnitStatus = NiceModal.create(
     );
     const [hhNhcount, setHhNhcount] = useState(unitDetails?.nhcount.toString());
     const [hhNote, setHhNote] = useState(unitDetails?.note);
-    const [unitSequence, setUnitSequence] = useState<number>(
-      unitDetails?.sequence
-    );
     const [coordinates, setCoordinates] = useState(validDefaultCoords);
     const [location, setLocation] = useState(
       validDefaultCoords
@@ -100,7 +97,6 @@ const UpdateUnitStatus = NiceModal.create(
           status: unitStatus || STATUS_CODES.DEFAULT,
           not_home_tries: hhNhcount ? parseInt(hhNhcount) : 0,
           dnc_time: hhDnctime ? new Date(hhDnctime).toISOString() : "",
-          sequence: unitSequence,
           coordinates: coordinates ? JSON.stringify(coordinates) : "",
           updated_by: policy.userName
         };
@@ -123,7 +119,6 @@ const UpdateUnitStatus = NiceModal.create(
         unitStatus,
         hhNhcount,
         hhDnctime,
-        unitSequence,
         coordinates,
         addressId,
         policy.userName
@@ -193,12 +188,6 @@ const UpdateUnitStatus = NiceModal.create(
       setHhNote(value);
     }, []);
 
-    const handleSequenceChange = useCallback((e: ChangeEvent<HTMLElement>) => {
-      const { value } = e.target as HTMLInputElement;
-      const parsedValue = parseInt(value);
-      setUnitSequence(parsedValue);
-    }, []);
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleHHTypeChange = useCallback((option: any) => {
       setHhtype(
@@ -262,20 +251,6 @@ const UpdateUnitStatus = NiceModal.create(
                 changeValue={hhNote}
               />
             </div>
-            {isSingleStory && (
-              <ComponentAuthorizer
-                requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
-                userPermission={policy.userRole}
-              >
-                <GenericInputField
-                  inputType="number"
-                  label={t("address.territorySequence", "Territory Sequence")}
-                  name="sequence"
-                  handleChange={handleSequenceChange}
-                  changeValue={unitSequence.toString()}
-                />
-              </ComponentAuthorizer>
-            )}
             {isSingleStory && (
               <GenericInputField
                 label={t("address.coordinates", "Address Coordinates")}

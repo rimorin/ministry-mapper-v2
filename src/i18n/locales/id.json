@@ -126,6 +126,7 @@
     "changeLocation": "Ubah Lokasi",
     "changeMapNumber": "Ubah Nomor Peta",
     "changeTerritory": "Ubah Wilayah",
+    "changeSequence": "Ubah Urutan",
     "changeName": "Ubah Nama",
     "addProperty": "Tambah No. Properti",
     "addUnit": "Tambah No. Unit",
@@ -276,7 +277,9 @@
     "clickToSelectLocation": "Klik untuk memilih lokasi",
     "existingMapNumber": "Nomor Peta yang Ada",
     "newMapNumber": "Nomor Peta Baru",
-    "deleteSuccess": "Alamat dihapus, {{name}}."
+    "deleteSuccess": "Alamat dihapus, {{name}}.",
+    "updateMapSequence": "Perbarui Urutan Peta",
+    "dragToReorder": "Seret dan lepaskan kartu untuk mengurutkan kembali urutan"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper sedang dalam pemeliharaan.",
@@ -324,8 +327,6 @@
     "propertyNumberLabel": "Nomor properti",
     "unitNumberLabel": "Nomor unit",
     "updateTitle": "Unit {{unitDisplay}}",
-    "sequenceNumberLabel": "Nomor Urut",
-    "sequenceNumberPlaceholder": "Nomor urut baris unit opsional",
     "requireOneUnitValidation": "Wilayah membutuhkan setidaknya 1 nomor unit.",
     "confirmDelete": "⚠️ PERINGATAN: Menghapus nomor unit \"{{unitNo}}\" dari \"{{mapName}}\". Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
     "deleteUnitButton": "Hapus Unit"

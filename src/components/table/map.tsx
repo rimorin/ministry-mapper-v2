@@ -1,7 +1,6 @@
 import React, { lazy, useCallback, useEffect, useState } from "react";
 import {
   TERRITORY_TYPES,
-  USER_ACCESS_LEVELS,
   NOT_HOME_STATUS_CODES,
   DEFAULT_UNIT_PADDING,
   PB_SECURITY_HEADER_KEY,
@@ -28,9 +27,7 @@ import {
 } from "../../utils/pocketbase";
 import { useTranslation } from "react-i18next";
 import { useModalManagement } from "../../hooks/useModalManagement";
-import ZeroPad from "../../utils/helpers/zeropad";
 const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
-const UpdateUnit = lazy(() => import("../modal/updateunit"));
 
 const useAddresses = (
   mapId: string,
@@ -131,7 +128,6 @@ const MainTable = ({
 }: territoryTableProps) => {
   const mapId = addressDetails?.id;
   const mapName = addressDetails?.name;
-  const userRole = policy?.userRole || USER_ACCESS_LEVELS.PUBLISHER.CODE;
   const mapType = addressDetails?.type;
   const { t } = useTranslation();
   const { showModal } = useModalManagement();
@@ -152,24 +148,6 @@ const MainTable = ({
       }
     },
     [mapId]
-  );
-
-  const handleEditUnit = useCallback(
-    (unitDetails?: unitDetails) => {
-      if (userRole !== USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE) return;
-      const unitNo = unitDetails?.number || "";
-      const sequence = unitDetails?.sequence;
-      const totalUnits = unitDetails?.totalunits || 1;
-      showModal(UpdateUnit, {
-        mapId,
-        mapName,
-        unitNo,
-        unitSequence: sequence,
-        unitDisplay: ZeroPad(unitNo, maxUnitLength),
-        totalUnits
-      });
-    },
-    [mapType, userRole, mapId]
   );
 
   const handleUpdateUnitStatus = useCallback(
@@ -208,28 +186,6 @@ const MainTable = ({
     []
   );
 
-  const getTotalUnitsFromEvent = useCallback(
-    (event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>) => {
-      if ("domEvent" in event) {
-        // Handle Google Maps event
-        const domEvent = event.domEvent.target as HTMLElement;
-        return domEvent.dataset.totalunits || "1";
-      }
-      // Handle React event
-      return event.currentTarget.dataset.totalunits || "1";
-    },
-    []
-  );
-
-  const handleUnitNoUpdate = (
-    event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>
-  ) => {
-    const details = getUnitDetails(event, addresses);
-    if (!details) return;
-    details.totalunits = Number(getTotalUnitsFromEvent(event));
-    handleEditUnit(details);
-  };
-
   const handleFloorDelete = useCallback(
     async (floor: number) => {
       const confirmDelete = window.confirm(
@@ -245,6 +201,39 @@ const MainTable = ({
 
       if (confirmDelete) {
         deleteAddressFloor(floor);
+      }
+    },
+    [mapName]
+  );
+
+  const deleteAddressUnit = useCallback(
+    async (unitNumber: string) => {
+      try {
+        await callFunction("/map/code/delete", {
+          method: "POST",
+          body: {
+            map: mapId,
+            code: unitNumber
+          }
+        });
+      } catch (error) {
+        errorHandler(error);
+      }
+    },
+    [mapId]
+  );
+
+  const handleUnitDelete = useCallback(
+    async (unitNumber: string) => {
+      const confirmDelete = window.confirm(
+        t("unit.confirmDelete", 'Delete unit {{unitNo}} from "{{mapName}}"?', {
+          unitNo: unitNumber,
+          mapName: mapName
+        })
+      );
+
+      if (confirmDelete) {
+        deleteAddressUnit(unitNumber);
       }
     },
     [mapName]
@@ -301,13 +290,23 @@ const MainTable = ({
     []
   );
 
-  const handleUnitNoUpdateEvent = (
-    event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>
-  ) => {
-    handleUnitNoUpdate(event);
-  };
-
   const { floorList, maxUnitLength } = organizeAddresses(addresses);
+
+  const handleUnitDeleteEvent = useCallback(
+    (event: React.MouseEvent<HTMLElement>) => {
+      const { unitno } = event.currentTarget.dataset;
+      const totalUnits = floorList.reduce(
+        (sum, floor) => sum + floor.units.length,
+        0
+      );
+      if (totalUnits === 1) {
+        alert(t("unit.requireOneUnitValidation"));
+        return;
+      }
+      handleUnitDelete(unitno || "");
+    },
+    [floorList]
+  );
   if (floorList.length === 0) {
     return <MapPlaceholder policy={policy} />;
   }
@@ -340,7 +339,7 @@ const MainTable = ({
       maxUnitLength={maxUnitLength}
       handleUnitStatusUpdate={handleHouseUpdate}
       handleFloorDelete={handleFloorDeleteEvent}
-      handleUnitNoUpdate={handleUnitNoUpdateEvent}
+      handleUnitDelete={handleUnitDeleteEvent}
     />
   );
 };
