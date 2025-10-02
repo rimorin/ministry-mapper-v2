@@ -1,3 +1,15 @@
+# [1.9.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.8.3...v1.9.0) (2025-10-02)
+
+
+### Bug Fixes
+
+* address dropdown direction ([70a7358](https://github.com/rimorin/ministry-mapper-v2/commit/70a7358d5d45312874cd3c4da136ad0b68237e0b))
+
+
+### Features
+
+* implement drag and drop sequence module ([3d6e8c7](https://github.com/rimorin/ministry-mapper-v2/commit/3d6e8c7da2276b38f3d9197c4d39982f6c8e364d))
+
 ## [1.8.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.8.2...v1.8.3) (2025-09-30)
 
 
