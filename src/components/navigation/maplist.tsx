@@ -31,6 +31,7 @@ const ChangeMapGeoLocation = lazy(() => import("../modal/changegeolocation"));
 const ChangeMapCode = lazy(() => import("../modal/changemapcd"));
 const ChangeAddressName = lazy(() => import("../modal/changeaddname"));
 const NewUnit = lazy(() => import("../modal/newunit"));
+const ChangeMapSequence = lazy(() => import("../modal/sequenceupdate"));
 
 function MapRow({
   index,
@@ -60,7 +61,8 @@ function MapRow({
     handleAddLowerFloor,
     handleResetMap,
     handleDeleteMap,
-    handleToggleMapExpansion
+    handleToggleMapExpansion,
+    handleSequenceUpdate
   } = handlers;
 
   const {
@@ -194,6 +196,11 @@ function MapRow({
                       onClick={() => handleChangeTerritory(mapId, mapName)}
                     >
                       {t("address.changeTerritory", "Change Territory")}
+                    </GenericDropdownItem>
+                    <GenericDropdownItem
+                      onClick={() => handleSequenceUpdate(mapId)}
+                    >
+                      {t("address.changeSequence", "Change Sequence")}
                     </GenericDropdownItem>
                     <GenericDropdownItem
                       onClick={() => handleShowChangeName(mapId, mapName)}
@@ -511,6 +518,16 @@ const MapListing: React.FC<MapListingProps> = ({
     [setAccordionKeys]
   );
 
+  const handleSequenceUpdate = useCallback(
+    (mapId: string) => {
+      showModal(ChangeMapSequence, {
+        footerSaveAcl: userAccessLevel,
+        mapId
+      });
+    },
+    [showModal, userAccessLevel]
+  );
+
   const rowProps = useMemo(
     () => ({
       sortedAddressList,
@@ -534,7 +551,8 @@ const MapListing: React.FC<MapListingProps> = ({
         handleAddLowerFloor,
         handleResetMap,
         handleDeleteMap,
-        handleToggleMapExpansion
+        handleToggleMapExpansion,
+        handleSequenceUpdate
       },
       t
     }),
@@ -560,6 +578,7 @@ const MapListing: React.FC<MapListingProps> = ({
       handleResetMap,
       handleDeleteMap,
       handleToggleMapExpansion,
+      handleSequenceUpdate,
       t
     ]
   );

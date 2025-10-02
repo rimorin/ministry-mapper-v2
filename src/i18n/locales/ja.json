@@ -130,7 +130,9 @@
     "clickToSelectLocation": "クリックして位置選択",
     "existingMapNumber": "既存マップ番号",
     "newMapNumber": "新規マップ番号",
-    "deleteSuccess": "住所が削除されました, {{name}}."
+    "deleteSuccess": "住所が削除されました, {{name}}.",
+    "updateMapSequence": "マップ順序の更新",
+    "dragToReorder": "カードをドラッグ&ドロップして順序を変更してください"
   },
   "address": {
     "address": "住所",
@@ -151,6 +153,7 @@
     "changeLocation": "位置変更",
     "changeMapNumber": "マップ番号変更",
     "changeTerritory": "区域変更",
+    "changeSequence": "順序変更",
     "changeName": "名前変更",
     "addProperty": "物件番号追加",
     "addUnit": "ユニット番号追加",
@@ -317,8 +320,6 @@
     "propertyNumberLabel": "物件番号",
     "unitNumberLabel": "ユニット番号",
     "updateTitle": "ユニット{{unitDisplay}}",
-    "sequenceNumberLabel": "順番",
-    "sequenceNumberPlaceholder": "任意のユニット行順序番号",
     "requireOneUnitValidation": "区域には最低1つのユニット番号が必要です。",
     "confirmDelete": "⚠️ 警告：「{{mapName}}」のユニット番号「{{unitNo}}」を削除します。この操作は元に戻せません。続行しますか？",
     "deleteUnitButton": "ユニット削除"
