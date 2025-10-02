@@ -26,7 +26,7 @@ import ModalUnitTitle from "../form/title";
 import HHTypeField from "../form/household";
 import ComponentAuthorizer from "../navigation/authorizer";
 import DateFormat from "../../utils/helpers/dateformat";
-import { deleteDataById, updateDataById } from "../../utils/pocketbase";
+import { updateDataById, callFunction } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import GenericButton from "../navigation/button";
 const ChangeMapGeolocation = lazy(() => import("./changegeolocation"));
@@ -39,6 +39,7 @@ const UpdateUnitStatus = NiceModal.create(
 
     const unitNumber = unitDetails?.number || "";
     const unitFloor = unitDetails?.floor || MIN_START_FLOOR;
+    const mapId = addressData?.id || "";
     const addressName = addressData?.name || "";
     const addressType = addressData?.type;
     const addressId = unitDetails?.id || "";
@@ -77,8 +78,12 @@ const UpdateUnitStatus = NiceModal.create(
     const handleDeleteProperty = useCallback(async () => {
       setIsSaving(true);
       try {
-        await deleteDataById("addresses", addressId, {
-          requestKey: `delete-address-${addressId}`
+        await callFunction("/map/code/delete", {
+          method: "POST",
+          body: {
+            map: mapId,
+            code: unitNumber
+          }
         });
         modal.hide();
       } catch (error) {
@@ -86,7 +91,7 @@ const UpdateUnitStatus = NiceModal.create(
       } finally {
         setIsSaving(false);
       }
-    }, [addressId]);
+    }, [mapId, unitNumber]);
 
     const handleSubmitClick = useCallback(
       async (event: FormEvent<HTMLElement>) => {
