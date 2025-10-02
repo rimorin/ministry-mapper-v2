@@ -130,7 +130,9 @@
     "clickToSelectLocation": "Klik untuk pilih lokasi",
     "existingMapNumber": "Nombor Peta Sedia Ada",
     "newMapNumber": "Nombor Peta Baru",
-    "deleteSuccess": "Alamat dipadam, {{name}}."
+    "deleteSuccess": "Alamat dipadam, {{name}}.",
+    "updateMapSequence": "Kemas Kini Urutan Peta",
+    "dragToReorder": "Seret dan lepaskan kad untuk menyusun semula urutan"
   },
   "address": {
     "address": "Alamat",
@@ -151,6 +153,7 @@
     "changeLocation": "Tukar Lokasi",
     "changeMapNumber": "Tukar Nombor Peta",
     "changeTerritory": "Tukar Wilayah",
+    "changeSequence": "Tukar Urutan",
     "changeName": "Tukar Nama",
     "addProperty": "Tambah No. Hartanah",
     "addUnit": "Tambah No. Unit",
@@ -317,8 +320,6 @@
     "propertyNumberLabel": "Nombor hartanah",
     "unitNumberLabel": "Nombor unit",
     "updateTitle": "Unit {{unitDisplay}}",
-    "sequenceNumberLabel": "Nombor Urutan",
-    "sequenceNumberPlaceholder": "Nombor urutan baris unit pilihan",
     "requireOneUnitValidation": "Wilayah memerlukan sekurang-kurangnya 1 nombor unit.",
     "confirmDelete": "⚠️ AMARAN: Memadam nombor unit \"{{unitNo}}\" bagi \"{{mapName}}\". Tindakan ini tidak boleh dibatalkan. Teruskan?",
     "deleteUnitButton": "Padam Unit"

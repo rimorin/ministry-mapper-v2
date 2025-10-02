@@ -130,7 +130,9 @@
     "clickToSelectLocation": "Click to select location",
     "existingMapNumber": "Existing Map Number",
     "newMapNumber": "New Map Number",
-    "deleteSuccess": "Deleted address, {{name}}."
+    "deleteSuccess": "Deleted address, {{name}}.",
+    "updateMapSequence": "Update Map Sequence",
+    "dragToReorder": "Drag and drop the cards to reorder the sequence"
   },
   "address": {
     "address": "Address",
@@ -151,6 +153,7 @@
     "changeLocation": "Change Location",
     "changeMapNumber": "Change Map Number",
     "changeTerritory": "Change Territory",
+    "changeSequence": "Change Sequence",
     "changeName": "Rename",
     "addProperty": "Add Property No.",
     "addUnit": "Add Unit No.",
@@ -318,8 +321,6 @@
     "propertyNumberLabel": "Property number",
     "unitNumberLabel": "Unit number",
     "updateTitle": "Unit {{unitDisplay}}",
-    "sequenceNumberLabel": "Sequence Number",
-    "sequenceNumberPlaceholder": "Optional unit row sequence number",
     "requireOneUnitValidation": "Territory requires at least 1 unit number.",
     "confirmDelete": "⚠️ WARNING: Deleting unit number \"{{unitNo}}\" of \"{{mapName}}\". This action cannot be undone. Proceed?",
     "deleteUnitButton": "Delete Unit"

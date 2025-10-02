@@ -130,7 +130,9 @@
     "clickToSelectLocation": "点击选择位置",
     "existingMapNumber": "现有地图编号",
     "newMapNumber": "新地图编号",
-    "deleteSuccess": "地址已删除, {{name}}."
+    "deleteSuccess": "地址已删除, {{name}}.",
+    "updateMapSequence": "更新地图顺序",
+    "dragToReorder": "拖放卡片以重新排序"
   },
   "address": {
     "address": "地址",
@@ -151,6 +153,7 @@
     "changeLocation": "更改位置",
     "changeMapNumber": "更改地图编号",
     "changeTerritory": "更改区域",
+    "changeSequence": "更改序列",
     "changeName": "重命名",
     "addProperty": "添加物业编号",
     "addUnit": "添加单元编号",
@@ -323,8 +326,6 @@
     "propertyNumberLabel": "房产编号",
     "unitNumberLabel": "单元编号",
     "updateTitle": "单元 {{unitDisplay}}",
-    "sequenceNumberLabel": "序列号",
-    "sequenceNumberPlaceholder": "可选单元行序列号",
     "requireOneUnitValidation": "区域至少需要 1 个单元编号。",
     "confirmDelete": "⚠️ 警告：正在删除 \"{{mapName}}\" 的单元编号 \"{{unitNo}}\"。此操作无法撤销。继续？",
     "deleteUnitButton": "删除单元"
