@@ -22,6 +22,17 @@
   margin: 0.25rem;
 }
 
+/* Ensure dropdown menu appears above map headers */
+.dropdown-btn .dropdown-menu {
+  z-index: 1055 !important;
+}
+
+/* When dropdown opens upward, ensure it's above everything */
+.dropdown-btn .dropup .dropdown-menu,
+.dropdown-btn.dropup .dropdown-menu {
+  z-index: 1055 !important;
+}
+
 .resend-text {
   cursor: pointer;
   margin-bottom: 1.5rem;
