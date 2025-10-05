@@ -705,6 +705,7 @@ function Admin({ user }: adminProps) {
                       t("territory.territory", "Territory")
                     )
                   }
+                  align={{ lg: "end" }}
                 >
                   <GenericDropdownItem
                     onClick={() =>
@@ -815,7 +816,7 @@ function Admin({ user }: adminProps) {
                   variant="outline-primary"
                   size="sm"
                   label={t("map.newMap", "New Map")}
-                  align="end"
+                  align={{ lg: "end" }}
                 >
                   <GenericDropdownItem
                     onClick={() =>
