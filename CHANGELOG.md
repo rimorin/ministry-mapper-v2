@@ -1,3 +1,10 @@
+## [1.9.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.9.1...v1.9.2) (2025-10-05)
+
+
+### Bug Fixes
+
+* dropdown btn alignment for small/large devices ([6d86821](https://github.com/rimorin/ministry-mapper-v2/commit/6d868219ad3291891c49aef7e91ab5a1c00d1f24))
+
 ## [1.9.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.9.0...v1.9.1) (2025-10-02)
 
 
