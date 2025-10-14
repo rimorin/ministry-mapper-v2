@@ -8,19 +8,18 @@ const NavBarBranding = memo(({ naming }: BrandingProps) => {
   const { t } = useTranslation();
 
   return (
-    <Navbar.Brand className="brand-wrap d-flex">
-      <div style={{ flex: "0 0 10%", marginRight: "2px" }}>
-        <Image
-          alt={t("branding.logo", "Ministry Mapper logo")}
-          src={getAssetUrl("favicon-32x32.png")}
-          width="32"
-          height="32"
-          className="d-inline-block align-top"
-        />
-      </div>
-      <div style={{ flex: "1" }}>
+    <Navbar.Brand className="brand-wrap d-flex align-items-center">
+      <Image
+        alt={t("branding.logo", "Ministry Mapper logo")}
+        src={getAssetUrl("favicon-32x32.png")}
+        width="32"
+        height="32"
+        className="d-inline-block align-top"
+        style={{ marginRight: "8px" }}
+      />
+      {naming && (
         <Navbar.Text className="fluid-bolding fluid-text">{naming}</Navbar.Text>
-      </div>
+      )}
     </Navbar.Brand>
   );
 });
