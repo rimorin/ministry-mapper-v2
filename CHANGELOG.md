@@ -1,3 +1,10 @@
+## [1.9.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.9.2...v1.9.3) (2025-10-14)
+
+
+### Bug Fixes
+
+* improve branding element for oauth verification ([bf7aace](https://github.com/rimorin/ministry-mapper-v2/commit/bf7aace8d5f05d23e1223309ec766ca959b27153))
+
 ## [1.9.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.9.1...v1.9.2) (2025-10-05)
 
 
