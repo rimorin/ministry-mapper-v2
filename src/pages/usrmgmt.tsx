@@ -211,7 +211,7 @@ const UserManagementComponent = () => {
       <div className="d-flex flex-column" style={{ minHeight: "99vh" }}>
         <Navbar bg="light">
           <Container fluid>
-            <NavBarBranding naming="" />
+            <NavBarBranding naming="Ministry Mapper" />
           </Container>
         </Navbar>
         <Container

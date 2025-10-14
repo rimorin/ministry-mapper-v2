@@ -91,7 +91,7 @@ const FrontPage = () => {
             languageOptions={languageOptions}
           />
           <Container fluid>
-            <NavBarBranding naming="" />
+            <NavBarBranding naming="Ministry Mapper" />
             <div className="d-flex">
               <GenericButton
                 className="m-1"
