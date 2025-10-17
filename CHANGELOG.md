@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.9.3...v1.10.0) (2025-10-17)
+
+
+### Features
+
+* implement google oauth ([603f363](https://github.com/rimorin/ministry-mapper-v2/commit/603f3633f87135b01b5a4cc2654d504959e42ab9))
+
 ## [1.9.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.9.2...v1.9.3) (2025-10-14)
 
 
