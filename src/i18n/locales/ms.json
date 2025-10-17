@@ -78,7 +78,12 @@
     "resendOTP": "Hantar OTP Semula",
     "verify": "Sahkan",
     "paste": "Tampal",
-    "clipboardDenied": "Kebenaran akses clipboard ditolak."
+    "clipboardDenied": "Kebenaran akses clipboard ditolak.",
+    "orContinueWith": "Atau teruskan dengan",
+    "google": "Google",
+    "microsoft": "Microsoft",
+    "signInWithGoogle": "Log masuk dengan Google",
+    "signingIn": "Memasuk..."
   },
   "territory": {
     "territory": "Wilayah",

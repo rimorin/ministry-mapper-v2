@@ -78,7 +78,12 @@
     "resendOTP": "重新发送一次性密码",
     "verify": "验证",
     "paste": "粘贴",
-    "clipboardDenied": "访问剪贴板的权限被拒绝。"
+    "clipboardDenied": "访问剪贴板的权限被拒绝。",
+    "orContinueWith": "或继续使用",
+    "google": "Google",
+    "microsoft": "Microsoft",
+    "signInWithGoogle": "使用 Google 登录",
+    "signingIn": "登录中..."
   },
   "territory": {
     "territory": "传道区域",

@@ -78,7 +78,12 @@
     "resendOTP": "Resend OTP",
     "verify": "Verify",
     "paste": "Paste",
-    "clipboardDenied": "Permission to access clipboard was denied."
+    "clipboardDenied": "Permission to access clipboard was denied.",
+    "orContinueWith": "Or continue with",
+    "google": "Google",
+    "microsoft": "Microsoft",
+    "signInWithGoogle": "Sign in with Google",
+    "signingIn": "Signing in..."
   },
   "territory": {
     "territory": "Territory",

@@ -78,7 +78,12 @@
     "resendOTP": "OTP ஐ மீண்டும் அனுப்பு",
     "verify": "சரிபார்க்க",
     "paste": "ஒட்டு",
-    "clipboardDenied": "கிளிப்போர்டை அணுக அனுமதி மறுக்கப்பட்டது."
+    "clipboardDenied": "கிளிப்போர்டை அணுக அனுமதி மறுக்கப்பட்டது.",
+    "orContinueWith": "அல்லது தொடரவும்",
+    "google": "Google",
+    "microsoft": "Microsoft",
+    "signInWithGoogle": "Google மூலம் உள்நுழைக",
+    "signingIn": "உள்நுழைகிறது..."
   },
   "territory": {
     "territory": "பிரதேசம்",
