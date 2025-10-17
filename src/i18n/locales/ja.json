@@ -78,7 +78,12 @@
     "resendOTP": "OTP再送信",
     "verify": "確認",
     "paste": "貼付",
-    "clipboardDenied": "クリップボード許可が拒否されました。"
+    "clipboardDenied": "クリップボード許可が拒否されました。",
+    "orContinueWith": "または続行",
+    "google": "Google",
+    "microsoft": "Microsoft",
+    "signInWithGoogle": "Googleでログイン",
+    "signingIn": "ログイン中..."
   },
   "territory": {
     "territory": "区域",

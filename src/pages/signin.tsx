@@ -1,29 +1,47 @@
-import { useCallback, useContext, useRef, useState } from "react";
-import { Form, Spinner, FloatingLabel } from "react-bootstrap";
+import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import {
+  Form,
+  Spinner,
+  FloatingLabel,
+  Image,
+  InputGroup
+} from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
   authenticateEmailAndPassword,
   authenticateOTP,
+  authenticateOAuth2,
   requestOTP
 } from "../utils/pocketbase";
 
 import errorHandler from "../utils/helpers/errorhandler";
 import { StateContext } from "../components/utils/context";
 import GenericButton from "../components/navigation/button";
+import { getAssetUrl } from "../utils/helpers/assetpath";
 
 const LoginComponent = () => {
   const { t } = useTranslation();
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [validated, setValidated] = useState(false);
   const [isLogin, setIsLogin] = useState(false);
+  const [isOAuthLoading, setIsOAuthLoading] = useState(false);
   const [otpSessionId, setOtpSessionId] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [mfaId, setMfaId] = useState("");
 
   const formRef = useRef<HTMLInputElement>(null);
+  const otpInputRef = useRef<HTMLInputElement>(null);
 
   const { setFrontPageMode } = useContext(StateContext);
+
+  // Auto-focus OTP input when OTP form is shown
+  useEffect(() => {
+    if (otpSessionId && otpInputRef.current) {
+      otpInputRef.current.focus();
+    }
+  }, [otpSessionId]);
 
   const processEmail = useCallback((email: string) => {
     return email.trim().toLowerCase();
@@ -93,36 +111,34 @@ const LoginComponent = () => {
       const text = await navigator.clipboard.readText();
       setOtpCode(text);
     } catch (err) {
-      if (err instanceof Error) {
-        // Ignore the error if the user aborts the share
-        if (err.name === "NotAllowedError") {
-          alert(
-            t(
-              "auth.clipboardDenied",
-              "Permission to access clipboard was denied."
-            )
-          );
-          return;
-        }
+      if (err instanceof Error && err.name === "NotAllowedError") {
+        alert(
+          t(
+            "auth.clipboardDenied",
+            "Permission to access clipboard was denied."
+          )
+        );
+        return;
       }
       errorHandler(err);
     }
   }, []);
 
-  const handleClearLogin = useCallback(() => {
-    setLoginPassword("");
-    setLoginEmail("");
-    setOtpCode("");
-    setValidated(false);
-  }, []);
+  const handleNavigateSignup = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      e.preventDefault();
+      setFrontPageMode("signup");
+    },
+    []
+  );
 
-  const handleNavigateSignup = useCallback(() => {
-    setFrontPageMode("signup");
-  }, []);
-
-  const handleNavigateForgot = useCallback(() => {
-    setFrontPageMode("forgot");
-  }, []);
+  const handleNavigateForgot = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      e.preventDefault();
+      setFrontPageMode("forgot");
+    },
+    []
+  );
 
   const handleResendOtp = useCallback(async () => {
     await handleOtpRequest(processEmail(loginEmail));
@@ -131,6 +147,17 @@ const LoginComponent = () => {
 
   const handleClearOtpCode = useCallback(() => {
     setOtpCode("");
+  }, []);
+
+  const handleOAuthSignIn = useCallback((provider: string) => {
+    setIsOAuthLoading(true);
+    authenticateOAuth2(provider)
+      .catch((err) => {
+        errorHandler(err);
+      })
+      .finally(() => {
+        setIsOAuthLoading(false);
+      });
   }, []);
 
   return (
@@ -156,6 +183,7 @@ const LoginComponent = () => {
                 placeholder={t("auth.enterEmail", "Enter email")}
                 value={loginEmail}
                 required
+                disabled={isLogin || isOAuthLoading}
                 onChange={(e) => {
                   setLoginEmail(e.target.value);
                 }}
@@ -166,39 +194,68 @@ const LoginComponent = () => {
             </FloatingLabel>
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicPassword">
-            <FloatingLabel
-              controlId="formBasicPassword"
-              label={t("auth.password", "Password")}
-            >
-              <Form.Control
-                type="password"
-                placeholder={t("auth.password", "Password")}
-                value={loginPassword}
-                required
-                onChange={(event) => setLoginPassword(event.target.value)}
-              />
-            </FloatingLabel>
+            <InputGroup>
+              <FloatingLabel
+                controlId="formBasicPassword"
+                label={t("auth.password", "Password")}
+                className="flex-grow-1"
+              >
+                <Form.Control
+                  type={showPassword ? "text" : "password"}
+                  placeholder={t("auth.password", "Password")}
+                  value={loginPassword}
+                  required
+                  disabled={isLogin || isOAuthLoading}
+                  onChange={(event) => setLoginPassword(event.target.value)}
+                  style={{ borderRight: "none" }}
+                />
+              </FloatingLabel>
+              <InputGroup.Text
+                onClick={() =>
+                  !isLogin && !isOAuthLoading && setShowPassword(!showPassword)
+                }
+                style={{
+                  cursor: isLogin || isOAuthLoading ? "not-allowed" : "pointer",
+                  backgroundColor: "transparent",
+                  borderLeft: "none",
+                  opacity: isLogin || isOAuthLoading ? 0.5 : 1
+                }}
+              >
+                {showPassword ? "👁️" : "👁️‍🗨️"}
+              </InputGroup.Text>
+            </InputGroup>
             <Form.Control.Feedback>
               {t("auth.looksGood", "Looks Good!")}
             </Form.Control.Feedback>
             <Form.Control.Feedback type="invalid">
               {t("auth.enterPassword", "Please enter password.")}
             </Form.Control.Feedback>
-            <div className="text-end">
-              <Form.Text
-                onClick={handleNavigateForgot}
-                className="text-underline"
-                muted
+            <div className="text-end mt-2">
+              <a
+                href="#"
+                onClick={(e) => {
+                  if (isLogin || isOAuthLoading) {
+                    e.preventDefault();
+                    return;
+                  }
+                  handleNavigateForgot(e);
+                }}
+                className="link-primary text-decoration-none small"
+                style={{
+                  pointerEvents: isLogin || isOAuthLoading ? "none" : "auto",
+                  opacity: isLogin || isOAuthLoading ? 0.5 : 1
+                }}
               >
                 {t("auth.forgotPassword", "Forgot Password?")}
-              </Form.Text>
+              </a>
             </div>
           </Form.Group>
           <Form.Group className="text-center" controlId="formBasicButton">
             <GenericButton
-              variant="outline-primary"
-              className="m-2"
+              variant="primary"
+              className="w-100 mb-3"
               type="submit"
+              disabled={isLogin || isOAuthLoading}
               label={
                 <>
                   {isLogin && (
@@ -213,64 +270,112 @@ const LoginComponent = () => {
                 </>
               }
             />
-            <GenericButton
-              variant="outline-primary"
-              className="mx-2"
-              type="reset"
-              label={t("common.clear", "Clear")}
-              onClick={handleClearLogin}
-            />
           </Form.Group>
           <Form.Group className="text-center" controlId="formBasicButton">
-            <hr />
-            <p>
+            <div className="my-4 d-flex align-items-center">
+              <hr className="flex-grow-1" />
+              <span className="px-3 text-muted small">
+                {t("auth.orContinueWith", "Or continue with")}
+              </span>
+              <hr className="flex-grow-1" />
+            </div>
+            <div className="d-flex gap-2 mb-4">
+              <GenericButton
+                variant="outline-secondary"
+                className="flex-fill py-2"
+                type="button"
+                disabled={isOAuthLoading || isLogin}
+                onClick={() => handleOAuthSignIn("google")}
+                label={
+                  <div className="d-flex align-items-center justify-content-center gap-2">
+                    {isOAuthLoading ? (
+                      <Spinner
+                        as="span"
+                        animation="border"
+                        size="sm"
+                        aria-hidden="true"
+                      />
+                    ) : (
+                      <Image
+                        src={getAssetUrl("google.svg")}
+                        alt="Google logo"
+                        width="20"
+                        height="20"
+                      />
+                    )}
+                    <span>
+                      {isOAuthLoading
+                        ? t("auth.signingIn", "Signing in...")
+                        : t("auth.signInWithGoogle", "Sign in with Google")}
+                    </span>
+                  </div>
+                }
+              />
+            </div>
+            <p className="mb-0">
               {t("auth.noAccountQuestion", "Don't have an account?")}{" "}
-              <span
-                style={{ cursor: "pointer", color: "blue" }}
-                onClick={handleNavigateSignup}
+              <a
+                href="#"
+                className="link-primary text-decoration-none fw-semibold"
+                onClick={(e) => {
+                  if (isLogin || isOAuthLoading) {
+                    e.preventDefault();
+                    return;
+                  }
+                  handleNavigateSignup(e);
+                }}
+                style={{
+                  pointerEvents: isLogin || isOAuthLoading ? "none" : "auto",
+                  opacity: isLogin || isOAuthLoading ? 0.5 : 1
+                }}
               >
                 {t("auth.signUp", "Sign Up")}
-              </span>
+              </a>
             </p>
           </Form.Group>
         </Form>
       ) : (
         <Form onSubmit={handleOtpSubmit} className="responsive-width">
-          <Form.Group className="mb-3 text-center">
-            <h1>
+          <Form.Group className="mb-4 text-center">
+            <h1 className="h3 mb-3">
               {t("auth.otpVerification", "One Time Password Verification")}
             </h1>
-            <p className="text-muted">
+            <p className="text-muted mb-0">
               {t("auth.otpSent", "An OTP has been sent to your email address.")}
             </p>
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicOtp">
             <FloatingLabel
-              controlId="formBasicPassword"
+              controlId="formBasicOtp"
               label={t("auth.oneTimePassword", "One-time Password")}
             >
               <Form.Control
+                ref={otpInputRef}
                 type="text"
                 placeholder={t("auth.enterOTP", "Enter OTP")}
                 value={otpCode}
                 required
+                disabled={isLogin}
                 onChange={(event) => setOtpCode(event.target.value)}
               />
             </FloatingLabel>
-            <div className="text-end">
-              <Form.Text
-                onClick={handleResendOtp}
-                className="text-underline"
-                muted
+            <div className="text-end mt-2">
+              <a
+                href="#"
+                onClick={(e) => {
+                  e.preventDefault();
+                  handleResendOtp();
+                }}
+                className="link-primary text-decoration-none small"
               >
                 {t("auth.resendOTP", "Resend OTP")}
-              </Form.Text>
+              </a>
             </div>
           </Form.Group>
           <Form.Group className="text-center" controlId="formBasicButton">
             <GenericButton
-              variant="outline-primary"
-              className="m-2"
+              variant="primary"
+              className="w-100 mb-2"
               type="submit"
               disabled={isLogin}
               label={
@@ -287,21 +392,25 @@ const LoginComponent = () => {
                 </>
               }
             />
-            {navigator.clipboard && (
+            <div className="d-flex gap-2">
+              {navigator.clipboard && (
+                <GenericButton
+                  className="flex-fill"
+                  variant="outline-secondary"
+                  label={t("auth.paste", "Paste")}
+                  onClick={handleClipboardPaste}
+                  disabled={isLogin}
+                />
+              )}
               <GenericButton
-                className="mx-2"
-                variant="outline-primary"
-                label={t("auth.paste", "Paste")}
-                onClick={handleClipboardPaste}
+                className="flex-fill"
+                variant="outline-secondary"
+                type="reset"
+                label={t("common.clear", "Clear")}
+                onClick={handleClearOtpCode}
+                disabled={isLogin}
               />
-            )}
-            <GenericButton
-              className="mx-2"
-              variant="outline-primary"
-              type="reset"
-              label={t("common.clear", "Clear")}
-              onClick={handleClearOtpCode}
-            />
+            </div>
           </Form.Group>
         </Form>
       )}

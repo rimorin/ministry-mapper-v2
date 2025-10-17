@@ -147,6 +147,17 @@ const authenticateOTP = async (
 };
 
 /**
+ * Authenticates a user with OAuth2 provider
+ * This method opens a popup window with the OAuth2 vendor page
+ * @param provider The OAuth2 provider name (e.g., "google")
+ * @throws Will throw an error if authentication fails
+ * @returns The authentication data including user record
+ */
+const authenticateOAuth2 = async (provider: string) => {
+  return pb.collection("users").authWithOAuth2({ provider });
+};
+
+/**
  * Sets up a listener for authentication state changes
  * @param callback Function to call when auth state changes
  * @returns Cleanup function to remove the listener
@@ -424,6 +435,7 @@ export {
   requestOTP,
   confirmVerification,
   authenticateOTP,
+  authenticateOAuth2,
   authListener,
   configureHeader,
   callFunction,

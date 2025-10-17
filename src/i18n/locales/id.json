@@ -78,7 +78,12 @@
     "resendOTP": "Kirim Ulang OTP",
     "verify": "Verifikasi",
     "paste": "Tempel",
-    "clipboardDenied": "Izin untuk mengakses clipboard ditolak."
+    "clipboardDenied": "Izin untuk mengakses clipboard ditolak.",
+    "orContinueWith": "Atau lanjutkan dengan",
+    "google": "Google",
+    "microsoft": "Microsoft",
+    "signInWithGoogle": "Masuk dengan Google",
+    "signingIn": "Masuk..."
   },
   "territory": {
     "territory": "Wilayah",
