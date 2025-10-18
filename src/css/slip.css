@@ -1,3 +1,5 @@
+/* Slip/map styles - uses centralized variables from variables.css */
+
 .map-body {
   max-height: 75dvh;
   overflow-y: auto;
@@ -13,15 +15,34 @@
 .nav-item-hover {
   cursor: pointer;
   font-size: 0.75rem;
-  transition:
-    box-shadow 0.3s ease,
-    background-color 0.3s ease;
+  transition: var(--mm-transition-all);
+  user-select: none;
 }
 
 .nav-item-hover:hover {
-  background-color: #e0f0e0;
+  background-color: var(--mm-success-light);
   border-radius: 5px;
   box-shadow: 0 0 0 5px rgba(224, 240, 224, 0.5);
+}
+
+.nav-item-hover:active {
+  transform: scale(0.95);
+}
+
+.nav-item-hover:focus-visible,
+.nav-item-hover a:focus-visible,
+.nav-item-hover button:focus-visible {
+  outline: 2px solid var(--mm-primary);
+  outline-offset: 2px;
+  border-radius: 5px;
+}
+
+.nav-item-hover img {
+  transition: transform 0.2s ease-in-out;
+}
+
+.nav-item-hover:hover img {
+  transform: scale(1.1);
 }
 
 .highlighted {
@@ -30,16 +51,29 @@
 }
 
 @keyframes highlight-glow {
-  0% {
-    box-shadow: 0 0 5px rgba(197, 19, 43, 0.5);
-    filter: drop-shadow(0 0 5px rgba(197, 19, 43, 0.5));
+  0%,
+  100% {
+    box-shadow: 0 0 5px var(--mm-danger-alpha-50);
+    filter: drop-shadow(0 0 5px var(--mm-danger-alpha-50));
   }
   50% {
-    box-shadow: 0 0 20px rgba(197, 19, 43, 0.7);
-    filter: drop-shadow(0 0 20px rgba(197, 19, 43, 0.7));
+    box-shadow: 0 0 20px var(--mm-danger-alpha-70);
+    filter: drop-shadow(0 0 20px var(--mm-danger-alpha-70));
   }
-  100% {
-    box-shadow: 0 0 5px rgba(197, 19, 43, 0.5);
-    filter: drop-shadow(0 0 5px rgba(197, 19, 43, 0.5));
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.map-content,
+.map-placeholder-content {
+  animation: fadeIn 0.3s ease-in-out;
 }

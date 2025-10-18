@@ -80,54 +80,50 @@ const FrontPage = () => {
   }
 
   return (
-    <>
-      <div className="d-flex flex-column" style={{ minHeight: "99vh" }}>
-        <Navbar bg="light">
-          <LanguageSelector
-            showListing={showLanguageSelector}
-            hideFunction={toggleLanguageSelector}
-            handleSelect={handleLanguageSelect}
-            currentLanguage={currentLanguage}
-            languageOptions={languageOptions}
-          />
-          <Container fluid>
-            <NavBarBranding naming="Ministry Mapper" />
-            <div className="d-flex">
-              <GenericButton
-                className="m-1"
-                size="sm"
-                variant="outline-primary"
-                onClick={handleOpenAbout}
-                label={t("navigation.about", "About")}
-              />
-              <GenericButton
-                className="m-1"
-                size="sm"
-                variant="outline-primary"
-                onClick={toggleLanguageSelector}
-                label={
-                  <Image
-                    src={getAssetUrl("language.svg")}
-                    alt="Language"
-                    width={16}
-                    height={16}
-                  />
-                }
-              />
-            </div>
-          </Container>
-        </Navbar>
-        <Container
-          fluid
-          className="d-flex align-items-center justify-content-center"
-          style={{ flexGrow: 1 }}
-        >
-          <Suspense fallback={<Loader suspended />}>
-            {componentToRender}
-          </Suspense>
+    <div className="d-flex flex-column" style={{ minHeight: "80vh" }}>
+      <Navbar bg="light" className="flex-shrink-0">
+        <LanguageSelector
+          showListing={showLanguageSelector}
+          hideFunction={toggleLanguageSelector}
+          handleSelect={handleLanguageSelect}
+          currentLanguage={currentLanguage}
+          languageOptions={languageOptions}
+        />
+        <Container fluid>
+          <NavBarBranding naming="Ministry Mapper" />
+          <div className="d-flex">
+            <GenericButton
+              className="m-1"
+              size="sm"
+              variant="outline-primary"
+              onClick={handleOpenAbout}
+              label={t("navigation.about", "About")}
+            />
+            <GenericButton
+              className="m-1"
+              size="sm"
+              variant="outline-primary"
+              onClick={toggleLanguageSelector}
+              label={
+                <Image
+                  src={getAssetUrl("language.svg")}
+                  alt="Language"
+                  width={16}
+                  height={16}
+                />
+              }
+            />
+          </div>
         </Container>
-      </div>
-    </>
+      </Navbar>
+      <Container
+        fluid
+        className="d-flex align-items-center justify-content-center flex-grow-1"
+        style={{ overflow: "auto" }}
+      >
+        <Suspense fallback={<Loader suspended />}>{componentToRender}</Suspense>
+      </Container>
+    </div>
   );
 };
 

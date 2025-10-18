@@ -1,3 +1,5 @@
+/* Main page styles - uses centralized variables from variables.css */
+
 .mm-logo {
   width: 30% !important;
 }
@@ -20,20 +22,191 @@
   width: 80%;
 }
 
+.password-checklist-compact ul {
+  margin: 0;
+  padding-left: 1.2rem;
+  line-height: 1.4;
+}
+
+.password-checklist-compact li {
+  margin-bottom: 0.1rem;
+  font-size: 0.8rem;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: var(--mm-primary-light);
+  box-shadow: 0 0 0 0.25rem var(--mm-primary-alpha-15);
+  transition:
+    border-color var(--mm-transition-fast),
+    box-shadow var(--mm-transition-fast);
+}
+
+.btn {
+  transition: all 0.2s ease-in-out;
+}
+
+.btn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--mm-shadow-preset-md);
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.responsive-width {
+  animation: fadeIn 0.3s ease-in-out;
+  box-shadow: var(--mm-shadow-preset-sm);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  background: var(--mm-white);
+}
+
+.icon-large {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.icon-xlarge {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.icon-primary {
+  color: var(--mm-primary);
+}
+
+.icon-secondary {
+  color: var(--mm-secondary);
+}
+
+.icon-success {
+  color: var(--mm-success-dark);
+}
+
+.icon-danger {
+  color: var(--mm-danger);
+}
+
+a.link-primary {
+  transition: color var(--mm-transition-fast);
+}
+
+a.link-primary:hover {
+  text-decoration: underline !important;
+}
+
+.input-group-text[role="button"] {
+  transition:
+    background-color var(--mm-transition-fast),
+    opacity var(--mm-transition-fast);
+  user-select: none;
+}
+
+.input-group-text[role="button"]:hover:not([style*="cursor: not-allowed"]) {
+  background-color: var(--mm-primary-alpha-5) !important;
+}
+
+.input-group-text[role="button"]:focus {
+  outline: var(--mm-focus-width) solid var(--mm-focus-color);
+  outline-offset: 2px;
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+[role="alert"] {
+  animation: scaleIn 0.3s ease-in-out;
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: var(--mm-focus-width) solid var(--mm-focus-color);
+  outline-offset: 2px;
+}
+
+.link-disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.otp-input {
+  letter-spacing: 0.5rem;
+  font-size: 1.5rem;
+  text-align: center;
+  font-family: monospace;
+}
+
+.password-toggle {
+  cursor: pointer;
+  background-color: transparent;
+  border-left: none;
+  transition:
+    background-color var(--mm-transition-fast),
+    opacity var(--mm-transition-fast);
+  user-select: none;
+}
+
+.password-toggle:hover:not(.disabled) {
+  background-color: var(--mm-primary-alpha-5);
+}
+
+.password-toggle.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.form-control,
+.form-select {
+  transition:
+    border-color var(--mm-transition-fast),
+    box-shadow var(--mm-transition-fast),
+    height var(--mm-transition-fast);
+}
+
 @media (max-width: 600px) {
   .responsive-width {
     width: 90%;
+    max-height: 100%;
+    overflow-y: auto;
   }
 }
 
 @media (min-width: 601px) and (max-width: 1024px) {
   .responsive-width {
     width: 70%;
+    max-height: 100%;
+    overflow-y: auto;
   }
 }
 
 @media (min-width: 1025px) {
   .responsive-width {
     width: 50%;
+    max-height: 100%;
+    overflow-y: auto;
   }
 }

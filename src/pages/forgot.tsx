@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { Form, Spinner, FloatingLabel } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
@@ -6,25 +6,29 @@ import errorHandler from "../utils/helpers/errorhandler";
 import { StateContext } from "../components/utils/context";
 import { requestPasswordReset } from "../utils/pocketbase";
 import GenericButton from "../components/navigation/button";
+import AuthContainer from "../components/form/authcontainer";
+import Divider from "../components/form/divider";
+import { getDisabledStyle } from "../utils/helpers/disabledstyle";
 
 const ForgotComponent = () => {
   const { t } = useTranslation();
   const [loginEmail, setLoginEmail] = useState("");
   const [validated, setValidated] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-
-  const formRef = useRef<HTMLInputElement>(null);
-
   const { setFrontPageMode } = useContext(StateContext);
 
-  const handleClearForm = () => {
+  const handleClearForm = useCallback(() => {
     setLoginEmail("");
     setValidated(false);
-  };
+  }, []);
 
-  const handleNavigateToLogin = () => {
-    setFrontPageMode("login");
-  };
+  const handleNavigateToLogin = useCallback(
+    (e: React.MouseEvent<HTMLAnchorElement>) => {
+      e.preventDefault();
+      setFrontPageMode("login");
+    },
+    [setFrontPageMode]
+  );
 
   const handleForgotPassword = async (
     event: React.FormEvent<HTMLFormElement>
@@ -51,49 +55,50 @@ const ForgotComponent = () => {
   };
 
   return (
-    <>
-      <Form
-        noValidate
-        validated={validated}
-        onSubmit={handleForgotPassword}
-        className="responsive-width"
-      >
-        <Form.Group className="mb-3 text-center">
-          <h1>{t("auth.forgottenPassword", "Forgotten your password?")}</h1>
-        </Form.Group>
-        <Form.Group className="mb-3 text-center">
-          <span>
-            {t(
-              "auth.resetInstructions",
-              "Enter your email address below and we will send you a link to reset your password."
-            )}
-          </span>
-        </Form.Group>
-        <Form.Group className="my-3" controlId="formBasicEmail">
-          <FloatingLabel
-            controlId="formBasicEmail"
-            label={t("auth.emailAddress", "Email address")}
-          >
-            <Form.Control
-              ref={formRef}
-              type="email"
-              placeholder={t("auth.enterEmail", "Email Address")}
-              value={loginEmail}
-              required
-              onChange={(e) => {
-                setLoginEmail(e.target.value);
-              }}
-            />
-            <Form.Control.Feedback type="invalid">
-              {t("auth.validEmailRequired", "Please enter a valid email.")}
-            </Form.Control.Feedback>
-          </FloatingLabel>
-        </Form.Group>
-        <Form.Group className="text-center" controlId="formBasicButton">
+    <AuthContainer
+      title={t("auth.forgottenPassword", "Forgotten your password?")}
+      subtitle={t(
+        "auth.resetInstructions",
+        "Enter your email address below and we will send you a link to reset your password."
+      )}
+      icon="🔑"
+      iconColor="secondary"
+      validated={validated}
+      onSubmit={handleForgotPassword}
+    >
+      <Form.Group className="mb-3" controlId="formBasicEmail">
+        <FloatingLabel
+          controlId="formBasicEmail"
+          label={t("auth.emailAddress", "Email address")}
+        >
+          <Form.Control
+            type="email"
+            placeholder={t("auth.enterEmail", "Email Address")}
+            value={loginEmail}
+            required
+            autoFocus
+            autoComplete="email"
+            disabled={isProcessing}
+            onChange={(e) => setLoginEmail(e.target.value)}
+          />
+          <Form.Control.Feedback type="invalid">
+            {t("auth.validEmailRequired", "Please enter a valid email.")}
+          </Form.Control.Feedback>
+        </FloatingLabel>
+        <div id="email-help" className="form-text small mt-2">
+          {t(
+            "auth.resetEmailHelp",
+            "We'll send a password reset link to this email if an account exists."
+          )}
+        </div>
+      </Form.Group>
+      <Form.Group className="text-center" controlId="formBasicButton">
+        <div className="d-flex gap-2 mb-2">
           <GenericButton
-            variant="outline-primary"
-            className="m-2"
+            variant="primary"
+            className="flex-fill"
             type="submit"
+            disabled={isProcessing}
             label={
               <>
                 {isProcessing && (
@@ -109,27 +114,28 @@ const ForgotComponent = () => {
             }
           />
           <GenericButton
-            variant="outline-primary"
-            className="mx-2"
+            variant="outline-secondary"
+            className="flex-fill"
             type="reset"
+            disabled={isProcessing}
             label={t("common.clear", "Clear")}
             onClick={handleClearForm}
           />
-        </Form.Group>
-        <Form.Group className="text-center" controlId="formBasicButton">
-          <hr />
-          <p>
-            {t("auth.alreadyHaveAccount", "Already have an account?")}{" "}
-            <span
-              style={{ cursor: "pointer", color: "blue" }}
-              onClick={handleNavigateToLogin}
-            >
-              {t("auth.signIn", "Sign In")}
-            </span>
-          </p>
-        </Form.Group>
-      </Form>
-    </>
+        </div>
+        <Divider text={t("auth.or", "Or")} />
+        <p className="mb-0">
+          {t("auth.rememberPassword", "Remember your password?")}{" "}
+          <a
+            href="#"
+            className="link-primary text-decoration-none fw-semibold"
+            onClick={handleNavigateToLogin}
+            style={getDisabledStyle(isProcessing)}
+          >
+            {t("auth.signIn", "Sign In")}
+          </a>
+        </p>
+      </Form.Group>
+    </AuthContainer>
   );
 };
 

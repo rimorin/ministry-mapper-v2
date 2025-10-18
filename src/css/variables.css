@@ -1,0 +1,312 @@
+/**
+ * CSS Custom Properties (Variables)
+ * Centralized variable definitions for Ministry Mapper v2
+ * 
+ * Organization:
+ * 1. Base Colors & Primitives
+ * 2. Semantic Colors
+ * 3. Opacity & Overlay
+ * 4. Shadows
+ * 5. Spacing & Sizing
+ * 6. Transitions & Animations
+ * 7. Gradients
+ * 
+ * All component CSS files should reference these variables.
+ * DO NOT define new colors - add them here for global reuse.
+ */
+
+:root {
+  /* ========================================
+     1. BASE COLORS & PRIMITIVES
+     ======================================== */
+
+  /* Grayscale Palette */
+  --mm-white: #ffffff;
+  --mm-black: #000000;
+  --mm-gray-50: #f8f9fa;
+  --mm-gray-100: #e9ecef;
+  --mm-gray-200: #e0e0e0;
+  --mm-gray-300: #c1c1c1;
+  --mm-gray-400: #a8a8a8;
+  --mm-gray-500: #888888;
+  --mm-gray-600: #6c757d;
+  --mm-gray-700: #555555;
+  --mm-gray-800: #495057;
+  --mm-gray-900: #4a5568;
+  --mm-gray-950: #1a202c;
+
+  /* Brand Colors */
+  --mm-primary: #0d6efd;
+  --mm-primary-hover: #0b5ed7;
+  --mm-primary-light: #86b7fe;
+  --mm-primary-lighter: #e7f1ff;
+
+  --mm-success: #28a745;
+  --mm-success-dark: #198754;
+  --mm-success-light: #e0f0e0;
+
+  --mm-danger: #dc3545;
+  --mm-danger-dark: #c5132b;
+
+  --mm-warning: #ff6b35;
+
+  --mm-info: #17a2b8;
+  --mm-info-alt: #007bff;
+
+  --mm-secondary: #6c757d;
+
+  /* ========================================
+     2. SEMANTIC COLORS
+     ======================================== */
+
+  /* Text Colors */
+  --mm-text-body: #212529;
+  --mm-text-muted: var(--mm-gray-600);
+  --mm-text-dark: var(--mm-gray-950);
+
+  /* Background Colors */
+  --mm-bg-body: var(--mm-white);
+  --mm-bg-subtle: var(--mm-gray-50);
+  --mm-bg-muted: var(--mm-gray-100);
+
+  /* ========================================
+     3. OPACITY & OVERLAY
+     ======================================== */
+
+  /* Primary Color with Opacity */
+  --mm-primary-alpha-5: rgba(13, 110, 253, 0.05);
+  --mm-primary-alpha-15: rgba(13, 110, 253, 0.15);
+  --mm-primary-alpha-20: rgba(13, 110, 253, 0.2);
+  --mm-primary-alpha-25: rgba(13, 110, 253, 0.25);
+  --mm-primary-alpha-30: rgba(13, 110, 253, 0.3);
+
+  /* Success Color with Opacity */
+  --mm-success-alpha-10: rgba(0, 255, 0, 0.1);
+  --mm-success-alpha-15: rgba(40, 167, 69, 0.15);
+  --mm-success-alpha-50: rgba(40, 167, 69, 0.5);
+  --mm-success-alpha-80: rgba(40, 167, 69, 0.8);
+
+  /* Warning Color with Opacity */
+  --mm-warning-alpha-30: rgba(168, 209, 255, 0.3);
+  --mm-warning-alpha-60: rgba(255, 107, 53, 0.6);
+
+  /* Danger Color with Opacity */
+  --mm-danger-alpha-50: rgba(197, 19, 43, 0.5);
+  --mm-danger-alpha-70: rgba(197, 19, 43, 0.7);
+
+  /* White Overlays */
+  --mm-overlay-white-30: rgba(255, 255, 255, 0.3);
+  --mm-overlay-white-40: rgba(255, 255, 255, 0.4);
+  --mm-overlay-white-50: rgba(255, 255, 255, 0.5);
+  --mm-overlay-white-70: rgba(255, 255, 255, 0.7);
+  --mm-overlay-white-95: rgba(255, 255, 255, 0.95);
+
+  /* Black Overlays */
+  --mm-overlay-black-5: rgba(0, 0, 0, 0.05);
+  --mm-overlay-black-8: rgba(0, 0, 0, 0.08);
+  --mm-overlay-black-10: rgba(0, 0, 0, 0.1);
+  --mm-overlay-black-12: rgba(0, 0, 0, 0.125);
+  --mm-overlay-black-20: rgba(0, 0, 0, 0.2);
+  --mm-overlay-black-30: rgba(0, 0, 0, 0.3);
+  --mm-overlay-black-50: rgba(224, 240, 224, 0.5);
+
+  /* ========================================
+     4. SHADOWS
+     ======================================== */
+
+  /* Shadow Colors (Semantic Opacity Levels) */
+  --mm-shadow-xs: rgba(0, 0, 0, 0.05);
+  --mm-shadow-sm: rgba(0, 0, 0, 0.075);
+  --mm-shadow-md: rgba(0, 0, 0, 0.1);
+  --mm-shadow-lg: rgba(0, 0, 0, 0.12);
+  --mm-shadow-xl: rgba(0, 0, 0, 0.2);
+  --mm-shadow-2xl: rgba(0, 0, 0, 0.25);
+  --mm-shadow-3xl: rgba(0, 0, 0, 0.3);
+
+  /* Shadow Presets (Ready to Use) */
+  --mm-shadow-preset-xs: 0 1px 2px var(--mm-shadow-xs);
+  --mm-shadow-preset-sm: 0 2px 4px var(--mm-shadow-sm);
+  --mm-shadow-preset-md: 0 4px 8px var(--mm-shadow-md);
+  --mm-shadow-preset-lg: 0 4px 12px var(--mm-shadow-lg);
+  --mm-shadow-preset-xl: 0 6px 16px var(--mm-shadow-xl);
+  --mm-shadow-preset-2xl: 0 8px 24px var(--mm-shadow-2xl);
+
+  /* Text Shadow */
+  --mm-text-shadow: 2px 3px 3px var(--mm-shadow-3xl);
+
+  /* ========================================
+     5. SPACING & SIZING
+     ======================================== */
+
+  /* Border Radius */
+  --mm-radius-sm: 0.375rem;
+  --mm-radius-md: 0.5rem;
+  --mm-radius-lg: 0.75rem;
+  --mm-radius-xl: 1rem;
+  --mm-radius-full: 50%;
+
+  /* Borders */
+  --mm-border-width: 1px;
+  --mm-border-width-thick: 2px;
+  --mm-border-width-thicker: 3px;
+  --mm-border-width-xl: 5px;
+
+  /* Focus Outline */
+  --mm-focus-width: 2px;
+  --mm-focus-offset: 2px;
+  --mm-focus-color: var(--mm-primary);
+  --mm-focus-shadow: 0 0 0 0.25rem var(--mm-primary-alpha-25);
+
+  /* ========================================
+     6. TRANSITIONS & ANIMATIONS
+     ======================================== */
+
+  /* Transition Durations */
+  --mm-duration-fast: 0.15s;
+  --mm-duration-base: 0.2s;
+  --mm-duration-slow: 0.3s;
+
+  /* Transition Timings */
+  --mm-ease-in-out: ease-in-out;
+  --mm-ease-out: ease-out;
+  --mm-ease-in: ease-in;
+  --mm-ease: ease;
+
+  /* Transition Presets */
+  --mm-transition-fast: var(--mm-duration-fast) var(--mm-ease-in-out);
+  --mm-transition-base: var(--mm-duration-base) var(--mm-ease);
+  --mm-transition-all: all var(--mm-duration-base) var(--mm-ease);
+  --mm-transition-color:
+    color var(--mm-duration-base) var(--mm-ease),
+    background-color var(--mm-duration-base) var(--mm-ease),
+    border-color var(--mm-duration-base) var(--mm-ease);
+  --mm-transition-transform: transform var(--mm-duration-base) var(--mm-ease);
+
+  /* Animation Scale */
+  --mm-scale-hover: 1.1;
+  --mm-scale-active: 0.95;
+  --mm-scale-drag: 1.05;
+
+  /* ========================================
+     7. GRADIENTS
+     ======================================== */
+
+  --mm-gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --mm-gradient-blue-light: linear-gradient(135deg, #cfe2ff 0%, #a8d1ff 100%);
+  --mm-gradient-green-light: linear-gradient(to bottom, #f8fffe, #ffffff);
+  --mm-gradient-header: linear-gradient(
+    to right,
+    var(--mm-gray-50),
+    var(--mm-gray-100)
+  );
+
+  /* ========================================
+     8. SCROLLBAR
+     ======================================== */
+
+  --mm-scrollbar-track: var(--mm-gray-50);
+  --mm-scrollbar-thumb: var(--mm-gray-500);
+  --mm-scrollbar-thumb-hover: var(--mm-gray-700);
+  --mm-scrollbar-thumb-alt: var(--mm-gray-300);
+  --mm-scrollbar-thumb-alt-hover: var(--mm-gray-400);
+  --mm-scrollbar-width: 8px;
+  --mm-scrollbar-radius: 4px;
+
+  /* ========================================
+     9. COMPONENT-SPECIFIC
+     ======================================== */
+
+  /* Badge */
+  --mm-badge-bg-transparent: transparent;
+  --mm-badge-opacity: 0.4;
+
+  /* Cell Highlights */
+  --mm-highlight-color: var(--mm-success);
+
+  /* Map Markers */
+  --mm-marker-border: var(--mm-white);
+  --mm-marker-shadow: rgba(0, 0, 0, 0.7);
+  --mm-marker-label-bg: rgba(0, 0, 0, 0.5);
+  --mm-marker-label-text: var(--mm-white);
+
+  /* Current Location Marker */
+  --mm-location-marker-bg: #0066ff;
+  --mm-location-marker-border: var(--mm-white);
+  --mm-location-marker-shadow: rgba(0, 0, 0, 0.5);
+  --mm-location-marker-ripple: rgba(0, 102, 255, 0.5);
+
+  /* Circular Progress */
+  --mm-progress-assignments: var(--mm-danger);
+  --mm-progress-personal: var(--mm-success);
+
+  /* Speed Dial */
+  --mm-speed-dial-backdrop: rgba(0, 0, 0, 0.3);
+  --mm-speed-dial-fab-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --mm-speed-dial-action-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* ========================================
+   DARK MODE OVERRIDES
+   ======================================== */
+
+[data-bs-theme="dark"] {
+  /* Base Colors */
+  --mm-gray-50: #343a40;
+  --mm-gray-100: #2c3034;
+  --mm-gray-200: #4a4a4a;
+  --mm-gray-300: #5a5a5a;
+
+  /* Semantic Colors */
+  --mm-text-body: #dee2e6;
+  --mm-text-dark: #f8f9fa;
+
+  --mm-bg-body: #212529;
+  --mm-bg-subtle: #2c3034;
+  --mm-bg-muted: #343a40;
+
+  /* Overlays - Inverted for dark mode */
+  --mm-overlay-white-30: rgba(33, 37, 41, 0.3);
+  --mm-overlay-white-40: rgba(33, 37, 41, 0.4);
+  --mm-overlay-white-50: rgba(33, 37, 41, 0.5);
+  --mm-overlay-white-70: rgba(33, 37, 41, 0.8);
+  --mm-overlay-white-95: rgba(33, 37, 41, 0.95);
+
+  --mm-overlay-black-5: rgba(255, 255, 255, 0.05);
+  --mm-overlay-black-8: rgba(255, 255, 255, 0.08);
+  --mm-overlay-black-10: rgba(255, 255, 255, 0.1);
+  --mm-overlay-black-12: rgba(255, 255, 255, 0.125);
+  --mm-overlay-black-50: rgba(33, 37, 41, 0.5);
+
+  /* Shadows - Stronger in dark mode */
+  --mm-shadow-xs: rgba(0, 0, 0, 0.2);
+  --mm-shadow-sm: rgba(0, 0, 0, 0.3);
+  --mm-shadow-md: rgba(0, 0, 0, 0.4);
+  --mm-shadow-lg: rgba(0, 0, 0, 0.4);
+  --mm-shadow-xl: rgba(0, 0, 0, 0.5);
+  --mm-shadow-2xl: rgba(0, 0, 0, 0.6);
+  --mm-shadow-3xl: rgba(0, 0, 0, 0.7);
+
+  /* Gradients - Adjusted for dark mode */
+  --mm-gradient-primary: linear-gradient(135deg, #4c5fd5 0%, #5a3a82 100%);
+  --mm-gradient-header: linear-gradient(to right, #2c3034, #343a40);
+
+  /* Scrollbar */
+  --mm-scrollbar-track: var(--mm-gray-100);
+  --mm-scrollbar-thumb: var(--mm-gray-200);
+  --mm-scrollbar-thumb-hover: var(--mm-gray-300);
+
+  /* Focus */
+  --mm-focus-color: #6ea8fe;
+
+  /* Map Markers - adjusted for dark mode */
+  --mm-marker-border: var(--mm-gray-100);
+  --mm-marker-shadow: rgba(0, 0, 0, 0.9);
+  --mm-marker-label-bg: rgba(255, 255, 255, 0.2);
+  --mm-marker-label-text: var(--mm-white);
+
+  /* Current Location Marker - brighter for dark mode */
+  --mm-location-marker-bg: #3399ff;
+  --mm-location-marker-border: var(--mm-gray-100);
+  --mm-location-marker-shadow: rgba(0, 0, 0, 0.8);
+  --mm-location-marker-ripple: rgba(51, 153, 255, 0.5);
+}

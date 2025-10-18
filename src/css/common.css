@@ -1,3 +1,5 @@
+/* Common styles - uses centralized variables from variables.css */
+
 .sticky-table {
   border-collapse: separate;
   border-spacing: 0;
@@ -6,14 +8,14 @@
 .sticky-left-cell {
   position: sticky;
   left: 0;
-  background-color: white !important;
+  background-color: var(--mm-white) !important;
   z-index: 2;
 }
 
 .sticky-top-cell {
   position: sticky;
   top: 0;
-  background-color: white;
+  background-color: var(--mm-white);
   z-index: 3;
 }
 
@@ -32,7 +34,7 @@
 }
 
 .badge-nothome {
-  color: black;
+  color: var(--mm-black);
   position: absolute;
   font-size: 0.8em;
   font-weight: bold;
@@ -57,32 +59,27 @@
 }
 
 .available {
-  background-color: rgba(0, 255, 0, 0.1) !important;
+  background-color: var(--mm-success-alpha-10) !important;
 }
 
 .cell-highlight {
-  box-shadow: 0px 0px 10px 2px green inset !important;
+  box-shadow: 0 0 10px 2px var(--mm-highlight-color) inset !important;
 }
 
 .brand-wrap {
   white-space: normal;
 }
 
-/* https://css-tricks.com/linearly-scale-font-size-with-css-clamp-based-on-the-viewport/ */
 @media screen and (max-width: 450px) {
   .fluid-button {
     font-size: clamp(0.5rem, 2.8vw, 2rem);
     font-weight: bolder;
   }
-}
 
-@media screen and (max-width: 450px) {
   .fluid-bolding {
     font-weight: bolder;
   }
-}
 
-@media screen and (max-width: 450px) {
   .fluid-text {
     font-size: clamp(0.5rem, 3.2vw, 2rem);
   }
@@ -112,45 +109,35 @@
 }
 
 .text-highlight {
-  text-shadow: 2px 3px 3px rgba(0, 0, 0, 0.3);
+  text-shadow: 2px 3px 3px var(--mm-shadow-3xl);
   font-weight: bold;
 }
 
 .help-button {
   cursor: pointer;
-  margin: 0 0.25rem 0 0.25rem;
+  margin: 0 0.25rem;
 }
 
 .suspense-loader {
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   z-index: 1050;
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: var(--mm-overlay-white-50);
 }
 
 @keyframes spinLocator {
-  0% {
-    transform: rotate(0deg);
-  }
-
-  100% {
+  to {
     transform: rotate(360deg);
   }
 }
 
 .note-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(255, 255, 255, 0.7);
+  inset: 0;
+  background: var(--mm-overlay-white-70);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -162,24 +149,73 @@
 }
 
 @keyframes pulse {
-  0% {
+  0%,
+  100% {
     transform: scale(1);
   }
   50% {
     transform: scale(1.1);
   }
-  100% {
-    transform: scale(1);
-  }
 }
 
 @keyframes ripple {
-  0% {
+  from {
     transform: translate(-50%, -50%) scale(0.8);
     opacity: 1;
   }
-  100% {
+  to {
     transform: translate(-50%, -50%) scale(1.5);
     opacity: 0;
   }
+}
+
+.current-location-marker {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--mm-location-marker-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--mm-location-marker-border);
+  box-shadow: 0 0 3px var(--mm-location-marker-shadow);
+  animation: pulse 2s infinite;
+  position: relative;
+}
+
+.current-location-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--mm-location-marker-ripple);
+  transform: translate(-50%, -50%);
+  animation: ripple 2s infinite;
+}
+
+.map-marker {
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: var(--mm-marker-label-text);
+  border: 2px solid var(--mm-marker-border);
+  box-shadow: 0 0 5px var(--mm-marker-shadow);
+}
+
+.map-marker-label {
+  position: absolute;
+  top: -5px;
+  left: -5px;
+  font-size: 10px;
+  padding: 1px 3px;
+  background-color: var(--mm-marker-label-bg);
+  color: var(--mm-marker-label-text);
+  border-radius: 2px;
 }

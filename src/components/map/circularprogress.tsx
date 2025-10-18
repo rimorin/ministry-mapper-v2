@@ -43,7 +43,6 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
         {hasAssignments && (
           <circle
             className="circular-progress-assignments"
-            stroke="red"
             strokeWidth={5}
             fill="none"
             cx={size / 2}
@@ -54,7 +53,6 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
         {hasPersonal && (
           <circle
             className="circular-progress-personal"
-            stroke="green"
             strokeWidth={3}
             fill="none"
             cx={size / 2}

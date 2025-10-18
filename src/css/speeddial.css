@@ -1,20 +1,11 @@
-/* SpeedDial CSS Variables */
 :root {
+  /* Component-specific sizing */
   --speed-dial-fab-size: 56px;
   --speed-dial-action-size: 48px;
-  --speed-dial-mobile-fab-size: 48px;
-  --speed-dial-mobile-action-size: 40px;
   --speed-dial-fab-font-size: 24px;
   --speed-dial-action-font-size: 16px;
-  --speed-dial-mobile-fab-font-size: 20px;
-  --speed-dial-mobile-action-font-size: 14px;
-  --speed-dial-transition: all 0.2s ease-in-out;
   --speed-dial-hover-scale: 1.1;
-  --speed-dial-active-scale-fab: 0.95;
-  --speed-dial-active-scale-action: 0.9;
   --speed-dial-font-weight: 300;
-  --speed-dial-box-shadow-fab: 0 6px 16px rgba(0, 0, 0, 0.2);
-  --speed-dial-box-shadow-action: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .speed-dial {
@@ -30,16 +21,17 @@
   border: none !important;
   font-size: var(--speed-dial-fab-font-size) !important;
   font-weight: var(--speed-dial-font-weight) !important;
-  transition: var(--speed-dial-transition) !important;
+  transition: var(--mm-transition-all) !important;
+  box-shadow: var(--mm-speed-dial-fab-shadow) !important;
 }
 
 .speed-dial-fab:hover {
   transform: scale(var(--speed-dial-hover-scale)) !important;
-  box-shadow: var(--speed-dial-box-shadow-fab) !important;
+  box-shadow: var(--mm-shadow-preset-xl) !important;
 }
 
 .speed-dial-fab:active {
-  transform: scale(var(--speed-dial-active-scale-fab)) !important;
+  transform: scale(0.95) !important;
 }
 
 .speed-dial-action {
@@ -48,16 +40,17 @@
   justify-content: center !important;
   border: none !important;
   font-size: var(--speed-dial-action-font-size) !important;
-  transition: var(--speed-dial-transition) !important;
+  transition: var(--mm-transition-all) !important;
+  box-shadow: var(--mm-speed-dial-action-shadow) !important;
 }
 
 .speed-dial-action:hover {
   transform: scale(var(--speed-dial-hover-scale)) !important;
-  box-shadow: var(--speed-dial-box-shadow-action) !important;
+  box-shadow: var(--mm-shadow-preset-lg) !important;
 }
 
 .speed-dial-action:active {
-  transform: scale(var(--speed-dial-active-scale-action)) !important;
+  transform: scale(0.9) !important;
 }
 
 .speed-dial-action-open {
@@ -66,19 +59,20 @@
 
 .speed-dial-backdrop {
   pointer-events: auto;
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  background-color: var(--mm-speed-dial-backdrop) !important;
+  z-index: -1 !important;
 }
 
-/* Responsive adjustments */
 @media (max-width: 768px) {
-  .speed-dial-fab {
-    width: var(--speed-dial-mobile-fab-size) !important;
-    height: var(--speed-dial-mobile-fab-size) !important;
-    font-size: var(--speed-dial-mobile-fab-font-size) !important;
-  }
-
-  .speed-dial-action {
-    width: var(--speed-dial-mobile-action-size) !important;
-    height: var(--speed-dial-mobile-action-size) !important;
-    font-size: var(--speed-dial-mobile-action-font-size) !important;
+  :root {
+    --speed-dial-fab-size: 48px;
+    --speed-dial-action-size: 40px;
+    --speed-dial-fab-font-size: 20px;
+    --speed-dial-action-font-size: 14px;
   }
 }

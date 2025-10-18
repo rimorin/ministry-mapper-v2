@@ -6,13 +6,12 @@ import { useTranslation } from "react-i18next";
 const TerritoryHeader = memo(({ name }: territoryHeaderProp) => {
   const { t } = useTranslation();
 
-  if (!name) return <></>;
+  if (!name) return null;
+
   return (
-    <Container
-      fluid
-      className="text-center bg-light py-2 fw-bolder text-success border-top"
-    >
-      {t("territory.territory")}: {name}
+    <Container fluid className="territory-header text-center">
+      <span className="territory-label">{t("territory.territory")}:</span>{" "}
+      <span className="territory-name">{name}</span>
     </Container>
   );
 });

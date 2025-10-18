@@ -18,6 +18,9 @@ import errorHandler from "../utils/helpers/errorhandler";
 import { StateContext } from "../components/utils/context";
 import GenericButton from "../components/navigation/button";
 import { getAssetUrl } from "../utils/helpers/assetpath";
+import AuthContainer from "../components/form/authcontainer";
+import Divider from "../components/form/divider";
+import { getDisabledStyle } from "../utils/helpers/disabledstyle";
 
 const LoginComponent = () => {
   const { t } = useTranslation();
@@ -31,7 +34,6 @@ const LoginComponent = () => {
   const [otpCode, setOtpCode] = useState("");
   const [mfaId, setMfaId] = useState("");
 
-  const formRef = useRef<HTMLInputElement>(null);
   const otpInputRef = useRef<HTMLInputElement>(null);
 
   const { setFrontPageMode } = useContext(StateContext);
@@ -43,8 +45,17 @@ const LoginComponent = () => {
     }
   }, [otpSessionId]);
 
-  const processEmail = useCallback((email: string) => {
-    return email.trim().toLowerCase();
+  const processEmail = useCallback(
+    (email: string) => email.trim().toLowerCase(),
+    []
+  );
+
+  const handleOtpRequest = useCallback(async (email: string) => {
+    try {
+      setOtpSessionId(await requestOTP(email));
+    } catch (err) {
+      errorHandler(err);
+    }
   }, []);
 
   const loginInWithEmailAndPassword = useCallback(
@@ -67,16 +78,8 @@ const LoginComponent = () => {
         setIsLogin(false);
       }
     },
-    []
+    [processEmail, handleOtpRequest]
   );
-
-  const handleOtpRequest = useCallback(async (email: string) => {
-    try {
-      setOtpSessionId(await requestOTP(email));
-    } catch (err) {
-      errorHandler(err);
-    }
-  }, []);
 
   const handleOtpSubmit = useCallback(
     async (event: React.FormEvent<HTMLFormElement>) => {
@@ -103,7 +106,7 @@ const LoginComponent = () => {
       }
       await loginInWithEmailAndPassword(loginEmail, loginPassword);
     },
-    [loginEmail, loginPassword]
+    [loginEmail, loginPassword, loginInWithEmailAndPassword]
   );
 
   const handleClipboardPaste = useCallback(async () => {
@@ -129,7 +132,7 @@ const LoginComponent = () => {
       e.preventDefault();
       setFrontPageMode("signup");
     },
-    []
+    [setFrontPageMode]
   );
 
   const handleNavigateForgot = useCallback(
@@ -137,13 +140,13 @@ const LoginComponent = () => {
       e.preventDefault();
       setFrontPageMode("forgot");
     },
-    []
+    [setFrontPageMode]
   );
 
   const handleResendOtp = useCallback(async () => {
     await handleOtpRequest(processEmail(loginEmail));
     alert(t("auth.otpSentAlert", "OTP sent to your email"));
-  }, [loginEmail]);
+  }, [loginEmail, processEmail, handleOtpRequest, t]);
 
   const handleClearOtpCode = useCallback(() => {
     setOtpCode("");
@@ -160,33 +163,34 @@ const LoginComponent = () => {
       });
   }, []);
 
+  const isDisabled = isLogin || isOAuthLoading;
+
   return (
     <>
       {!otpSessionId ? (
-        <Form
-          noValidate
+        <AuthContainer
+          title={t("auth.signIn", "Sign In")}
+          subtitle={t(
+            "auth.signInWelcome",
+            "Welcome back! Please enter your credentials."
+          )}
           validated={validated}
           onSubmit={handleLoginSubmit}
-          className="responsive-width"
         >
-          <Form.Group className="mb-3 text-center">
-            <h1>{t("auth.signIn", "Sign In")}</h1>
-          </Form.Group>
-          <Form.Group className="my-3" controlId="formBasicEmail">
+          <Form.Group className="mb-3" controlId="formBasicEmail">
             <FloatingLabel
               controlId="formBasicEmail"
               label={t("auth.emailAddress", "Email address")}
             >
               <Form.Control
-                ref={formRef}
                 type="email"
                 placeholder={t("auth.enterEmail", "Enter email")}
                 value={loginEmail}
                 required
-                disabled={isLogin || isOAuthLoading}
-                onChange={(e) => {
-                  setLoginEmail(e.target.value);
-                }}
+                autoComplete="email"
+                autoFocus
+                disabled={isDisabled}
+                onChange={(e) => setLoginEmail(e.target.value)}
               />
               <Form.Control.Feedback type="invalid">
                 {t("auth.validEmailRequired", "Please enter a valid email.")}
@@ -205,21 +209,22 @@ const LoginComponent = () => {
                   placeholder={t("auth.password", "Password")}
                   value={loginPassword}
                   required
-                  disabled={isLogin || isOAuthLoading}
+                  autoComplete="current-password"
+                  disabled={isDisabled}
                   onChange={(event) => setLoginPassword(event.target.value)}
                   style={{ borderRight: "none" }}
                 />
               </FloatingLabel>
               <InputGroup.Text
-                onClick={() =>
-                  !isLogin && !isOAuthLoading && setShowPassword(!showPassword)
+                onClick={() => !isDisabled && setShowPassword(!showPassword)}
+                tabIndex={0}
+                role="button"
+                aria-label={
+                  showPassword
+                    ? t("auth.hidePassword", "Hide password")
+                    : t("auth.showPassword", "Show password")
                 }
-                style={{
-                  cursor: isLogin || isOAuthLoading ? "not-allowed" : "pointer",
-                  backgroundColor: "transparent",
-                  borderLeft: "none",
-                  opacity: isLogin || isOAuthLoading ? 0.5 : 1
-                }}
+                className={`password-toggle ${isDisabled ? "disabled" : ""}`}
               >
                 {showPassword ? "👁️" : "👁️‍🗨️"}
               </InputGroup.Text>
@@ -233,18 +238,9 @@ const LoginComponent = () => {
             <div className="text-end mt-2">
               <a
                 href="#"
-                onClick={(e) => {
-                  if (isLogin || isOAuthLoading) {
-                    e.preventDefault();
-                    return;
-                  }
-                  handleNavigateForgot(e);
-                }}
+                onClick={handleNavigateForgot}
                 className="link-primary text-decoration-none small"
-                style={{
-                  pointerEvents: isLogin || isOAuthLoading ? "none" : "auto",
-                  opacity: isLogin || isOAuthLoading ? 0.5 : 1
-                }}
+                style={getDisabledStyle(isDisabled)}
               >
                 {t("auth.forgotPassword", "Forgot Password?")}
               </a>
@@ -255,7 +251,7 @@ const LoginComponent = () => {
               variant="primary"
               className="w-100 mb-3"
               type="submit"
-              disabled={isLogin || isOAuthLoading}
+              disabled={isDisabled}
               label={
                 <>
                   {isLogin && (
@@ -272,19 +268,13 @@ const LoginComponent = () => {
             />
           </Form.Group>
           <Form.Group className="text-center" controlId="formBasicButton">
-            <div className="my-4 d-flex align-items-center">
-              <hr className="flex-grow-1" />
-              <span className="px-3 text-muted small">
-                {t("auth.orContinueWith", "Or continue with")}
-              </span>
-              <hr className="flex-grow-1" />
-            </div>
+            <Divider text={t("auth.orContinueWith", "Or continue with")} />
             <div className="d-flex gap-2 mb-4">
               <GenericButton
                 variant="outline-secondary"
                 className="flex-fill py-2"
                 type="button"
-                disabled={isOAuthLoading || isLogin}
+                disabled={isDisabled}
                 onClick={() => handleOAuthSignIn("google")}
                 label={
                   <div className="d-flex align-items-center justify-content-center gap-2">
@@ -317,33 +307,27 @@ const LoginComponent = () => {
               <a
                 href="#"
                 className="link-primary text-decoration-none fw-semibold"
-                onClick={(e) => {
-                  if (isLogin || isOAuthLoading) {
-                    e.preventDefault();
-                    return;
-                  }
-                  handleNavigateSignup(e);
-                }}
-                style={{
-                  pointerEvents: isLogin || isOAuthLoading ? "none" : "auto",
-                  opacity: isLogin || isOAuthLoading ? 0.5 : 1
-                }}
+                onClick={handleNavigateSignup}
+                style={getDisabledStyle(isDisabled)}
               >
                 {t("auth.signUp", "Sign Up")}
               </a>
             </p>
           </Form.Group>
-        </Form>
+        </AuthContainer>
       ) : (
-        <Form onSubmit={handleOtpSubmit} className="responsive-width">
-          <Form.Group className="mb-4 text-center">
-            <h1 className="h3 mb-3">
-              {t("auth.otpVerification", "One Time Password Verification")}
-            </h1>
-            <p className="text-muted mb-0">
-              {t("auth.otpSent", "An OTP has been sent to your email address.")}
-            </p>
-          </Form.Group>
+        <AuthContainer
+          title={t("auth.otpVerification", "One Time Password Verification")}
+          subtitle={t(
+            "auth.otpSent",
+            "An OTP has been sent to your email address."
+          )}
+          icon="🔒"
+          onSubmit={handleOtpSubmit}
+        >
+          <p className="text-center text-muted mb-3 small">
+            <strong>{loginEmail}</strong>
+          </p>
           <Form.Group className="mb-3" controlId="formBasicOtp">
             <FloatingLabel
               controlId="formBasicOtp"
@@ -352,21 +336,32 @@ const LoginComponent = () => {
               <Form.Control
                 ref={otpInputRef}
                 type="text"
+                inputMode="numeric"
+                pattern="[0-9]*"
+                maxLength={4}
                 placeholder={t("auth.enterOTP", "Enter OTP")}
                 value={otpCode}
                 required
                 disabled={isLogin}
-                onChange={(event) => setOtpCode(event.target.value)}
+                onChange={(event) => {
+                  const value = event.target.value.replace(/\D/g, "");
+                  setOtpCode(value);
+                }}
+                className="otp-input"
               />
             </FloatingLabel>
-            <div className="text-end mt-2">
+            <div id="otp-help" className="form-text text-center mt-2">
+              {t("auth.otpHelp", "Enter the 4-digit code sent to your email")}
+            </div>
+            <div className="text-center mt-2">
               <a
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  handleResendOtp();
+                  if (!isLogin) handleResendOtp();
                 }}
                 className="link-primary text-decoration-none small"
+                style={getDisabledStyle(isLogin)}
               >
                 {t("auth.resendOTP", "Resend OTP")}
               </a>
@@ -412,7 +407,7 @@ const LoginComponent = () => {
               />
             </div>
           </Form.Group>
-        </Form>
+        </AuthContainer>
       )}
     </>
   );
