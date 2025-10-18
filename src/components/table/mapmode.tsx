@@ -47,37 +47,12 @@ const TerritoryMapView = ({
           <div
             data-id={element.id}
             data-floor={element.floor}
-            className={`${policy?.getUnitColor(
+            className={`map-marker ${policy?.getUnitColor(
               element,
               aggregates.value || DEFAULT_AGGREGATES.value
             )}`}
-            style={{
-              position: "relative",
-              width: "42px",
-              height: "42px",
-              borderRadius: "50%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: "14px",
-              color: "#fff",
-              border: "2px solid white",
-              boxShadow: "0 0 5px rgba(0,0,0,0.7)"
-            }}
           >
-            <div
-              style={{
-                position: "absolute",
-                top: "-5px",
-                left: "-5px",
-                fontSize: "10px",
-                padding: "1px 3px",
-                backgroundColor: "rgba(0, 0, 0, 0.5)",
-                color: "#fff"
-              }}
-            >
-              {houseType}
-            </div>
+            <div className="map-marker-label">{houseType}</div>
             <HouseStatus
               type={element.type}
               note={element.note}

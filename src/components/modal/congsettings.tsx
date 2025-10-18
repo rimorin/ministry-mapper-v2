@@ -2,7 +2,6 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
 import { useState, FormEvent } from "react";
 import { Form, Row, Col, Modal } from "react-bootstrap";
-import FormRange from "react-bootstrap/FormRange";
 import {
   DEFAULT_CONGREGATION_MAX_TRIES,
   DEFAULT_SELF_DESTRUCT_HOURS,
@@ -94,7 +93,7 @@ const UpdateCongregationSettings = NiceModal.create(
                 {t("congregation.numberOfTries", "No. of Tries")}
               </Form.Label>
               <Col xs="9">
-                <FormRange
+                <Form.Range
                   min={1}
                   max={4}
                   value={maxTries}
@@ -126,7 +125,7 @@ const UpdateCongregationSettings = NiceModal.create(
                 )}
               </Form.Label>
               <Col xs="9">
-                <FormRange
+                <Form.Range
                   min={1}
                   max={24}
                   value={defaultExpiryHrs}

@@ -9,19 +9,19 @@ const Welcome = memo(({ name }: WelcomeProps) => {
 
   return (
     <Container className="container-main">
-      <Card className="card-main" style={{ width: "100%" }}>
-        <Card.Img
-          alt="Ministry Mapper main logo"
-          className="mm-main-image"
-          src={getAssetUrl("logo.png")}
-        />
-        <Card.Body>
-          <Card.Title className="text-center">
-            {t("auth.welcome")} {name || t("auth.welcomeDefault")}
-          </Card.Title>
-          <Card.Text className="text-justify">
-            {t("territory.selectTerritory")}
-          </Card.Text>
+      <Card className="welcome-card">
+        <div className="welcome-image-container">
+          <img
+            alt="Ministry Mapper logo"
+            className="welcome-image"
+            src={getAssetUrl("logo.png")}
+          />
+        </div>
+        <Card.Body className="welcome-card-body">
+          <h2 className="welcome-card-title">
+            {t("auth.welcome")} {name || t("auth.welcomeDefault")}! 👋
+          </h2>
+          <p className="welcome-card-text">{t("territory.selectTerritory")}</p>
         </Card.Body>
       </Card>
     </Container>

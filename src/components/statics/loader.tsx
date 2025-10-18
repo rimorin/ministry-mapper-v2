@@ -1,4 +1,4 @@
-import { Container, Spinner } from "react-bootstrap";
+import { Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { LoaderProps } from "../../utils/interface";
 
@@ -13,15 +13,16 @@ const Loader: React.FC<LoaderProps> = ({ suspended = false }) => {
     );
   }
   return (
-    <Container
-      className="d-flex align-items-center justify-content-center vh-100"
-      fluid
-    >
-      <div className="text-center">
-        <Spinner variant="primary" />
-        <div className="mt-2">{t("common.loading")}</div>
+    <div className="loading-overlay">
+      <div className="loading-content">
+        <Spinner
+          animation="border"
+          variant="primary"
+          className="loading-spinner"
+        />
+        <div className="loading-text">{t("common.loading")}</div>
       </div>
-    </Container>
+    </div>
   );
 };
 

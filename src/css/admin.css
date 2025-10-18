@@ -1,9 +1,12 @@
+/* Admin page styles - uses centralized variables from variables.css */
+
 .admin-unit-header:hover {
-  background-color: #e7f1ff;
+  background-color: var(--mm-primary-lighter);
+  transition: var(--mm-transition-base);
 }
 
 .aggregate-dark-text {
-  color: black;
+  color: var(--mm-black);
 }
 
 .back-to-top {
@@ -11,6 +14,11 @@
   bottom: 30px;
   right: 25px;
   cursor: pointer;
+  transition: var(--mm-transition-base);
+}
+
+.back-to-top:hover {
+  transform: translateY(-3px);
 }
 
 .no-confirm-btn {
@@ -22,25 +30,46 @@
   margin: 0.25rem;
 }
 
-/* Ensure dropdown menu appears above map headers */
-.dropdown-btn .dropdown-menu {
-  z-index: 1055 !important;
-}
-
-/* When dropdown opens upward, ensure it's above everything */
+.dropdown-btn .dropdown-menu,
 .dropdown-btn .dropup .dropdown-menu,
 .dropdown-btn.dropup .dropdown-menu {
   z-index: 1055 !important;
+  box-shadow: var(--mm-shadow-preset-lg);
+  border: none;
+  border-radius: var(--mm-radius-md);
+}
+
+.dropdown-btn .btn {
+  transition: all 0.25s ease-in-out;
+  border-radius: 0.375rem;
+}
+
+.dropdown-btn .btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: var(--mm-shadow-preset-lg);
+}
+
+.dropdown-btn .btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.dropdown-btn button:focus-visible,
+.dropdown-btn a:focus-visible {
+  outline: 2px solid var(--mm-primary);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px var(--mm-primary-alpha-25);
 }
 
 .resend-text {
   cursor: pointer;
   margin-bottom: 1.5rem;
-  color: #0d6efd;
+  color: var(--mm-primary);
+  transition: color 0.2s ease;
 }
 
 .resend-text:hover {
   text-decoration: underline;
+  color: var(--mm-primary-hover);
 }
 
 .warning-help-button {
@@ -52,11 +81,31 @@
 .map-body-admin {
   height: 490px;
   overflow: auto;
-  border: 1px solid rgba(0, 0, 0, 0.125);
-  border-radius: 0.375rem;
+  border: 1px solid var(--mm-overlay-black-10);
+  border-radius: 0.75rem;
   box-sizing: border-box;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  background: var(--mm-white);
+  box-shadow: var(--mm-shadow-preset-sm);
+}
+
+.map-body-admin::-webkit-scrollbar {
+  width: 8px;
+}
+
+.map-body-admin::-webkit-scrollbar-track {
+  background: var(--mm-scrollbar-track);
+  border-radius: 4px;
+}
+
+.map-body-admin::-webkit-scrollbar-thumb {
+  background: var(--mm-scrollbar-thumb-alt);
+  border-radius: 4px;
+}
+
+.map-body-admin::-webkit-scrollbar-thumb:hover {
+  background: var(--mm-scrollbar-thumb-alt-hover);
 }
 
 @media (max-width: 768px) {
@@ -80,20 +129,16 @@
 }
 
 .notification-glow {
-  animation: notification-glow 1s infinite;
+  animation: notification-glow 1.5s infinite;
 }
 
 @keyframes notification-glow {
-  0% {
-    box-shadow: 0 0 5px green;
-  }
-
-  50% {
-    box-shadow: 0 0 20px green;
-  }
-
+  0%,
   100% {
-    box-shadow: 0 0 5px green;
+    box-shadow: 0 0 5px var(--mm-success-alpha-50);
+  }
+  50% {
+    box-shadow: 0 0 20px var(--mm-success-alpha-80);
   }
 }
 
@@ -102,35 +147,32 @@
   width: 100%;
   position: relative;
   overflow: hidden;
+  border-radius: 0.75rem;
+  box-shadow: var(--mm-shadow-preset-lg);
 }
 
 .circular-progress-container {
   position: relative;
   display: inline-block;
   border-radius: 50%;
-  /* Ensure the container is circular */
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  /* Add a subtle shadow */
+  box-shadow: 0 2px 8px var(--mm-shadow-lg);
 }
 
 .circular-progress {
   transform: rotate(-180deg);
-  /* Rotate the entire SVG to start from 12 o'clock */
 }
 
 .circular-progress-background {
-  opacity: 0.3;
-  stroke: #e0e0e0;
+  opacity: 0.2;
+  stroke: var(--mm-gray-200);
 }
 
 .circular-progress-highlight {
-  transition: stroke-dashoffset 0.35s;
+  transition: stroke-dashoffset 0.35s ease;
   transform: rotate(0.25turn);
   transform-origin: center;
-  stroke: #007bff;
-  /* Blue color for the progress highlight */
+  stroke: var(--mm-info-alt);
   stroke-width: 4;
-  /* Increase stroke width for better visibility */
 }
 
 .circular-progress-center {
@@ -143,16 +185,19 @@
   justify-content: center;
   font-size: 13px;
   font-weight: bold;
+  color: var(--mm-gray-600er);
 }
 
 .circular-progress-assignments {
   animation: circular-glow 1.5s infinite alternate;
   opacity: 0.7;
+  stroke: var(--mm-success);
 }
 
 .circular-progress-personal {
   animation: circular-glow 1.5s infinite alternate;
   opacity: 0.5;
+  stroke: var(--mm-info);
 }
 
 @keyframes circular-glow {
@@ -160,7 +205,6 @@
     stroke-width: 4;
     stroke-opacity: 0.5;
   }
-
   100% {
     stroke-width: 6;
     stroke-opacity: 1;
@@ -168,31 +212,249 @@
 }
 
 .selected-marker {
-  border: 2px solid orange;
+  border: 2px solid var(--mm-warning);
   border-radius: 50%;
-  box-shadow: 0 0 10px orange;
+  box-shadow: 0 0 15px var(--mm-warning-alpha-60);
 }
 
 .mode-toggle-button {
   position: fixed;
   bottom: 30px;
   left: 25px;
-  background-color: #adb5bd;
-  color: #fff;
+  background: var(--mm-gradient-primary);
+  color: var(--mm-white);
   border: none;
   border-radius: 50%;
-  width: 50px;
-  height: 50px;
+  width: 56px;
+  height: 56px;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--mm-shadow-preset-xl);
   cursor: pointer;
-  opacity: 0.7;
+  opacity: 0.9;
   z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+.mode-toggle-button:hover {
+  opacity: 1;
+  transform: scale(1.1);
+  box-shadow: 0 8px 20px var(--mm-shadow-3xl);
 }
 
 .marker-info-card {
   font-size: 0.9rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--mm-shadow-preset-lg);
+  border-radius: var(--mm-radius-md);
+  border: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.territory-content {
+  animation: fadeIn 0.4s ease-out;
+}
+
+.welcome-card {
+  max-width: 500px;
+  margin: 2rem auto;
+  border: none;
+  border-radius: 1rem;
+  box-shadow: var(--mm-shadow-preset-lg);
+  overflow: hidden;
+  transition: all 0.3s ease;
+  background: var(--mm-white);
+}
+
+.welcome-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px var(--mm-success-alpha-15);
+}
+
+.welcome-image-container {
+  padding: 3rem 2rem 2rem;
+  background: var(--mm-gradient-green-light);
+  text-align: center;
+  border-bottom: 3px solid var(--mm-success);
+}
+
+.welcome-image {
+  max-width: 160px;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 2px 8px var(--mm-shadow-xs));
+}
+
+.welcome-card-body {
+  padding: 2rem;
+  text-align: center;
+}
+
+.welcome-card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--mm-text-dark);
+  margin-bottom: 1rem;
+}
+
+.welcome-card-text {
+  font-size: 1rem;
+  color: var(--mm-gray-900);
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .welcome-card {
+    margin: 1rem;
+  }
+
+  .welcome-image-container {
+    padding: 2rem 1.5rem 1.5rem;
+  }
+
+  .welcome-image {
+    max-width: 120px;
+  }
+
+  .welcome-card-body {
+    padding: 1.5rem;
+  }
+
+  .welcome-card-title {
+    font-size: 1.25rem;
+  }
+
+  .welcome-card-text {
+    font-size: 0.95rem;
+  }
+}
+
+.territory-header {
+  background: var(--mm-gradient-header);
+  border-bottom: 2px solid var(--mm-success);
+  padding: 0.5rem 0;
+  font-size: 0.875rem;
+  color: var(--mm-success);
+  box-shadow: 0 1px 4px var(--mm-shadow-xs);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.territory-label {
+  font-weight: 500;
+  opacity: 0.85;
+}
+
+.territory-name {
+  font-weight: 600;
+}
+
+.admin-navbar {
+  box-shadow: 0 2px 12px var(--mm-shadow-md);
+  border-bottom: 1px solid var(--mm-overlay-black-5);
+}
+
+.admin-navbar .navbar-brand {
+  font-weight: 600;
+  font-size: 1.125rem;
+}
+
+.loading-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--mm-overlay-white-95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  backdrop-filter: blur(4px);
+}
+
+.loading-content {
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  color: var(--mm-primary);
+}
+
+.loading-text {
+  margin-top: 1rem;
+  font-size: 1rem;
+  color: var(--mm-secondary);
+}
+
+.list-group-item {
+  border: 1px solid var(--mm-overlay-black-8);
+  border-radius: var(--mm-radius-md);
+  margin-bottom: 0.5rem;
+  transition: var(--mm-transition-base);
+}
+
+.list-group-item:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px var(--mm-shadow-md);
+  border-color: var(--mm-primary-alpha-30);
+}
+
+.list-group-item.active {
+  background: var(--mm-gradient-primary);
+  border-color: transparent;
+  color: var(--mm-white);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: var(--mm-secondary);
+}
+
+.empty-state-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  opacity: 0.3;
+}
+
+.empty-state-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--mm-gray-600er);
+}
+
+.empty-state-description {
+  font-size: 1rem;
+  color: var(--mm-secondary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  .dropdown-btn,
+  .back-to-top,
+  .mode-toggle-button,
+  .navbar {
+    display: none !important;
+  }
 }

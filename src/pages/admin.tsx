@@ -619,7 +619,13 @@ function Admin({ user }: adminProps) {
         currentLanguage={currentLanguage}
         languageOptions={languageOptions}
       />
-      <Navbar bg="light" variant="light" expand="lg">
+      <Navbar
+        bg="light"
+        variant="light"
+        expand="lg"
+        className="admin-navbar"
+        sticky="top"
+      >
         <Container fluid>
           {congregationName ? (
             <NavBarBranding naming={congregationName} />
@@ -929,32 +935,38 @@ function Admin({ user }: adminProps) {
         </Container>
       </Navbar>
       {!selectedTerritory.code && <Welcome name={userName} />}
-      <TerritoryHeader name={selectedTerritory.name} />
-      {isMapView ? (
-        <MapView
-          key={`mapview-${selectedTerritory.id}`}
-          sortedAddressList={sortedAddressList}
-          policy={policy}
-        />
-      ) : (
-        <MapListing
-          key={`maplist-${selectedTerritory.id}`}
-          sortedAddressList={sortedAddressList}
-          accordingKeys={accordingKeys}
-          setAccordionKeys={setAccordionKeys}
-          mapViews={mapViews}
-          setMapViews={setMapViews}
-          policy={policy}
-          values={values}
-          setValues={setValues}
-          userAccessLevel={userAccessLevel || USER_ACCESS_LEVELS.NO_ACCESS.CODE}
-          isReadonly={isReadonly}
-          deleteMap={deleteMap}
-          addFloorToMap={addFloorToMap}
-          resetMap={resetMap}
-          processingMap={processingMap}
-          toggleAddressTerritoryListing={toggleAddressTerritoryListing}
-        />
+      {selectedTerritory.code && (
+        <div className="territory-content">
+          <TerritoryHeader name={selectedTerritory.name} />
+          {isMapView ? (
+            <MapView
+              key={`mapview-${selectedTerritory.id}`}
+              sortedAddressList={sortedAddressList}
+              policy={policy}
+            />
+          ) : (
+            <MapListing
+              key={`maplist-${selectedTerritory.id}`}
+              sortedAddressList={sortedAddressList}
+              accordingKeys={accordingKeys}
+              setAccordionKeys={setAccordionKeys}
+              mapViews={mapViews}
+              setMapViews={setMapViews}
+              policy={policy}
+              values={values}
+              setValues={setValues}
+              userAccessLevel={
+                userAccessLevel || USER_ACCESS_LEVELS.NO_ACCESS.CODE
+              }
+              isReadonly={isReadonly}
+              deleteMap={deleteMap}
+              addFloorToMap={addFloorToMap}
+              resetMap={resetMap}
+              processingMap={processingMap}
+              toggleAddressTerritoryListing={toggleAddressTerritoryListing}
+            />
+          )}
+        </div>
       )}
       {selectedTerritory.code && (
         <>

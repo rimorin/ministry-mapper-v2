@@ -111,7 +111,6 @@ const SpeedDial: React.FC<SpeedDialProps> = ({
               borderRadius: "50%",
               width: SPEED_DIAL.DIMENSIONS.ACTION_SIZE.WIDTH,
               height: SPEED_DIAL.DIMENSIONS.ACTION_SIZE.HEIGHT,
-              boxShadow: SPEED_DIAL.STYLES.BOX_SHADOW.ACTION,
               transform: isOpen
                 ? `scale(${SPEED_DIAL.TRANSFORM.SCALE.NORMAL})`
                 : `scale(${SPEED_DIAL.TRANSFORM.SCALE.CLOSED})`,
@@ -136,7 +135,6 @@ const SpeedDial: React.FC<SpeedDialProps> = ({
           borderRadius: "50%",
           width: SPEED_DIAL.DIMENSIONS.FAB_SIZE.WIDTH,
           height: SPEED_DIAL.DIMENSIONS.FAB_SIZE.HEIGHT,
-          boxShadow: SPEED_DIAL.STYLES.BOX_SHADOW.FAB,
           transition: `transform ${SPEED_DIAL.TRANSITIONS.DURATION} ${SPEED_DIAL.TRANSITIONS.EASING}`,
           transform: isOpen
             ? `rotate(${SPEED_DIAL.TRANSFORM.ROTATION.OPEN})`
@@ -150,19 +148,7 @@ const SpeedDial: React.FC<SpeedDialProps> = ({
 
       {/* Backdrop overlay when open */}
       {isOpen && (
-        <div
-          className="speed-dial-backdrop"
-          style={{
-            position: "fixed",
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: `rgba(0,0,0,${SPEED_DIAL.STYLES.BACKDROP_OPACITY})`,
-            zIndex: -1
-          }}
-          onClick={() => setIsOpen(false)}
-        />
+        <div className="speed-dial-backdrop" onClick={() => setIsOpen(false)} />
       )}
     </div>
   );

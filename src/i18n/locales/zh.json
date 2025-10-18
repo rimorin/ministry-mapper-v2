@@ -26,7 +26,9 @@
     "Messages": "消息",
     "Directions": "方向指引",
     "Expiry": "到期",
-    "name": "姓名"
+    "name": "姓名",
+    "success": "成功！",
+    "error": "错误"
   },
   "auth": {
     "signIn": "登录",
@@ -80,10 +82,26 @@
     "paste": "粘贴",
     "clipboardDenied": "访问剪贴板的权限被拒绝。",
     "orContinueWith": "或继续使用",
+    "or": "或",
     "google": "Google",
     "microsoft": "Microsoft",
     "signInWithGoogle": "使用 Google 登录",
-    "signingIn": "登录中..."
+    "signingIn": "登录中...",
+    "createAccount": "创建您的账户以开始使用传道地图",
+    "rememberPassword": "记得密码了吗？",
+    "enterNewPassword": "在下方输入您的新密码",
+    "emailVerificationSuccess": "您的电子邮箱已验证成功。",
+    "passwordResetSuccess": "您的密码已成功重置。",
+    "signInWelcome": "欢迎回来！请输入您的凭据。",
+    "showPassword": "显示密码",
+    "hidePassword": "隐藏密码",
+    "securityIcon": "安全",
+    "passwordResetIcon": "密码重置",
+    "otpHelp": "输入发送到您电子邮件的4位数代码",
+    "emailHelp": "我们将向此电子邮件发送验证链接。",
+    "resetEmailHelp": "如果账户存在，我们将向此电子邮件发送密码重置链接。",
+    "nameRequired": "请输入您的姓名。",
+    "backToLogin": "返回登录"
   },
   "territory": {
     "territory": "传道区域",
@@ -319,11 +337,7 @@
     "levelUnit": "楼层/单元",
     "deleteFloor": "🗑️"
   },
-  "location": {
-    "currentLocation": "当前位置",
-    "searchPlaceholder": "搜索位置...",
-    "selectOnMap": "在地图上选择"
-  },
+  "location": {},
   "unit": {
     "alphanumericDashHyphenValidation": "单元/房产编号只能包含字母数字字符、破折号或连字符。",
     "addPropertyTitle": "将房产添加到 {{name}}",

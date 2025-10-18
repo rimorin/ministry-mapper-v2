@@ -1,5 +1,4 @@
 import { Form } from "react-bootstrap";
-import FormRange from "react-bootstrap/FormRange";
 import { MIN_START_FLOOR, MAX_TOP_FLOOR } from "../../utils/constants";
 import { FloorProps } from "../../utils/interface";
 import { useCallback } from "react";
@@ -18,7 +17,7 @@ const FloorField = ({ handleChange, changeValue }: FloorProps) => {
     <Form.Group className="mb-3" controlId="formBasicFloorRange">
       <Form.Label>{t("floors.numberOfFloors", "No. of floors")}</Form.Label>
       <div className="d-flex align-items-center gap-3">
-        <FormRange
+        <Form.Range
           min={MIN_START_FLOOR}
           max={MAX_TOP_FLOOR}
           value={changeValue}

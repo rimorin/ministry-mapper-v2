@@ -26,7 +26,9 @@
     "Messages": "Mesej",
     "Directions": "Arah",
     "Expiry": "Tamat",
-    "name": "Nama"
+    "name": "Nama",
+    "success": "Berjaya!",
+    "error": "Ralat"
   },
   "auth": {
     "signIn": "Log Masuk",
@@ -80,10 +82,26 @@
     "paste": "Tampal",
     "clipboardDenied": "Kebenaran akses clipboard ditolak.",
     "orContinueWith": "Atau teruskan dengan",
+    "or": "Atau",
     "google": "Google",
     "microsoft": "Microsoft",
     "signInWithGoogle": "Log masuk dengan Google",
-    "signingIn": "Memasuk..."
+    "signingIn": "Memasuk...",
+    "createAccount": "Cipta akaun anda untuk bermula dengan Ministry Mapper",
+    "rememberPassword": "Ingat kata laluan anda?",
+    "enterNewPassword": "Masukkan kata laluan baru anda di bawah",
+    "emailVerificationSuccess": "Alamat e-mel anda telah disahkan.",
+    "passwordResetSuccess": "Kata laluan anda berjaya direset.",
+    "signInWelcome": "Selamat kembali! Sila masukkan kelayakan anda.",
+    "showPassword": "Tunjukkan kata laluan",
+    "hidePassword": "Sembunyikan kata laluan",
+    "securityIcon": "Keselamatan",
+    "passwordResetIcon": "Set Semula Kata Laluan",
+    "otpHelp": "Masukkan kod 4 digit yang dihantar ke e-mel anda",
+    "emailHelp": "Kami akan menghantar pautan pengesahan ke e-mel ini.",
+    "resetEmailHelp": "Kami akan menghantar pautan set semula kata laluan ke e-mel ini jika akaun wujud.",
+    "nameRequired": "Sila masukkan nama anda.",
+    "backToLogin": "Kembali ke Log Masuk"
   },
   "territory": {
     "territory": "Wilayah",

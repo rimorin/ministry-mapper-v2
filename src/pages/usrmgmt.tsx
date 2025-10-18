@@ -75,11 +75,11 @@ const UserManagementComponent = () => {
     []
   );
 
-  const resetCreationForm = () => {
+  const resetCreationForm = useCallback(() => {
     setLoginPassword("");
     setCloginPassword("");
     setValidated(false);
-  };
+  }, []);
 
   useEffect(() => {
     if (mode === MODE_VERIFY_EMAIL) {
@@ -99,10 +99,24 @@ const UserManagementComponent = () => {
               event.preventDefault();
               handleResetPassword(oobCode);
             }}
-            className="responsive-width"
+            className="responsive-width py-3"
           >
             <Form.Group className="mb-3 text-center">
-              <h1>{t("auth.resetPassword", "Reset Password")}</h1>
+              <div className="mb-3">
+                <div
+                  className="icon-large icon-primary"
+                  role="img"
+                  aria-label={t("auth.securityIcon", "Security")}
+                >
+                  🔒
+                </div>
+              </div>
+              <h1 className="h3 mb-2">
+                {t("auth.resetPassword", "Reset Password")}
+              </h1>
+              <p className="text-muted mb-0 small">
+                {t("auth.enterNewPassword", "Enter your new password below")}
+              </p>
             </Form.Group>
             <Form.Group className="mb-3" controlId="formBasicPassword">
               <FloatingLabel
@@ -114,6 +128,9 @@ const UserManagementComponent = () => {
                   placeholder={t("auth.password", "Password")}
                   value={loginPassword}
                   required
+                  autoFocus
+                  autoComplete="new-password"
+                  disabled={isResetting}
                   onChange={(event) => setLoginPassword(event.target.value)}
                 />
               </FloatingLabel>
@@ -129,60 +146,68 @@ const UserManagementComponent = () => {
                   value={cloginPassword}
                   onChange={(event) => setCloginPassword(event.target.value)}
                   required
+                  autoComplete="new-password"
+                  disabled={isResetting}
                 />
               </FloatingLabel>
             </Form.Group>
             <Form.Group className="mb-3">
-              <PasswordChecklist
-                rules={PASSWORD_POLICY}
-                minLength={MINIMUM_PASSWORD_LENGTH}
-                value={loginPassword}
-                valueAgain={cloginPassword}
-                onChange={(isValid) => setIsLoginPasswordOk(isValid)}
-                messages={{
-                  minLength: t(
-                    "password.minLength",
-                    "Password must be at least {{length}} characters long.",
-                    { length: MINIMUM_PASSWORD_LENGTH }
-                  ),
-                  number: t(
-                    "password.number",
-                    "Password must contain numbers."
-                  ),
-                  capital: t(
-                    "password.capital",
-                    "Password must contain uppercase letters."
-                  ),
-                  match: t("password.match", "Passwords must match.")
-                }}
-              />
+              <div id="password-requirements">
+                <PasswordChecklist
+                  rules={PASSWORD_POLICY}
+                  minLength={MINIMUM_PASSWORD_LENGTH}
+                  value={loginPassword}
+                  valueAgain={cloginPassword}
+                  onChange={(isValid) => setIsLoginPasswordOk(isValid)}
+                  messages={{
+                    minLength: t(
+                      "password.minLength",
+                      "Password must be at least {{length}} characters long.",
+                      { length: MINIMUM_PASSWORD_LENGTH }
+                    ),
+                    number: t(
+                      "password.number",
+                      "Password must contain numbers."
+                    ),
+                    capital: t(
+                      "password.capital",
+                      "Password must contain uppercase letters."
+                    ),
+                    match: t("password.match", "Passwords must match.")
+                  }}
+                />
+              </div>
             </Form.Group>
             <Form.Group className="text-center" controlId="formBasicButton">
-              <GenericButton
-                variant="outline-primary"
-                className={`m-2 ${!isLoginPasswordOk && "disabled"}`}
-                type="submit"
-                label={
-                  <>
-                    {isResetting && (
-                      <Spinner
-                        as="span"
-                        animation="border"
-                        size="sm"
-                        aria-hidden="true"
-                      />
-                    )}{" "}
-                    {t("common.submit", "Submit")}
-                  </>
-                }
-              />
-              <GenericButton
-                variant="outline-primary"
-                className="mx-2"
-                type="reset"
-                label={t("common.clear", "Clear")}
-                onClick={() => resetCreationForm()}
-              />
+              <div className="d-flex gap-2">
+                <GenericButton
+                  variant="primary"
+                  className="flex-fill"
+                  type="submit"
+                  disabled={!isLoginPasswordOk || isResetting}
+                  label={
+                    <>
+                      {isResetting && (
+                        <Spinner
+                          as="span"
+                          animation="border"
+                          size="sm"
+                          aria-hidden="true"
+                        />
+                      )}{" "}
+                      {t("common.submit", "Submit")}
+                    </>
+                  }
+                />
+                <GenericButton
+                  variant="outline-secondary"
+                  className="flex-fill"
+                  type="reset"
+                  disabled={isResetting}
+                  label={t("common.clear", "Clear")}
+                  onClick={resetCreationForm}
+                />
+              </div>
             </Form.Group>
           </Form>
         </>
@@ -190,39 +215,63 @@ const UserManagementComponent = () => {
       break;
     default:
       managementComponent = (
-        <div>{t("errors.invalidRequest", "Invalid Request")}</div>
+        <div className="text-center">
+          <p className="text-muted">
+            {t("errors.invalidRequest", "Invalid Request")}
+          </p>
+        </div>
       );
   }
 
   if (message) {
+    const isSuccess =
+      message.includes("success") || message.includes("verified");
     managementComponent = (
-      <div
-        className="d-flex flex-column justify-content-between"
-        style={{ height: "100%" }}
-      >
-        <div className="fluid-bolding mb-3">{message}</div>
+      <div className="responsive-width py-3 text-center">
+        <div className="mb-4">
+          <div
+            className={`icon-xlarge ${isSuccess ? "icon-success" : "icon-danger"}`}
+            role="img"
+          >
+            {isSuccess ? "✅" : "❌"}
+          </div>
+          <h2 className="h4 mb-3">
+            {isSuccess
+              ? t("common.success", "Success!")
+              : t("common.error", "Error")}
+          </h2>
+          <p className="text-muted mb-4">{message}</p>
+        </div>
+        <GenericButton
+          variant="primary"
+          onClick={() => (window.location.href = "/")}
+          label={t("auth.backToLogin", "Back to Login")}
+          className="w-100"
+        />
       </div>
     );
   }
 
   if (isProcessing) return <Loader />;
+
   return (
-    <>
-      <div className="d-flex flex-column" style={{ minHeight: "99vh" }}>
-        <Navbar bg="light">
-          <Container fluid>
-            <NavBarBranding naming="Ministry Mapper" />
-          </Container>
-        </Navbar>
-        <Container
-          fluid
-          className="d-flex align-items-center justify-content-center"
-          style={{ flexGrow: 1 }}
-        >
-          {managementComponent}
+    <div
+      className="d-flex flex-column"
+      style={{ minHeight: "100%", height: "100%" }}
+    >
+      <Navbar bg="light" className="flex-shrink-0">
+        <Container fluid>
+          <NavBarBranding naming="Ministry Mapper" />
         </Container>
-      </div>
-    </>
+      </Navbar>
+      <Container
+        fluid
+        className="d-flex align-items-center justify-content-center flex-grow-1"
+        style={{ overflow: "auto" }}
+      >
+        {managementComponent}
+      </Container>
+    </div>
   );
 };
 

@@ -26,7 +26,9 @@
     "Messages": "Messages",
     "Directions": "Directions",
     "Expiry": "Expiry",
-    "name": "Name"
+    "name": "Name",
+    "success": "Success!",
+    "error": "Error"
   },
   "auth": {
     "signIn": "Sign In",
@@ -80,10 +82,26 @@
     "paste": "Paste",
     "clipboardDenied": "Permission to access clipboard was denied.",
     "orContinueWith": "Or continue with",
+    "or": "Or",
     "google": "Google",
     "microsoft": "Microsoft",
     "signInWithGoogle": "Sign in with Google",
-    "signingIn": "Signing in..."
+    "signingIn": "Signing in...",
+    "createAccount": "Create your account to get started with Ministry Mapper",
+    "rememberPassword": "Remember your password?",
+    "enterNewPassword": "Enter your new password below",
+    "emailVerificationSuccess": "Your email address has been verified.",
+    "passwordResetSuccess": "Your password has been successfully reset.",
+    "signInWelcome": "Welcome back! Please enter your credentials.",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password",
+    "securityIcon": "Security",
+    "passwordResetIcon": "Password Reset",
+    "otpHelp": "Enter the 4-digit code sent to your email",
+    "emailHelp": "We'll send a verification link to this email.",
+    "resetEmailHelp": "We'll send a password reset link to this email if an account exists.",
+    "nameRequired": "Please enter your name.",
+    "backToLogin": "Back to Login"
   },
   "territory": {
     "territory": "Territory",

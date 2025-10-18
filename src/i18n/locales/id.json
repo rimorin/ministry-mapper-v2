@@ -26,7 +26,9 @@
     "Messages": "Pesan",
     "Directions": "Petunjuk Arah",
     "Expiry": "Kedaluwarsa",
-    "name": "Nama"
+    "name": "Nama",
+    "success": "Berhasil!",
+    "error": "Kesalahan"
   },
   "auth": {
     "signIn": "Masuk",
@@ -80,10 +82,26 @@
     "paste": "Tempel",
     "clipboardDenied": "Izin untuk mengakses clipboard ditolak.",
     "orContinueWith": "Atau lanjutkan dengan",
+    "or": "Atau",
     "google": "Google",
     "microsoft": "Microsoft",
     "signInWithGoogle": "Masuk dengan Google",
-    "signingIn": "Masuk..."
+    "signingIn": "Masuk...",
+    "createAccount": "Buat akun Anda untuk memulai dengan Ministry Mapper",
+    "rememberPassword": "Ingat kata sandi Anda?",
+    "enterNewPassword": "Masukkan kata sandi baru Anda di bawah ini",
+    "emailVerificationSuccess": "Alamat email Anda telah diverifikasi.",
+    "passwordResetSuccess": "Kata sandi Anda telah berhasil diatur ulang.",
+    "signInWelcome": "Selamat datang kembali! Silakan masukkan kredensial Anda.",
+    "showPassword": "Tampilkan kata sandi",
+    "hidePassword": "Sembunyikan kata sandi",
+    "securityIcon": "Keamanan",
+    "passwordResetIcon": "Reset Kata Sandi",
+    "otpHelp": "Masukkan kode 4 digit yang dikirim ke email Anda",
+    "emailHelp": "Kami akan mengirim tautan verifikasi ke email ini.",
+    "resetEmailHelp": "Kami akan mengirim tautan reset kata sandi ke email ini jika akun tersebut ada.",
+    "nameRequired": "Silakan masukkan nama Anda.",
+    "backToLogin": "Kembali ke Login"
   },
   "territory": {
     "territory": "Wilayah",
@@ -148,7 +166,6 @@
     "clearNote": "Hapus Catatan",
     "resetWarning": "⚠️ PERINGATAN: Mengatur ulang status semua properti \"{{name}}\" akan mengatur ulang semua status. Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
     "deleteWarning": "⚠️ PERINGATAN: Menghapus peta \"{{name}}\" akan menghapusnya sepenuhnya. Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
-    "selectLocation": "Pilih Lokasi",
     "locationWithName": "Lokasi {{name}}"
   },
   "household": {
@@ -299,7 +316,6 @@
     "pageNotFound": "404 Halaman Tidak Ditemukan 🚫",
     "pageNotFoundMessage": "Maaf, halaman yang Anda minta tidak dapat ditemukan.",
     "geolocationNotSupported": "Geolokasi tidak didukung oleh browser Anda",
-    "unableToGetCurrentLocation": "Tidak dapat memperoleh lokasi Anda saat ini. Silakan periksa pengaturan browser Anda.",
     "unableToGetLocation": "Tidak dapat memperoleh lokasi Anda saat ini. Silakan periksa pengaturan browser Anda."
   },
   "links": {
@@ -320,11 +336,7 @@
     "levelUnit": "lvl/unit",
     "deleteFloor": "🗑️"
   },
-  "location": {
-    "currentLocation": "Lokasi Saat Ini",
-    "searchPlaceholder": "Cari lokasi...",
-    "selectOnMap": "Pilih di peta"
-  },
+  "location": {},
   "unit": {
     "alphanumericDashHyphenValidation": "Nomor Unit/Properti hanya boleh berisi karakter alfanumerik, tanda hubung atau tanda hubung.",
     "addPropertyTitle": "Tambahkan properti ke {{name}}",

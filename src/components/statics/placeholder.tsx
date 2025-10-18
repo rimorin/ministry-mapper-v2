@@ -18,7 +18,7 @@ const MapPlaceholder: React.FC<MapPlaceholderProps> = ({
   const widths = [6, 8, 7, 5, 9, 4];
 
   return (
-    <div className={containerClass} style={{ backgroundColor: "#f8f9fa" }}>
+    <div className={`${containerClass} map-placeholder-content bg-light`}>
       <Table
         bordered
         striped

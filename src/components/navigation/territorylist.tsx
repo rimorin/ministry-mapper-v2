@@ -15,40 +15,62 @@ const TerritoryListing = memo(
     hideSelectedTerritory = false
   }: TerritoryListingProps) => {
     const { t } = useTranslation();
-    const currentTerritories = territories
-      ? hideSelectedTerritory
+    const currentTerritories = !territories
+      ? undefined
+      : hideSelectedTerritory
         ? territories.filter((element) => element.code !== selectedTerritory)
-        : territories
-      : undefined;
+        : territories;
+
     return (
       <Offcanvas
-        placement={"bottom"}
+        placement="bottom"
         show={showListing}
         onHide={hideFunction}
-        style={{ height: TERRITORY_SELECTOR_VIEWPORT_HEIGHT }}
+        style={{
+          height: TERRITORY_SELECTOR_VIEWPORT_HEIGHT,
+          borderTopLeftRadius: "1rem",
+          borderTopRightRadius: "1rem"
+        }}
       >
         <Offcanvas.Header closeButton>
-          <Offcanvas.Title>{t("territory.selectTerritory")}</Offcanvas.Title>
+          <Offcanvas.Title>
+            <span style={{ fontSize: "1.125rem", fontWeight: "600" }}>
+              {t("territory.selectTerritory")}
+            </span>
+          </Offcanvas.Title>
         </Offcanvas.Header>
         <Offcanvas.Body>
           <ListGroup onSelect={handleSelect}>
-            {currentTerritories &&
+            {currentTerritories && currentTerritories.length > 0 ? (
               currentTerritories.map((element) => (
                 <ListGroup.Item
                   action
                   key={`list-group-item-${element.code}`}
                   eventKey={element.id}
+                  className={element.code === selectedTerritory ? "active" : ""}
                 >
-                  <div
-                    style={{ justifyContent: "space-between", display: "flex" }}
-                  >
+                  <div className="d-flex justify-content-between align-items-center">
                     <span className="fw-bold">
                       {element.code}: {element.name}
                     </span>
                     <AggregationBadge aggregate={element.aggregates} />
                   </div>
                 </ListGroup.Item>
-              ))}
+              ))
+            ) : (
+              <div className="empty-state">
+                <div className="empty-state-icon">📍</div>
+                <div className="empty-state-title">
+                  {t("territory.noTerritories", "No Territories")}
+                </div>
+                <div className="empty-state-description">
+                  {t(
+                    "territory.noTerritoriesDescription",
+                    "No territories available to select"
+                  )}
+                </div>
+              </div>
+            )}
           </ListGroup>
         </Offcanvas.Body>
       </Offcanvas>

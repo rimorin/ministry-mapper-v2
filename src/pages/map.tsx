@@ -12,6 +12,7 @@ import { Image, Nav, Navbar } from "react-bootstrap";
 import { addressDetails, latlongInterface } from "../utils/interface";
 import { Policy } from "../utils/policies";
 import { getAssetUrl } from "../utils/helpers/assetpath";
+import { handleKeyboardActivation } from "../utils/helpers/keyboard";
 import Legend from "../components/navigation/legend";
 import InvalidPage from "../components/statics/invalidpage";
 import MainTable from "../components/table/map";
@@ -282,78 +283,111 @@ const Map = () => {
         currentLanguage={currentLanguage}
         languageOptions={languageOptions}
       />
-      <TopNavbar title={mapDetails?.name || ""} onLegendClick={toggleLegend} />
-      {mapDetails && (
-        <MainTable
-          key={`link-map-${id}`}
-          mapView={mapView}
-          policy={policy}
-          addressDetails={mapDetails}
-          assignmentId={id}
+      <div className="map-content">
+        <TopNavbar
+          title={mapDetails?.name || ""}
+          onLegendClick={toggleLegend}
         />
-      )}
-      <Navbar bg="light">
-        <Nav className="w-100 justify-content-between mx-4">
-          <Nav.Item
-            className={`text-center nav-item-hover`}
-            onClick={handleMessageClick}
-          >
-            <Image
-              src={getAssetUrl("feedback.svg")}
-              alt="Feedback"
-              className={
-                hasPinnedMessages && readPinnedMessages === "false"
-                  ? "highlighted"
-                  : ""
-              }
-            />
-            <div className="small">{t("common.Messages", "Messages")}</div>
-          </Nav.Item>
-          {mapDetails?.type === TERRITORY_TYPES.SINGLE_STORY && (
+        {mapDetails && (
+          <MainTable
+            key={`link-map-${id}`}
+            mapView={mapView}
+            policy={policy}
+            addressDetails={mapDetails}
+            assignmentId={id}
+          />
+        )}
+        <Navbar bg="light">
+          <Nav className="w-100 justify-content-between mx-4">
+            <Nav.Item
+              className={`text-center nav-item-hover`}
+              onClick={handleMessageClick}
+              tabIndex={0}
+              onKeyDown={(e) => handleKeyboardActivation(e, handleMessageClick)}
+              role="button"
+              aria-label={t("common.Messages", "Messages")}
+            >
+              <Image
+                src={getAssetUrl("feedback.svg")}
+                alt="Feedback"
+                className={
+                  hasPinnedMessages && readPinnedMessages === "false"
+                    ? "highlighted"
+                    : ""
+                }
+              />
+              <div className="small">{t("common.Messages", "Messages")}</div>
+            </Nav.Item>
+            {mapDetails?.type === TERRITORY_TYPES.SINGLE_STORY && (
+              <Nav.Item
+                className="text-center nav-item-hover"
+                onClick={toggleMapView}
+                tabIndex={0}
+                onKeyDown={(e) => handleKeyboardActivation(e, toggleMapView)}
+                role="button"
+                aria-label={
+                  mapView
+                    ? t("navigation.listView", "List View")
+                    : t("navigation.mapView", "Map View")
+                }
+              >
+                {mapView ? (
+                  <>
+                    <Image src={getAssetUrl("gridmode.svg")} alt="Grid" />
+                    <div className="small">
+                      {t("navigation.listView", "List View")}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <Image src={getAssetUrl("mapmode.svg")} alt="Map" />
+                    <div className="small">
+                      {t("navigation.mapView", "Map View")}
+                    </div>
+                  </>
+                )}
+              </Nav.Item>
+            )}
             <Nav.Item
               className="text-center nav-item-hover"
-              onClick={toggleMapView}
+              onClick={showLocationModal}
+              tabIndex={0}
+              onKeyDown={(e) => handleKeyboardActivation(e, showLocationModal)}
+              role="button"
+              aria-label={t("common.Directions", "Directions")}
             >
-              {mapView ? (
-                <>
-                  <Image src={getAssetUrl("gridmode.svg")} alt="Grid" />
-                  <div className="small">
-                    {t("navigation.listView", "List View")}
-                  </div>
-                </>
-              ) : (
-                <>
-                  <Image src={getAssetUrl("mapmode.svg")} alt="Map" />
-                  <div className="small">
-                    {t("navigation.mapView", "Map View")}
-                  </div>
-                </>
-              )}
+              <Image src={getAssetUrl("maplocation.svg")} alt="Location" />
+              <div className="small">
+                {t("common.Directions", "Directions")}
+              </div>
             </Nav.Item>
-          )}
-          <Nav.Item
-            className="text-center nav-item-hover"
-            onClick={showLocationModal}
-          >
-            <Image src={getAssetUrl("maplocation.svg")} alt="Location" />
-            <div className="small">{t("common.Directions", "Directions")}</div>
-          </Nav.Item>
-          <Nav.Item
-            className="text-center nav-item-hover"
-            onClick={showExpiryModal}
-          >
-            <Image src={getAssetUrl("time.svg")} alt="Expiry" />
-            <div className="small">{t("common.Expiry", "Expiry")}</div>
-          </Nav.Item>
-          <Nav.Item
-            className="text-center nav-item-hover"
-            onClick={toggleLanguageSelector}
-          >
-            <Image src={getAssetUrl("language.svg")} alt="Language" />
-            <div className="small">{currentLanguage}</div>
-          </Nav.Item>
-        </Nav>
-      </Navbar>
+            <Nav.Item
+              className="text-center nav-item-hover"
+              onClick={showExpiryModal}
+              tabIndex={0}
+              onKeyDown={(e) => handleKeyboardActivation(e, showExpiryModal)}
+              role="button"
+              aria-label={t("common.Expiry", "Expiry")}
+            >
+              <Image src={getAssetUrl("time.svg")} alt="Expiry" />
+              <div className="small">{t("common.Expiry", "Expiry")}</div>
+            </Nav.Item>
+            <Nav.Item
+              className="text-center nav-item-hover"
+              onClick={toggleLanguageSelector}
+              tabIndex={0}
+              onKeyDown={(e) =>
+                handleKeyboardActivation(e, toggleLanguageSelector)
+              }
+              role="button"
+              aria-label={t("common.Language", "Language")}
+            >
+              <Image src={getAssetUrl("language.svg")} alt="Language" />
+              <div className="small">{currentLanguage}</div>
+            </Nav.Item>
+          </Nav>
+        </Navbar>
+      </div>
     </>
   );
 };
