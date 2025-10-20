@@ -374,5 +374,15 @@
   "generatedMap": {
     "info": "場所、ワークロード、進捗に基づいて、利用可能な最寄りの区域マップへのクイックリンクを取得します。",
     "share": "共有"
+  },
+  "theme": {
+    "settings": "テーマ設定",
+    "description": "お好みのテーマを選択するか、システム設定に従います",
+    "light": "ライト",
+    "lightDescription": "明るく鮮明なテーマ",
+    "dark": "ダーク",
+    "darkDescription": "目に優しい",
+    "system": "システム",
+    "systemDescription": "デバイスの設定に従います"
   }
 }

@@ -374,5 +374,15 @@
   "generatedMap": {
     "info": "위치, 작업량, 진행 상황을 기반으로 가장 가까운 이용 가능한 구역 맵에 대한 퀵 링크를 얻으세요.",
     "share": "공유"
+  },
+  "theme": {
+    "settings": "테마 설정",
+    "description": "선호하는 테마를 선택하거나 시스템 설정을 따릅니다",
+    "light": "라이트",
+    "lightDescription": "밝고 선명한 테마",
+    "dark": "다크",
+    "darkDescription": "눈이 편안함",
+    "system": "시스템",
+    "systemDescription": "기기 설정을 따릅니다"
   }
 }

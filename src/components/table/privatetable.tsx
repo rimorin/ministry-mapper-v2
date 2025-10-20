@@ -20,7 +20,7 @@ const PrivateTerritoryTable = ({
         {houses &&
           houses.units.map((element) => (
             <Col key={`house-column-${element.id}`}>
-              <Card bg="light" text="dark">
+              <Card>
                 <Card.Body
                   style={{
                     padding: "0",

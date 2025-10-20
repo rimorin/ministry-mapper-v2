@@ -1,22 +1,23 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-
-import { useState, FormEvent, useCallback } from "react";
+import { useState, FormEvent, useCallback, useMemo } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
-import { UserModalProps } from "../../utils/interface";
-import ModalFooter from "../form/footer";
-import UserRoleField from "../form/role";
-import HelpButton from "../navigation/help";
 import AsyncSelect from "react-select/async";
 import { OptionsOrGroups, GroupBase } from "react-select";
 import { RecordModel } from "pocketbase";
+import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
+import errorHandler from "../../utils/helpers/errorhandler";
+import { UserModalProps, SelectProps } from "../../utils/interface";
+import ModalFooter from "../form/footer";
+import UserRoleField from "../form/role";
+import HelpButton from "../navigation/help";
 import {
   createData,
   getFirstItemOfList,
   getPaginatedList
 } from "../../utils/pocketbase";
+import { useTheme } from "../../hooks/useTheme";
+import { getReactSelectStyles } from "../../utils/helpers/reactSelectStyles";
 
 const InviteUser = NiceModal.create(
   ({
@@ -25,10 +26,20 @@ const InviteUser = NiceModal.create(
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE
   }: UserModalProps) => {
     const { t } = useTranslation();
+    const { actualTheme } = useTheme();
     const [userRole, setUserRole] = useState(USER_ACCESS_LEVELS.READ_ONLY.CODE);
     const [userId, setUserId] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
+
+    const customStyles = useMemo(
+      () =>
+        getReactSelectStyles<SelectProps>({
+          isDark: actualTheme === "dark",
+          zIndex: 9999
+        }),
+      [actualTheme]
+    );
 
     const getUsersByNames = useCallback(async (inputValue: string) => {
       return getPaginatedList("users", 1, 10, {
@@ -36,6 +47,22 @@ const InviteUser = NiceModal.create(
         requestKey: `get-users-${inputValue}`
       });
     }, []);
+
+    const getRoleDisplayName = useCallback(
+      (roleCode: string): string => {
+        if (roleCode === USER_ACCESS_LEVELS.READ_ONLY.CODE) {
+          return t("user.roles.readOnly", "Read Only");
+        } else if (roleCode === USER_ACCESS_LEVELS.CONDUCTOR.CODE) {
+          return t("user.roles.conductor", "Conductor");
+        } else if (roleCode === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE) {
+          return t("user.roles.administrator", "Administrator");
+        } else if (roleCode === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
+          return t("user.roles.noAccess", "No Access");
+        }
+        return "";
+      },
+      [t]
+    );
 
     const handleUserDetails = useCallback(
       async (event: FormEvent<HTMLElement>) => {
@@ -76,18 +103,7 @@ const InviteUser = NiceModal.create(
             }
           );
 
-          // Get the translated role display name based on the user's role
-          let roleName;
-          if (userRole === USER_ACCESS_LEVELS.READ_ONLY.CODE) {
-            roleName = t("user.roles.readOnly", "Read Only");
-          } else if (userRole === USER_ACCESS_LEVELS.CONDUCTOR.CODE) {
-            roleName = t("user.roles.conductor", "Conductor");
-          } else if (userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE) {
-            roleName = t("user.roles.administrator", "Administrator");
-          } else if (userRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
-            roleName = t("user.roles.noAccess", "No Access");
-          }
-
+          const roleName = getRoleDisplayName(userRole);
           alert(
             t("user.accessGranted", "Granted {{role}} access to user.", {
               role: roleName
@@ -100,17 +116,24 @@ const InviteUser = NiceModal.create(
           setIsSaving(false);
         }
       },
-      [userId, userRole]
+      [userId, userRole, uid, congregation, t, getRoleDisplayName, modal]
     );
+
     const promiseOptions = async (
       inputValue: string
-    ): Promise<OptionsOrGroups<unknown, GroupBase<unknown>>> => {
+    ): Promise<OptionsOrGroups<SelectProps, GroupBase<SelectProps>>> => {
       const users = await getUsersByNames(inputValue);
-      const options = users.items.map((user: RecordModel) => ({
+      const options: SelectProps[] = users.items.map((user: RecordModel) => ({
         label: `${user.name} - ${user?.email}`,
         value: user.id
       }));
       return options;
+    };
+
+    const handleSelectChange = (option: SelectProps | null) => {
+      if (option) {
+        setUserId(option.value);
+      }
     };
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
@@ -120,20 +143,15 @@ const InviteUser = NiceModal.create(
         </Modal.Header>
         <Form onSubmit={handleUserDetails}>
           <Modal.Body>
-            <AsyncSelect
+            <AsyncSelect<SelectProps>
               className="mb-3"
               placeholder={t(
                 "user.searchByNameOrEmail",
                 "Search for user by name or email"
               )}
-              styles={{
-                menu: (provided) => ({ ...provided, zIndex: 9999 })
-              }}
+              styles={customStyles}
               loadOptions={promiseOptions}
-              // eslint-disable-next-line @typescript-eslint/no-explicit-any
-              onChange={(option: any) => {
-                setUserId(option.value);
-              }}
+              onChange={handleSelectChange}
               required
             />
             <Form.Group

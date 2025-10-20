@@ -199,6 +199,13 @@
     var(--mm-gray-50),
     var(--mm-gray-100)
   );
+  --mm-gradient-teal: linear-gradient(
+    135deg,
+    #0c4a6e 0%,
+    #0e7490 50%,
+    #14b8a6 100%
+  );
+  --mm-gradient-map-header: linear-gradient(135deg, #2c3034 0%, #343a40 100%);
 
   /* ========================================
      8. SCROLLBAR
@@ -207,6 +214,11 @@
   --mm-scrollbar-track: var(--mm-gray-50);
   --mm-scrollbar-thumb: var(--mm-gray-500);
   --mm-scrollbar-thumb-hover: var(--mm-gray-700);
+
+  /* Icon Filters */
+  --mm-icon-invert: invert(1) brightness(1.2);
+  --mm-icon-invert-hover: invert(1) brightness(1.4);
+  --mm-icon-invert-bright: invert(1) brightness(1.5);
   --mm-scrollbar-thumb-alt: var(--mm-gray-300);
   --mm-scrollbar-thumb-alt-hover: var(--mm-gray-400);
   --mm-scrollbar-width: 8px;
@@ -262,7 +274,20 @@
 
   --mm-bg-body: #212529;
   --mm-bg-subtle: #2c3034;
+  --mm-text-muted: #adb5bd;
+  --mm-text-semibold: #f8f9fa;
+
+  --mm-bg-card: #212529;
+
+  /* Border Colors */
+  --mm-border-color: #495057;
+  --mm-border-subtle: #6c757d;
   --mm-bg-muted: #343a40;
+
+  /* Teal Accent */
+  --mm-teal-hover-bg: rgba(13, 202, 240, 0.15);
+  --mm-teal-hover-shadow: rgba(13, 202, 240, 0.3);
+  --mm-teal-subtle: rgba(13, 202, 240, 0.1);
 
   /* Overlays - Inverted for dark mode */
   --mm-overlay-white-30: rgba(33, 37, 41, 0.3);
@@ -289,14 +314,27 @@
   /* Gradients - Adjusted for dark mode */
   --mm-gradient-primary: linear-gradient(135deg, #4c5fd5 0%, #5a3a82 100%);
   --mm-gradient-header: linear-gradient(to right, #2c3034, #343a40);
+  --mm-gradient-teal: linear-gradient(
+    135deg,
+    #0c4a6e 0%,
+    #0e7490 50%,
+    #14b8a6 100%
+  );
+  --mm-gradient-map-header: linear-gradient(135deg, #2c3034 0%, #343a40 100%);
 
   /* Scrollbar */
   --mm-scrollbar-track: var(--mm-gray-100);
   --mm-scrollbar-thumb: var(--mm-gray-200);
   --mm-scrollbar-thumb-hover: var(--mm-gray-300);
 
+  /* Icon Filters */
+  --mm-icon-invert: invert(1) brightness(1.2);
+  --mm-icon-invert-hover: invert(1) brightness(1.4);
+  --mm-icon-invert-bright: invert(1) brightness(1.5);
+
   /* Focus */
   --mm-focus-color: #6ea8fe;
+  --mm-focus-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 
   /* Map Markers - adjusted for dark mode */
   --mm-marker-border: var(--mm-gray-100);
@@ -309,4 +347,8 @@
   --mm-location-marker-border: var(--mm-gray-100);
   --mm-location-marker-shadow: rgba(0, 0, 0, 0.8);
   --mm-location-marker-ripple: rgba(51, 153, 255, 0.5);
+
+  /* Table cell highlighting - adjusted for dark mode */
+  --mm-success-alpha-10: rgba(0, 200, 0, 0.15);
+  --mm-highlight-color: #198754;
 }

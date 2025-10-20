@@ -1,5 +1,5 @@
 import React from "react";
-import { StateType } from "../../utils/interface";
+import { StateType, ThemeContextType } from "../../utils/interface";
 
 // Create a new context with a default value
 const StateContext = React.createContext<StateType>({
@@ -7,4 +7,11 @@ const StateContext = React.createContext<StateType>({
   setFrontPageMode: () => {}
 });
 
-export { StateContext };
+// Theme context
+const ThemeContext = React.createContext<ThemeContextType>({
+  theme: "system",
+  setTheme: () => {},
+  actualTheme: "light"
+});
+
+export { StateContext, ThemeContext };

@@ -9,35 +9,11 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
 }) => {
   return (
     <MapControl position={ControlPosition.LEFT_BOTTOM}>
-      <Card
-        style={{
-          width: "14rem",
-          margin: "24px",
-          fontSize: "0.8rem"
-        }}
-      >
+      <Card className="map-control-panel">
         {name && <Card.Header>{name}</Card.Header>}
         <Card.Body>
-          <div
-            style={{
-              maxWidth: "90%",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap"
-            }}
-          >
-            Latitude: {lat}
-          </div>
-          <div
-            style={{
-              maxWidth: "90%",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-              whiteSpace: "nowrap"
-            }}
-          >
-            Longitude: {lng}
-          </div>
+          <div className="map-control-panel-coordinate">Latitude: {lat}</div>
+          <div className="map-control-panel-coordinate">Longitude: {lng}</div>
         </Card.Body>
       </Card>
     </MapControl>

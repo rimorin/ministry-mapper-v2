@@ -39,6 +39,9 @@ import { useModalManagement } from "../hooks/useModalManagement";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 const UpdateMapMessages = lazy(() => import("../components/modal/mapmessages"));
 const ShowExpiry = lazy(() => import("../components/modal/slipexpiry"));
+const ThemeSettingsModal = lazy(
+  () => import("../components/modal/themesettings")
+);
 
 const Map = () => {
   const { id } = useParams();
@@ -115,6 +118,10 @@ const Map = () => {
   const handleLanguageSelect = useCallback((language: string) => {
     changeLanguage(language);
     toggleLanguageSelector();
+  }, []);
+
+  const handleOpenThemeSettings = useCallback(() => {
+    showModal(ThemeSettingsModal, {});
   }, []);
 
   const checkPinnedMessages = useCallback(
@@ -297,7 +304,7 @@ const Map = () => {
             assignmentId={id}
           />
         )}
-        <Navbar bg="light">
+        <Navbar>
           <Nav className="w-100 justify-content-between mx-4">
             <Nav.Item
               className={`text-center nav-item-hover`}
@@ -382,8 +389,29 @@ const Map = () => {
               role="button"
               aria-label={t("common.Language", "Language")}
             >
-              <Image src={getAssetUrl("language.svg")} alt="Language" />
+              <Image
+                src={getAssetUrl("language.svg")}
+                alt="Language"
+                className="language-icon"
+              />
               <div className="small">{currentLanguage}</div>
+            </Nav.Item>
+            <Nav.Item
+              className="text-center nav-item-hover"
+              onClick={handleOpenThemeSettings}
+              tabIndex={0}
+              onKeyDown={(e) =>
+                handleKeyboardActivation(e, handleOpenThemeSettings)
+              }
+              role="button"
+              aria-label={t("theme.settings", "Theme Settings")}
+            >
+              <Image
+                src={getAssetUrl("dark-theme.svg")}
+                alt="Theme"
+                className="theme-icon"
+              />
+              <div className="small">{t("theme.theme", "Theme")}</div>
             </Nav.Item>
           </Nav>
         </Navbar>

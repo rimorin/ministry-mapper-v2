@@ -81,7 +81,7 @@ const FrontPage = () => {
 
   return (
     <div className="d-flex flex-column" style={{ minHeight: "80vh" }}>
-      <Navbar bg="light" className="flex-shrink-0">
+      <Navbar className="flex-shrink-0">
         <LanguageSelector
           showListing={showLanguageSelector}
           hideFunction={toggleLanguageSelector}
@@ -110,6 +110,7 @@ const FrontPage = () => {
                   alt="Language"
                   width={16}
                   height={16}
+                  className="language-icon"
                 />
               }
             />

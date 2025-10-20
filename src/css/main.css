@@ -71,7 +71,7 @@
   box-shadow: var(--mm-shadow-preset-sm);
   border-radius: 0.5rem;
   padding: 1.5rem;
-  background: var(--mm-white);
+  background: var(--mm-bg-body);
 }
 
 .icon-large {
