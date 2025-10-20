@@ -65,6 +65,7 @@ import {
 } from "../components/navigation/dropdownbutton";
 import BackToTopButton from "../components/navigation/backtotop";
 import ModeToggle from "../components/navigation/maptoggle";
+import ThemeToggle from "../components/navigation/themetoggle";
 
 const UnauthorizedPage = SuspenseComponent(
   lazy(() => import("../components/statics/unauth"))
@@ -619,13 +620,7 @@ function Admin({ user }: adminProps) {
         currentLanguage={currentLanguage}
         languageOptions={languageOptions}
       />
-      <Navbar
-        bg="light"
-        variant="light"
-        expand="lg"
-        className="admin-navbar"
-        sticky="top"
-      >
+      <Navbar expand="lg" className="admin-navbar" sticky="top">
         <Container fluid>
           {congregationName ? (
             <NavBarBranding naming={congregationName} />
@@ -917,6 +912,7 @@ function Admin({ user }: adminProps) {
                 {t("auth.logout", "Logout")}
               </GenericDropdownItem>
             </GenericDropdownButton>
+            <ThemeToggle className="m-1" />
             <GenericButton
               className="m-1"
               size="sm"
@@ -928,6 +924,7 @@ function Admin({ user }: adminProps) {
                   alt="Language"
                   width={16}
                   height={16}
+                  className="language-icon"
                 />
               }
             />

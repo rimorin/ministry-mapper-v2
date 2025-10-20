@@ -375,5 +375,15 @@
   "generatedMap": {
     "info": "Dapatkan tautan cepat ke peta wilayah terdekat yang tersedia berdasarkan lokasi, beban kerja, dan kemajuan.",
     "share": "Bagikan"
+  },
+  "theme": {
+    "settings": "Pengaturan Tema",
+    "description": "Pilih tema yang Anda sukai atau ikuti pengaturan sistem Anda",
+    "light": "Terang",
+    "lightDescription": "Tema yang cerah dan jelas",
+    "dark": "Gelap",
+    "darkDescription": "Nyaman untuk mata",
+    "system": "Sistem",
+    "systemDescription": "Mengikuti pengaturan perangkat Anda"
   }
 }

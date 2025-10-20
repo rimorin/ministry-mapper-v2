@@ -1,5 +1,6 @@
+/* Virtual maps styles - uses centralized variables from variables.css */
+
 :root {
-  /* Component-specific responsive sizing */
   --vmap-header-height: 58px;
   --vmap-header-padding: 1rem 1.25rem;
 }

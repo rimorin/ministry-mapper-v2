@@ -375,5 +375,15 @@
   "generatedMap": {
     "info": "Get a quick link to the nearest available territory map based on location, workload, and progress.",
     "share": "Share"
+  },
+  "theme": {
+    "settings": "Theme Settings",
+    "description": "Choose your preferred theme or follow your system settings",
+    "light": "Light",
+    "lightDescription": "Bright and clear theme",
+    "dark": "Dark",
+    "darkDescription": "Easy on the eyes",
+    "system": "System",
+    "systemDescription": "Follows your device settings"
   }
 }

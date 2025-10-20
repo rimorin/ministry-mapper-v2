@@ -1,5 +1,6 @@
 /* Admin page styles - uses centralized variables from variables.css */
 
+/* ===== HEADER & HOVER EFFECTS ===== */
 .admin-unit-header:hover {
   background-color: var(--mm-primary-lighter);
   transition: var(--mm-transition-base);
@@ -9,6 +10,7 @@
   color: var(--mm-black);
 }
 
+/* ===== NAVIGATION ===== */
 .back-to-top {
   position: fixed;
   bottom: 30px;
@@ -25,6 +27,7 @@
   margin-left: 1.5rem;
 }
 
+/* ===== DROPDOWNS ===== */
 .dropdown-btn {
   display: inline-block;
   margin: 0.25rem;
@@ -60,6 +63,7 @@
   box-shadow: 0 0 0 4px var(--mm-primary-alpha-25);
 }
 
+/* ===== TEXT & LINKS ===== */
 .resend-text {
   cursor: pointer;
   margin-bottom: 1.5rem;
@@ -78,6 +82,7 @@
   top: 0.55rem;
 }
 
+/* ===== MAP CONTAINERS ===== */
 .map-body-admin {
   height: 490px;
   overflow: auto;
@@ -86,7 +91,7 @@
   box-sizing: border-box;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  background: var(--mm-white);
+  background: var(--mm-bg-body);
   box-shadow: var(--mm-shadow-preset-sm);
 }
 
@@ -108,26 +113,16 @@
   background: var(--mm-scrollbar-thumb-alt-hover);
 }
 
-@media (max-width: 768px) {
-  .map-body-admin {
-    height: 450px;
-  }
+.map-view-admin {
+  height: 75dvh;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  box-shadow: var(--mm-shadow-preset-lg);
 }
 
-@media (max-width: 480px) {
-  .map-body-admin {
-    height: 400px;
-    font-size: 0.875rem;
-    overscroll-behavior: contain;
-  }
-}
-
-@media (max-width: 430px) {
-  .map-body-admin {
-    height: 360px;
-  }
-}
-
+/* ===== ANIMATIONS ===== */
 .notification-glow {
   animation: notification-glow 1.5s infinite;
 }
@@ -142,15 +137,33 @@
   }
 }
 
-.map-view-admin {
-  height: 75dvh;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.75rem;
-  box-shadow: var(--mm-shadow-preset-lg);
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
+.territory-content {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes circular-glow {
+  0% {
+    stroke-width: 4;
+    stroke-opacity: 0.5;
+  }
+  100% {
+    stroke-width: 6;
+    stroke-opacity: 1;
+  }
+}
+
+/* ===== CIRCULAR PROGRESS ===== */
 .circular-progress-container {
   position: relative;
   display: inline-block;
@@ -183,9 +196,16 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 13px;
-  font-weight: bold;
-  color: var(--mm-gray-600er);
+  font-size: 14px;
+  font-weight: 900;
+  color: #000;
+  text-shadow:
+    -1px -1px 0 #fff,
+    1px -1px 0 #fff,
+    -1px 1px 0 #fff,
+    1px 1px 0 #fff,
+    0 0 3px rgba(255, 255, 255, 0.8),
+    0 0 5px rgba(255, 255, 255, 0.6);
 }
 
 .circular-progress-assignments {
@@ -200,17 +220,7 @@
   stroke: var(--mm-info);
 }
 
-@keyframes circular-glow {
-  0% {
-    stroke-width: 4;
-    stroke-opacity: 0.5;
-  }
-  100% {
-    stroke-width: 6;
-    stroke-opacity: 1;
-  }
-}
-
+/* ===== MAP MARKERS ===== */
 .selected-marker {
   border: 2px solid var(--mm-warning);
   border-radius: 50%;
@@ -244,27 +254,116 @@
 }
 
 .marker-info-card {
+  width: 17rem;
   font-size: 0.9rem;
   box-shadow: var(--mm-shadow-preset-lg);
   border-radius: var(--mm-radius-md);
-  border: none;
+  background-color: var(--mm-white);
+  color: var(--mm-text-body);
+  border: 1px solid var(--mm-border-color);
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+[data-bs-theme="dark"] .marker-info-card {
+  background-color: var(--mm-gray-950);
+  color: var(--mm-text-body);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.territory-content {
-  animation: fadeIn 0.4s ease-out;
+/* Map control panel for coordinates display */
+.map-control-panel {
+  width: 14rem;
+  margin: 24px;
+  font-size: 0.8rem;
+  background-color: var(--mm-white);
+  color: var(--mm-text-body);
+  border: 1px solid var(--mm-border-color);
 }
 
+[data-bs-theme="dark"] .map-control-panel {
+  background-color: var(--mm-gray-950);
+  color: var(--mm-text-body);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.map-control-panel-coordinate {
+  max-width: 90%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Map autocomplete search container */
+/* Map Autocomplete Container */
+.map-autocomplete-container {
+  width: 320px;
+  margin-top: 10px;
+}
+
+.map-autocomplete-input {
+  border-right: none;
+  height: 38px;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--mm-overlay-white-95);
+  box-shadow: var(--mm-shadow-preset-sm);
+}
+
+.map-autocomplete-input::placeholder {
+  font-size: 0.875rem;
+}
+
+.map-autocomplete-input:focus {
+  border-right: none;
+  background-color: var(--mm-white);
+}
+
+.map-autocomplete-clear-btn {
+  border-left: none;
+  font-size: 0.875rem;
+  padding: 0.5rem 0.75rem;
+  box-shadow: var(--mm-shadow-preset-sm);
+}
+
+.map-autocomplete-results {
+  background-color: var(--mm-white);
+  box-shadow: var(--mm-shadow-preset-lg);
+  border: var(--mm-border-width) solid var(--mm-overlay-black-12);
+}
+
+.map-autocomplete-results .list-group-item {
+  background-color: var(--mm-bg-subtle);
+  border-color: var(--mm-overlay-black-8);
+  color: var(--mm-text-body);
+  font-weight: 500;
+  padding: 0.625rem 0.75rem;
+}
+
+.map-autocomplete-results .list-group-item:hover {
+  background-color: var(--mm-bg-muted);
+  color: var(--mm-text-dark);
+}
+
+[data-bs-theme="dark"] .map-autocomplete-input,
+[data-bs-theme="dark"] .map-autocomplete-clear-btn {
+  background-color: var(--mm-overlay-white-95);
+  box-shadow: var(--mm-shadow-preset-md);
+}
+
+[data-bs-theme="dark"] .map-autocomplete-input:focus {
+  background-color: var(--mm-bg-subtle);
+}
+
+[data-bs-theme="dark"] .map-autocomplete-results {
+  background-color: var(--mm-bg-subtle);
+  box-shadow: var(--mm-shadow-preset-xl);
+  border-color: var(--mm-border-color);
+}
+
+[data-bs-theme="dark"] .map-autocomplete-results .list-group-item:hover {
+  background-color: var(--mm-bg-muted);
+}
+
+/* ===== WELCOME CARD ===== */
 .welcome-card {
   max-width: 500px;
   margin: 2rem auto;
@@ -273,7 +372,7 @@
   box-shadow: var(--mm-shadow-preset-lg);
   overflow: hidden;
   transition: all 0.3s ease;
-  background: var(--mm-white);
+  background: var(--mm-bg-body);
 }
 
 .welcome-card:hover {
@@ -313,32 +412,7 @@
   margin-bottom: 0;
 }
 
-@media (max-width: 768px) {
-  .welcome-card {
-    margin: 1rem;
-  }
-
-  .welcome-image-container {
-    padding: 2rem 1.5rem 1.5rem;
-  }
-
-  .welcome-image {
-    max-width: 120px;
-  }
-
-  .welcome-card-body {
-    padding: 1.5rem;
-  }
-
-  .welcome-card-title {
-    font-size: 1.25rem;
-  }
-
-  .welcome-card-text {
-    font-size: 0.95rem;
-  }
-}
-
+/* ===== TERRITORY HEADER ===== */
 .territory-header {
   background: var(--mm-gradient-header);
   border-bottom: 2px solid var(--mm-success);
@@ -363,6 +437,7 @@
 .admin-navbar {
   box-shadow: 0 2px 12px var(--mm-shadow-md);
   border-bottom: 1px solid var(--mm-overlay-black-5);
+  background-color: var(--mm-bg-body);
 }
 
 .admin-navbar .navbar-brand {
@@ -370,6 +445,7 @@
   font-size: 1.125rem;
 }
 
+/* ===== LOADING ===== */
 .loading-overlay {
   position: fixed;
   inset: 0;
@@ -397,6 +473,7 @@
   color: var(--mm-secondary);
 }
 
+/* ===== LIST GROUPS ===== */
 .list-group-item {
   border: 1px solid var(--mm-overlay-black-8);
   border-radius: var(--mm-radius-md);
@@ -416,6 +493,7 @@
   color: var(--mm-white);
 }
 
+/* ===== EMPTY STATES ===== */
 .empty-state {
   text-align: center;
   padding: 3rem 1.5rem;
@@ -440,6 +518,52 @@
   color: var(--mm-secondary);
 }
 
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .map-body-admin {
+    height: 450px;
+  }
+
+  .welcome-card {
+    margin: 1rem;
+  }
+
+  .welcome-image-container {
+    padding: 2rem 1.5rem 1.5rem;
+  }
+
+  .welcome-image {
+    max-width: 120px;
+  }
+
+  .welcome-card-body {
+    padding: 1.5rem;
+  }
+
+  .welcome-card-title {
+    font-size: 1.25rem;
+  }
+
+  .welcome-card-text {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-body-admin {
+    height: 400px;
+    font-size: 0.875rem;
+    overscroll-behavior: contain;
+  }
+}
+
+@media (max-width: 430px) {
+  .map-body-admin {
+    height: 360px;
+  }
+}
+
+/* ===== ACCESSIBILITY ===== */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -450,6 +574,7 @@
   }
 }
 
+/* ===== PRINT ===== */
 @media print {
   .dropdown-btn,
   .back-to-top,

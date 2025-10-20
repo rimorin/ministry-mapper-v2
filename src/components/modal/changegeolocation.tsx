@@ -175,7 +175,7 @@ const ChangeMapGeolocation = NiceModal.create(
           <Modal.Footer className="justify-content-around">
             <GenericButton
               variant="secondary"
-              onClick={() => modal.remove()}
+              onClick={() => modal.hide()}
               label={t("common.cancel", "Cancel")}
             />
             <GenericButton

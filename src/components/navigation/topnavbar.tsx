@@ -8,7 +8,7 @@ interface TopNavbarProps {
 
 const TopNavbar = ({ title, onLegendClick }: TopNavbarProps) => {
   return (
-    <Navbar bg="light" expand="sm">
+    <Navbar expand="sm">
       <Container fluid>
         <Navbar.Brand
           className="brand-wrap d-flex align-items-center"

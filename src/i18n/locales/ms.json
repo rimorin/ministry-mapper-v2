@@ -374,5 +374,15 @@
   "generatedMap": {
     "info": "Dapatkan pautan pantas ke peta wilayah terdekat yang tersedia berdasarkan lokasi, beban kerja, dan kemajuan.",
     "share": "Kongsi"
+  },
+  "theme": {
+    "settings": "Tetapan Tema",
+    "description": "Pilih tema pilihan anda atau ikut tetapan sistem anda",
+    "light": "Cerah",
+    "lightDescription": "Tema yang terang dan jelas",
+    "dark": "Gelap",
+    "darkDescription": "Mudah untuk mata",
+    "system": "Sistem",
+    "systemDescription": "Mengikut tetapan peranti anda"
   }
 }

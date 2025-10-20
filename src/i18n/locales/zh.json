@@ -376,5 +376,15 @@
   "generatedMap": {
     "info": "根据位置、工作负荷和进度获取到最近可用区域地图的快速链接。",
     "share": "分享"
+  },
+  "theme": {
+    "settings": "主题设置",
+    "description": "选择您喜欢的主题或跟随系统设置",
+    "light": "浅色",
+    "lightDescription": "明亮清晰的主题",
+    "dark": "深色",
+    "darkDescription": "护眼模式",
+    "system": "系统",
+    "systemDescription": "跟随您的设备设置"
   }
 }

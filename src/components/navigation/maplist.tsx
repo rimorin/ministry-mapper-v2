@@ -114,7 +114,7 @@ function MapRow({
               now={completeValue}
               label={completedPercent}
             />
-            <Navbar bg="light" expand="lg" key={`navbar-${mapId}`}>
+            <Navbar expand="lg" key={`navbar-${mapId}`}>
               <Container fluid className="justify-content-end">
                 {mapType === TERRITORY_TYPES.SINGLE_STORY && (
                   <GenericButton

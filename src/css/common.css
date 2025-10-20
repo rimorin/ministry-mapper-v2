@@ -1,5 +1,6 @@
 /* Common styles - uses centralized variables from variables.css */
 
+/* ===== LAYOUT & TABLE ===== */
 .sticky-table {
   border-collapse: separate;
   border-spacing: 0;
@@ -8,14 +9,14 @@
 .sticky-left-cell {
   position: sticky;
   left: 0;
-  background-color: var(--mm-white) !important;
+  background-color: var(--mm-bg-body) !important;
   z-index: 2;
 }
 
 .sticky-top-cell {
   position: sticky;
   top: 0;
-  background-color: var(--mm-white);
+  background-color: var(--mm-bg-body);
   z-index: 3;
 }
 
@@ -33,6 +34,11 @@
   flex-wrap: wrap;
 }
 
+.brand-wrap {
+  white-space: normal;
+}
+
+/* ===== BADGES & ICONS ===== */
 .badge-nothome {
   color: var(--mm-black);
   position: absolute;
@@ -58,6 +64,11 @@
   opacity: 0.4;
 }
 
+.language-icon {
+  filter: none;
+}
+
+/* ===== STATE INDICATORS ===== */
 .available {
   background-color: var(--mm-success-alpha-10) !important;
 }
@@ -66,46 +77,17 @@
   box-shadow: 0 0 10px 2px var(--mm-highlight-color) inset !important;
 }
 
-.brand-wrap {
-  white-space: normal;
-}
-
-@media screen and (max-width: 450px) {
-  .fluid-button {
-    font-size: clamp(0.5rem, 2.8vw, 2rem);
-    font-weight: bolder;
-  }
-
-  .fluid-bolding {
-    font-weight: bolder;
-  }
-
-  .fluid-text {
-    font-size: clamp(0.5rem, 3.2vw, 2rem);
-  }
-}
-
 .landed-unit {
   height: 2rem;
 }
 
+/* ===== TEXT & TYPOGRAPHY ===== */
 .text-underline {
   cursor: pointer;
 }
 
 .text-underline:hover {
   text-decoration: underline;
-}
-
-.blinking {
-  animation: blinker 1s linear infinite;
-  font-weight: 500;
-}
-
-@keyframes blinker {
-  50% {
-    opacity: 0;
-  }
 }
 
 .text-highlight {
@@ -118,29 +100,24 @@
   margin: 0 0.25rem;
 }
 
-.suspense-loader {
+/* ===== OVERLAYS ===== */
+.suspense-loader,
+.note-overlay {
   position: fixed;
   inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.suspense-loader {
   z-index: 1050;
   background-color: var(--mm-overlay-white-50);
 }
 
-@keyframes spinLocator {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .note-overlay {
   position: absolute;
-  inset: 0;
   background: var(--mm-overlay-white-70);
-  display: flex;
-  justify-content: center;
-  align-items: center;
   z-index: 1;
 }
 
@@ -148,27 +125,7 @@
   z-index: 9999 !important;
 }
 
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-}
-
-@keyframes ripple {
-  from {
-    transform: translate(-50%, -50%) scale(0.8);
-    opacity: 1;
-  }
-  to {
-    transform: translate(-50%, -50%) scale(1.5);
-    opacity: 0;
-  }
-}
-
+/* ===== MAP MARKERS ===== */
 .current-location-marker {
   width: 100%;
   height: 100%;
@@ -218,4 +175,390 @@
   background-color: var(--mm-marker-label-bg);
   color: var(--mm-marker-label-text);
   border-radius: 2px;
+}
+
+/* ===== ANIMATIONS ===== */
+.blinking {
+  animation: blinker 1s linear infinite;
+  font-weight: 500;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes ripple {
+  from {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 1;
+  }
+  to {
+    transform: translate(-50%, -50%) scale(1.5);
+    opacity: 0;
+  }
+}
+
+@keyframes spinLocator {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ===== RESPONSIVE TYPOGRAPHY ===== */
+@media screen and (max-width: 450px) {
+  .fluid-button {
+    font-size: clamp(0.5rem, 2.8vw, 2rem);
+    font-weight: bolder;
+  }
+
+  .fluid-bolding {
+    font-weight: bolder;
+  }
+
+  .fluid-text {
+    font-size: clamp(0.5rem, 3.2vw, 2rem);
+  }
+}
+
+/* Dark mode fix for outline-dark buttons */
+[data-bs-theme="dark"] .btn-outline-dark {
+  --bs-btn-color: #f8f9fa !important;
+  --bs-btn-border-color: #6c757d !important;
+  --bs-btn-hover-color: #fff !important;
+  --bs-btn-hover-bg: #495057 !important;
+  --bs-btn-hover-border-color: #495057 !important;
+  --bs-btn-active-color: #fff !important;
+  --bs-btn-active-bg: #343a40 !important;
+  --bs-btn-active-border-color: #343a40 !important;
+  --bs-btn-disabled-color: #6c757d !important;
+  --bs-btn-disabled-border-color: #495057 !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-dark.active {
+  background-color: #495057 !important;
+  border-color: #495057 !important;
+  color: #fff !important;
+}
+
+/* Improve visibility of other outline buttons in dark mode */
+[data-bs-theme="dark"] .btn-outline-success {
+  --bs-btn-color: #ffffff !important;
+  --bs-btn-border-color: #198754 !important;
+  --bs-btn-hover-color: #fff !important;
+  --bs-btn-hover-bg: #198754 !important;
+  --bs-btn-hover-border-color: #198754 !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-secondary {
+  --bs-btn-color: #ffffff !important;
+  --bs-btn-border-color: #6c757d !important;
+  --bs-btn-hover-color: #fff !important;
+  --bs-btn-hover-bg: #6c757d !important;
+  --bs-btn-hover-border-color: #6c757d !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-danger {
+  --bs-btn-color: #ffffff !important;
+  --bs-btn-border-color: #dc3545 !important;
+  --bs-btn-hover-color: #fff !important;
+  --bs-btn-hover-bg: #dc3545 !important;
+  --bs-btn-hover-border-color: #dc3545 !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-info {
+  --bs-btn-color: #ffffff !important;
+  --bs-btn-border-color: #0dcaf0 !important;
+  --bs-btn-hover-color: #000 !important;
+  --bs-btn-hover-bg: #0dcaf0 !important;
+  --bs-btn-hover-border-color: #0dcaf0 !important;
+}
+
+[data-bs-theme="dark"] .btn-outline-primary {
+  --bs-btn-color: #ffffff !important;
+  --bs-btn-border-color: #0d6efd !important;
+  --bs-btn-hover-color: #fff !important;
+  --bs-btn-hover-bg: #0d6efd !important;
+  --bs-btn-hover-border-color: #0d6efd !important;
+}
+
+/* Ensure button text is visible */
+[data-bs-theme="dark"] .btn {
+  color: inherit;
+}
+
+[data-bs-theme="dark"] .btn-primary {
+  color: #fff !important;
+  background-color: #0d6efd !important;
+  border-color: #0d6efd !important;
+}
+
+[data-bs-theme="dark"] .btn-secondary {
+  color: #fff !important;
+  background-color: #6c757d !important;
+  border-color: #6c757d !important;
+}
+
+[data-bs-theme="dark"] .btn-success {
+  color: #fff !important;
+  background-color: #198754 !important;
+  border-color: #198754 !important;
+}
+
+[data-bs-theme="dark"] .btn-danger {
+  color: #fff !important;
+  background-color: #dc3545 !important;
+  border-color: #dc3545 !important;
+}
+
+[data-bs-theme="dark"] .btn-warning {
+  color: #000 !important;
+  background-color: #ffc107 !important;
+  border-color: #ffc107 !important;
+}
+
+[data-bs-theme="dark"] .btn-info {
+  color: #000 !important;
+  background-color: #0dcaf0 !important;
+  border-color: #0dcaf0 !important;
+}
+
+[data-bs-theme="dark"] .btn-light {
+  color: #000 !important;
+  background-color: #f8f9fa !important;
+  border-color: #f8f9fa !important;
+}
+
+[data-bs-theme="dark"] .btn-dark {
+  color: #fff !important;
+  background-color: #212529 !important;
+  border-color: #212529 !important;
+}
+
+/* Dark mode modal support */
+[data-bs-theme="dark"] .modal-content {
+  background-color: #212529;
+  color: #dee2e6;
+}
+
+[data-bs-theme="dark"] .modal-header {
+  border-bottom-color: #495057;
+}
+
+[data-bs-theme="dark"] .modal-footer {
+  border-top-color: #495057;
+}
+
+/* Dark mode card support */
+[data-bs-theme="dark"] .card {
+  background-color: #212529;
+  color: #dee2e6;
+  border-color: #495057;
+}
+
+[data-bs-theme="dark"] .card-header {
+  background-color: #2c3034;
+  border-bottom-color: #495057;
+}
+
+[data-bs-theme="dark"] .card-footer {
+  background-color: #2c3034;
+  border-top-color: #495057;
+}
+
+/* Dark mode list group support */
+[data-bs-theme="dark"] .list-group-item {
+  background-color: #212529;
+  color: #dee2e6;
+  border-color: #495057;
+}
+
+[data-bs-theme="dark"] .list-group-item.active {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+[data-bs-theme="dark"] .list-group-item:hover {
+  background-color: #2c3034;
+}
+
+/* Dark mode form controls */
+[data-bs-theme="dark"] .form-control,
+[data-bs-theme="dark"] .form-select {
+  background-color: #2c3034;
+  border-color: #495057;
+  color: #dee2e6;
+}
+
+[data-bs-theme="dark"] .form-control:focus,
+[data-bs-theme="dark"] .form-select:focus {
+  background-color: #2c3034;
+  border-color: #6ea8fe;
+  color: #dee2e6;
+}
+
+[data-bs-theme="dark"] .form-control::placeholder {
+  color: #6c757d;
+}
+
+/* Dark mode dropdown support */
+[data-bs-theme="dark"] .dropdown-menu {
+  background-color: #2c3034 !important;
+  border-color: #495057 !important;
+}
+
+[data-bs-theme="dark"] .dropdown-item {
+  color: #dee2e6 !important;
+}
+
+[data-bs-theme="dark"] .dropdown-item:hover,
+[data-bs-theme="dark"] .dropdown-item:focus {
+  background-color: #495057 !important;
+  color: #fff !important;
+}
+
+[data-bs-theme="dark"] .dropdown-divider {
+  border-top-color: #495057 !important;
+}
+
+/* Dropdown toggle should match regular button styling - no color override */
+/* Buttons already have proper colors defined, dropdown toggle inherits them */
+
+/* Dark mode button group support */
+[data-bs-theme="dark"] .btn-group {
+  border-color: #495057;
+}
+
+/* Dark mode spinner */
+[data-bs-theme="dark"] .spinner-border {
+  color: #6ea8fe;
+}
+
+/* Dark mode progress bar */
+[data-bs-theme="dark"] .progress {
+  background-color: #495057;
+}
+
+[data-bs-theme="dark"] .progress-bar {
+  background-color: #0d6efd;
+}
+
+/* Dark mode container */
+[data-bs-theme="dark"] .container,
+[data-bs-theme="dark"] .container-fluid {
+  color: #dee2e6;
+}
+
+/* Dark mode table support */
+[data-bs-theme="dark"] .table {
+  color: #dee2e6;
+  border-color: #495057;
+}
+
+[data-bs-theme="dark"] .table thead,
+[data-bs-theme="dark"] .table tbody,
+[data-bs-theme="dark"] .table th,
+[data-bs-theme="dark"] .table td {
+  border-color: #495057;
+}
+
+[data-bs-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
+  --bs-table-bg-type: rgba(255, 255, 255, 0.05);
+  color: #dee2e6;
+}
+
+[data-bs-theme="dark"] .table-hover > tbody > tr:hover > * {
+  --bs-table-bg-state: rgba(255, 255, 255, 0.075);
+  color: #dee2e6;
+}
+
+[data-bs-theme="dark"] .table-bordered {
+  border-color: #495057;
+}
+
+/* Dark mode badge support */
+[data-bs-theme="dark"] .badge {
+  color: #fff;
+}
+
+[data-bs-theme="dark"] .badge.bg-secondary {
+  background-color: #6c757d !important;
+  color: #fff;
+}
+
+/* Ensure available cells are visible in dark mode */
+[data-bs-theme="dark"] .available {
+  background-color: var(--mm-success-alpha-10) !important;
+}
+
+[data-bs-theme="dark"] .cell-highlight {
+  box-shadow: 0 0 10px 2px var(--mm-highlight-color) inset !important;
+}
+
+/* Card header text visibility in dark mode */
+[data-bs-theme="dark"] .card-header {
+  color: #dee2e6;
+}
+
+[data-bs-theme="dark"] .card-body {
+  color: #dee2e6;
+}
+
+/* Dark mode - NotHome icon */
+[data-bs-theme="dark"] .badge-nothome {
+  color: var(--mm-text-body);
+}
+
+[data-bs-theme="dark"] .nothome-envelope {
+  filter: var(--mm-icon-invert-bright);
+  opacity: 0.6;
+}
+
+/* Dark mode - Status symbols */
+[data-bs-theme="dark"] .status-invalid {
+  filter: brightness(1.5) contrast(1.3);
+  text-shadow: 0 0 2px rgba(255, 255, 255, 1);
+}
+
+/* Dark mode - Form controls */
+[data-bs-theme="dark"] .form-check-input[type="radio"] {
+  background-color: var(--mm-border-color);
+  border-color: var(--mm-border-subtle);
+}
+
+[data-bs-theme="dark"] .form-check-input[type="radio"]:checked {
+  background-color: #0d6efd;
+  border-color: #0d6efd;
+}
+
+[data-bs-theme="dark"] .form-check-input[type="radio"]:focus {
+  border-color: #86b7fe;
+  box-shadow: var(--mm-focus-shadow);
+}
+
+[data-bs-theme="dark"] .form-check-label {
+  color: var(--mm-text-body);
+}
+
+[data-bs-theme="dark"] .fw-semibold {
+  color: var(--mm-text-semibold);
+}
+
+.language-icon {
+  filter: none;
+}
+
+[data-bs-theme="dark"] .language-icon {
+  filter: invert(1) brightness(1.2);
 }

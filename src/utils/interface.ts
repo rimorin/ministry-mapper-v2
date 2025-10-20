@@ -731,6 +731,14 @@ export interface StateType {
   >;
 }
 
+export type ThemeMode = "light" | "dark" | "system";
+
+export interface ThemeContextType {
+  theme: ThemeMode;
+  setTheme: (theme: ThemeMode) => void;
+  actualTheme: "light" | "dark";
+}
+
 export interface MapSequenceUpdateModalProps
   extends mapInterface,
     congregationInterface,

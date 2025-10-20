@@ -93,7 +93,7 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
           })}
         {selectedAddress && (
           <MapControl position={ControlPosition.RIGHT_BOTTOM}>
-            <Card className="marker-info-card" style={{ width: "17rem" }}>
+            <Card className="marker-info-card">
               <Card.Header className="text-center py-2">
                 <b>{selectedAddress.name}</b>
               </Card.Header>

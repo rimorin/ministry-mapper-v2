@@ -14,7 +14,7 @@ const AddressStatus = memo((props: unitProps) => {
   } = props;
 
   if (currentStatus === STATUS_CODES.INVALID) {
-    return <>✖️</>;
+    return <span className="status-invalid">✖️</span>;
   }
 
   const status = useMemo(() => {

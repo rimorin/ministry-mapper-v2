@@ -5,9 +5,14 @@ import {
   useMap,
   useMapsLibrary
 } from "@vis.gl/react-google-maps";
-import { Container, Form, InputGroup, ListGroup } from "react-bootstrap";
+import {
+  Container,
+  Form,
+  InputGroup,
+  ListGroup,
+  Button
+} from "react-bootstrap";
 import { DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION } from "../../utils/constants";
-import GenericButton from "../navigation/button";
 import { GmapAutocompleteProps } from "../../utils/interface";
 
 export const GmapAutocomplete = ({
@@ -17,24 +22,16 @@ export const GmapAutocomplete = ({
   const map = useMap();
   const places = useMapsLibrary("places");
 
-  // https://developers.google.com/maps/documentation/javascript/reference/places-autocomplete-service#AutocompleteSessionToken
   const [sessionToken, setSessionToken] =
     useState<google.maps.places.AutocompleteSessionToken>();
-
-  // https://developers.google.com/maps/documentation/javascript/reference/places-autocomplete-service
   const [autocompleteService, setAutocompleteService] =
     useState<google.maps.places.AutocompleteService | null>(null);
-
-  // https://developers.google.com/maps/documentation/javascript/reference/places-service
   const [placesService, setPlacesService] =
     useState<google.maps.places.PlacesService | null>(null);
-
   const [predictionResults, setPredictionResults] = useState<
     Array<google.maps.places.AutocompletePrediction>
   >([]);
-
-  const [inputValue, setInputValue] = useState<string>("");
-  const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
     if (!places || !map) return;
@@ -46,110 +43,99 @@ export const GmapAutocomplete = ({
     return () => setAutocompleteService(null);
   }, [map, places]);
 
-  useEffect(() => {
-    return () => {
-      if (timerId) {
-        clearTimeout(timerId);
-      }
-    };
-  }, [timerId]);
-
   const fetchPredictions = useCallback(
-    async (inputValue: string) => {
-      if (!autocompleteService || !inputValue) {
+    async (value: string) => {
+      if (!autocompleteService || !value || value.length < 3) {
         setPredictionResults([]);
         return;
       }
 
-      if (inputValue.length < 3) {
-        setPredictionResults([]);
-        return;
-      }
-
-      const request = {
-        input: inputValue,
+      const response = await autocompleteService.getPlacePredictions({
+        input: value,
         sessionToken,
         componentRestrictions: { country: origin }
-      };
-      const response = await autocompleteService.getPlacePredictions(request);
+      });
       setPredictionResults(response.predictions);
     },
-    [autocompleteService, sessionToken]
+    [autocompleteService, sessionToken, origin]
   );
 
   const onInputChange = useCallback(
     (event: FormEvent<HTMLInputElement>) => {
-      const value = (event.target as HTMLInputElement)?.value;
+      const value = (event.target as HTMLInputElement).value;
       setInputValue(value);
-      setTimerId(setTimeout(() => fetchPredictions(value), 300));
+
+      const timerId = setTimeout(() => fetchPredictions(value), 300);
+      return () => clearTimeout(timerId);
     },
     [fetchPredictions]
   );
 
   const handleSuggestionClick = useCallback(
     (placeId: string) => {
-      if (!places) return;
+      if (!places || !placesService) return;
 
-      const detailRequestOptions = {
-        placeId,
-        fields: ["geometry", "name", "formatted_address"],
-        sessionToken
-      };
-
-      const detailsRequestCallback = (
-        placeDetails: google.maps.places.PlaceResult | null
-      ) => {
-        onPlaceSelect(placeDetails);
-        setPredictionResults([]);
-        setInputValue(placeDetails?.formatted_address ?? "");
-        setSessionToken(new places.AutocompleteSessionToken());
-      };
-
-      placesService?.getDetails(detailRequestOptions, detailsRequestCallback);
+      placesService.getDetails(
+        {
+          placeId,
+          fields: ["geometry", "name", "formatted_address"],
+          sessionToken
+        },
+        (placeDetails) => {
+          onPlaceSelect(placeDetails);
+          setPredictionResults([]);
+          setInputValue(placeDetails?.formatted_address ?? "");
+          setSessionToken(new places.AutocompleteSessionToken());
+        }
+      );
     },
     [onPlaceSelect, places, placesService, sessionToken]
   );
 
+  const handleClearInput = () => {
+    setInputValue("");
+    setPredictionResults([]);
+  };
+
   return (
     <MapControl position={ControlPosition.INLINE_START_BLOCK_START}>
-      <Container
-        style={{
-          width: "300px",
-          marginTop: "10px"
-        }}
-      >
+      <Container className="map-autocomplete-container">
         <InputGroup>
-          <GenericButton
-            variant="outline-secondary"
-            onClick={() => {
-              setInputValue("");
-              setPredictionResults([]);
-            }}
-            label="🗑️"
-          />
           <Form.Control
             type="text"
             placeholder="Search for a place"
             value={inputValue}
-            onInput={(event: FormEvent<HTMLInputElement>) =>
-              onInputChange(event)
-            }
+            onInput={onInputChange}
+            className="map-autocomplete-input"
+            aria-label="Search for a place"
+            aria-autocomplete="list"
+            aria-controls="autocomplete-results"
+            autoComplete="off"
           />
+          {inputValue && (
+            <Button
+              variant="light"
+              onClick={handleClearInput}
+              className="map-autocomplete-clear-btn"
+              aria-label="Clear search"
+            >
+              ✕
+            </Button>
+          )}
         </InputGroup>
         {predictionResults.length > 0 && (
-          <ListGroup as="ul">
-            {predictionResults.map(({ place_id, description }) => {
-              return (
-                <ListGroup.Item
-                  as="li"
-                  action
-                  key={place_id}
-                  onClick={() => handleSuggestionClick(place_id)}
-                >
-                  {description}
-                </ListGroup.Item>
-              );
-            })}
+          <ListGroup as="ul" id="autocomplete-results">
+            {predictionResults.map(({ place_id, description }) => (
+              <ListGroup.Item
+                as="li"
+                action
+                key={place_id}
+                onClick={() => handleSuggestionClick(place_id)}
+                role="option"
+              >
+                {description}
+              </ListGroup.Item>
+            ))}
           </ListGroup>
         )}
       </Container>
