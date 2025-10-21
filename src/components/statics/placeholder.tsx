@@ -1,4 +1,4 @@
-import React from "react";
+import { FC } from "react";
 import { Placeholder, Table } from "react-bootstrap";
 import { Policy } from "../../utils/policies";
 
@@ -8,7 +8,7 @@ interface MapPlaceholderProps {
   columns?: number;
 }
 
-const MapPlaceholder: React.FC<MapPlaceholderProps> = ({
+const MapPlaceholder: FC<MapPlaceholderProps> = ({
   policy,
   rows = 10,
   columns = 4

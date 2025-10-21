@@ -1,10 +1,10 @@
-import React, { useState, useRef } from "react";
+import { FC, useState, useRef } from "react";
 import { Button, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { SpeedDialAction, SpeedDialProps } from "../../utils/interface";
 import { SPEED_DIAL } from "../../utils/constants";
 import "./../../css/speeddial.css";
 
-const SpeedDial: React.FC<SpeedDialProps> = ({
+const SpeedDial: FC<SpeedDialProps> = ({
   icon = (
     <img
       src={SPEED_DIAL.DEFAULTS.ICON_URL}
