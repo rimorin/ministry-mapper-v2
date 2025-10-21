@@ -1,3 +1,15 @@
+# [1.11.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.10.0...v1.11.0) (2025-10-21)
+
+
+### Bug Fixes
+
+* disable auto complete for various inputs ([4908a9d](https://github.com/rimorin/ministry-mapper-v2/commit/4908a9d74c7f5aff549df064a1acd7ef19464cab))
+
+
+### Features
+
+* implement dark mode ([6fc86be](https://github.com/rimorin/ministry-mapper-v2/commit/6fc86bee0a91a2cbdf736b475a6ba0362fc65c7f))
+
 # [1.10.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.9.3...v1.10.0) (2025-10-17)
 
 
