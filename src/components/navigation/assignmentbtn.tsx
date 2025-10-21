@@ -1,4 +1,4 @@
-import React, { lazy, memo, useCallback, useEffect } from "react";
+import { lazy, memo, useCallback, useEffect, useState } from "react";
 import { ButtonGroup, Spinner, Badge } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
@@ -36,12 +36,12 @@ interface PersonalButtonGroupProps {
 }
 
 const useAssignments = (mapId: string) => {
-  const [personalLinks, setPersonalLinks] = React.useState<
-    Map<string, LinkSession>
-  >(new Map());
-  const [normalLinks, setNormalLinks] = React.useState<
-    Map<string, LinkSession>
-  >(new Map());
+  const [personalLinks, setPersonalLinks] = useState<Map<string, LinkSession>>(
+    new Map()
+  );
+  const [normalLinks, setNormalLinks] = useState<Map<string, LinkSession>>(
+    new Map()
+  );
 
   const retrieveAssignments = useCallback(async () => {
     if (!mapId) return;
@@ -107,13 +107,12 @@ const useAssignments = (mapId: string) => {
   return { personalLinks, normalLinks };
 };
 
-const AssignmentButtonGroup: React.FC<PersonalButtonGroupProps> = memo(
+const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = memo(
   ({ addressElement, policy, userId }) => {
     const { t } = useTranslation();
     const { showModal } = useModalManagement();
-    const [isSettingPersonalLink, setIsSettingPersonalLink] =
-      React.useState(false);
-    const [isSettingNormalLink, setIsSettingNormalLink] = React.useState(false);
+    const [isSettingPersonalLink, setIsSettingPersonalLink] = useState(false);
+    const [isSettingNormalLink, setIsSettingNormalLink] = useState(false);
     const mapId = addressElement.id;
 
     const { personalLinks, normalLinks } = useAssignments(mapId);

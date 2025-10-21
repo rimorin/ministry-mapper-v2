@@ -4,12 +4,8 @@
     "close": "닫기",
     "save": "저장",
     "cancel": "취소",
-    "yes": "예",
-    "no": "아니오",
     "delete": "삭제",
-    "edit": "편집",
     "create": "생성",
-    "search": "검색",
     "select": "선택",
     "selectLanguage": "언어 선택",
     "submit": "제출",
@@ -28,12 +24,13 @@
     "Expiry": "만료",
     "name": "이름",
     "success": "성공!",
-    "error": "오류"
+    "error": "오류",
+    "Language": "언어",
+    "Loading": "로딩 중..."
   },
   "auth": {
     "signIn": "로그인",
     "signUp": "가입",
-    "signOut": "로그아웃",
     "forgotPassword": "비밀번호 찾기",
     "resetPassword": "비밀번호 재설정",
     "changePassword": "비밀번호 변경",
@@ -41,7 +38,6 @@
     "password": "비밀번호",
     "confirmPassword": "비밀번호 확인",
     "name": "이름",
-    "profile": "프로필",
     "welcome": "환영합니다",
     "welcomeDefault": "Ministry Mapper에 오신 것을 환영합니다",
     "logout": "로그아웃",
@@ -83,8 +79,6 @@
     "clipboardDenied": "클립보드 접근이 거부되었습니다.",
     "orContinueWith": "또는 계속하기",
     "or": "또는",
-    "google": "Google",
-    "microsoft": "Microsoft",
     "signInWithGoogle": "Google로 로그인",
     "signingIn": "로그인 중...",
     "createAccount": "Ministry Mapper를 시작하려면 계정을 생성하세요",
@@ -96,23 +90,21 @@
     "showPassword": "비밀번호 표시",
     "hidePassword": "비밀번호 숨기기",
     "securityIcon": "보안",
-    "passwordResetIcon": "비밀번호 재설정",
     "otpHelp": "이메일로 전송된 4자리 코드를 입력하세요",
     "emailHelp": "이 이메일로 확인 링크를 보내드립니다.",
     "resetEmailHelp": "계정이 존재하는 경우 이 이메일로 비밀번호 재설정 링크를 보내드립니다.",
     "nameRequired": "이름을 입력하세요.",
-    "backToLogin": "로그인으로 돌아가기"
+    "backToLogin": "로그인으로 돌아가기",
+    "didNotReceiveEmail": "인증 이메일을 받지 못하셨나요?",
+    "verificationEmailResent": "인증 이메일이 재전송되었습니다.",
+    "verifyEmailMessage": "계속하려면 이메일 주소를 인증해주세요."
   },
   "territory": {
     "territory": "구역",
-    "territories": "구역",
     "selectTerritory": "구역 선택",
     "createTerritory": "구역 생성",
     "changeName": "이름 변경",
     "changeCode": "코드 변경",
-    "deleteTerritory": "구역 삭제",
-    "resetTerritory": "구역 초기화",
-    "noTerritory": "선택된 구역 없음",
     "createNew": "새로 생성",
     "deleteCurrent": "현재 삭제",
     "resetStatus": "상태 초기화",
@@ -128,7 +120,12 @@
     "notHome": "부재",
     "completed": "완료",
     "assignees": "담당자",
-    "publisherPlaceholder": "전도인 이름 입력"
+    "publisherPlaceholder": "전도인 이름 입력",
+    "changeSuccess": "구역 {{code}}이(가) 성공적으로 업데이트되었습니다.",
+    "deleteSuccess": "구역 {{code}}을(를) 삭제했습니다.",
+    "noTerritories": "구역 없음",
+    "noTerritoriesDescription": "새 구역을 만들어 시작하세요.",
+    "territoryCode": "구역 코드"
   },
   "map": {
     "newMap": "새 맵",
@@ -155,14 +152,13 @@
     "newMapNumber": "새 맵 번호",
     "deleteSuccess": "주소가 삭제되었습니다, {{name}}.",
     "updateMapSequence": "맵 순서 업데이트",
-    "dragToReorder": "카드를 드래그 앤 드롭하여 순서를 변경하세요"
+    "dragToReorder": "카드를 드래그 앤 드롭하여 순서를 변경하세요",
+    "enterNewMapNumber": "새 지도 번호를 입력하세요"
   },
   "address": {
     "address": "주소",
-    "addresses": "주소",
     "location": "위치",
     "coordinates": "좌표",
-    "unit": "단위",
     "floor": "층",
     "name": "이름",
     "status": "상태",
@@ -185,7 +181,6 @@
     "resetStatus": "상태 초기화",
     "delete": "삭제",
     "notes": "메모",
-    "territorySequence": "구역 순서",
     "clickToSelectOnMap": "맵에서 선택하려면 클릭",
     "coordinatesDescription": "주소의 위도와 경도.",
     "updatedByOn": "{{date}}에 {{user}}가 업데이트",
@@ -193,7 +188,8 @@
     "clearNote": "메모 지우기",
     "resetWarning": "⚠️ 경고: \"{{name}}\"의 모든 속성 상태를 초기화하면 모든 상태가 초기화됩니다. 이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?",
     "deleteWarning": "⚠️ 경고: \"{{name}}\" 맵을 삭제하면 완전히 제거됩니다. 이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?",
-    "locationWithName": "{{name}} 위치"
+    "locationWithName": "{{name}} 위치",
+    "deleteFloorWarning": "⚠️ 경고: \"{{name}}\"의 {{floor}}층을 삭제합니다. 이 작업은 취소할 수 없습니다. 계속하시겠습니까?"
   },
   "household": {
     "household": "가구",
@@ -209,8 +205,6 @@
     "numberOfFloors": "층수"
   },
   "user": {
-    "user": "사용자",
-    "users": "사용자",
     "selectUser": "사용자 선택",
     "manageUsers": "사용자 관리",
     "inviteUser": "사용자 초대",
@@ -232,7 +226,6 @@
   },
   "congregation": {
     "congregation": "회중",
-    "congregations": "회중",
     "selectCongregation": "회중 선택",
     "settings": "설정",
     "options": "옵션",
@@ -256,17 +249,15 @@
     "expiryDescription": "구역 슬립 링크가 만료되기 전 기간",
     "triesDescription": "부재중을 완료로 간주하기 전 시도 횟수",
     "defaultSlipExpiry": "기본 슬립 만료 시간",
-    "optionsUpdated": "회중 가구 옵션이 업데이트되었습니다."
+    "optionsUpdated": "회중 가구 옵션이 업데이트되었습니다.",
+    "duplicateOptionCodes": "중복된 옵션 코드가 발견되었습니다. 입력 내용을 확인해주세요.",
+    "notFound": "회중을 찾을 수 없습니다."
   },
   "assignment": {
     "assignment": "할당",
     "assignments": "할당",
-    "create": "할당 생성",
-    "createdDate": "생성 날짜",
-    "expiryDate": "만료 날짜",
     "publisher": "출판자",
     "link": "링크",
-    "delete": "삭제",
     "linkWithTerritory": "{{territory}} {{type}} 링크"
   },
   "assignments": {
@@ -280,15 +271,12 @@
   },
   "messages": {
     "messages": "메시지",
-    "readMessages": "읽은 메시지",
-    "unreadMessages": "읽지 않은 메시지",
     "enterMessage": "메시지 입력",
     "messagesOn": "{{name}}의 메시지"
   },
   "navigation": {
     "map": "맵",
     "list": "목록",
-    "account": "계정",
     "help": "도움말",
     "legend": "범례",
     "listView": "목록 보기",
@@ -334,7 +322,8 @@
   },
   "table": {
     "levelUnit": "층/단위",
-    "deleteFloor": "🗑️"
+    "deleteFloor": "🗑️",
+    "deleteUnit": "🗑️"
   },
   "unit": {
     "alphanumericDashHyphenValidation": "단위/속성 번호는 영숫자, 대시 또는 하이픈만 포함해야 합니다.",
@@ -342,10 +331,8 @@
     "addUnitTitle": "{{mapId}}에 단위 추가",
     "propertyNumberLabel": "속성 번호",
     "unitNumberLabel": "단위 번호",
-    "updateTitle": "단위 {{unitDisplay}}",
     "requireOneUnitValidation": "구역에는 최소 1개의 단위 번호가 필요합니다.",
-    "confirmDelete": "⚠️ 경고: \"{{mapName}}\"의 단위 번호 \"{{unitNo}}\"를 삭제합니다. 이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?",
-    "deleteUnitButton": "단위 삭제"
+    "confirmDelete": "⚠️ 경고: \"{{mapName}}\"의 단위 번호 \"{{unitNo}}\"를 삭제합니다. 이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?"
   },
   "profile": {
     "updateSuccess": "프로필 업데이트됨.",
@@ -383,6 +370,7 @@
     "dark": "다크",
     "darkDescription": "눈이 편안함",
     "system": "시스템",
-    "systemDescription": "기기 설정을 따릅니다"
+    "systemDescription": "기기 설정을 따릅니다",
+    "theme": "테마"
   }
 }

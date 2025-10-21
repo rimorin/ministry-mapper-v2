@@ -4,12 +4,8 @@
     "close": "閉じる",
     "save": "保存",
     "cancel": "キャンセル",
-    "yes": "はい",
-    "no": "いいえ",
     "delete": "削除",
-    "edit": "編集",
     "create": "作成",
-    "search": "検索",
     "select": "選択",
     "selectLanguage": "言語を選択",
     "submit": "送信",
@@ -28,12 +24,13 @@
     "Expiry": "期限",
     "name": "名前",
     "success": "成功！",
-    "error": "エラー"
+    "error": "エラー",
+    "Language": "言語",
+    "Loading": "読み込み中..."
   },
   "auth": {
     "signIn": "ログイン",
     "signUp": "登録",
-    "signOut": "ログアウト",
     "forgotPassword": "パスワード忘れ",
     "resetPassword": "リセット",
     "changePassword": "変更",
@@ -41,7 +38,6 @@
     "password": "パスワード",
     "confirmPassword": "確認",
     "name": "名前",
-    "profile": "プロフィール",
     "welcome": "ようこそ",
     "welcomeDefault": "Ministry Mapperへ",
     "logout": "ログアウト",
@@ -83,8 +79,6 @@
     "clipboardDenied": "クリップボード許可が拒否されました。",
     "orContinueWith": "または続行",
     "or": "または",
-    "google": "Google",
-    "microsoft": "Microsoft",
     "signInWithGoogle": "Googleでログイン",
     "signingIn": "ログイン中...",
     "createAccount": "Ministry Mapperを始めるためにアカウントを作成してください",
@@ -96,23 +90,21 @@
     "showPassword": "パスワードを表示",
     "hidePassword": "パスワードを隠す",
     "securityIcon": "セキュリティ",
-    "passwordResetIcon": "パスワードリセット",
     "otpHelp": "メールに送信された4桁のコードを入力してください",
     "emailHelp": "このメールに確認リンクを送信します。",
     "resetEmailHelp": "アカウントが存在する場合、このメールにパスワードリセットリンクを送信します。",
     "nameRequired": "名前を入力してください。",
-    "backToLogin": "ログインに戻る"
+    "backToLogin": "ログインに戻る",
+    "didNotReceiveEmail": "確認メールが届きませんか？",
+    "verificationEmailResent": "確認メールを再送信しました。",
+    "verifyEmailMessage": "続行するにはメールアドレスを確認してください。"
   },
   "territory": {
     "territory": "区域",
-    "territories": "区域",
     "selectTerritory": "区域選択",
     "createTerritory": "区域作成",
     "changeName": "名前変更",
     "changeCode": "コード変更",
-    "deleteTerritory": "区域削除",
-    "resetTerritory": "区域リセット",
-    "noTerritory": "区域未選択",
     "createNew": "新規作成",
     "deleteCurrent": "現在を削除",
     "resetStatus": "状態リセット",
@@ -128,7 +120,12 @@
     "notHome": "不在",
     "completed": "完了",
     "assignees": "担当者",
-    "publisherPlaceholder": "奉仕者名を入力"
+    "publisherPlaceholder": "奉仕者名を入力",
+    "changeSuccess": "区域 {{code}} が正常に更新されました。",
+    "deleteSuccess": "区域 {{code}} を削除しました。",
+    "noTerritories": "区域がありません",
+    "noTerritoriesDescription": "新しい区域を作成して開始してください。",
+    "territoryCode": "区域コード"
   },
   "map": {
     "newMap": "新規マップ",
@@ -155,14 +152,13 @@
     "newMapNumber": "新規マップ番号",
     "deleteSuccess": "住所が削除されました, {{name}}.",
     "updateMapSequence": "マップ順序の更新",
-    "dragToReorder": "カードをドラッグ&ドロップして順序を変更してください"
+    "dragToReorder": "カードをドラッグ&ドロップして順序を変更してください",
+    "enterNewMapNumber": "新しい地図番号を入力してください"
   },
   "address": {
     "address": "住所",
-    "addresses": "住所",
     "location": "位置",
     "coordinates": "座標",
-    "unit": "ユニット",
     "floor": "階",
     "name": "名前",
     "status": "状態",
@@ -185,7 +181,6 @@
     "resetStatus": "状態リセット",
     "delete": "削除",
     "notes": "メモ",
-    "territorySequence": "区域順序",
     "clickToSelectOnMap": "マップで選択",
     "coordinatesDescription": "住所の緯度と経度。",
     "updatedByOn": "{{date}}に{{user}}が更新",
@@ -193,7 +188,8 @@
     "clearNote": "メモを消去",
     "resetWarning": "⚠️ 警告：「{{name}}」のすべての物件状態をリセットします。この操作は元に戻せません。続行しますか？",
     "deleteWarning": "⚠️ 警告：マップ「{{name}}」を完全に削除します。この操作は元に戻せません。続行しますか？",
-    "locationWithName": "{{name}}の位置"
+    "locationWithName": "{{name}}の位置",
+    "deleteFloorWarning": "⚠️ 警告: \"{{name}}\" の {{floor}} 階を削除します。この操作は元に戻せません。続行しますか？"
   },
   "household": {
     "household": "世帯",
@@ -209,8 +205,6 @@
     "numberOfFloors": "階数"
   },
   "user": {
-    "user": "ユーザー",
-    "users": "ユーザー",
     "selectUser": "ユーザー選択",
     "manageUsers": "ユーザー管理",
     "inviteUser": "招待",
@@ -232,7 +226,6 @@
   },
   "congregation": {
     "congregation": "会衆",
-    "congregations": "会衆",
     "selectCongregation": "会衆選択",
     "settings": "設定",
     "options": "オプション",
@@ -256,17 +249,15 @@
     "expiryDescription": "区域スリップリンクの有効期間",
     "triesDescription": "不在を完了とみなすまでの試行回数",
     "defaultSlipExpiry": "デフォルト期限時間",
-    "optionsUpdated": "会衆世帯オプションを更新しました。"
+    "optionsUpdated": "会衆世帯オプションを更新しました。",
+    "duplicateOptionCodes": "重複するオプションコードが見つかりました。入力内容を確認してください。",
+    "notFound": "会衆が見つかりません。"
   },
   "assignment": {
     "assignment": "割当",
     "assignments": "割当",
-    "create": "割当作成",
-    "createdDate": "作成日",
-    "expiryDate": "期限日",
     "publisher": "伝道者",
     "link": "リンク",
-    "delete": "削除",
     "linkWithTerritory": "{{territory}} {{type}}リンク"
   },
   "assignments": {
@@ -280,15 +271,12 @@
   },
   "messages": {
     "messages": "メッセージ",
-    "readMessages": "既読",
-    "unreadMessages": "未読",
     "enterMessage": "メッセージ入力",
     "messagesOn": "{{name}}のメッセージ"
   },
   "navigation": {
     "map": "マップ",
     "list": "リスト",
-    "account": "アカウント",
     "help": "ヘルプ",
     "legend": "凡例",
     "listView": "リスト表示",
@@ -334,7 +322,8 @@
   },
   "table": {
     "levelUnit": "階/ユニット",
-    "deleteFloor": "🗑️"
+    "deleteFloor": "🗑️",
+    "deleteUnit": "🗑️"
   },
   "unit": {
     "alphanumericDashHyphenValidation": "ユニット/物件番号には英数字、ダッシュ、またはハイフンのみ含める必要があります。",
@@ -342,10 +331,8 @@
     "addUnitTitle": "{{mapId}}にユニット追加",
     "propertyNumberLabel": "物件番号",
     "unitNumberLabel": "ユニット番号",
-    "updateTitle": "ユニット{{unitDisplay}}",
     "requireOneUnitValidation": "区域には最低1つのユニット番号が必要です。",
-    "confirmDelete": "⚠️ 警告：「{{mapName}}」のユニット番号「{{unitNo}}」を削除します。この操作は元に戻せません。続行しますか？",
-    "deleteUnitButton": "ユニット削除"
+    "confirmDelete": "⚠️ 警告：「{{mapName}}」のユニット番号「{{unitNo}}」を削除します。この操作は元に戻せません。続行しますか？"
   },
   "profile": {
     "updateSuccess": "プロフィール更新。",
@@ -383,6 +370,7 @@
     "dark": "ダーク",
     "darkDescription": "目に優しい",
     "system": "システム",
-    "systemDescription": "デバイスの設定に従います"
+    "systemDescription": "デバイスの設定に従います",
+    "theme": "テーマ"
   }
 }

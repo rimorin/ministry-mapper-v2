@@ -4,12 +4,8 @@
     "close": "关闭",
     "save": "保存",
     "cancel": "取消",
-    "yes": "是",
-    "no": "否",
     "delete": "删除",
-    "edit": "编辑",
     "create": "创建",
-    "search": "搜索",
     "select": "选择",
     "selectLanguage": "选择语言",
     "submit": "提交",
@@ -28,12 +24,13 @@
     "Expiry": "到期",
     "name": "姓名",
     "success": "成功！",
-    "error": "错误"
+    "error": "错误",
+    "Language": "语言",
+    "Loading": "加载中..."
   },
   "auth": {
     "signIn": "登录",
     "signUp": "注册",
-    "signOut": "登出",
     "forgotPassword": "忘记密码",
     "resetPassword": "重置密码",
     "changePassword": "更改密码",
@@ -41,7 +38,6 @@
     "password": "密码",
     "confirmPassword": "确认密码",
     "name": "姓名",
-    "profile": "个人资料",
     "welcome": "欢迎",
     "welcomeDefault": "来到传道地图",
     "logout": "登出",
@@ -83,8 +79,6 @@
     "clipboardDenied": "访问剪贴板的权限被拒绝。",
     "orContinueWith": "或继续使用",
     "or": "或",
-    "google": "Google",
-    "microsoft": "Microsoft",
     "signInWithGoogle": "使用 Google 登录",
     "signingIn": "登录中...",
     "createAccount": "创建您的账户以开始使用传道地图",
@@ -96,23 +90,21 @@
     "showPassword": "显示密码",
     "hidePassword": "隐藏密码",
     "securityIcon": "安全",
-    "passwordResetIcon": "密码重置",
     "otpHelp": "输入发送到您电子邮件的4位数代码",
     "emailHelp": "我们将向此电子邮件发送验证链接。",
     "resetEmailHelp": "如果账户存在，我们将向此电子邮件发送密码重置链接。",
     "nameRequired": "请输入您的姓名。",
-    "backToLogin": "返回登录"
+    "backToLogin": "返回登录",
+    "didNotReceiveEmail": "没有收到验证邮件？",
+    "verificationEmailResent": "验证邮件已重新发送。",
+    "verifyEmailMessage": "请验证您的电子邮件地址以继续。"
   },
   "territory": {
     "territory": "传道区域",
-    "territories": "传道区域",
     "selectTerritory": "选择传道区域",
     "createTerritory": "创建传道区域",
     "changeName": "更改名称",
     "changeCode": "更改代码",
-    "deleteTerritory": "删除传道区域",
-    "resetTerritory": "重置传道区域",
-    "noTerritory": "未选择传道区域",
     "createNew": "创建新区域",
     "deleteCurrent": "删除当前区域",
     "resetStatus": "重置状态",
@@ -128,7 +120,12 @@
     "notHome": "不在家",
     "completed": "已完成",
     "assignees": "指派人员",
-    "publisherPlaceholder": "输入传道员姓名"
+    "publisherPlaceholder": "输入传道员姓名",
+    "changeSuccess": "领土 {{code}} 更新成功。",
+    "deleteSuccess": "已删除领土 {{code}}。",
+    "noTerritories": "没有领土",
+    "noTerritoriesDescription": "创建一个新领土以开始。",
+    "territoryCode": "领土代码"
   },
   "map": {
     "newMap": "新地图",
@@ -155,14 +152,13 @@
     "newMapNumber": "新地图编号",
     "deleteSuccess": "地址已删除, {{name}}.",
     "updateMapSequence": "更新地图顺序",
-    "dragToReorder": "拖放卡片以重新排序"
+    "dragToReorder": "拖放卡片以重新排序",
+    "enterNewMapNumber": "请输入新的地图编号"
   },
   "address": {
     "address": "地址",
-    "addresses": "地址",
     "location": "位置",
     "coordinates": "坐标",
-    "unit": "单元",
     "floor": "楼层",
     "name": "名称",
     "status": "状态",
@@ -185,7 +181,6 @@
     "resetStatus": "重置状态",
     "delete": "删除",
     "notes": "备注",
-    "territorySequence": "区域序列",
     "clickToSelectOnMap": "点击在地图上选择",
     "coordinatesDescription": "地址的纬度和经度。",
     "updatedByOn": "由{{user}}于{{date}}更新",
@@ -210,8 +205,6 @@
     "numberOfFloors": "楼层数量"
   },
   "user": {
-    "user": "用户",
-    "users": "用户",
     "selectUser": "选择用户",
     "manageUsers": "管理用户",
     "inviteUser": "邀请用户",
@@ -233,7 +226,6 @@
   },
   "congregation": {
     "congregation": "会众",
-    "congregations": "会众",
     "selectCongregation": "选择会众",
     "settings": "设置",
     "options": "选项",
@@ -257,17 +249,15 @@
     "expiryDescription": "传道区域单过期前的持续时间",
     "triesDescription": "在认为完成之前尝试不在家的次数",
     "defaultSlipExpiry": "默认单到期小时数",
-    "optionsUpdated": "会众家庭选项已更新。"
+    "optionsUpdated": "会众家庭选项已更新。",
+    "duplicateOptionCodes": "发现重复的选项代码。请检查您的输入。",
+    "notFound": "未找到会众。"
   },
   "assignment": {
     "assignment": "分配",
     "assignments": "分配",
-    "create": "创建分配",
-    "createdDate": "创建日期",
-    "expiryDate": "到期日期",
     "publisher": "发布者",
     "link": "链接",
-    "delete": "删除",
     "linkWithTerritory": "{{territory}} {{type}} 链接"
   },
   "assignments": {
@@ -281,15 +271,12 @@
   },
   "messages": {
     "messages": "消息",
-    "readMessages": "已读消息",
-    "unreadMessages": "未读消息",
     "enterMessage": "输入消息",
     "messagesOn": "{{name}} 上的消息"
   },
   "navigation": {
     "map": "地图",
     "list": "列表",
-    "account": "账户",
     "help": "帮助",
     "legend": "图例",
     "listView": "列表视图",
@@ -335,7 +322,8 @@
   },
   "table": {
     "levelUnit": "楼层/单元",
-    "deleteFloor": "🗑️"
+    "deleteFloor": "🗑️",
+    "deleteUnit": "🗑️"
   },
   "location": {},
   "unit": {
@@ -344,10 +332,8 @@
     "addUnitTitle": "将单元添加到 {{mapId}}",
     "propertyNumberLabel": "房产编号",
     "unitNumberLabel": "单元编号",
-    "updateTitle": "单元 {{unitDisplay}}",
     "requireOneUnitValidation": "区域至少需要 1 个单元编号。",
-    "confirmDelete": "⚠️ 警告：正在删除 \"{{mapName}}\" 的单元编号 \"{{unitNo}}\"。此操作无法撤销。继续？",
-    "deleteUnitButton": "删除单元"
+    "confirmDelete": "⚠️ 警告：正在删除 \"{{mapName}}\" 的单元编号 \"{{unitNo}}\"。此操作无法撤销。继续？"
   },
   "profile": {
     "updateSuccess": "个人资料已更新。",
@@ -385,6 +371,7 @@
     "dark": "深色",
     "darkDescription": "护眼模式",
     "system": "系统",
-    "systemDescription": "跟随您的设备设置"
+    "systemDescription": "跟随您的设备设置",
+    "theme": "主题"
   }
 }

@@ -310,6 +310,10 @@
   filter: invert(1) brightness(1.2);
 }
 
+[data-bs-theme="dark"] .help-button {
+  filter: var(--mm-icon-invert-bright);
+}
+
 /* ===== NAVBAR ===== */
 [data-bs-theme="dark"] .admin-navbar,
 [data-bs-theme="dark"] .navbar {
@@ -343,6 +347,11 @@
 [data-bs-theme="dark"] .navbar-toggler:focus {
   border-color: var(--mm-focus-color);
   box-shadow: var(--mm-focus-shadow);
+}
+
+[data-bs-theme="dark"] .navbar img[alt="Legend"],
+[data-bs-theme="dark"] .navbar img[alt="Information"] {
+  filter: var(--mm-icon-invert-bright);
 }
 
 /* ===== ADMIN PAGE ===== */

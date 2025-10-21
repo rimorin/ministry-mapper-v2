@@ -10,12 +10,29 @@ export default defineConfig(() => {
       sourcemap: true,
       rollupOptions: {
         output: {
-          manualChunks: {
-            react: ["react", "react-dom"],
-            sentry: ["@sentry/react"],
-            gmaps: ["@vis.gl/react-google-maps"],
-            pocketbase: ["pocketbase"],
-            routing: ["wouter"]
+          manualChunks(id) {
+            // Large vendors get their own chunks
+            if (id.includes("node_modules/@sentry")) return "vendor-sentry";
+            if (
+              id.includes("node_modules/react-bootstrap") ||
+              id.includes("node_modules/bootstrap")
+            )
+              return "vendor-bootstrap";
+            if (
+              id.includes("node_modules/react-select") ||
+              id.includes("node_modules/@dnd-kit") ||
+              id.includes("node_modules/react-calendar") ||
+              id.includes("node_modules/react-countdown") ||
+              id.includes("node_modules/react-password-checklist") ||
+              id.includes("node_modules/react-countdown") ||
+              id.includes("node_modules/ebay/nice-modal-react")
+            )
+              return "vendor-ui";
+
+            // Everything else from node_modules
+            if (id.includes("node_modules")) {
+              return "vendor-libs";
+            }
           }
         }
       }
@@ -70,7 +87,6 @@ export default defineConfig(() => {
         scss: {
           silenceDeprecations: [
             "import",
-            "mixed-decls",
             "color-functions",
             "global-builtin",
             "legacy-js-api"

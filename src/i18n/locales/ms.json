@@ -4,12 +4,8 @@
     "close": "Tutup",
     "save": "Simpan",
     "cancel": "Batal",
-    "yes": "Ya",
-    "no": "Tidak",
     "delete": "Padam",
-    "edit": "Edit",
     "create": "Cipta",
-    "search": "Cari",
     "select": "Pilih",
     "selectLanguage": "Pilih Bahasa",
     "submit": "Hantar",
@@ -28,12 +24,13 @@
     "Expiry": "Tamat",
     "name": "Nama",
     "success": "Berjaya!",
-    "error": "Ralat"
+    "error": "Ralat",
+    "Language": "Bahasa",
+    "Loading": "Memuatkan..."
   },
   "auth": {
     "signIn": "Log Masuk",
     "signUp": "Daftar",
-    "signOut": "Log Keluar",
     "forgotPassword": "Lupa Kata Laluan",
     "resetPassword": "Reset Kata Laluan",
     "changePassword": "Tukar Kata Laluan",
@@ -41,7 +38,6 @@
     "password": "Kata Laluan",
     "confirmPassword": "Sahkan Kata Laluan",
     "name": "Nama",
-    "profile": "Profil",
     "welcome": "Selamat Datang",
     "welcomeDefault": "Ke Ministry Mapper",
     "logout": "Log Keluar",
@@ -83,8 +79,6 @@
     "clipboardDenied": "Kebenaran akses clipboard ditolak.",
     "orContinueWith": "Atau teruskan dengan",
     "or": "Atau",
-    "google": "Google",
-    "microsoft": "Microsoft",
     "signInWithGoogle": "Log masuk dengan Google",
     "signingIn": "Memasuk...",
     "createAccount": "Cipta akaun anda untuk bermula dengan Ministry Mapper",
@@ -96,26 +90,24 @@
     "showPassword": "Tunjukkan kata laluan",
     "hidePassword": "Sembunyikan kata laluan",
     "securityIcon": "Keselamatan",
-    "passwordResetIcon": "Set Semula Kata Laluan",
     "otpHelp": "Masukkan kod 4 digit yang dihantar ke e-mel anda",
     "emailHelp": "Kami akan menghantar pautan pengesahan ke e-mel ini.",
     "resetEmailHelp": "Kami akan menghantar pautan set semula kata laluan ke e-mel ini jika akaun wujud.",
     "nameRequired": "Sila masukkan nama anda.",
-    "backToLogin": "Kembali ke Log Masuk"
+    "backToLogin": "Kembali ke Log Masuk",
+    "didNotReceiveEmail": "Tidak menerima emel pengesahan?",
+    "verificationEmailResent": "Emel pengesahan telah dihantar semula.",
+    "verifyEmailMessage": "Sila sahkan alamat emel anda untuk meneruskan."
   },
   "territory": {
     "territory": "Wilayah",
-    "territories": "Wilayah",
     "selectTerritory": "Pilih Wilayah",
     "createTerritory": "Cipta Wilayah",
     "changeName": "Tukar Nama",
     "changeCode": "Tukar Kod",
-    "deleteTerritory": "Padam Wilayah",
-    "resetTerritory": "Reset Wilayah",
-    "noTerritory": "Tiada wilayah dipilih",
     "createNew": "Cipta Baru",
     "deleteCurrent": "Padam Semasa",
-    "resetStatus": "Reset Status",
+    "resetStatus": "Set Semula Status",
     "deleteWarning": "⚠️ AMARAN: Memadam wilayah \"{{code}}\" akan membuang semua peta dan tugasan berkaitan. Tindakan ini tidak boleh dibatalkan. Teruskan?",
     "resetWarning": "⚠️ AMARAN: Reset wilayah \"{{code}}\" akan reset status semua alamat. Tindakan ini tidak boleh dibatalkan. Teruskan?",
     "existingTerritoryCode": "Kod Wilayah Sedia Ada",
@@ -128,7 +120,12 @@
     "notHome": "Tidak Ada di Rumah",
     "completed": "Selesai",
     "assignees": "Yang Ditugaskan",
-    "publisherPlaceholder": "Masukkan nama pemberita"
+    "publisherPlaceholder": "Masukkan nama pemberita",
+    "changeSuccess": "Wilayah {{code}} berjaya dikemas kini.",
+    "deleteSuccess": "Wilayah {{code}} telah dipadam.",
+    "noTerritories": "Tiada Wilayah",
+    "noTerritoriesDescription": "Cipta wilayah baharu untuk bermula.",
+    "territoryCode": "Kod Wilayah"
   },
   "map": {
     "newMap": "Peta Baru",
@@ -155,14 +152,13 @@
     "newMapNumber": "Nombor Peta Baru",
     "deleteSuccess": "Alamat dipadam, {{name}}.",
     "updateMapSequence": "Kemas Kini Urutan Peta",
-    "dragToReorder": "Seret dan lepaskan kad untuk menyusun semula urutan"
+    "dragToReorder": "Seret dan lepaskan kad untuk menyusun semula urutan",
+    "enterNewMapNumber": "Sila masukkan nombor peta baharu"
   },
   "address": {
     "address": "Alamat",
-    "addresses": "Alamat",
     "location": "Lokasi",
     "coordinates": "Koordinat",
-    "unit": "Unit",
     "floor": "Tingkat",
     "name": "Nama",
     "status": "Status",
@@ -182,10 +178,9 @@
     "addUnit": "Tambah No. Unit",
     "addHigherFloor": "Tambah Tingkat Atas",
     "addLowerFloor": "Tambah Tingkat Bawah",
-    "resetStatus": "Reset Status",
+    "resetStatus": "Set Semula Status",
     "delete": "Padam",
     "notes": "Nota",
-    "territorySequence": "Urutan Wilayah",
     "clickToSelectOnMap": "Klik untuk pilih di peta",
     "coordinatesDescription": "Latitud dan Longitud alamat.",
     "updatedByOn": "Dikemas kini oleh {{user}} pada {{date}}",
@@ -193,7 +188,8 @@
     "clearNote": "Kosongkan Nota",
     "resetWarning": "⚠️ AMARAN: Reset semua status hartanah bagi \"{{name}}\" akan reset semua status. Tindakan ini tidak boleh dibatalkan. Teruskan?",
     "deleteWarning": "⚠️ AMARAN: Memadam peta \"{{name}}\" akan membuangnya sepenuhnya. Tindakan ini tidak boleh dibatalkan. Teruskan?",
-    "locationWithName": "Lokasi {{name}}"
+    "locationWithName": "Lokasi {{name}}",
+    "deleteFloorWarning": "⚠️ AMARAN: Memadam tingkat {{floor}} daripada \"{{name}}\". Tindakan ini tidak boleh dibatalkan. Teruskan?"
   },
   "household": {
     "household": "Isi Rumah",
@@ -209,8 +205,6 @@
     "numberOfFloors": "Bil. tingkat"
   },
   "user": {
-    "user": "Pengguna",
-    "users": "Pengguna",
     "selectUser": "Pilih Pengguna",
     "manageUsers": "Urus Pengguna",
     "inviteUser": "Jemput Pengguna",
@@ -232,7 +226,6 @@
   },
   "congregation": {
     "congregation": "Sidang",
-    "congregations": "Sidang",
     "selectCongregation": "Pilih Sidang",
     "settings": "Tetapan",
     "options": "Pilihan",
@@ -256,17 +249,15 @@
     "expiryDescription": "Tempoh pautan slip wilayah sebelum ia tamat",
     "triesDescription": "Bilangan kali untuk cuba rumah tiada di rumah sebelum menganggapnya selesai",
     "defaultSlipExpiry": "Tamat Tempoh Slip Lalai (Jam)",
-    "optionsUpdated": "Pilihan isi rumah sidang dikemas kini."
+    "optionsUpdated": "Pilihan isi rumah sidang dikemas kini.",
+    "duplicateOptionCodes": "Kod pilihan pendua ditemui. Sila semak input anda.",
+    "notFound": "Jemaat tidak dijumpai."
   },
   "assignment": {
     "assignment": "Tugasan",
     "assignments": "Tugasan",
-    "create": "Cipta Tugasan",
-    "createdDate": "Tarikh Dicipta",
-    "expiryDate": "Tarikh Tamat",
     "publisher": "Penerbit",
     "link": "Pautan",
-    "delete": "Padam",
     "linkWithTerritory": "Pautan {{territory}} {{type}}"
   },
   "assignments": {
@@ -280,15 +271,12 @@
   },
   "messages": {
     "messages": "Mesej",
-    "readMessages": "Mesej Dibaca",
-    "unreadMessages": "Mesej Belum Dibaca",
     "enterMessage": "Masukkan mesej",
     "messagesOn": "Mesej pada {{name}}"
   },
   "navigation": {
     "map": "Peta",
     "list": "Senarai",
-    "account": "Akaun",
     "help": "Bantuan",
     "legend": "Petunjuk",
     "listView": "Paparan Senarai",
@@ -334,7 +322,8 @@
   },
   "table": {
     "levelUnit": "tingkat/unit",
-    "deleteFloor": "🗑️"
+    "deleteFloor": "🗑️",
+    "deleteUnit": "🗑️"
   },
   "unit": {
     "alphanumericDashHyphenValidation": "Nombor Unit/Hartanah hanya boleh mengandungi aksara abjad angka, sengkang atau tanda sempang.",
@@ -342,10 +331,8 @@
     "addUnitTitle": "Tambah unit ke {{mapId}}",
     "propertyNumberLabel": "Nombor hartanah",
     "unitNumberLabel": "Nombor unit",
-    "updateTitle": "Unit {{unitDisplay}}",
     "requireOneUnitValidation": "Wilayah memerlukan sekurang-kurangnya 1 nombor unit.",
-    "confirmDelete": "⚠️ AMARAN: Memadam nombor unit \"{{unitNo}}\" bagi \"{{mapName}}\". Tindakan ini tidak boleh dibatalkan. Teruskan?",
-    "deleteUnitButton": "Padam Unit"
+    "confirmDelete": "⚠️ AMARAN: Memadam nombor unit \"{{unitNo}}\" bagi \"{{mapName}}\". Tindakan ini tidak boleh dibatalkan. Teruskan?"
   },
   "profile": {
     "updateSuccess": "Profil dikemas kini.",
@@ -383,6 +370,7 @@
     "dark": "Gelap",
     "darkDescription": "Mudah untuk mata",
     "system": "Sistem",
-    "systemDescription": "Mengikut tetapan peranti anda"
+    "systemDescription": "Mengikut tetapan peranti anda",
+    "theme": "Tema"
   }
 }

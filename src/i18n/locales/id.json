@@ -4,12 +4,8 @@
     "close": "Tutup",
     "save": "Simpan",
     "cancel": "Batal",
-    "yes": "Ya",
-    "no": "Tidak",
     "delete": "Hapus",
-    "edit": "Edit",
     "create": "Buat",
-    "search": "Cari",
     "select": "Pilih",
     "selectLanguage": "Pilih Bahasa",
     "submit": "Kirim",
@@ -28,12 +24,13 @@
     "Expiry": "Kedaluwarsa",
     "name": "Nama",
     "success": "Berhasil!",
-    "error": "Kesalahan"
+    "error": "Kesalahan",
+    "Language": "Bahasa",
+    "Loading": "Memuat..."
   },
   "auth": {
     "signIn": "Masuk",
     "signUp": "Daftar",
-    "signOut": "Keluar",
     "forgotPassword": "Lupa Kata Sandi",
     "resetPassword": "Setel Ulang Kata Sandi",
     "changePassword": "Ubah Kata Sandi",
@@ -41,7 +38,6 @@
     "password": "Kata Sandi",
     "confirmPassword": "Konfirmasi Kata Sandi",
     "name": "Nama",
-    "profile": "Profil",
     "welcome": "Selamat Datang",
     "welcomeDefault": "Ke Ministry Mapper",
     "logout": "Keluar",
@@ -83,8 +79,6 @@
     "clipboardDenied": "Izin untuk mengakses clipboard ditolak.",
     "orContinueWith": "Atau lanjutkan dengan",
     "or": "Atau",
-    "google": "Google",
-    "microsoft": "Microsoft",
     "signInWithGoogle": "Masuk dengan Google",
     "signingIn": "Masuk...",
     "createAccount": "Buat akun Anda untuk memulai dengan Ministry Mapper",
@@ -96,23 +90,21 @@
     "showPassword": "Tampilkan kata sandi",
     "hidePassword": "Sembunyikan kata sandi",
     "securityIcon": "Keamanan",
-    "passwordResetIcon": "Reset Kata Sandi",
     "otpHelp": "Masukkan kode 4 digit yang dikirim ke email Anda",
     "emailHelp": "Kami akan mengirim tautan verifikasi ke email ini.",
     "resetEmailHelp": "Kami akan mengirim tautan reset kata sandi ke email ini jika akun tersebut ada.",
     "nameRequired": "Silakan masukkan nama Anda.",
-    "backToLogin": "Kembali ke Login"
+    "backToLogin": "Kembali ke Login",
+    "didNotReceiveEmail": "Tidak menerima email verifikasi?",
+    "verificationEmailResent": "Email verifikasi telah dikirim ulang.",
+    "verifyEmailMessage": "Silakan verifikasi alamat email Anda untuk melanjutkan."
   },
   "territory": {
     "territory": "Wilayah",
-    "territories": "Wilayah-wilayah",
     "selectTerritory": "Pilih Wilayah",
     "createTerritory": "Buat Wilayah",
     "changeName": "Ubah Nama",
     "changeCode": "Ubah Kode",
-    "deleteTerritory": "Hapus Wilayah",
-    "resetTerritory": "Setel Ulang Wilayah",
-    "noTerritory": "Tidak ada wilayah yang dipilih",
     "createNew": "Buat Baru",
     "deleteCurrent": "Hapus yang Sekarang",
     "resetStatus": "Setel Ulang Status",
@@ -128,14 +120,17 @@
     "notHome": "Tidak Ada di Rumah",
     "completed": "Selesai",
     "assignees": "Yang Ditugaskan",
-    "publisherPlaceholder": "Masukkan nama pemberita"
+    "publisherPlaceholder": "Masukkan nama pemberita",
+    "changeSuccess": "Wilayah {{code}} berhasil diperbarui.",
+    "deleteSuccess": "Wilayah {{code}} telah dihapus.",
+    "noTerritories": "Tidak Ada Wilayah",
+    "noTerritoriesDescription": "Buat wilayah baru untuk memulai.",
+    "territoryCode": "Kode Wilayah"
   },
   "address": {
     "address": "Alamat",
-    "addresses": "Alamat-alamat",
     "location": "Lokasi",
     "coordinates": "Koordinat",
-    "unit": "Unit",
     "floor": "Lantai",
     "name": "Nama",
     "status": "Status",
@@ -158,7 +153,6 @@
     "resetStatus": "Setel Ulang Status",
     "delete": "Hapus",
     "notes": "Catatan",
-    "territorySequence": "Urutan Wilayah",
     "clickToSelectOnMap": "Klik untuk memilih di peta",
     "coordinatesDescription": "Lintang dan Bujur alamat.",
     "updatedByOn": "Diperbarui oleh {{user}} pada {{date}}",
@@ -166,7 +160,8 @@
     "clearNote": "Hapus Catatan",
     "resetWarning": "⚠️ PERINGATAN: Mengatur ulang status semua properti \"{{name}}\" akan mengatur ulang semua status. Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
     "deleteWarning": "⚠️ PERINGATAN: Menghapus peta \"{{name}}\" akan menghapusnya sepenuhnya. Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
-    "locationWithName": "Lokasi {{name}}"
+    "locationWithName": "Lokasi {{name}}",
+    "deleteFloorWarning": "⚠️ PERINGATAN: Menghapus lantai {{floor}} dari \"{{name}}\". Tindakan ini tidak dapat dibatalkan. Lanjutkan?"
   },
   "household": {
     "household": "Rumah Tangga",
@@ -182,8 +177,6 @@
     "numberOfFloors": "Jumlah lantai"
   },
   "user": {
-    "user": "Pengguna",
-    "users": "Pengguna-pengguna",
     "selectUser": "Pilih Pengguna",
     "manageUsers": "Kelola Pengguna",
     "inviteUser": "Undang Pengguna",
@@ -205,7 +198,6 @@
   },
   "congregation": {
     "congregation": "Sidang",
-    "congregations": "Sidang-sidang",
     "selectCongregation": "Pilih Sidang",
     "settings": "Pengaturan",
     "options": "Opsi",
@@ -224,22 +216,20 @@
     "optionDefaultTooltip": "Ini menentukan jenis rumah tangga default dari wilayah sidang. Opsi default tidak akan muncul di kotak rumah wilayah.",
     "sequence": "Urutan",
     "countable": "Dapat Dihitung",
-    "default": "Default",
+    "default": "Bawaan",
     "newOption": "Opsi Baru",
     "expiryDescription": "Durasi tautan slip wilayah sebelum kedaluwarsa",
     "triesDescription": "Jumlah percobaan untuk rumah yang tidak ada penghuni sebelum dianggap selesai",
     "defaultSlipExpiry": "Jam Kedaluwarsa Slip Default",
-    "optionsUpdated": "Opsi rumah tangga sidang telah diperbarui."
+    "optionsUpdated": "Opsi rumah tangga sidang telah diperbarui.",
+    "duplicateOptionCodes": "Kode opsi duplikat ditemukan. Silakan periksa masukan Anda.",
+    "notFound": "Jemaat tidak ditemukan."
   },
   "assignment": {
     "assignment": "Penugasan",
     "assignments": "Penugasan-penugasan",
-    "create": "Buat Penugasan",
-    "createdDate": "Tanggal Dibuat",
-    "expiryDate": "Tanggal Kadaluarsa",
     "publisher": "Penerbit",
     "link": "Tautan",
-    "delete": "Hapus",
     "linkWithTerritory": "{{territory}} {{type}} Tautan"
   },
   "assignments": {
@@ -253,15 +243,12 @@
   },
   "messages": {
     "messages": "Pesan",
-    "readMessages": "Pesan Terbaca",
-    "unreadMessages": "Pesan Belum Dibaca",
     "enterMessage": "Masukkan pesan",
     "messagesOn": "Pesan di {{name}}"
   },
   "navigation": {
     "map": "Peta",
     "list": "Daftar",
-    "account": "Akun",
     "help": "Bantuan",
     "legend": "Legenda",
     "listView": "Tampilan Daftar",
@@ -301,7 +288,8 @@
     "newMapNumber": "Nomor Peta Baru",
     "deleteSuccess": "Alamat dihapus, {{name}}.",
     "updateMapSequence": "Perbarui Urutan Peta",
-    "dragToReorder": "Seret dan lepaskan kartu untuk mengurutkan kembali urutan"
+    "dragToReorder": "Seret dan lepaskan kartu untuk mengurutkan kembali urutan",
+    "enterNewMapNumber": "Silakan masukkan nomor peta baru"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper sedang dalam pemeliharaan.",
@@ -333,8 +321,9 @@
     "logo": "Logo Ministry Mapper"
   },
   "table": {
-    "levelUnit": "lvl/unit",
-    "deleteFloor": "🗑️"
+    "levelUnit": "lantai/unit",
+    "deleteFloor": "🗑️",
+    "deleteUnit": "🗑️"
   },
   "location": {},
   "unit": {
@@ -343,10 +332,8 @@
     "addUnitTitle": "Tambahkan unit ke {{mapId}}",
     "propertyNumberLabel": "Nomor properti",
     "unitNumberLabel": "Nomor unit",
-    "updateTitle": "Unit {{unitDisplay}}",
     "requireOneUnitValidation": "Wilayah membutuhkan setidaknya 1 nomor unit.",
-    "confirmDelete": "⚠️ PERINGATAN: Menghapus nomor unit \"{{unitNo}}\" dari \"{{mapName}}\". Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
-    "deleteUnitButton": "Hapus Unit"
+    "confirmDelete": "⚠️ PERINGATAN: Menghapus nomor unit \"{{unitNo}}\" dari \"{{mapName}}\". Tindakan ini tidak dapat dibatalkan. Lanjutkan?"
   },
   "profile": {
     "updateSuccess": "Profil diperbarui.",
@@ -384,6 +371,7 @@
     "dark": "Gelap",
     "darkDescription": "Nyaman untuk mata",
     "system": "Sistem",
-    "systemDescription": "Mengikuti pengaturan perangkat Anda"
+    "systemDescription": "Mengikuti pengaturan perangkat Anda",
+    "theme": "Tema"
   }
 }

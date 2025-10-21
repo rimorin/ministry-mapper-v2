@@ -4,12 +4,8 @@
     "close": "Close",
     "save": "Save",
     "cancel": "Cancel",
-    "yes": "Yes",
-    "no": "No",
     "delete": "Delete",
-    "edit": "Edit",
     "create": "Create",
-    "search": "Search",
     "select": "Select",
     "selectLanguage": "Select Language",
     "submit": "Submit",
@@ -28,12 +24,13 @@
     "Expiry": "Expiry",
     "name": "Name",
     "success": "Success!",
-    "error": "Error"
+    "error": "Error",
+    "Language": "Language",
+    "Loading": "Loading..."
   },
   "auth": {
     "signIn": "Sign In",
     "signUp": "Sign Up",
-    "signOut": "Sign Out",
     "forgotPassword": "Forgot Password",
     "resetPassword": "Reset Password",
     "changePassword": "Change Password",
@@ -41,7 +38,6 @@
     "password": "Password",
     "confirmPassword": "Confirm Password",
     "name": "Name",
-    "profile": "Profile",
     "welcome": "Welcome",
     "welcomeDefault": "To the Ministry Mapper",
     "logout": "Logout",
@@ -83,8 +79,6 @@
     "clipboardDenied": "Permission to access clipboard was denied.",
     "orContinueWith": "Or continue with",
     "or": "Or",
-    "google": "Google",
-    "microsoft": "Microsoft",
     "signInWithGoogle": "Sign in with Google",
     "signingIn": "Signing in...",
     "createAccount": "Create your account to get started with Ministry Mapper",
@@ -96,23 +90,21 @@
     "showPassword": "Show password",
     "hidePassword": "Hide password",
     "securityIcon": "Security",
-    "passwordResetIcon": "Password Reset",
     "otpHelp": "Enter the 4-digit code sent to your email",
     "emailHelp": "We'll send a verification link to this email.",
     "resetEmailHelp": "We'll send a password reset link to this email if an account exists.",
     "nameRequired": "Please enter your name.",
-    "backToLogin": "Back to Login"
+    "backToLogin": "Back to Login",
+    "didNotReceiveEmail": "Didn't receive verification email?",
+    "verificationEmailResent": "Verification email resent.",
+    "verifyEmailMessage": "Please verify your email address to continue."
   },
   "territory": {
     "territory": "Territory",
-    "territories": "Territories",
     "selectTerritory": "Select Territory",
     "createTerritory": "Create Territory",
     "changeName": "Change Name",
     "changeCode": "Change Code",
-    "deleteTerritory": "Delete Territory",
-    "resetTerritory": "Reset Territory",
-    "noTerritory": "No territory selected",
     "createNew": "Create New",
     "deleteCurrent": "Delete Current",
     "resetStatus": "Reset Status",
@@ -128,7 +120,12 @@
     "notHome": "Not Home",
     "completed": "Completed",
     "assignees": "Assignees",
-    "publisherPlaceholder": "Enter publisher name"
+    "publisherPlaceholder": "Enter publisher name",
+    "changeSuccess": "Territory {{code}} updated successfully.",
+    "deleteSuccess": "Deleted territory, {{code}}.",
+    "noTerritories": "No Territories",
+    "noTerritoriesDescription": "Create a new territory to get started.",
+    "territoryCode": "Territory Code"
   },
   "map": {
     "newMap": "New Map",
@@ -155,14 +152,13 @@
     "newMapNumber": "New Map Number",
     "deleteSuccess": "Deleted address, {{name}}.",
     "updateMapSequence": "Update Map Sequence",
-    "dragToReorder": "Drag and drop the cards to reorder the sequence"
+    "dragToReorder": "Drag and drop the cards to reorder the sequence",
+    "enterNewMapNumber": "Please enter a new map number"
   },
   "address": {
     "address": "Address",
-    "addresses": "Addresses",
     "location": "Location",
     "coordinates": "Coordinates",
-    "unit": "Unit",
     "floor": "Floor",
     "name": "Name",
     "status": "Status",
@@ -185,7 +181,6 @@
     "resetStatus": "Reset Status",
     "delete": "Delete",
     "notes": "Notes",
-    "territorySequence": "Territory Sequence",
     "clickToSelectOnMap": "Click to select on map",
     "coordinatesDescription": "Latitude and Longitude of the address.",
     "updatedByOn": "Updated by {{user}} on {{date}}",
@@ -210,8 +205,6 @@
     "numberOfFloors": "No. of floors"
   },
   "user": {
-    "user": "User",
-    "users": "Users",
     "selectUser": "Select User",
     "manageUsers": "Manage Users",
     "inviteUser": "Invite User",
@@ -233,7 +226,6 @@
   },
   "congregation": {
     "congregation": "Congregation",
-    "congregations": "Congregations",
     "selectCongregation": "Select Congregation",
     "settings": "Settings",
     "options": "Options",
@@ -257,17 +249,15 @@
     "expiryDescription": "The duration of the territory slip link before it expires",
     "triesDescription": "The number of times to try not at homes before considering it done",
     "defaultSlipExpiry": "Default Slip Expiry Hours",
-    "optionsUpdated": "Congregation household options updated."
+    "optionsUpdated": "Congregation household options updated.",
+    "duplicateOptionCodes": "Duplicate option codes found. Please check your input.",
+    "notFound": "Congregation not found."
   },
   "assignment": {
     "assignment": "Assignment",
     "assignments": "Assignments",
-    "create": "Create Assignment",
-    "createdDate": "Created Date",
-    "expiryDate": "Expiry Date",
     "publisher": "Publisher",
     "link": "Link",
-    "delete": "Delete",
     "linkWithTerritory": "{{territory}} {{type}} Links"
   },
   "assignments": {
@@ -281,15 +271,12 @@
   },
   "messages": {
     "messages": "Messages",
-    "readMessages": "Read Messages",
-    "unreadMessages": "Unread Messages",
     "enterMessage": "Enter message",
     "messagesOn": "Messages on {{name}}"
   },
   "navigation": {
     "map": "Map",
     "list": "List",
-    "account": "Account",
     "help": "Help",
     "legend": "Legend",
     "listView": "List View",
@@ -335,7 +322,8 @@
   },
   "table": {
     "levelUnit": "lvl/unit",
-    "deleteFloor": "🗑️"
+    "deleteFloor": "🗑️",
+    "deleteUnit": "🗑️"
   },
   "unit": {
     "alphanumericDashHyphenValidation": "The Unit/Property number should only include alphanumeric characters, dash or hyphen.",
@@ -343,10 +331,8 @@
     "addUnitTitle": "Add unit to {{mapId}}",
     "propertyNumberLabel": "Property number",
     "unitNumberLabel": "Unit number",
-    "updateTitle": "Unit {{unitDisplay}}",
     "requireOneUnitValidation": "Territory requires at least 1 unit number.",
-    "confirmDelete": "⚠️ WARNING: Deleting unit number \"{{unitNo}}\" of \"{{mapName}}\". This action cannot be undone. Proceed?",
-    "deleteUnitButton": "Delete Unit"
+    "confirmDelete": "⚠️ WARNING: Deleting unit number \"{{unitNo}}\" of \"{{mapName}}\". This action cannot be undone. Proceed?"
   },
   "profile": {
     "updateSuccess": "Profile updated.",
@@ -384,6 +370,7 @@
     "dark": "Dark",
     "darkDescription": "Easy on the eyes",
     "system": "System",
-    "systemDescription": "Follows your device settings"
+    "systemDescription": "Follows your device settings",
+    "theme": "Theme"
   }
 }
