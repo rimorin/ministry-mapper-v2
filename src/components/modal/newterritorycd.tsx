@@ -89,6 +89,7 @@ const NewTerritoryCode = NiceModal.create(
                 "territory.codeExample",
                 "Territory code. For eg, M01, W12, etc."
               )}
+              autoComplete="off"
             />
             <GenericInputField
               label={t("common.name", "Name")}
@@ -103,6 +104,7 @@ const NewTerritoryCode = NiceModal.create(
                 "territory.nameExample",
                 "Name of the territory. For eg, 801-810, Woodlands Drive."
               )}
+              autoComplete="off"
             />
           </Modal.Body>
           <ModalFooter

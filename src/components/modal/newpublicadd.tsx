@@ -137,6 +137,7 @@ const NewPublicAddress = NiceModal.create(
               changeValue={name}
               required={true}
               information={t("map.descriptionInfo")}
+              autoComplete="off"
             />
             <GenericInputField
               label={t("map.mapCoordinates")}
@@ -147,6 +148,7 @@ const NewPublicAddress = NiceModal.create(
               required={true}
               handleChange={() => {}}
               information={t("map.coordinatesInfo")}
+              autoComplete="off"
             />
             <FloorField
               handleChange={(e: ChangeEvent<HTMLElement>) => {

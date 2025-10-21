@@ -12,7 +12,8 @@ const GenericInputField = ({
   information = "",
   inputType = "string",
   readOnly = false,
-  focus = false
+  focus = false,
+  autoComplete
 }: FormProps) => {
   return (
     <Form.Group className="mb-3" controlId={`basicForm${name}Text`}>
@@ -28,6 +29,7 @@ const GenericInputField = ({
         readOnly={readOnly}
         // autofocus does not work for ios safari
         autoFocus={focus}
+        autoComplete={autoComplete}
       />
       {information && <Form.Text muted>{information}</Form.Text>}
     </Form.Group>
