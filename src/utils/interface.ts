@@ -140,6 +140,7 @@ export interface FormProps {
   inputType?: string;
   readOnly?: boolean;
   focus?: boolean;
+  autoComplete?: string;
 }
 
 export interface FloorProps {

@@ -275,6 +275,7 @@ const UpdateUnitStatus = NiceModal.create(
                   "address.coordinatesDescription",
                   "Latitude and Longitude of the address."
                 )}
+                autoComplete="off"
               />
             )}
             {unitDetails?.updated && unitDetails?.updatedBy && (
