@@ -8,25 +8,50 @@
   --speed-dial-font-weight: 300;
 }
 
+/* ===== LIGHT MODE ===== */
+[data-bs-theme="light"],
+:root:not([data-bs-theme]) {
+  --speed-dial-bg: var(--bs-light);
+  --speed-dial-color: var(--bs-dark);
+  --speed-dial-border: transparent;
+  --speed-dial-hover-bg: var(--bs-light);
+}
+
+/* ===== DARK MODE ===== */
+[data-bs-theme="dark"] {
+  --speed-dial-bg: var(--bs-dark);
+  --speed-dial-color: var(--bs-light);
+  --speed-dial-border: var(--mm-gray-400);
+  --speed-dial-hover-bg: var(--mm-gray-600);
+}
+
 .speed-dial {
   display: flex;
   flex-direction: column;
   align-items: center;
+  opacity: 0.65;
 }
 
 .speed-dial-fab {
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  border: none !important;
+  background-color: var(--speed-dial-bg) !important;
+  border: 1px solid var(--speed-dial-border) !important;
+  color: var(--speed-dial-color) !important;
   font-size: var(--speed-dial-fab-font-size) !important;
   font-weight: var(--speed-dial-font-weight) !important;
   transition: var(--mm-transition-all) !important;
   box-shadow: var(--mm-speed-dial-fab-shadow) !important;
 }
 
+.speed-dial-fab img {
+  transition: var(--mm-transition-fast);
+}
+
 .speed-dial-fab:hover {
   transform: scale(var(--speed-dial-hover-scale)) !important;
+  background-color: var(--speed-dial-hover-bg) !important;
   box-shadow: var(--mm-shadow-preset-xl) !important;
 }
 
@@ -38,14 +63,21 @@
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  border: none !important;
+  background-color: var(--speed-dial-bg) !important;
+  border: 1px solid var(--speed-dial-border) !important;
+  color: var(--speed-dial-color) !important;
   font-size: var(--speed-dial-action-font-size) !important;
   transition: var(--mm-transition-all) !important;
   box-shadow: var(--mm-speed-dial-action-shadow) !important;
 }
 
+.speed-dial-action img {
+  transition: var(--mm-transition-fast);
+}
+
 .speed-dial-action:hover {
   transform: scale(var(--speed-dial-hover-scale)) !important;
+  background-color: var(--speed-dial-hover-bg) !important;
   box-shadow: var(--mm-shadow-preset-lg) !important;
 }
 

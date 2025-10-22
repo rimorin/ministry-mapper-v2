@@ -249,7 +249,7 @@ const QuickLinkModal = NiceModal.create(
                     />
                     <MapControl position={ControlPosition.TOP_CENTER}>
                       <div
-                        className="bg-white rounded-3 shadow-lg border p-3 mt-1"
+                        className="bg-body rounded-3 shadow-lg border p-3 mt-1"
                         style={{ minWidth: "280px" }}
                       >
                         <div className="d-flex justify-content-center gap-3">
@@ -257,7 +257,7 @@ const QuickLinkModal = NiceModal.create(
                             <div className="fw-bold text-warning fs-5">
                               {mapData.not_done}
                             </div>
-                            <small className="text-muted">
+                            <small className="text-body-secondary">
                               {t("territory.notDone")}
                             </small>
                           </div>
@@ -265,7 +265,7 @@ const QuickLinkModal = NiceModal.create(
                             <div className="fw-bold text-info fs-5">
                               {mapData.not_home}
                             </div>
-                            <small className="text-muted">
+                            <small className="text-body-secondary">
                               {t("territory.notHome")}
                             </small>
                           </div>
@@ -273,7 +273,7 @@ const QuickLinkModal = NiceModal.create(
                             <div className="fw-bold text-success fs-5">
                               {mapData.progress}%
                             </div>
-                            <small className="text-muted">
+                            <small className="text-body-secondary">
                               {t("territory.completed")}
                             </small>
                           </div>
@@ -282,15 +282,14 @@ const QuickLinkModal = NiceModal.create(
                         {mapData.assignees.length > 0 && (
                           <div className="border-top pt-2 mt-2">
                             <div className="text-center">
-                              <small className="text-muted fw-medium mb-2 d-block">
+                              <small className="text-body-secondary fw-medium mb-2 d-block">
                                 {t("territory.assignees")}
                               </small>
                               <div className="d-flex flex-wrap justify-content-center gap-1">
                                 {mapData.assignees.map((assignee, index) => (
                                   <Badge
                                     key={index}
-                                    bg="light"
-                                    text="dark"
+                                    bg="secondary"
                                     className="px-2 py-1"
                                     style={{ fontSize: "0.875rem" }}
                                   >

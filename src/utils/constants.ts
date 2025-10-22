@@ -194,8 +194,8 @@ const PB_FIELDS = {
 const SPEED_DIAL = {
   DIMENSIONS: {
     FAB_SIZE: {
-      WIDTH: "56px",
-      HEIGHT: "56px"
+      WIDTH: "52px",
+      HEIGHT: "52px"
     },
     ACTION_SIZE: {
       WIDTH: "48px",
@@ -211,7 +211,7 @@ const SPEED_DIAL = {
     }
   },
   SPACING: {
-    ACTION_DISTANCE: 60,
+    ACTION_DISTANCE: 70,
     CENTER_OFFSET: 4 // (56 - 48) / 2
   },
   STYLES: {
