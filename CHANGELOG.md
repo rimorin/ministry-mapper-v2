@@ -1,3 +1,11 @@
+## [1.11.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.11.1...v1.11.2) (2025-10-22)
+
+
+### Bug Fixes
+
+* handle invite query for oauth users ([5aef92e](https://github.com/rimorin/ministry-mapper-v2/commit/5aef92ea77829a55ed4747120a750734b5e1156c))
+* missing dark mode settings for speed dial, quick link and placeholder ([6d8eba3](https://github.com/rimorin/ministry-mapper-v2/commit/6d8eba32f2b1994fe2ddf1a447f89fe1696ca7c5))
+
 ## [1.11.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.11.0...v1.11.1) (2025-10-22)
 
 
