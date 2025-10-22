@@ -21,6 +21,7 @@ import LanguageSelector from "../i18n/LanguageSelector";
 import { LanguageContext } from "../i18n/LanguageContext";
 import useUIState from "../hooks/useUIManagement";
 import GenericButton from "../components/navigation/button";
+import ThemeToggle from "../components/navigation/themetoggle";
 const { VITE_ABOUT_URL } = import.meta.env;
 
 const AboutURL = (VITE_ABOUT_URL || MINISTRY_MAPPER_WIKI_PAGE) as string;
@@ -99,6 +100,7 @@ const FrontPage = () => {
               onClick={handleOpenAbout}
               label={t("navigation.about", "About")}
             />
+            <ThemeToggle className="m-1" />
             <GenericButton
               className="m-1"
               size="sm"
