@@ -1,3 +1,11 @@
+## [1.11.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.11.0...v1.11.1) (2025-10-22)
+
+
+### Bug Fixes
+
+* floating label in dark mode ([58799db](https://github.com/rimorin/ministry-mapper-v2/commit/58799dbfd5286f59479ea58e038a8b2ca68add5c))
+* missing theme toggle in frontpage ([1380e58](https://github.com/rimorin/ministry-mapper-v2/commit/1380e581c74128acc68bbbe9c0998906ba5be4e3))
+
 # [1.11.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.10.0...v1.11.0) (2025-10-21)
 
 
