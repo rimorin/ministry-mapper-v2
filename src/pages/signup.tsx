@@ -106,11 +106,7 @@ const SignupComponent = () => {
         </p>
       </Form.Group>
       <Form.Group className="mb-2" controlId="name">
-        <FloatingLabel
-          controlId="name"
-          label={t("auth.name", "User Name")}
-          style={{ fontSize: "0.9rem" }}
-        >
+        <FloatingLabel controlId="name" label={t("auth.name", "User Name")}>
           <Form.Control
             type="text"
             placeholder={t("auth.enterName", "Enter Name")}
@@ -120,7 +116,6 @@ const SignupComponent = () => {
             autoComplete="name"
             disabled={isCreating}
             onChange={handleInputChange}
-            style={{ fontSize: "0.9rem", padding: "0.5rem 0.75rem" }}
           />
           <Form.Control.Feedback type="invalid">
             {t("auth.nameRequired", "Please enter your name.")}
@@ -131,7 +126,6 @@ const SignupComponent = () => {
         <FloatingLabel
           controlId="email"
           label={t("auth.emailAddress", "Email Address")}
-          style={{ fontSize: "0.9rem" }}
         >
           <Form.Control
             type="email"
@@ -141,7 +135,6 @@ const SignupComponent = () => {
             autoComplete="email"
             disabled={isCreating}
             onChange={handleInputChange}
-            style={{ fontSize: "0.9rem", padding: "0.5rem 0.75rem" }}
           />
           <Form.Control.Feedback type="invalid">
             {t("auth.validEmailRequired", "Please enter a valid email.")}
@@ -155,7 +148,6 @@ const SignupComponent = () => {
         <FloatingLabel
           controlId="password"
           label={t("auth.password", "Password")}
-          style={{ fontSize: "0.9rem" }}
         >
           <Form.Control
             type="password"
@@ -165,7 +157,6 @@ const SignupComponent = () => {
             autoComplete="new-password"
             disabled={isCreating}
             onChange={handleInputChange}
-            style={{ fontSize: "0.9rem", padding: "0.5rem 0.75rem" }}
           />
         </FloatingLabel>
       </Form.Group>
@@ -173,7 +164,6 @@ const SignupComponent = () => {
         <FloatingLabel
           controlId="confirmPassword"
           label={t("auth.confirmPassword", "Confirm Password")}
-          style={{ fontSize: "0.9rem" }}
         >
           <Form.Control
             type="password"
@@ -183,7 +173,6 @@ const SignupComponent = () => {
             autoComplete="new-password"
             disabled={isCreating}
             onChange={handleInputChange}
-            style={{ fontSize: "0.9rem", padding: "0.5rem 0.75rem" }}
           />
         </FloatingLabel>
       </Form.Group>

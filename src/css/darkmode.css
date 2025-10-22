@@ -184,6 +184,32 @@
   color: #6c757d;
 }
 
+/* ===== FLOATING LABELS ===== */
+[data-bs-theme="dark"] .form-floating > .form-control::placeholder,
+[data-bs-theme="dark"] .form-floating > .form-select::placeholder,
+[data-bs-theme="dark"] .form-floating > .form-control:focus::placeholder,
+[data-bs-theme="dark"] .form-floating > .form-select:focus::placeholder {
+  color: transparent;
+}
+
+[data-bs-theme="dark"] .form-floating > label {
+  color: #6c757d;
+}
+
+[data-bs-theme="dark"] .form-floating > .form-control:focus ~ label,
+[data-bs-theme="dark"]
+  .form-floating
+  > .form-control:not(:placeholder-shown)
+  ~ label,
+[data-bs-theme="dark"] .form-floating > .form-select ~ label {
+  color: rgba(222, 226, 230, 0.65);
+  transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+}
+
+[data-bs-theme="dark"] .form-floating > .form-control:focus ~ label {
+  color: #6ea8fe;
+}
+
 [data-bs-theme="dark"] .form-check-input[type="radio"] {
   background-color: var(--mm-border-color);
   border-color: var(--mm-border-subtle);
