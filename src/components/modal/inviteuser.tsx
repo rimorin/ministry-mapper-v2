@@ -124,7 +124,8 @@ const InviteUser = NiceModal.create(
     ): Promise<OptionsOrGroups<SelectProps, GroupBase<SelectProps>>> => {
       const users = await getUsersByNames(inputValue);
       const options: SelectProps[] = users.items.map((user: RecordModel) => ({
-        label: `${user.name} - ${user?.email}`,
+        label:
+          user.name && user.email ? `${user.name} - ${user.email}` : user.name,
         value: user.id
       }));
       return options;
