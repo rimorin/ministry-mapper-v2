@@ -76,6 +76,20 @@ const ChangeMapGeolocation = NiceModal.create(
         setIsSaving(false);
       }
     };
+
+    const handlePlaceSelect = useCallback(
+      (place: google.maps.places.Place | null) => {
+        if (place?.location) {
+          const lat = place.location.lat();
+          const lng = place.location.lng();
+          const newLocation = { lat, lng };
+          setAddressLocation(newLocation);
+          setCurrentCenter(newLocation);
+        }
+      },
+      []
+    );
+
     const onMapClick = useCallback((event: MapMouseEvent) => {
       const eventDetails = event.detail;
       setAddressLocation({
@@ -152,21 +166,7 @@ const ChangeMapGeolocation = NiceModal.create(
               )}
               <GmapAutocomplete
                 origin={origin}
-                onPlaceSelect={(place) => {
-                  if (place && place.geometry && place.geometry.location) {
-                    const location = place.geometry.location;
-                    const locationLat = location.lat();
-                    const locationLng = location.lng();
-                    setAddressLocation({
-                      lat: locationLat,
-                      lng: locationLng
-                    });
-                    setCurrentCenter({
-                      lat: locationLat,
-                      lng: locationLng
-                    });
-                  }
-                }}
+                onPlaceSelect={handlePlaceSelect}
               />
               <MapCurrentTarget onClick={() => setCurrentCenter(coordinates)} />
               {addressLocation && <AdvancedMarker position={addressLocation} />}

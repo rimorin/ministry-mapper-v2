@@ -153,7 +153,8 @@
     "deleteSuccess": "Alamat dipadam, {{name}}.",
     "updateMapSequence": "Kemas Kini Urutan Peta",
     "dragToReorder": "Seret dan lepaskan kad untuk menyusun semula urutan",
-    "enterNewMapNumber": "Sila masukkan nombor peta baharu"
+    "enterNewMapNumber": "Sila masukkan nombor peta baharu",
+    "searchPlace": "Cari tempat"
   },
   "address": {
     "address": "Alamat",

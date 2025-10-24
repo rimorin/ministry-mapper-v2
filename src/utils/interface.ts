@@ -625,7 +625,7 @@ export interface MapViewProps {
 }
 
 export interface GmapAutocompleteProps {
-  onPlaceSelect: (place: google.maps.places.PlaceResult | null) => void;
+  onPlaceSelect: (place: google.maps.places.Place | null) => void;
   origin: string;
 }
 

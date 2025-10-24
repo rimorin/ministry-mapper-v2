@@ -289,7 +289,8 @@
     "deleteSuccess": "முகவரி நீக்கப்பட்டது, {{name}}.",
     "updateMapSequence": "வரைபட வரிசையை புதுப்பிக்கவும்",
     "dragToReorder": "வரிசையை மாற்ற அட்டைகளை இழுத்து விடவும்",
-    "enterNewMapNumber": "புதிய வரைபட எண்ணை உள்ளிடவும்"
+    "enterNewMapNumber": "புதிய வரைபட எண்ணை உள்ளிடவும்",
+    "searchPlace": "இடத்தைத் தேடு"
   },
   "maintenance": {
     "maintenanceMode": "மினிஸ்ட்ரி மேப்பர் தற்போது பராமரிப்பில் உள்ளது.",

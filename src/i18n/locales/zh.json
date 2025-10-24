@@ -153,7 +153,8 @@
     "deleteSuccess": "地址已删除, {{name}}.",
     "updateMapSequence": "更新地图顺序",
     "dragToReorder": "拖放卡片以重新排序",
-    "enterNewMapNumber": "请输入新的地图编号"
+    "enterNewMapNumber": "请输入新的地图编号",
+    "searchPlace": "搜索地点"
   },
   "address": {
     "address": "地址",

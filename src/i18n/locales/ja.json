@@ -153,7 +153,8 @@
     "deleteSuccess": "住所が削除されました, {{name}}.",
     "updateMapSequence": "マップ順序の更新",
     "dragToReorder": "カードをドラッグ&ドロップして順序を変更してください",
-    "enterNewMapNumber": "新しい地図番号を入力してください"
+    "enterNewMapNumber": "新しい地図番号を入力してください",
+    "searchPlace": "場所を検索"
   },
   "address": {
     "address": "住所",

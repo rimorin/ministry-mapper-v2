@@ -153,7 +153,8 @@
     "deleteSuccess": "Deleted address, {{name}}.",
     "updateMapSequence": "Update Map Sequence",
     "dragToReorder": "Drag and drop the cards to reorder the sequence",
-    "enterNewMapNumber": "Please enter a new map number"
+    "enterNewMapNumber": "Please enter a new map number",
+    "searchPlace": "Search for a place"
   },
   "address": {
     "address": "Address",

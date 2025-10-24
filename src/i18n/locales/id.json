@@ -289,7 +289,8 @@
     "deleteSuccess": "Alamat dihapus, {{name}}.",
     "updateMapSequence": "Perbarui Urutan Peta",
     "dragToReorder": "Seret dan lepaskan kartu untuk mengurutkan kembali urutan",
-    "enterNewMapNumber": "Silakan masukkan nomor peta baru"
+    "enterNewMapNumber": "Silakan masukkan nomor peta baru",
+    "searchPlace": "Cari tempat"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper sedang dalam pemeliharaan.",
