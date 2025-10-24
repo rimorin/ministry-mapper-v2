@@ -1,8 +1,7 @@
-import { useEffect, useState, useCallback, FormEvent } from "react";
+import { useEffect, useState, useCallback, FormEvent, useRef } from "react";
 import {
   ControlPosition,
   MapControl,
-  useMap,
   useMapsLibrary
 } from "@vis.gl/react-google-maps";
 import {
@@ -12,89 +11,98 @@ import {
   ListGroup,
   Button
 } from "react-bootstrap";
+import { useTranslation } from "react-i18next";
 import { DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION } from "../../utils/constants";
 import { GmapAutocompleteProps } from "../../utils/interface";
+import errorHandler from "../../utils/helpers/errorhandler";
 
 export const GmapAutocomplete = ({
   onPlaceSelect,
   origin = DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION
 }: GmapAutocompleteProps) => {
-  const map = useMap();
+  const { t } = useTranslation();
   const places = useMapsLibrary("places");
-
-  const [sessionToken, setSessionToken] =
-    useState<google.maps.places.AutocompleteSessionToken>();
-  const [autocompleteService, setAutocompleteService] =
-    useState<google.maps.places.AutocompleteService | null>(null);
-  const [placesService, setPlacesService] =
-    useState<google.maps.places.PlacesService | null>(null);
-  const [predictionResults, setPredictionResults] = useState<
-    Array<google.maps.places.AutocompletePrediction>
+  const sessionTokenRef =
+    useRef<google.maps.places.AutocompleteSessionToken | null>(null);
+  const [suggestions, setSuggestions] = useState<
+    Array<google.maps.places.AutocompleteSuggestion>
   >([]);
   const [inputValue, setInputValue] = useState("");
+  const [selectedValue, setSelectedValue] = useState("");
 
   useEffect(() => {
-    if (!places || !map) return;
+    if (!places || !inputValue || inputValue === selectedValue) {
+      setSuggestions([]);
+      return;
+    }
 
-    setAutocompleteService(new places.AutocompleteService());
-    setPlacesService(new places.PlacesService(map));
-    setSessionToken(new places.AutocompleteSessionToken());
+    const { AutocompleteSessionToken, AutocompleteSuggestion } = places;
 
-    return () => setAutocompleteService(null);
-  }, [map, places]);
+    if (!sessionTokenRef.current) {
+      sessionTokenRef.current = new AutocompleteSessionToken();
+    }
 
-  const fetchPredictions = useCallback(
-    async (value: string) => {
-      if (!autocompleteService || !value || value.length < 3) {
-        setPredictionResults([]);
-        return;
-      }
+    // Debounce the API call
+    const timerId = setTimeout(() => {
+      const request: google.maps.places.AutocompleteRequest = {
+        input: inputValue,
+        sessionToken: sessionTokenRef.current!,
+        ...(origin && { includedRegionCodes: [origin] })
+      };
 
-      const response = await autocompleteService.getPlacePredictions({
-        input: value,
-        sessionToken,
-        componentRestrictions: { country: origin }
-      });
-      setPredictionResults(response.predictions);
-    },
-    [autocompleteService, sessionToken, origin]
-  );
+      AutocompleteSuggestion.fetchAutocompleteSuggestions(request)
+        .then((res) => {
+          setSuggestions(res.suggestions.filter((s) => s.placePrediction));
+        })
+        .catch((error) => {
+          errorHandler(error);
+          setSuggestions([]);
+        });
+    }, 300);
+
+    return () => clearTimeout(timerId);
+  }, [places, inputValue, origin, selectedValue]);
 
   const onInputChange = useCallback(
     (event: FormEvent<HTMLInputElement>) => {
       const value = (event.target as HTMLInputElement).value;
       setInputValue(value);
-
-      const timerId = setTimeout(() => fetchPredictions(value), 300);
-      return () => clearTimeout(timerId);
+      if (value !== selectedValue) {
+        setSelectedValue("");
+      }
     },
-    [fetchPredictions]
+    [selectedValue]
   );
 
   const handleSuggestionClick = useCallback(
-    (placeId: string) => {
-      if (!places || !placesService) return;
+    async (suggestion: google.maps.places.AutocompleteSuggestion) => {
+      if (!places || !suggestion.placePrediction) return;
 
-      placesService.getDetails(
-        {
-          placeId,
-          fields: ["geometry", "name", "formatted_address"],
-          sessionToken
-        },
-        (placeDetails) => {
-          onPlaceSelect(placeDetails);
-          setPredictionResults([]);
-          setInputValue(placeDetails?.formatted_address ?? "");
-          setSessionToken(new places.AutocompleteSessionToken());
-        }
-      );
+      const place = suggestion.placePrediction.toPlace();
+
+      try {
+        await place.fetchFields({
+          fields: ["location", "displayName", "formattedAddress"]
+        });
+
+        const address = place.formattedAddress || "";
+        setInputValue(address);
+        setSelectedValue(address);
+        setSuggestions([]);
+        onPlaceSelect(place);
+        sessionTokenRef.current = new places.AutocompleteSessionToken();
+      } catch (error) {
+        errorHandler(error);
+        onPlaceSelect(null);
+      }
     },
-    [onPlaceSelect, places, placesService, sessionToken]
+    [places, onPlaceSelect]
   );
 
   const handleClearInput = () => {
     setInputValue("");
-    setPredictionResults([]);
+    setSelectedValue("");
+    setSuggestions([]);
   };
 
   return (
@@ -103,11 +111,11 @@ export const GmapAutocomplete = ({
         <InputGroup>
           <Form.Control
             type="text"
-            placeholder="Search for a place"
+            placeholder={t("map.searchPlace", "Search for a place")}
             value={inputValue}
             onInput={onInputChange}
             className="map-autocomplete-input"
-            aria-label="Search for a place"
+            aria-label={t("map.searchPlace")}
             aria-autocomplete="list"
             aria-controls="autocomplete-results"
             autoComplete="off"
@@ -117,23 +125,23 @@ export const GmapAutocomplete = ({
               variant="light"
               onClick={handleClearInput}
               className="map-autocomplete-clear-btn"
-              aria-label="Clear search"
+              aria-label={t("common.clear")}
             >
               ✕
             </Button>
           )}
         </InputGroup>
-        {predictionResults.length > 0 && (
+        {suggestions.length > 0 && (
           <ListGroup as="ul" id="autocomplete-results">
-            {predictionResults.map(({ place_id, description }) => (
+            {suggestions.map((suggestion) => (
               <ListGroup.Item
                 as="li"
                 action
-                key={place_id}
-                onClick={() => handleSuggestionClick(place_id)}
+                key={suggestion.placePrediction!.placeId}
+                onClick={() => handleSuggestionClick(suggestion)}
                 role="option"
               >
-                {description}
+                {suggestion.placePrediction!.text.text}
               </ListGroup.Item>
             ))}
           </ListGroup>
