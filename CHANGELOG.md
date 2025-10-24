@@ -1,3 +1,10 @@
+# [1.12.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.11.2...v1.12.0) (2025-10-24)
+
+
+### Features
+
+* google maps new places api migration ([492ed39](https://github.com/rimorin/ministry-mapper-v2/commit/492ed398480155df213d727e51db45359c59043e))
+
 ## [1.11.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.11.1...v1.11.2) (2025-10-22)
 
 
