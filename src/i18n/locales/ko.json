@@ -290,7 +290,8 @@
     "transitMode": "대중교통 모드",
     "transportModes": "이동 모드",
     "openMaps": "맵 열기",
-    "generateLink": "퀵 링크"
+    "generateLink": "퀵 링크",
+    "arrivedAtDestination": "목적지에 도착했습니다!"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper는 현재 유지보수 중입니다.",

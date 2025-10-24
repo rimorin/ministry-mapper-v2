@@ -290,7 +290,8 @@
     "transitMode": "Mod transit",
     "transportModes": "Mod pengangkutan",
     "openMaps": "Buka Peta",
-    "generateLink": "Pautan Pantas"
+    "generateLink": "Pautan Pantas",
+    "arrivedAtDestination": "Anda telah tiba di destinasi!"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper kini dalam penyelenggaraan.",

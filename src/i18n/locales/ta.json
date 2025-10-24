@@ -261,7 +261,8 @@
     "transitMode": "பொதுப்போக்குவரத்து முறை",
     "transportModes": "போக்குவரத்து முறைகள்",
     "openMaps": "வரைபடங்களைத் திறக்கவும்",
-    "generateLink": "விரைவு இணைப்பு"
+    "generateLink": "விரைவு இணைப்பு",
+    "arrivedAtDestination": "நீங்கள் இலக்கை அடைந்துவிட்டீர்கள்!"
   },
   "map": {
     "newMap": "புதிய வரைபடம்",

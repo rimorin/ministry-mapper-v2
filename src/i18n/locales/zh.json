@@ -290,7 +290,8 @@
     "transitMode": "公交模式",
     "transportModes": "交通模式",
     "openMaps": "打开地图",
-    "generateLink": "快速链接"
+    "generateLink": "快速链接",
+    "arrivedAtDestination": "您已到达目的地！"
   },
   "maintenance": {
     "maintenanceMode": "传道地图正在进行维护。",

@@ -152,6 +152,104 @@
   animation: ripple 2s infinite;
 }
 
+.direction-arrow-container {
+  position: relative;
+  width: 24px;
+  height: 24px;
+}
+
+.direction-arrow-marker {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--mm-location-marker-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid var(--mm-location-marker-border);
+  box-shadow: 0 0 3px var(--mm-location-marker-shadow);
+  animation: pulse 2s infinite;
+  position: relative;
+}
+
+.direction-arrow-ripple {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid var(--mm-location-marker-ripple);
+  transform: translate(-50%, -50%);
+  animation: ripple 2s infinite;
+}
+
+.direction-arrow-svg {
+  transition: transform 0.1s ease-out;
+}
+
+.direction-arrow-path {
+  fill: var(--mm-marker-label-text);
+  stroke: var(--mm-location-marker-border);
+  stroke-width: 1;
+}
+
+.arrival-notification {
+  background: var(--bs-success);
+  color: var(--mm-white);
+  padding: 12px 24px;
+  border-radius: 12px;
+  margin-bottom: 80px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.3px;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    0 2px 4px rgba(0, 0, 0, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  animation: slideUpFade 0.5s ease-out;
+}
+
+.arrival-tooltip-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: none;
+}
+
+.arrival-tooltip {
+  position: absolute;
+  bottom: 100%;
+  margin-bottom: 35px;
+  background: var(--bs-success);
+  color: var(--mm-white);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.25),
+    0 2px 4px rgba(0, 0, 0, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  animation: bounceIn 0.6s ease-out;
+  pointer-events: auto;
+}
+
+.arrival-tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid var(--bs-success);
+}
+
 .map-marker {
   position: relative;
   width: 42px;
@@ -207,6 +305,31 @@
   to {
     transform: translate(-50%, -50%) scale(1.5);
     opacity: 0;
+  }
+}
+
+@keyframes slideUpFade {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.8);
+  }
+  50% {
+    transform: translateY(-5px) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -549,6 +672,27 @@
 [data-bs-theme="dark"] .nothome-envelope {
   filter: var(--mm-icon-invert-bright);
   opacity: 0.6;
+}
+
+/* Dark mode - Arrival notification */
+[data-bs-theme="dark"] .arrival-notification {
+  background: #198754;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+[data-bs-theme="dark"] .arrival-tooltip {
+  background: #198754;
+  border-color: rgba(255, 255, 255, 0.2);
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, 0.4),
+    0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+[data-bs-theme="dark"] .arrival-tooltip::after {
+  border-top-color: #198754;
 }
 
 /* Dark mode - Status symbols */

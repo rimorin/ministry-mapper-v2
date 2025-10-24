@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Image, Modal } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { WIKI_CATEGORIES } from "../../utils/constants";
@@ -10,107 +10,178 @@ import {
   latlongInterface
 } from "../../utils/interface";
 import {
+  AdvancedMarker,
   ControlPosition,
   Map,
   MapControl,
+  Pin,
   useMap,
   useMapsLibrary
 } from "@vis.gl/react-google-maps";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import getDirection from "../../utils/helpers/directiongenerator";
 import TravelModeButtons from "../map/travelmodebtn";
+import DirectionArrow from "../statics/directionarrow";
+
+const GEOLOCATION_OPTIONS = {
+  enableHighAccuracy: true,
+  timeout: 10000,
+  maximumAge: 0
+};
+
+const ARRIVAL_THRESHOLD_IN_METRES = 50;
+
+const calculateDistance = (
+  point1: latlongInterface,
+  point2: latlongInterface
+): number => {
+  if (!google?.maps?.geometry?.spherical) return Infinity;
+
+  return google.maps.geometry.spherical.computeDistanceBetween(
+    new google.maps.LatLng(point1.lat, point1.lng),
+    new google.maps.LatLng(point2.lat, point2.lng)
+  );
+};
 
 const GetMapGeolocation = NiceModal.create(
   ({ coordinates, origin, name }: GetMapGeolocationModalProps) => {
     const { t } = useTranslation();
+    const modal = useModal();
+    const map = useMap();
+    const routesLibrary = useMapsLibrary("routes");
+    const geometryLibrary = useMapsLibrary("geometry");
+
     const [currentCenter, setCurrentCenter] =
       useState<latlongInterface>(coordinates);
     const [currentLocation, setCurrentLocation] = useState<latlongInterface>();
     const [travelMode, setTravelMode] = useState<google.maps.TravelMode>(
       google.maps.TravelMode.WALKING
     );
-    const [isCalculating, setIsCalculating] = useState(true);
-    const modal = useModal();
-
-    const map = useMap();
-
-    const routesLibrary = useMapsLibrary("routes");
+    const [isCalculating, setIsCalculating] = useState(false);
+    const [hasArrived, setHasArrived] = useState(false);
     const [directionsService, setDirectionsService] =
       useState<google.maps.DirectionsService>();
     const [directionsRenderer, setDirectionsRenderer] =
       useState<google.maps.DirectionsRenderer>();
 
-    const getCurrentLocation = (
-      onSuccess: (position: GeolocationPosition) => void,
-      onError: () => void
-    ) => {
-      if (!navigator.geolocation) {
-        alert(
-          t(
-            "errors.geolocationNotSupported",
-            "Geolocation is not supported by your browser"
-          )
-        );
-        onError();
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(onSuccess, onError);
-    };
+    const updateLocation = useCallback(
+      (position: GeolocationPosition) => {
+        if (!geometryLibrary) return;
+
+        const newLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+
+        setCurrentLocation(newLocation);
+
+        const distance = calculateDistance(newLocation, coordinates);
+
+        if (distance < ARRIVAL_THRESHOLD_IN_METRES && !hasArrived) {
+          setHasArrived(true);
+
+          if (directionsRenderer) {
+            directionsRenderer.setMap(null);
+          }
+
+          if (navigator.vibrate) {
+            navigator.vibrate(200);
+          }
+        }
+      },
+      [coordinates, hasArrived, directionsRenderer, geometryLibrary]
+    );
+
+    const handleLocationError = useCallback(() => {
+      alert(
+        t(
+          "errors.unableToGetLocation",
+          "Unable to get your current location. Please check your browser settings."
+        )
+      );
+      modal.hide();
+    }, [t, modal]);
 
     useEffect(() => {
       if (!routesLibrary || !map) return;
-      setDirectionsService(new routesLibrary.DirectionsService());
-      setDirectionsRenderer(
-        new routesLibrary.DirectionsRenderer({
-          map
-        })
-      );
-    }, [routesLibrary, map, travelMode]);
+
+      const service = new routesLibrary.DirectionsService();
+      const renderer = new routesLibrary.DirectionsRenderer({
+        map,
+        suppressMarkers: true
+      });
+
+      setDirectionsService(service);
+      setDirectionsRenderer(renderer);
+
+      return () => renderer.setMap(null);
+    }, [routesLibrary, map]);
 
     useEffect(() => {
-      if (!directionsService || !directionsRenderer || !currentLocation) return;
+      if (
+        !directionsService ||
+        !directionsRenderer ||
+        !currentLocation ||
+        hasArrived
+      )
+        return;
 
-      const initDirections = async () => {
+      const calculateDirections = async () => {
+        setIsCalculating(true);
         try {
-          const direction = await directionsService.route({
+          const result = await directionsService.route({
             origin: currentLocation,
             destination: coordinates,
-            travelMode: travelMode,
+            travelMode,
             provideRouteAlternatives: false,
             region: origin
           });
-          directionsRenderer.setDirections(direction);
-          setIsCalculating(false);
+          directionsRenderer.setDirections(result);
         } catch (error) {
           console.error(error);
+        } finally {
+          setIsCalculating(false);
         }
       };
 
-      setIsCalculating(true);
-      initDirections();
-
-      return () => directionsRenderer.setMap(null);
-    }, [directionsService, directionsRenderer, travelMode, currentLocation]);
+      calculateDirections();
+    }, [
+      directionsService,
+      directionsRenderer,
+      travelMode,
+      currentLocation,
+      coordinates,
+      origin,
+      hasArrived
+    ]);
 
     useEffect(() => {
-      getCurrentLocation(
-        (position) => {
-          setCurrentLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-        },
-        () => {
+      if (!navigator.geolocation || hasArrived) {
+        if (!navigator.geolocation) {
           alert(
             t(
-              "errors.unableToGetLocation",
-              "Unable to get your current location. Please check your browser settings."
+              "errors.geolocationNotSupported",
+              "Geolocation is not supported by your browser"
             )
           );
           modal.hide();
         }
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        updateLocation,
+        handleLocationError
       );
-    }, []);
+
+      const watchId = navigator.geolocation.watchPosition(
+        updateLocation,
+        console.error,
+        GEOLOCATION_OPTIONS
+      );
+
+      return () => navigator.geolocation.clearWatch(watchId);
+    }, [updateLocation, handleLocationError, hasArrived, t, modal]);
 
     return (
       <Modal {...bootstrapDialog(modal)} fullscreen>
@@ -135,6 +206,22 @@ const GetMapGeolocation = NiceModal.create(
             streetViewControl={false}
             gestureHandling="greedy"
           >
+            {!hasArrived && currentLocation && (
+              <AdvancedMarker position={currentLocation}>
+                <DirectionArrow />
+              </AdvancedMarker>
+            )}
+            <AdvancedMarker position={coordinates}>
+              <Pin>
+                {hasArrived && (
+                  <div className="arrival-tooltip-wrapper">
+                    <div className="arrival-tooltip">
+                      {t("navigation.arrivedAtDestination")}
+                    </div>
+                  </div>
+                )}
+              </Pin>
+            </AdvancedMarker>
             <MapControl position={ControlPosition.INLINE_END_BLOCK_END}>
               <Image
                 src={getAssetUrl("gmaps.svg")}

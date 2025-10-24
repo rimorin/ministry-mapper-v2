@@ -290,7 +290,8 @@
     "transitMode": "Transit mode",
     "transportModes": "Transport modes",
     "openMaps": "Open Maps",
-    "generateLink": "Quick Link"
+    "generateLink": "Quick Link",
+    "arrivedAtDestination": "You have arrived at your destination!"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper is currently down for maintenance.",

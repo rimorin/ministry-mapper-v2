@@ -290,7 +290,8 @@
     "transitMode": "公共交通機関",
     "transportModes": "移動モード",
     "openMaps": "マップ表示",
-    "generateLink": "クイックリンク"
+    "generateLink": "クイックリンク",
+    "arrivedAtDestination": "目的地に到着しました！"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapperはメンテナンス中です。",

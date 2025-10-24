@@ -261,7 +261,8 @@
     "transitMode": "Mode Transit",
     "transportModes": "Mode Transportasi",
     "openMaps": "Buka Peta",
-    "generateLink": "Tautan Cepat"
+    "generateLink": "Tautan Cepat",
+    "arrivedAtDestination": "Anda telah sampai di tujuan!"
   },
   "map": {
     "newMap": "Peta Baru",
