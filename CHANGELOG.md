@@ -1,3 +1,10 @@
+## [1.12.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.12.0...v1.12.1) (2025-10-27)
+
+
+### Bug Fixes
+
+* increase overscanCount to render more items at list edges ([1bdd7af](https://github.com/rimorin/ministry-mapper-v2/commit/1bdd7afe14231a48d194d070185eccd53e017352))
+
 # [1.12.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.11.2...v1.12.0) (2025-10-24)
 
 
