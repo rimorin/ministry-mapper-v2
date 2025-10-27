@@ -240,6 +240,10 @@
   --mm-marker-shadow: rgba(0, 0, 0, 0.7);
   --mm-marker-label-bg: rgba(0, 0, 0, 0.5);
   --mm-marker-label-text: var(--mm-white);
+  --mm-marker-text-shadow:
+    -1px -1px 2px rgba(0, 0, 0, 0.9), 1px -1px 2px rgba(0, 0, 0, 0.9),
+    -1px 1px 2px rgba(0, 0, 0, 0.9), 1px 1px 2px rgba(0, 0, 0, 0.9),
+    0 0 4px rgba(0, 0, 0, 0.9);
 
   /* Current Location Marker */
   --mm-location-marker-bg: #0066ff;
@@ -341,6 +345,10 @@
   --mm-marker-shadow: rgba(0, 0, 0, 0.9);
   --mm-marker-label-bg: rgba(255, 255, 255, 0.2);
   --mm-marker-label-text: var(--mm-white);
+  --mm-marker-text-shadow:
+    -1px -1px 2px rgba(0, 0, 0, 1), 1px -1px 2px rgba(0, 0, 0, 1),
+    -1px 1px 2px rgba(0, 0, 0, 1), 1px 1px 2px rgba(0, 0, 0, 1),
+    0 0 5px rgba(0, 0, 0, 1), 0 0 8px rgba(0, 0, 0, 0.8);
 
   /* Current Location Marker - brighter for dark mode */
   --mm-location-marker-bg: #3399ff;
