@@ -593,7 +593,7 @@ const MapListing: React.FC<MapListingProps> = ({
       rowHeight={getRowHeight}
       rowComponent={MapRow}
       rowProps={rowProps}
-      overscanCount={2}
+      overscanCount={5}
     />
   );
 };
