@@ -1,3 +1,15 @@
+# [1.13.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.12.1...v1.13.0) (2025-10-30)
+
+
+### Bug Fixes
+
+* handle validation errors ([35aafa1](https://github.com/rimorin/ministry-mapper-v2/commit/35aafa182b61ec5705fdeddbd82c40464eeec143))
+
+
+### Features
+
+* implement toast notification ([d5611fa](https://github.com/rimorin/ministry-mapper-v2/commit/d5611fa2ad3734bc71acb0681bdbad91fa07ff5a))
+
 ## [1.12.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.12.0...v1.12.1) (2025-10-27)
 
 
