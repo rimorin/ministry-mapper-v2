@@ -1,6 +1,6 @@
 import "../css/admin.css";
 
-import { useEffect, useCallback, useContext, lazy } from "react";
+import { useEffect, useContext, lazy } from "react";
 import { Container, Navbar, Spinner, Image } from "react-bootstrap";
 
 import { AuthRecord } from "pocketbase";
@@ -183,41 +183,36 @@ function Admin({ user }: adminProps) {
   const { currentLanguage, changeLanguage, languageOptions } =
     useContext(LanguageContext);
 
-  const logoutUser = useCallback(() => cleanupSession(), []);
+  const logoutUser = () => cleanupSession();
 
-  const handleUserSelect = useCallback(
-    async (userKey: string | null) => {
-      if (!userKey) return;
-      const details = congregationUsers.get(userKey);
-      if (!details) return;
-      const updatedRole = await showModal(UpdateUser, {
-        uid: userKey,
-        congregation: congregationCode,
-        footerSaveAcl: userAccessLevel,
-        name: details.name,
-        role: details.role
-      });
+  const handleUserSelect = async (userKey: string | null) => {
+    if (!userKey) return;
+    const details = congregationUsers.get(userKey);
+    if (!details) return;
+    const updatedRole = await showModal(UpdateUser, {
+      uid: userKey,
+      congregation: congregationCode,
+      footerSaveAcl: userAccessLevel,
+      name: details.name,
+      role: details.role
+    });
 
-      setCongregationUsers((existingUsers) => {
-        if (updatedRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
-          existingUsers.delete(userKey);
-          return new Map<string, userDetails>(existingUsers);
-        }
-        details.role = updatedRole as string;
-        return new Map<string, userDetails>(
-          existingUsers.set(userKey, details)
-        );
-      });
-    },
-    [congregationUsers, congregationCode, userAccessLevel]
-  );
+    setCongregationUsers((existingUsers) => {
+      if (updatedRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
+        existingUsers.delete(userKey);
+        return new Map<string, userDetails>(existingUsers);
+      }
+      details.role = updatedRole as string;
+      return new Map<string, userDetails>(existingUsers.set(userKey, details));
+    });
+  };
 
-  const handleLanguageSelect = useCallback((lang: string) => {
+  const handleLanguageSelect = (lang: string) => {
     changeLanguage(lang);
     toggleLanguageSelector();
-  }, []);
+  };
 
-  const getAssignments = useCallback(async (code: string, uid: string) => {
+  const getAssignments = async (code: string, uid: string) => {
     setIsAssignmentLoading(true);
     try {
       const assignments = await getList("assignments", {
@@ -246,9 +241,9 @@ function Admin({ user }: adminProps) {
     } finally {
       setIsAssignmentLoading(false);
     }
-  }, []);
+  };
 
-  const handleGenerateTerritoryMap = useCallback(async () => {
+  const handleGenerateTerritoryMap = async () => {
     setIsAssignmentLoading(true);
     try {
       // Open modal to get publisher input first
@@ -258,46 +253,45 @@ function Admin({ user }: adminProps) {
     } finally {
       setIsAssignmentLoading(false);
     }
-  }, [selectedTerritory.id]);
+  };
 
-  const handleAddressTerritorySelect = useCallback(
-    async (newTerritoryId: string | null) => {
-      const details = values as valuesDetails;
-      const mapId = details.map as string;
-      const newTerritoryCode = territories.get(newTerritoryId as string)?.code;
+  const handleAddressTerritorySelect = async (
+    newTerritoryId: string | null
+  ) => {
+    const details = values as valuesDetails;
+    const mapId = details.map as string;
+    const newTerritoryCode = territories.get(newTerritoryId as string)?.code;
 
-      try {
-        toggleAddressTerritoryListing();
-        await callFunction("/map/territory/update", {
-          method: "POST",
-          body: {
-            map: mapId,
-            new_territory: newTerritoryId,
-            old_territory: selectedTerritory.id
+    try {
+      toggleAddressTerritoryListing();
+      await callFunction("/map/territory/update", {
+        method: "POST",
+        body: {
+          map: mapId,
+          new_territory: newTerritoryId,
+          old_territory: selectedTerritory.id
+        }
+      });
+      setSortedAddressList(
+        sortedAddressList.filter((address) => address.id !== mapId)
+      );
+      notifyWarning(
+        t(
+          "territory.changeSuccess",
+          "Changed territory of {{name}} from {{oldCode}} to {{newCode}}.",
+          {
+            name: details.name,
+            oldCode: selectedTerritory.code,
+            newCode: newTerritoryCode
           }
-        });
-        setSortedAddressList(
-          sortedAddressList.filter((address) => address.id !== mapId)
-        );
-        notifyWarning(
-          t(
-            "territory.changeSuccess",
-            "Changed territory of {{name}} from {{oldCode}} to {{newCode}}.",
-            {
-              name: details.name,
-              oldCode: selectedTerritory.code,
-              newCode: newTerritoryCode
-            }
-          )
-        );
-      } catch (error) {
-        notifyError(error);
-      }
-    },
-    [values, selectedTerritory.id, selectedTerritory.code]
-  );
+        )
+      );
+    } catch (error) {
+      notifyError(error);
+    }
+  };
 
-  const fetchData = useCallback(async () => {
+  const fetchData = async () => {
     const userRoles = await getList("roles", {
       filter: `user="${userId}"`,
       expand: "congregation",
@@ -310,7 +304,6 @@ function Admin({ user }: adminProps) {
       notifyError(`Unauthorised access by ${userEmail}`, true);
       return;
     }
-
     const congregationAccesses = userRoles.map((record) => {
       return {
         code: record.expand?.congregation.id,
@@ -339,9 +332,9 @@ function Admin({ user }: adminProps) {
       setCongregationCodeCache("");
     }
     setCongregationCode(initialSelectedCode);
-  }, [userId, userEmail]);
+  };
 
-  const fetchCongregationData = useCallback(async (code: string) => {
+  const fetchCongregationData = async (code: string) => {
     const congDetails = await getDataById("congregations", code, {
       requestKey: `congregation-${code}`
     });
@@ -402,85 +395,77 @@ function Admin({ user }: adminProps) {
     }
 
     setIsLoading(false);
-  }, []);
+  };
 
-  const setupAddresses = useCallback(
-    async (territoryId: string) => {
-      if (!territoryId) return;
-      const maps = await getList("maps", {
-        filter: `territory="${territoryId}"`,
-        requestKey: null,
-        sort: "code",
-        fields: PB_FIELDS.MAPS
-      });
-      const newMapViews = new Map<string, boolean>();
-      const newAccordionKeys = [] as Array<string>;
-      const sortedMaps = maps.map((map) => {
-        const mapId = map.id;
-        newMapViews.set(mapId, isMapView);
-        newAccordionKeys.push(mapId);
-        return processMapRecord(map);
-      });
-      setSortedAddressList(sortedMaps);
-      setAccordionKeys(newAccordionKeys);
-      setMapViews(newMapViews);
-    },
-    [isMapView]
-  );
+  const setupAddresses = async (territoryId: string) => {
+    if (!territoryId) return;
+    const maps = await getList("maps", {
+      filter: `territory="${territoryId}"`,
+      requestKey: null,
+      sort: "code",
+      fields: PB_FIELDS.MAPS
+    });
+    const newMapViews = new Map<string, boolean>();
+    const newAccordionKeys = [] as Array<string>;
+    const sortedMaps = maps.map((map) => {
+      const mapId = map.id;
+      newMapViews.set(mapId, isMapView);
+      newAccordionKeys.push(mapId);
+      return processMapRecord(map);
+    });
+    setSortedAddressList(sortedMaps);
+    setAccordionKeys(newAccordionKeys);
+    setMapViews(newMapViews);
+  };
 
-  const toggleCongregation = useCallback((selectedCode: string | null) => {
+  const toggleCongregation = (selectedCode: string | null) => {
     handleCongregationSelect(selectedCode);
     clearTerritorySelection();
-  }, []);
+  };
 
-  const handleShowCongregationSettings = useCallback(() => {
+  const handleShowCongregationSettings = () => {
     showModal(UpdateCongregationSettings, {
       currentName: congregationName,
       currentCongregation: congregationCode,
       currentMaxTries: policy?.maxTries || DEFAULT_CONGREGATION_MAX_TRIES,
       currentDefaultExpiryHrs: defaultExpiryHours
     });
-  }, [
-    congregationName,
-    congregationCode,
-    policy?.maxTries,
-    defaultExpiryHours
-  ]);
+  };
 
-  const handleShowCongregationOptions = useCallback(() => {
+  const handleShowCongregationOptions = () => {
     showModal(UpdateCongregationOptions, {
       currentCongregation: congregationCode
     });
-  }, [congregationCode]);
+  };
 
-  const handleManageUsers = useCallback(async () => {
+  const handleManageUsers = async () => {
     await getUsers();
-  }, [congregationCode]);
+  };
 
-  const handleInviteUser = useCallback(() => {
+  const handleInviteUser = () => {
     showModal(InviteUser, {
       uid: userId,
       congregation: congregationCode,
       footerSaveAcl: userAccessLevel
     });
-  }, [congregationCode, userAccessLevel]);
+  };
 
-  const handleShowProfile = useCallback(() => {
+  const handleShowProfile = () => {
     showModal(GetProfile, {
       user: getUser() as AuthRecord
     });
-  }, []);
+  };
 
-  const handleShowAssignments = useCallback(() => {
+  const handleShowAssignments = () => {
     getAssignments(congregationCode, getUser("id") as string);
-  }, [congregationCode]);
+  };
 
-  const handlePasswordReset = useCallback(async () => {
+  const handlePasswordReset = async () => {
     await requestPasswordReset();
     notifyWarning(
       t("auth.passwordResetConfirmation", "Password reset email sent.")
     );
-  }, []);
+  };
 
   useEffect(() => {
     fetchData();
@@ -491,6 +476,7 @@ function Admin({ user }: adminProps) {
   }, []);
 
   useEffect(() => {
+    console.log("Congregation code changed:", congregationCode);
     if (!congregationCode) return;
     setUserAccessLevel(congregationAccess.current[congregationCode]);
 

@@ -1,4 +1,3 @@
-import { useCallback } from "react";
 import { useToast } from "../components/middlewares/toast";
 import * as Sentry from "@sentry/react";
 
@@ -43,80 +42,67 @@ const formatErrorMessage = (error: any): string => {
 export const useNotification = () => {
   const toast = useToast();
 
-  const handleNotification = useCallback(
-    (
-      type: NotificationType,
-      messageOrError: string | Error | unknown,
-      options?: NotificationOptions
-    ) => {
-      const { title, silent = false } = options || {};
+  const handleNotification = (
+    type: NotificationType,
+    messageOrError: string | Error | unknown,
+    options?: NotificationOptions
+  ) => {
+    const { title, silent = false } = options || {};
 
-      if (type === "error") {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        if ((messageOrError as any)?.isAbort) {
-          console.warn("Request was aborted:", messageOrError);
-          return;
-        }
-
-        if (silent) {
-          return;
-        }
-
-        if (messageOrError instanceof Error) {
-          Sentry.captureException(messageOrError);
-        }
-
-        const errorMessage =
-          typeof messageOrError === "string"
-            ? messageOrError
-            : formatErrorMessage(messageOrError);
-
-        toast.error(errorMessage, "Error");
-      } else {
-        const message =
-          typeof messageOrError === "string"
-            ? messageOrError
-            : String(messageOrError);
-
-        switch (type) {
-          case "success":
-            toast.success(message, title);
-            break;
-          case "warning":
-            toast.warning(message, title);
-            break;
-          case "info":
-            toast.info(message, title);
-            break;
-        }
+    if (type === "error") {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      if ((messageOrError as any)?.isAbort) {
+        console.warn("Request was aborted:", messageOrError);
+        return;
       }
-    },
-    [toast]
-  );
 
-  const notifySuccess = useCallback(
-    (message: string, title?: string) =>
-      handleNotification("success", message, { title }),
-    [handleNotification]
-  );
+      if (silent) {
+        return;
+      }
 
-  const notifyError = useCallback(
-    (messageOrError: string | Error | unknown, silent = false) =>
-      handleNotification("error", messageOrError, { silent }),
-    [handleNotification]
-  );
+      if (messageOrError instanceof Error) {
+        Sentry.captureException(messageOrError);
+      }
 
-  const notifyWarning = useCallback(
-    (message: string, title?: string) =>
-      handleNotification("warning", message, { title }),
-    [handleNotification]
-  );
+      const errorMessage =
+        typeof messageOrError === "string"
+          ? messageOrError
+          : formatErrorMessage(messageOrError);
 
-  const notifyInfo = useCallback(
-    (message: string, title?: string) =>
-      handleNotification("info", message, { title }),
-    [handleNotification]
-  );
+      toast.error(errorMessage, "Error");
+    } else {
+      const message =
+        typeof messageOrError === "string"
+          ? messageOrError
+          : String(messageOrError);
+
+      switch (type) {
+        case "success":
+          toast.success(message, title);
+          break;
+        case "warning":
+          toast.warning(message, title);
+          break;
+        case "info":
+          toast.info(message, title);
+          break;
+      }
+    }
+  };
+
+  const notifySuccess = (message: string, title?: string) =>
+    handleNotification("success", message, { title });
+
+  const notifyError = (
+    messageOrError: string | Error | unknown,
+    silent = false
+  ) => handleNotification("error", messageOrError, { silent });
+
+  const notifyWarning = (message: string, title?: string) =>
+    handleNotification("warning", message, { title });
+
+  const notifyInfo = (message: string, title?: string) =>
+    handleNotification("info", message, { title });
 
   return {
     handleNotification,

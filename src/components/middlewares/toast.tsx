@@ -1,10 +1,4 @@
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  ReactNode
-} from "react";
+import { createContext, useContext, useState, ReactNode } from "react";
 import { ToastContainer as BSToastContainer, Toast } from "react-bootstrap";
 
 export type ToastVariant =
@@ -57,7 +51,7 @@ export const useToast = () => {
 export const ToastProvider = ({ children }: { children: ReactNode }) => {
   const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-  const removeToast = useCallback((id: string) => {
+  const removeToast = (id: string) => {
     setToasts((prev) =>
       prev.map((toast) => (toast.id === id ? { ...toast, show: false } : toast))
     );
@@ -65,62 +59,48 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     setTimeout(() => {
       setToasts((prev) => prev.filter((toast) => toast.id !== id));
     }, ANIMATION_DURATION);
-  }, []);
+  };
 
-  const showToast = useCallback(
-    (
-      message: string,
-      variant: ToastVariant = "info",
-      title?: string,
-      options?: Partial<ToastMessage>
-    ) => {
-      const id = `toast-${Date.now()}-${Math.random()}`;
-      const newToast: ToastMessage = {
-        id,
-        message,
-        variant,
-        title,
-        autohide: true,
-        delay: DEFAULT_DELAY,
-        show: false,
-        ...options
-      };
+  const showToast = (
+    message: string,
+    variant: ToastVariant = "info",
+    title?: string,
+    options?: Partial<ToastMessage>
+  ) => {
+    const id = `toast-${Date.now()}-${Math.random()}`;
+    const newToast: ToastMessage = {
+      id,
+      message,
+      variant,
+      title,
+      autohide: true,
+      delay: DEFAULT_DELAY,
+      show: false,
+      ...options
+    };
 
-      setToasts((prev) => [...prev, newToast]);
+    setToasts((prev) => [...prev, newToast]);
 
-      setTimeout(() => {
-        setToasts((prev) =>
-          prev.map((toast) =>
-            toast.id === id ? { ...toast, show: true } : toast
-          )
-        );
-      }, SHOW_DELAY);
-    },
-    []
-  );
+    setTimeout(() => {
+      setToasts((prev) =>
+        prev.map((toast) =>
+          toast.id === id ? { ...toast, show: true } : toast
+        )
+      );
+    }, SHOW_DELAY);
+  };
 
-  const success = useCallback(
-    (message: string, title = "Success") =>
-      showToast(message, "success", title),
-    [showToast]
-  );
+  const success = (message: string, title = "Success") =>
+    showToast(message, "success", title);
 
-  const error = useCallback(
-    (message: string, title = "Error") =>
-      showToast(message, "danger", title, { autohide: false }),
-    [showToast]
-  );
+  const error = (message: string, title = "Error") =>
+    showToast(message, "danger", title, { autohide: false });
 
-  const warning = useCallback(
-    (message: string, title = "Warning") =>
-      showToast(message, "warning", title),
-    [showToast]
-  );
+  const warning = (message: string, title = "Warning") =>
+    showToast(message, "warning", title);
 
-  const info = useCallback(
-    (message: string, title?: string) => showToast(message, "info", title),
-    [showToast]
-  );
+  const info = (message: string, title?: string) =>
+    showToast(message, "info", title);
 
   const contextValue = {
     showToast,

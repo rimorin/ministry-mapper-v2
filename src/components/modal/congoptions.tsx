@@ -1,12 +1,6 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
-import {
-  useState,
-  FormEvent,
-  useEffect,
-  ChangeEvent,
-  useCallback
-} from "react";
+import { useState, FormEvent, useEffect, ChangeEvent } from "react";
 import {
   Form,
   Modal,
@@ -21,6 +15,7 @@ import useNotification from "../../hooks/useNotification";
 import HelpButton from "../navigation/help";
 import {
   HHOptionProps,
+  OptionTooltipProps,
   UpdateCongregationOptionsModalProps
 } from "../../utils/interface";
 import GenericInputField from "../form/input";
@@ -140,27 +135,16 @@ const UpdateCongregationOptions = NiceModal.create(
       }
     };
 
-    const Link = useCallback(
-      ({
-        id,
-        children,
-        title
-      }: {
-        id: string;
-        children: React.ReactNode;
-        title: string;
-      }) => {
-        return (
-          <OverlayTrigger
-            overlay={<Tooltip id={id}>{title}</Tooltip>}
-            placement="bottom"
-          >
-            <u>{children}</u>
-          </OverlayTrigger>
-        );
-      },
-      [currentCongregation]
-    );
+    const OptionTooltip = ({ id, children, title }: OptionTooltipProps) => {
+      return (
+        <OverlayTrigger
+          overlay={<Tooltip id={id}>{title}</Tooltip>}
+          placement="bottom"
+        >
+          <u>{children}</u>
+        </OverlayTrigger>
+      );
+    };
 
     useEffect(() => {
       const getHHOptions = async () => {
@@ -224,7 +208,7 @@ const UpdateCongregationOptions = NiceModal.create(
               <thead className="sticky-top-cell">
                 <tr>
                   <th style={{ width: "15%", textAlign: "center" }}>
-                    <Link
+                    <OptionTooltip
                       id="optionCd"
                       title={t(
                         "congregation.optionCodeTooltip",
@@ -232,10 +216,10 @@ const UpdateCongregationOptions = NiceModal.create(
                       )}
                     >
                       {t("common.code", "Code")}
-                    </Link>
+                    </OptionTooltip>
                   </th>
                   <th style={{ width: "35%" }}>
-                    <Link
+                    <OptionTooltip
                       id="optionDesc"
                       title={t(
                         "congregation.optionDescTooltip",
@@ -243,10 +227,10 @@ const UpdateCongregationOptions = NiceModal.create(
                       )}
                     >
                       {t("common.description", "Description")}
-                    </Link>
+                    </OptionTooltip>
                   </th>
                   <th style={{ width: "15%" }}>
-                    <Link
+                    <OptionTooltip
                       id="optionSeq"
                       title={t(
                         "congregation.optionSeqTooltip",
@@ -254,10 +238,10 @@ const UpdateCongregationOptions = NiceModal.create(
                       )}
                     >
                       {t("congregation.sequence", "Sequence")}
-                    </Link>
+                    </OptionTooltip>
                   </th>
                   <th style={{ width: "15%", textAlign: "center" }}>
-                    <Link
+                    <OptionTooltip
                       id="optionCountable"
                       title={t(
                         "congregation.optionCountableTooltip",
@@ -265,10 +249,10 @@ const UpdateCongregationOptions = NiceModal.create(
                       )}
                     >
                       {t("congregation.countable", "Countable")}
-                    </Link>
+                    </OptionTooltip>
                   </th>
                   <th style={{ width: "15%", textAlign: "center" }}>
-                    <Link
+                    <OptionTooltip
                       id="optionDefault"
                       title={t(
                         "congregation.optionDefaultTooltip",
@@ -276,7 +260,7 @@ const UpdateCongregationOptions = NiceModal.create(
                       )}
                     >
                       {t("congregation.default", "Default")}
-                    </Link>
+                    </OptionTooltip>
                   </th>
                   <th style={{ width: "15%" }}></th>
                 </tr>

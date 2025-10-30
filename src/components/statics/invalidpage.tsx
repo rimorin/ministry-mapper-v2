@@ -1,9 +1,8 @@
-import { memo } from "react";
 import { Container, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 
-const InvalidPage = memo(() => {
+const InvalidPage = () => {
   const { t } = useTranslation();
 
   return (
@@ -22,6 +21,6 @@ const InvalidPage = memo(() => {
       </Card>
     </Container>
   );
-});
+};
 
 export default InvalidPage;

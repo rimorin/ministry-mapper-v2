@@ -41,7 +41,11 @@ export default defineConfig(() => {
       port: 3000
     },
     plugins: [
-      react(),
+      react({
+        babel: {
+          plugins: ["babel-plugin-react-compiler"]
+        }
+      }),
       visualizer(),
       TurboConsole(),
       VitePWA({

@@ -1,7 +1,7 @@
 import { Container, Card, Spinner } from "react-bootstrap";
 import { userInterface } from "../../utils/interface";
 import UseAnotherButton from "./useanother";
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import useNotification from "../../hooks/useNotification";
 import { useTranslation } from "react-i18next";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
@@ -14,7 +14,7 @@ const VerificationPage = ({ user }: userInterface) => {
   const userEmail = user?.email;
   const [isSending, setIsSending] = useState(false);
 
-  const handleResendMail = useCallback(async () => {
+  const handleResendMail = async () => {
     setIsSending(true);
     try {
       await verifyEmail(userEmail);
@@ -29,9 +29,9 @@ const VerificationPage = ({ user }: userInterface) => {
     } finally {
       setIsSending(false);
     }
-  }, [userEmail, notifySuccess, notifyError, t]);
+  };
 
-  const handleClick = useCallback(() => cleanupSession(), []);
+  const handleClick = () => cleanupSession();
 
   return (
     <Container className="container-main">

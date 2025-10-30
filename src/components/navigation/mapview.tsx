@@ -44,7 +44,7 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
       setIsLoading(true);
       setSelectedAddress(null);
     };
-  }, [sortedAddressList]);
+  }, []);
 
   // if loading show a placeholder with the appropriate height
   if (isLoading) {

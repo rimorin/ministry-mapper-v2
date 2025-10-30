@@ -1,7 +1,7 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useTranslation } from "react-i18next";
 
-import { useState, FormEvent, useCallback } from "react";
+import { useState, FormEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
@@ -24,35 +24,32 @@ const UpdateUser = NiceModal.create(
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
 
-    const handleUserDetails = useCallback(
-      async (event: FormEvent<HTMLElement>) => {
-        event.preventDefault();
-        setIsSaving(true);
-        try {
-          if (userRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
-            await deleteDataById("roles", uid, {
-              requestKey: `delete-usr-role-${uid}`
-            });
-          } else {
-            await updateDataById(
-              "roles",
-              uid,
-              { role: userRole },
-              {
-                requestKey: `update-usr-role-${uid}`
-              }
-            );
-          }
-          modal.resolve(userRole);
-          modal.hide();
-        } catch (error) {
-          notifyError(error);
-        } finally {
-          setIsSaving(false);
+    const handleUserDetails = async (event: FormEvent<HTMLElement>) => {
+      event.preventDefault();
+      setIsSaving(true);
+      try {
+        if (userRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
+          await deleteDataById("roles", uid, {
+            requestKey: `delete-usr-role-${uid}`
+          });
+        } else {
+          await updateDataById(
+            "roles",
+            uid,
+            { role: userRole },
+            {
+              requestKey: `update-usr-role-${uid}`
+            }
+          );
         }
-      },
-      [userRole]
-    );
+        modal.resolve(userRole);
+        modal.hide();
+      } catch (error) {
+        notifyError(error);
+      } finally {
+        setIsSaving(false);
+      }
+    };
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>

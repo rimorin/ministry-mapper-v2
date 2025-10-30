@@ -1,9 +1,8 @@
-import { memo } from "react";
 import { Container } from "react-bootstrap";
 import { territoryHeaderProp } from "../../utils/interface";
 import { useTranslation } from "react-i18next";
 
-const TerritoryHeader = memo(({ name }: territoryHeaderProp) => {
+const TerritoryHeader = ({ name }: territoryHeaderProp) => {
   const { t } = useTranslation();
 
   if (!name) return null;
@@ -14,6 +13,6 @@ const TerritoryHeader = memo(({ name }: territoryHeaderProp) => {
       <span className="territory-name">{name}</span>
     </Container>
   );
-});
+};
 
 export default TerritoryHeader;

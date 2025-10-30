@@ -1,4 +1,4 @@
-import React, { lazy, useCallback, useEffect, useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import {
   TERRITORY_TYPES,
   NOT_HOME_STATUS_CODES,
@@ -38,30 +38,27 @@ const useAddresses = (
     new Map()
   );
 
-  const createUnitDetails = useCallback(
-    (address: RecordModel): unitDetails => ({
-      id: address.id,
-      coordinates: address.coordinates,
-      number: address.code,
-      note: address.notes,
-      type: Array.isArray(address.type)
-        ? address.type.map((type: string) => ({
-            id: type,
-            code: options.get(type)?.code ?? ""
-          }))
-        : [],
-      status: address.status,
-      nhcount: address.not_home_tries ?? NOT_HOME_STATUS_CODES.DEFAULT,
-      dnctime: address.dnc_time ?? null,
-      sequence: address.sequence,
-      floor: address.floor,
-      updated: address.updated,
-      updatedBy: address.updated_by
-    }),
-    [options]
-  );
+  const createUnitDetails = (address: RecordModel): unitDetails => ({
+    id: address.id,
+    coordinates: address.coordinates,
+    number: address.code,
+    note: address.notes,
+    type: Array.isArray(address.type)
+      ? address.type.map((type: string) => ({
+          id: type,
+          code: options.get(type)?.code ?? ""
+        }))
+      : [],
+    status: address.status,
+    nhcount: address.not_home_tries ?? NOT_HOME_STATUS_CODES.DEFAULT,
+    dnctime: address.dnc_time ?? null,
+    sequence: address.sequence,
+    floor: address.floor,
+    updated: address.updated,
+    updatedBy: address.updated_by
+  });
 
-  const fetchAddressData = useCallback(async () => {
+  const fetchAddressData = async () => {
     if (!mapId) return;
     const addresses = await getList("addresses", {
       filter: `map="${mapId}"`,
@@ -76,7 +73,7 @@ const useAddresses = (
     });
 
     setAddresses(addressMap);
-  }, [mapId]);
+  };
 
   useEffect(() => {
     if (!mapId) return;
@@ -134,148 +131,126 @@ const MainTable = ({
   const { showModal } = useModalManagement();
   const addresses = useAddresses(mapId, policy.getOptionMap(), assignmentId);
 
-  const deleteAddressFloor = useCallback(
-    async (floor: number) => {
-      try {
-        await callFunction("/map/floor/remove", {
-          method: "POST",
-          body: {
-            map: mapId,
-            floor: floor
-          }
-        });
-      } catch (error) {
-        notifyError(error);
-      }
-    },
-    [mapId]
-  );
-
-  const handleUpdateUnitStatus = useCallback(
-    (unitDetails?: unitDetails) => {
-      if (!unitDetails) return;
-      showModal(UpdateUnitStatus, {
-        addressData: addressDetails,
-        unitDetails,
-        policy: policy
-      });
-    },
-    [addressDetails.id]
-  );
-
-  const getIdFromEvent = useCallback(
-    (event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>) => {
-      if ("domEvent" in event) {
-        // event is a GoogleMapMouseEvent
-        const domEvent = event.domEvent.target as HTMLElement;
-        return domEvent.dataset.id;
-      }
-      // event is a React.MouseEvent
-      return event.currentTarget.dataset.id;
-    },
-    []
-  );
-
-  const getUnitDetails = useCallback(
-    (
-      event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>,
-      addresses: Map<string, unitDetails>
-    ) => {
-      const id = getIdFromEvent(event) || "";
-      return addresses.get(id);
-    },
-    []
-  );
-
-  const handleFloorDelete = useCallback(
-    async (floor: number) => {
-      const confirmDelete = window.confirm(
-        t(
-          "address.deleteFloorWarning",
-          '⚠️ WARNING: Deleting floor {{floor}} of "{{name}}". This action cannot be undone. Proceed?',
-          {
-            floor: floor,
-            name: mapName
-          }
-        )
-      );
-
-      if (confirmDelete) {
-        deleteAddressFloor(floor);
-      }
-    },
-    [mapName]
-  );
-
-  const deleteAddressUnit = useCallback(
-    async (unitNumber: string) => {
-      try {
-        await callFunction("/map/code/delete", {
-          method: "POST",
-          body: {
-            map: mapId,
-            code: unitNumber
-          }
-        });
-      } catch (error) {
-        notifyError(error);
-      }
-    },
-    [mapId]
-  );
-
-  const handleUnitDelete = useCallback(
-    async (unitNumber: string) => {
-      const confirmDelete = window.confirm(
-        t("unit.confirmDelete", 'Delete unit {{unitNo}} from "{{mapName}}"?', {
-          unitNo: unitNumber,
-          mapName: mapName
-        })
-      );
-
-      if (confirmDelete) {
-        deleteAddressUnit(unitNumber);
-      }
-    },
-    [mapName]
-  );
-
-  const organizeAddresses = useCallback(
-    (
-      addresses: Map<string, unitDetails>
-    ): { floorList: floorDetails[]; maxUnitLength: number } => {
-      if (addresses.size === 0) {
-        return { floorList: [], maxUnitLength: DEFAULT_UNIT_PADDING };
-      }
-
-      let maxUnitLength = DEFAULT_UNIT_PADDING;
-
-      // Use a Map to group units by floor
-      const floorMap = new Map<number, unitDetails[]>();
-
-      // Single pass to group by floor and track maxUnitLength
-      for (const address of addresses.values()) {
-        const { floor, number } = address;
-        maxUnitLength = Math.max(maxUnitLength, number.length);
-
-        if (!floorMap.has(floor)) {
-          floorMap.set(floor, []);
+  const deleteAddressFloor = async (floor: number) => {
+    try {
+      await callFunction("/map/floor/remove", {
+        method: "POST",
+        body: {
+          map: mapId,
+          floor: floor
         }
-        floorMap.get(floor)!.push(address);
+      });
+    } catch (error) {
+      notifyError(error);
+    }
+  };
+
+  const handleUpdateUnitStatus = (unitDetails?: unitDetails) => {
+    if (!unitDetails) return;
+    showModal(UpdateUnitStatus, {
+      addressData: addressDetails,
+      unitDetails,
+      policy: policy
+    });
+  };
+
+  const getIdFromEvent = (
+    event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>
+  ) => {
+    if ("domEvent" in event) {
+      // event is a GoogleMapMouseEvent
+      const domEvent = event.domEvent.target as HTMLElement;
+      return domEvent.dataset.id;
+    }
+    // event is a React.MouseEvent
+    return event.currentTarget.dataset.id;
+  };
+
+  const getUnitDetails = (
+    event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>,
+    addresses: Map<string, unitDetails>
+  ) => {
+    const id = getIdFromEvent(event) || "";
+    return addresses.get(id);
+  };
+
+  const handleFloorDelete = async (floor: number) => {
+    const confirmDelete = window.confirm(
+      t(
+        "address.deleteFloorWarning",
+        '⚠️ WARNING: Deleting floor {{floor}} of "{{name}}". This action cannot be undone. Proceed?',
+        {
+          floor: floor,
+          name: mapName
+        }
+      )
+    );
+
+    if (confirmDelete) {
+      deleteAddressFloor(floor);
+    }
+  };
+
+  const deleteAddressUnit = async (unitNumber: string) => {
+    try {
+      await callFunction("/map/code/delete", {
+        method: "POST",
+        body: {
+          map: mapId,
+          code: unitNumber
+        }
+      });
+    } catch (error) {
+      notifyError(error);
+    }
+  };
+
+  const handleUnitDelete = async (unitNumber: string) => {
+    const confirmDelete = window.confirm(
+      t("unit.confirmDelete", 'Delete unit {{unitNo}} from "{{mapName}}"?', {
+        unitNo: unitNumber,
+        mapName: mapName
+      })
+    );
+
+    if (confirmDelete) {
+      deleteAddressUnit(unitNumber);
+    }
+  };
+
+  const organizeAddresses = (
+    addresses: Map<string, unitDetails>
+  ): { floorList: floorDetails[]; maxUnitLength: number } => {
+    if (addresses.size === 0) {
+      return { floorList: [], maxUnitLength: DEFAULT_UNIT_PADDING };
+    }
+
+    let maxUnitLength = DEFAULT_UNIT_PADDING;
+
+    // Use a Map to group units by floor
+    const floorMap = new Map<number, unitDetails[]>();
+
+    // Single pass to group by floor and track maxUnitLength
+    for (const address of addresses.values()) {
+      const { floor, number } = address;
+      maxUnitLength = Math.max(maxUnitLength, number.length);
+
+      if (!floorMap.has(floor)) {
+        floorMap.set(floor, []);
       }
+      floorMap.get(floor)!.push(address);
+    }
 
-      // Convert to final format, sort floors and units
-      const floorList: floorDetails[] = Array.from(floorMap.entries())
-        .map(([floor, units]) => ({
-          floor,
-          units: units.sort((a, b) => a.sequence - b.sequence)
-        }))
-        .sort((a, b) => b.floor - a.floor);
+    // Convert to final format, sort floors and units
+    const floorList: floorDetails[] = Array.from(floorMap.entries())
+      .map(([floor, units]) => ({
+        floor,
+        units: units.sort((a, b) => a.sequence - b.sequence)
+      }))
+      .sort((a, b) => b.floor - a.floor);
 
-      return { floorList, maxUnitLength };
-    },
-    []
-  );
+    return { floorList, maxUnitLength };
+  };
 
   const handleHouseUpdate = (
     event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>
@@ -283,31 +258,25 @@ const MainTable = ({
     handleUpdateUnitStatus(getUnitDetails(event, addresses));
   };
 
-  const handleFloorDeleteEvent = useCallback(
-    (event: React.MouseEvent<HTMLElement>) => {
-      const { floor } = event.currentTarget.dataset;
-      handleFloorDelete(Number(floor));
-    },
-    []
-  );
+  const handleFloorDeleteEvent = (event: React.MouseEvent<HTMLElement>) => {
+    const { floor } = event.currentTarget.dataset;
+    handleFloorDelete(Number(floor));
+  };
 
   const { floorList, maxUnitLength } = organizeAddresses(addresses);
 
-  const handleUnitDeleteEvent = useCallback(
-    (event: React.MouseEvent<HTMLElement>) => {
-      const { unitno } = event.currentTarget.dataset;
-      const totalUnits = floorList.reduce(
-        (sum, floor) => sum + floor.units.length,
-        0
-      );
-      if (totalUnits === 1) {
-        notifyWarning(t("unit.requireOneUnitValidation"));
-        return;
-      }
-      handleUnitDelete(unitno || "");
-    },
-    [floorList, notifyWarning, t, handleUnitDelete]
-  );
+  const handleUnitDeleteEvent = (event: React.MouseEvent<HTMLElement>) => {
+    const { unitno } = event.currentTarget.dataset;
+    const totalUnits = floorList.reduce(
+      (sum, floor) => sum + floor.units.length,
+      0
+    );
+    if (totalUnits === 1) {
+      notifyWarning(t("unit.requireOneUnitValidation"));
+      return;
+    }
+    handleUnitDelete(unitno || "");
+  };
   if (floorList.length === 0) {
     return <MapPlaceholder policy={policy} />;
   }

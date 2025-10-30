@@ -1,12 +1,16 @@
-import { useEffect, useCallback, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 export function useVisibilityChange(callback: () => void) {
-  const stableCallback = useCallback(callback, [callback]);
+  const callbackRef = useRef(callback);
+
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
 
   useEffect(() => {
     const handleVisibilityChange = () => {
       if (document.visibilityState === "visible") {
-        stableCallback();
+        callbackRef.current();
       }
     };
 
@@ -14,7 +18,7 @@ export function useVisibilityChange(callback: () => void) {
     return () => {
       document.removeEventListener("visibilitychange", handleVisibilityChange);
     };
-  }, [stableCallback]);
+  }, []);
 }
 
 export function usePageVisibility() {

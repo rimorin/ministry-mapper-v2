@@ -1,10 +1,38 @@
-import { memo, useMemo } from "react";
 import { Badge } from "react-bootstrap";
 import { STATUS_CODES } from "../../utils/constants";
-import { unitProps } from "../../utils/interface";
+import { typeInterface, unitProps } from "../../utils/interface";
 import NotHomeIcon from "./nothome";
 
-const AddressStatus = memo((props: unitProps) => {
+const status = (status: string) => {
+  switch (status) {
+    case STATUS_CODES.DONE:
+      return "✅ ";
+    case STATUS_CODES.DO_NOT_CALL:
+      return "🚫 ";
+    default:
+      return "";
+  }
+};
+
+const getHouseholdBadge = (type: typeInterface[], defaultOption: string) => {
+  if (!type || type.length === 0) {
+    return null;
+  }
+
+  const filteredTypes = type.filter((type) => type.id !== defaultOption);
+
+  if (filteredTypes.length === 0) {
+    return null;
+  }
+
+  return (
+    <Badge bg="secondary" className="me-1" pill>
+      {filteredTypes.map((type) => type.code).join(", ")}
+    </Badge>
+  );
+};
+
+const AddressStatus = (props: unitProps) => {
   const {
     type: householdType,
     note,
@@ -17,47 +45,16 @@ const AddressStatus = memo((props: unitProps) => {
     return <span className="status-invalid">✖️</span>;
   }
 
-  const status = useMemo(() => {
-    switch (currentStatus) {
-      case STATUS_CODES.DONE:
-        return "✅ ";
-      case STATUS_CODES.DO_NOT_CALL:
-        return "🚫 ";
-      default:
-        return "";
-    }
-  }, [currentStatus]);
-
-  const getHouseholdBadge = useMemo(() => {
-    if (!householdType || householdType.length === 0) {
-      return null;
-    }
-
-    const filteredTypes = householdType.filter(
-      (type) => type.id !== defaultOption
-    );
-
-    if (filteredTypes.length === 0) {
-      return null;
-    }
-
-    return (
-      <Badge bg="secondary" className="me-1" pill>
-        {filteredTypes.map((type) => type.code).join(", ")}
-      </Badge>
-    );
-  }, [householdType, defaultOption]);
-
   return (
     <>
-      {currentStatus !== STATUS_CODES.NOT_HOME && <>{status}</>}
+      {currentStatus !== STATUS_CODES.NOT_HOME && <>{status(currentStatus)}</>}
       {currentStatus === STATUS_CODES.NOT_HOME && (
         <NotHomeIcon nhcount={nhcount} classProp={"me-1"} />
       )}
       {note && <>🗒️ </>}
-      {getHouseholdBadge}
+      {getHouseholdBadge(householdType, defaultOption)}
     </>
   );
-});
+};
 
 export default AddressStatus;

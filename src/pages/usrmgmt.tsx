@@ -5,7 +5,7 @@ import {
   FloatingLabel,
   Spinner
 } from "react-bootstrap";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import Loader from "../components/statics/loader";
 import NavBarBranding from "../components/navigation/branding";
 import { PASSWORD_POLICY, MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
@@ -24,6 +24,7 @@ const UserManagementComponent = () => {
   const [isResetting, setIsResetting] = useState(false);
   const [validated, setValidated] = useState(false);
   const [message, setMessage] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
   const [loginPassword, setLoginPassword] = useState("");
   const [cloginPassword, setCloginPassword] = useState("");
   const [isLoginPasswordOk, setIsLoginPasswordOk] = useState(false);
@@ -33,53 +34,51 @@ const UserManagementComponent = () => {
   const mode = searchParams.get("mode") || "";
   const oobCode = searchParams.get("oobCode") || "";
 
-  const handleResetPassword = useCallback(
-    async (actionCode: string): Promise<void> => {
-      try {
-        setIsResetting(true);
-        await confirmPasswordReset(actionCode, loginPassword, cloginPassword);
-        setMessage(
-          t(
-            "auth.passwordResetSuccess",
-            "Your password has been successfully reset."
-          )
-        );
-      } catch (error) {
-        setMessage(JSON.stringify(error));
-      } finally {
-        setIsResetting(false);
-      }
-    },
-    [loginPassword, cloginPassword]
-  );
+  const handleResetPassword = async (actionCode: string): Promise<void> => {
+    try {
+      setIsResetting(true);
+      await confirmPasswordReset(actionCode, loginPassword, cloginPassword);
+      setMessage(
+        t(
+          "auth.passwordResetSuccess",
+          "Your password has been successfully reset."
+        )
+      );
+      setIsSuccess(true);
+    } catch (error) {
+      setMessage(JSON.stringify(error));
+      setIsSuccess(false);
+    } finally {
+      setIsResetting(false);
+    }
+  };
 
-  const handleVerifyEmail = useCallback(
-    async (actionCode: string): Promise<void> => {
-      try {
-        setIsProcessing(true);
-        await confirmVerification(actionCode);
-        setMessage(
-          t(
-            "auth.emailVerificationSuccess",
-            "Your email address has been verified."
-          )
-        );
-      } catch (error) {
-        setMessage(
-          error instanceof Error ? error.message : JSON.stringify(error)
-        );
-      } finally {
-        setIsProcessing(false);
-      }
-    },
-    []
-  );
+  const handleVerifyEmail = async (actionCode: string): Promise<void> => {
+    try {
+      setIsProcessing(true);
+      await confirmVerification(actionCode);
+      setMessage(
+        t(
+          "auth.emailVerificationSuccess",
+          "Your email address has been verified."
+        )
+      );
+      setIsSuccess(true);
+    } catch (error) {
+      setMessage(
+        error instanceof Error ? error.message : JSON.stringify(error)
+      );
+      setIsSuccess(false);
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
-  const resetCreationForm = useCallback(() => {
+  const resetCreationForm = () => {
     setLoginPassword("");
     setCloginPassword("");
     setValidated(false);
-  }, []);
+  };
 
   useEffect(() => {
     if (mode === MODE_VERIFY_EMAIL) {
@@ -224,8 +223,6 @@ const UserManagementComponent = () => {
   }
 
   if (message) {
-    const isSuccess =
-      message.includes("success") || message.includes("verified");
     managementComponent = (
       <div className="responsive-width py-3 text-center">
         <div className="mb-4">

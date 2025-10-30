@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useRef } from "react";
 import {
   userDetails,
   CongregationAccessObject,
@@ -38,15 +38,15 @@ export default function useCongregationManagement({
   );
   const congregationAccess = useRef<Record<string, string>>({});
 
-  const toggleCongregationListing = useCallback(() => {
+  const toggleCongregationListing = () => {
     setShowCongregationListing((existingState) => !existingState);
-  }, []);
+  };
 
-  const toggleUserListing = useCallback(() => {
+  const toggleUserListing = () => {
     setShowUserListing((existingState) => !existingState);
-  }, []);
+  };
 
-  const getUsers = useCallback(async () => {
+  const getUsers = async () => {
     try {
       setIsShowingUserListing(true);
       setCongregationUsers(
@@ -58,18 +58,15 @@ export default function useCongregationManagement({
     } finally {
       setIsShowingUserListing(false);
     }
-  }, [congregationCode, userId, toggleUserListing, notifyError]);
+  };
 
-  const handleCongregationSelect = useCallback(
-    (newCongCode: string | null) => {
-      const selectedCode = newCongCode as string;
-      setCongregationCodeCache(selectedCode);
-      setCongregationCode(selectedCode);
-      setCongregationName("");
-      toggleCongregationListing();
-    },
-    [toggleCongregationListing]
-  );
+  const handleCongregationSelect = (newCongCode: string | null) => {
+    const selectedCode = newCongCode as string;
+    setCongregationCodeCache(selectedCode);
+    setCongregationCode(selectedCode);
+    setCongregationName("");
+    toggleCongregationListing();
+  };
 
   return {
     congregationName,

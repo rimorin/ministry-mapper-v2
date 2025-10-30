@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import {
   Form,
   Spinner,
@@ -46,71 +46,62 @@ const LoginComponent = () => {
     }
   }, [otpSessionId]);
 
-  const processEmail = useCallback(
-    (email: string) => email.trim().toLowerCase(),
-    []
-  );
+  const processEmail = (email: string) => email.trim().toLowerCase();
 
-  const handleOtpRequest = useCallback(async (email: string) => {
+  const handleOtpRequest = async (email: string) => {
     try {
       setOtpSessionId(await requestOTP(email));
     } catch (err) {
       notifyError(err);
     }
-  }, []);
+  };
 
-  const loginInWithEmailAndPassword = useCallback(
-    async (email: string, password: string) => {
-      const processedEmail = processEmail(email);
-      try {
-        setIsLogin(true);
-        await authenticateEmailAndPassword(processedEmail, password);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err: any) {
-        const mfaId = err.response?.mfaId;
-        setValidated(false);
-        if (!mfaId) {
-          notifyError(err);
-          return;
-        }
-        await handleOtpRequest(processedEmail);
-        setMfaId(mfaId);
-      } finally {
-        setIsLogin(false);
-      }
-    },
-    [processEmail, handleOtpRequest]
-  );
-
-  const handleOtpSubmit = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      event.preventDefault();
-      try {
-        setIsLogin(true);
-        await authenticateOTP(otpSessionId, otpCode, mfaId);
-      } catch (err) {
+  const loginInWithEmailAndPassword = async (
+    email: string,
+    password: string
+  ) => {
+    const processedEmail = processEmail(email);
+    try {
+      setIsLogin(true);
+      await authenticateEmailAndPassword(processedEmail, password);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      const mfaId = err.response?.mfaId;
+      setValidated(false);
+      if (!mfaId) {
         notifyError(err);
-      } finally {
-        setIsLogin(false);
-      }
-    },
-    [otpSessionId, otpCode, mfaId]
-  );
-
-  const handleLoginSubmit = useCallback(
-    async (event: React.FormEvent<HTMLFormElement>) => {
-      const form = event.currentTarget;
-      event.preventDefault();
-      setValidated(true);
-      if (form.checkValidity() === false) {
         return;
       }
-      await loginInWithEmailAndPassword(loginEmail, loginPassword);
-    },
-    [loginEmail, loginPassword, loginInWithEmailAndPassword]
-  );
+      await handleOtpRequest(processedEmail);
+      setMfaId(mfaId);
+    } finally {
+      setIsLogin(false);
+    }
+  };
 
-  const handleClipboardPaste = useCallback(async () => {
+  const handleOtpSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    try {
+      setIsLogin(true);
+      await authenticateOTP(otpSessionId, otpCode, mfaId);
+    } catch (err) {
+      notifyError(err);
+    } finally {
+      setIsLogin(false);
+    }
+  };
+
+  const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    const form = event.currentTarget;
+    event.preventDefault();
+    setValidated(true);
+    if (form.checkValidity() === false) {
+      return;
+    }
+    await loginInWithEmailAndPassword(loginEmail, loginPassword);
+  };
+
+  const handleClipboardPaste = async () => {
     try {
       const text = await navigator.clipboard.readText();
       setOtpCode(text);
@@ -126,34 +117,28 @@ const LoginComponent = () => {
       }
       notifyError(err);
     }
-  }, []);
+  };
 
-  const handleNavigateSignup = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>) => {
-      e.preventDefault();
-      setFrontPageMode("signup");
-    },
-    [setFrontPageMode]
-  );
+  const handleNavigateSignup = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setFrontPageMode("signup");
+  };
 
-  const handleNavigateForgot = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>) => {
-      e.preventDefault();
-      setFrontPageMode("forgot");
-    },
-    [setFrontPageMode]
-  );
+  const handleNavigateForgot = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setFrontPageMode("forgot");
+  };
 
-  const handleResendOtp = useCallback(async () => {
+  const handleResendOtp = async () => {
     await handleOtpRequest(processEmail(loginEmail));
     notifyInfo(t("auth.otpSentAlert", "OTP sent to your email"));
-  }, [loginEmail, processEmail, handleOtpRequest, t]);
+  };
 
-  const handleClearOtpCode = useCallback(() => {
+  const handleClearOtpCode = () => {
     setOtpCode("");
-  }, []);
+  };
 
-  const handleOAuthSignIn = useCallback((provider: string) => {
+  const handleOAuthSignIn = (provider: string) => {
     setIsOAuthLoading(true);
     authenticateOAuth2(provider)
       .catch((err) => {
@@ -162,7 +147,7 @@ const LoginComponent = () => {
       .finally(() => {
         setIsOAuthLoading(false);
       });
-  }, []);
+  };
 
   const isDisabled = isLogin || isOAuthLoading;
 

@@ -1,10 +1,9 @@
-import { memo } from "react";
 import { Navbar, Image } from "react-bootstrap";
 import { BrandingProps } from "../../utils/interface";
 import { useTranslation } from "react-i18next";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 
-const NavBarBranding = memo(({ naming }: BrandingProps) => {
+const NavBarBranding = ({ naming }: BrandingProps) => {
   const { t } = useTranslation();
 
   return (
@@ -22,6 +21,6 @@ const NavBarBranding = memo(({ naming }: BrandingProps) => {
       )}
     </Navbar.Brand>
   );
-});
+};
 
 export default NavBarBranding;

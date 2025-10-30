@@ -1,4 +1,4 @@
-import { lazy, memo, useCallback, useEffect, useState, FC } from "react";
+import { lazy, useEffect, useState, FC } from "react";
 import { ButtonGroup, Spinner, Badge } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
@@ -43,7 +43,7 @@ const useAssignments = (mapId: string) => {
     new Map()
   );
 
-  const retrieveAssignments = useCallback(async () => {
+  const retrieveAssignments = async () => {
     if (!mapId) return;
     const mapAssignments = await getList("assignments", {
       filter: `map='${mapId}'`,
@@ -62,20 +62,21 @@ const useAssignments = (mapId: string) => {
     }
     setPersonalLinks(personalLinks);
     setNormalLinks(normalLinks);
-  }, [mapId]);
+  };
 
-  const updateLinks = useCallback(
-    (prev: Map<string, LinkSession>, record: RecordModel, action: string) => {
-      const updatedSet = new Map(prev);
-      if (action === "delete") {
-        updatedSet.delete(record.id);
-      } else {
-        updatedSet.set(record.id, new LinkSession(record));
-      }
-      return updatedSet;
-    },
-    []
-  );
+  const updateLinks = (
+    prev: Map<string, LinkSession>,
+    record: RecordModel,
+    action: string
+  ) => {
+    const updatedSet = new Map(prev);
+    if (action === "delete") {
+      updatedSet.delete(record.id);
+    } else {
+      updatedSet.set(record.id, new LinkSession(record));
+    }
+    return updatedSet;
+  };
 
   useEffect(() => {
     if (!mapId) return;
@@ -107,196 +108,195 @@ const useAssignments = (mapId: string) => {
   return { personalLinks, normalLinks };
 };
 
-const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = memo(
-  ({ addressElement, policy, userId }) => {
-    const { t } = useTranslation();
-    const { notifyError, notifyWarning } = useNotification();
-    const { showModal } = useModalManagement();
-    const [isSettingPersonalLink, setIsSettingPersonalLink] = useState(false);
-    const [isSettingNormalLink, setIsSettingNormalLink] = useState(false);
-    const mapId = addressElement.id;
+const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
+  addressElement,
+  policy,
+  userId
+}) => {
+  const { t } = useTranslation();
+  const { notifyError, notifyWarning } = useNotification();
+  const { showModal } = useModalManagement();
+  const [isSettingPersonalLink, setIsSettingPersonalLink] = useState(false);
+  const [isSettingNormalLink, setIsSettingNormalLink] = useState(false);
+  const mapId = addressElement.id;
 
-    const { personalLinks, normalLinks } = useAssignments(mapId);
+  const { personalLinks, normalLinks } = useAssignments(mapId);
 
-    const handleButtonClick = useCallback(async (linkType: string) => {
-      if (!navigator.share) {
-        notifyWarning(UNSUPPORTED_BROWSER_MSG);
-        return;
-      }
-      try {
-        const linkReturn = await showModal(ConfirmSlipDetails, {
-          addressName: addressElement.name,
-          userAccessLevel: policy.userRole,
-          isPersonalSlip: linkType === LINK_TYPES.PERSONAL
-        });
+  const handleButtonClick = async (linkType: string) => {
+    if (!navigator.share) {
+      notifyWarning(UNSUPPORTED_BROWSER_MSG);
+      return;
+    }
+    try {
+      const linkReturn = await showModal(ConfirmSlipDetails, {
+        addressName: addressElement.name,
+        userAccessLevel: policy.userRole,
+        isPersonalSlip: linkType === LINK_TYPES.PERSONAL
+      });
 
-        const linkObject = linkReturn as Record<string, unknown>;
-        const expiryHrs = (
-          linkType === LINK_TYPES.PERSONAL
-            ? linkObject.linkExpiryHrs
-            : policy.defaultExpiryHours
-        ) as number;
-        await shareTimedLink(
-          linkType,
-          addressElement.name,
-          assignmentMessage(addressElement.name),
-          expiryHrs,
-          linkObject.publisherName as string
-        );
-      } finally {
-        setIsSettingNormalLink(false);
-        setIsSettingPersonalLink(false);
-      }
-    }, []);
+      const linkObject = linkReturn as Record<string, unknown>;
+      const expiryHrs = (
+        linkType === LINK_TYPES.PERSONAL
+          ? linkObject.linkExpiryHrs
+          : policy.defaultExpiryHours
+      ) as number;
+      await shareTimedLink(
+        linkType,
+        addressElement.name,
+        assignmentMessage(addressElement.name),
+        expiryHrs,
+        linkObject.publisherName as string
+      );
+    } finally {
+      setIsSettingNormalLink(false);
+      setIsSettingPersonalLink(false);
+    }
+  };
 
-    const shareTimedLink = useCallback(
-      async (
-        linktype: string,
-        title: string,
-        body: string,
-        hours: number,
-        publisherName = ""
-      ) => {
-        if (!navigator.share) {
-          notifyWarning(UNSUPPORTED_BROWSER_MSG);
+  const shareTimedLink = async (
+    linktype: string,
+    title: string,
+    body: string,
+    hours: number,
+    publisherName = ""
+  ) => {
+    if (!navigator.share) {
+      notifyWarning(UNSUPPORTED_BROWSER_MSG);
+      return;
+    }
+    try {
+      if (linktype === LINK_TYPES.ASSIGNMENT) setIsSettingNormalLink(true);
+      if (linktype === LINK_TYPES.PERSONAL) setIsSettingPersonalLink(true);
+      const linkRecord = await createData(
+        "assignments",
+        {
+          map: mapId,
+          user: userId,
+          type: linktype,
+          expiry_date: addHours(hours),
+          publisher: publisherName
+        },
+        {
+          requestKey: `create-assignment-${mapId}-${userId}`
+        }
+      );
+      const linkId = linkRecord.id;
+      const url = `map/${linkId}`;
+      const absoluteUrl = new URL(url, window.location.href);
+      await navigator.share({
+        title: title,
+        text: body,
+        url: absoluteUrl.toString()
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        // Ignore the error if the user aborts the share
+        if (error.name === "AbortError") {
           return;
         }
-        try {
-          if (linktype === LINK_TYPES.ASSIGNMENT) setIsSettingNormalLink(true);
-          if (linktype === LINK_TYPES.PERSONAL) setIsSettingPersonalLink(true);
-          const linkRecord = await createData(
-            "assignments",
-            {
-              map: mapId,
-              user: userId,
-              type: linktype,
-              expiry_date: addHours(hours),
-              publisher: publisherName
-            },
-            {
-              requestKey: `create-assignment-${mapId}-${userId}`
-            }
-          );
-          const linkId = linkRecord.id;
-          const url = `map/${linkId}`;
-          const absoluteUrl = new URL(url, window.location.href);
-          await navigator.share({
-            title: title,
-            text: body,
-            url: absoluteUrl.toString()
-          });
-        } catch (error) {
-          if (error instanceof Error) {
-            // Ignore the error if the user aborts the share
-            if (error.name === "AbortError") {
-              return;
-            }
-          }
-          notifyError(error, true);
-        }
-      },
-      []
-    );
+      }
+      notifyError(error, true);
+    }
+  };
 
-    const handleAssignmentsButtonClick = (linkType: string) => {
-      const assignments =
-        linkType === LINK_TYPES.PERSONAL ? personalLinks : normalLinks;
-      showModal(GetAssignments, {
-        assignments: Array.from(assignments.values()),
-        assignmentType: linkType,
-        assignmentTerritory: addressElement.name
-      });
-    };
+  const handleAssignmentsButtonClick = (linkType: string) => {
+    const assignments =
+      linkType === LINK_TYPES.PERSONAL ? personalLinks : normalLinks;
+    showModal(GetAssignments, {
+      assignments: Array.from(assignments.values()),
+      assignmentType: linkType,
+      assignmentTerritory: addressElement.name
+    });
+  };
 
-    return (
-      <>
-        <ComponentAuthorizer
-          requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
-          userPermission={policy.userRole}
-        >
-          <ButtonGroup className="m-1">
+  return (
+    <>
+      <ComponentAuthorizer
+        requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
+        userPermission={policy.userRole}
+      >
+        <ButtonGroup className="m-1">
+          <GenericButton
+            key={`assign-personal-${mapId}`}
+            size="sm"
+            variant="outline-primary"
+            onClick={() => handleButtonClick(LINK_TYPES.PERSONAL)}
+            label={t("links.personal", "Personal")}
+          />
+          {(isSettingPersonalLink && (
             <GenericButton
-              key={`assign-personal-${mapId}`}
               size="sm"
               variant="outline-primary"
-              onClick={() => handleButtonClick(LINK_TYPES.PERSONAL)}
-              label={t("links.personal", "Personal")}
+              label={
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  aria-hidden="true"
+                />
+              }
             />
-            {(isSettingPersonalLink && (
+          )) ||
+            (personalLinks.size > 0 && (
               <GenericButton
                 size="sm"
                 variant="outline-primary"
+                onClick={() =>
+                  handleAssignmentsButtonClick(LINK_TYPES.PERSONAL)
+                }
                 label={
-                  <Spinner
-                    as="span"
-                    animation="border"
-                    size="sm"
-                    aria-hidden="true"
-                  />
+                  <Badge bg="danger" className="me-1">
+                    {personalLinks.size}
+                  </Badge>
                 }
               />
-            )) ||
-              (personalLinks.size > 0 && (
-                <GenericButton
-                  size="sm"
-                  variant="outline-primary"
-                  onClick={() =>
-                    handleAssignmentsButtonClick(LINK_TYPES.PERSONAL)
-                  }
-                  label={
-                    <Badge bg="danger" className="me-1">
-                      {personalLinks.size}
-                    </Badge>
-                  }
-                />
-              ))}
-          </ButtonGroup>
-        </ComponentAuthorizer>
-        <ComponentAuthorizer
-          requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
-          userPermission={policy.userRole}
-        >
-          <ButtonGroup className="m-1">
+            ))}
+        </ButtonGroup>
+      </ComponentAuthorizer>
+      <ComponentAuthorizer
+        requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
+        userPermission={policy.userRole}
+      >
+        <ButtonGroup className="m-1">
+          <GenericButton
+            key={`assign-normal-${mapId}`}
+            size="sm"
+            variant="outline-primary"
+            onClick={() => handleButtonClick(LINK_TYPES.ASSIGNMENT)}
+            label={t("links.assignment", "Assign")}
+          />
+          {(isSettingNormalLink && (
             <GenericButton
-              key={`assign-normal-${mapId}`}
               size="sm"
               variant="outline-primary"
-              onClick={() => handleButtonClick(LINK_TYPES.ASSIGNMENT)}
-              label={t("links.assignment", "Assign")}
+              label={
+                <Spinner
+                  as="span"
+                  animation="border"
+                  size="sm"
+                  aria-hidden="true"
+                />
+              }
             />
-            {(isSettingNormalLink && (
+          )) ||
+            (normalLinks.size > 0 && (
               <GenericButton
                 size="sm"
                 variant="outline-primary"
+                onClick={() =>
+                  handleAssignmentsButtonClick(LINK_TYPES.ASSIGNMENT)
+                }
                 label={
-                  <Spinner
-                    as="span"
-                    animation="border"
-                    size="sm"
-                    aria-hidden="true"
-                  />
+                  <Badge bg="danger" className="me-1">
+                    {normalLinks.size}
+                  </Badge>
                 }
               />
-            )) ||
-              (normalLinks.size > 0 && (
-                <GenericButton
-                  size="sm"
-                  variant="outline-primary"
-                  onClick={() =>
-                    handleAssignmentsButtonClick(LINK_TYPES.ASSIGNMENT)
-                  }
-                  label={
-                    <Badge bg="danger" className="me-1">
-                      {normalLinks.size}
-                    </Badge>
-                  }
-                />
-              ))}
-          </ButtonGroup>
-        </ComponentAuthorizer>
-      </>
-    );
-  }
-);
+            ))}
+        </ButtonGroup>
+      </ComponentAuthorizer>
+    </>
+  );
+};
 
 export default AssignmentButtonGroup;

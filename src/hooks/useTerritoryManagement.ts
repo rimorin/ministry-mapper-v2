@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState } from "react";
 import {
   territoryDetails,
   TerritoryManagementOptions
@@ -8,14 +8,12 @@ import {
   callFunction,
   unsubscriber
 } from "../utils/pocketbase";
-import { useTranslation } from "react-i18next";
 import useNotification from "./useNotification";
 import useLocalStorage from "./useLocalStorage";
 
 export default function useTerritoryManagement({
   congregationCode
 }: TerritoryManagementOptions) {
-  const { t } = useTranslation();
   const { notifyError } = useNotification();
   const [isProcessingTerritory, setIsProcessingTerritory] =
     useState<boolean>(false);
@@ -34,23 +32,20 @@ export default function useTerritoryManagement({
     ""
   );
 
-  const toggleTerritoryListing = useCallback(() => {
+  const toggleTerritoryListing = () => {
     setShowTerritoryListing((existingState) => !existingState);
-  }, []);
+  };
 
-  const handleTerritorySelect = useCallback(
-    (eventKey: string | null) => {
-      setSelectedTerritory((prev) => ({
-        ...prev,
-        id: eventKey as string
-      }));
-      setTerritoryCodeCache(eventKey as string);
-      toggleTerritoryListing();
-    },
-    [toggleTerritoryListing, setTerritoryCodeCache]
-  );
+  const handleTerritorySelect = (eventKey: string | null) => {
+    setSelectedTerritory((prev) => ({
+      ...prev,
+      id: eventKey as string
+    }));
+    setTerritoryCodeCache(eventKey as string);
+    toggleTerritoryListing();
+  };
 
-  const deleteTerritory = useCallback(async () => {
+  const deleteTerritory = async () => {
     if (!selectedTerritory.id) return;
     setIsProcessingTerritory(true);
     try {
@@ -65,15 +60,9 @@ export default function useTerritoryManagement({
     } finally {
       setIsProcessingTerritory(false);
     }
-  }, [
-    selectedTerritory.id,
-    selectedTerritory.code,
-    congregationCode,
-    t,
-    notifyError
-  ]);
+  };
 
-  const resetTerritory = useCallback(async () => {
+  const resetTerritory = async () => {
     if (!selectedTerritory.code) return;
     setIsProcessingTerritory(true);
     try {
@@ -88,43 +77,39 @@ export default function useTerritoryManagement({
     } finally {
       setIsProcessingTerritory(false);
     }
-  }, [selectedTerritory.code, selectedTerritory.id, notifyError]);
+  };
 
-  const processCongregationTerritories = useCallback(
+  const processCongregationTerritories = (
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (congregationTerritories: any) => {
-      const territoryList = new Map<string, territoryDetails>();
-      try {
-        if (!congregationTerritories) return territoryList;
-        for (const territory in congregationTerritories) {
-          const name = congregationTerritories[territory]["description"];
-          const id = congregationTerritories[territory]["id"];
-          const code = congregationTerritories[territory]["code"];
-          const progress = congregationTerritories[territory]["progress"];
-          territoryList.set(id, {
-            id: id,
-            code: code,
-            name: name,
-            aggregates: progress
-          });
-        }
-      } catch (error) {
-        notifyError(error);
+    congregationTerritories: any
+  ) => {
+    const territoryList = new Map<string, territoryDetails>();
+    try {
+      if (!congregationTerritories) return territoryList;
+      for (const territory in congregationTerritories) {
+        const name = congregationTerritories[territory]["description"];
+        const id = congregationTerritories[territory]["id"];
+        const code = congregationTerritories[territory]["code"];
+        const progress = congregationTerritories[territory]["progress"];
+        territoryList.set(id, {
+          id: id,
+          code: code,
+          name: name,
+          aggregates: progress
+        });
       }
-      return territoryList;
-    },
-    []
-  );
+    } catch (error) {
+      notifyError(error);
+    }
+    return territoryList;
+  };
 
-  const congregationTerritoryList = useMemo(
-    () => Array.from(territories.values()),
-    [territories]
-  );
+  const congregationTerritoryList = Array.from(territories.values());
 
-  const clearTerritorySelection = useCallback(() => {
+  const clearTerritorySelection = () => {
     setSelectedTerritory({ id: "", code: undefined, name: undefined });
     setTerritoryCodeCache("");
-  }, []);
+  };
 
   return {
     selectedTerritory,

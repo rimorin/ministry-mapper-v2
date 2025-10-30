@@ -1,11 +1,4 @@
-import {
-  useContext,
-  useEffect,
-  useState,
-  lazy,
-  Suspense,
-  useCallback
-} from "react";
+import { useContext, useEffect, useState, lazy, Suspense } from "react";
 import { Container, Navbar, Image } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { MINISTRY_MAPPER_WIKI_PAGE } from "../utils/constants";
@@ -41,14 +34,14 @@ const FrontPage = () => {
   const [loginUser, setLoginUser] = useState<AuthModel>(getUser() as AuthModel);
   const { frontPageMode } = context;
 
-  const handleLanguageSelect = useCallback((language: string) => {
+  const handleLanguageSelect = (language: string) => {
     changeLanguage(language);
     toggleLanguageSelector();
-  }, []);
+  };
 
-  const handleOpenAbout = useCallback(() => {
+  const handleOpenAbout = () => {
     window.open(AboutURL);
-  }, []);
+  };
 
   useEffect(() => {
     authListener((model: AuthModel) => {
