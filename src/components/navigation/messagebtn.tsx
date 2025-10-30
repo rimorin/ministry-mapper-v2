@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useCallback, memo } from "react";
+import React, { lazy, useEffect } from "react";
 import { ButtonGroup, Badge } from "react-bootstrap";
 import {
   MESSAGE_TYPES,
@@ -23,14 +23,14 @@ interface PersonalButtonGroupProps {
 const useUnreadMessages = (mapId: string) => {
   const [unreadMsgCount, setUnreadMsgCount] = React.useState(0);
 
-  const fetchUnreadMsgs = useCallback(async () => {
+  const fetchUnreadMsgs = async () => {
     const unreadMessages = await getList("messages", {
       filter: `map = "${mapId}" && type!= "${MESSAGE_TYPES.ADMIN}" && read = false`,
       fields: "id",
       requestKey: null
     });
     setUnreadMsgCount(unreadMessages.length);
-  }, [mapId]);
+  };
 
   useEffect(() => {
     if (!mapId) return;
@@ -59,51 +59,52 @@ const useUnreadMessages = (mapId: string) => {
   return unreadMsgCount;
 };
 
-const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = memo(
-  ({ addressElement, policy }) => {
-    const mapId = addressElement.id;
-    const userRole = policy.userRole;
-    const isAdmin = userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
-    const msgType = isAdmin ? MESSAGE_TYPES.ADMIN : MESSAGE_TYPES.CONDUCTOR;
-    const { showModal } = useModalManagement();
-    const unreadMsgCount = useUnreadMessages(mapId);
-    const { t } = useTranslation();
+const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
+  addressElement,
+  policy
+}) => {
+  const mapId = addressElement.id;
+  const userRole = policy.userRole;
+  const isAdmin = userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
+  const msgType = isAdmin ? MESSAGE_TYPES.ADMIN : MESSAGE_TYPES.CONDUCTOR;
+  const { showModal } = useModalManagement();
+  const unreadMsgCount = useUnreadMessages(mapId);
+  const { t } = useTranslation();
 
-    const handleMessagesClick = useCallback(() => {
-      showModal(UpdateMapMessages, {
-        name: addressElement.name,
-        mapId: mapId,
-        helpLink: WIKI_CATEGORIES.PUBLISHER_ADDRESS_FEEDBACK,
-        footerSaveAcl: userRole,
-        policy: policy,
-        messageType: msgType
-      });
-    }, [mapId, userRole]);
+  const handleMessagesClick = () => {
+    showModal(UpdateMapMessages, {
+      name: addressElement.name,
+      mapId: mapId,
+      helpLink: WIKI_CATEGORIES.PUBLISHER_ADDRESS_FEEDBACK,
+      footerSaveAcl: userRole,
+      policy: policy,
+      messageType: msgType
+    });
+  };
 
-    return (
-      <>
-        <ButtonGroup className="m-1">
+  return (
+    <>
+      <ButtonGroup className="m-1">
+        <GenericButton
+          size="sm"
+          variant="outline-primary"
+          onClick={handleMessagesClick}
+          label={t("messages.messages", "Messages")}
+        />
+        {isAdmin && unreadMsgCount > 0 && (
           <GenericButton
             size="sm"
             variant="outline-primary"
-            onClick={handleMessagesClick}
-            label={t("messages.messages", "Messages")}
+            label={
+              <Badge bg="success" className="me-1 notification-glow">
+                {unreadMsgCount}
+              </Badge>
+            }
           />
-          {isAdmin && unreadMsgCount > 0 && (
-            <GenericButton
-              size="sm"
-              variant="outline-primary"
-              label={
-                <Badge bg="success" className="me-1 notification-glow">
-                  {unreadMsgCount}
-                </Badge>
-              }
-            />
-          )}
-        </ButtonGroup>
-      </>
-    );
-  }
-);
+        )}
+      </ButtonGroup>
+    </>
+  );
+};
 
 export default MessageButtonGroup;

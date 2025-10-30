@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 import { PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY } from "../utils/constants";
 
 export default function useUIState() {
@@ -12,17 +12,17 @@ export default function useUIState() {
   const [isAssignmentLoading, setIsAssignmentLoading] =
     useState<boolean>(false);
 
-  const handleScroll = useCallback(() => {
+  const handleScroll = () => {
     setShowBkTopButton(window.scrollY > PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY);
-  }, []);
+  };
 
-  const toggleAddressTerritoryListing = useCallback(() => {
+  const toggleAddressTerritoryListing = () => {
     setShowChangeAddressTerritory((existingState) => !existingState);
-  }, []);
+  };
 
-  const toggleLanguageSelector = useCallback(() => {
+  const toggleLanguageSelector = () => {
     setShowLanguageSelector((existingState) => !existingState);
-  }, []);
+  };
 
   return {
     showBkTopButton,

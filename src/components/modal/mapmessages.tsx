@@ -1,6 +1,6 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
-import { useState, FormEvent, useEffect, useCallback } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import useNotification from "../../hooks/useNotification";
@@ -42,7 +42,7 @@ const useMessages = (mapId: string, assignmentId?: string) => {
     };
   };
 
-  const fetchFeedbacks = useCallback(async () => {
+  const fetchFeedbacks = async () => {
     if (!mapId) return;
     const feedbacks = await getList("messages", {
       filter: `map="${mapId}"`,
@@ -52,7 +52,7 @@ const useMessages = (mapId: string, assignmentId?: string) => {
     });
 
     setMessages(feedbacks.map((fb) => processRecord(fb)));
-  }, [mapId]);
+  };
 
   useEffect(() => {
     if (!mapId) return;
@@ -117,33 +117,30 @@ const UpdateMapMessages = NiceModal.create(
       policy.userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
     const { messages } = useMessages(mapId, assignmentId);
 
-    const handleSubmitFeedback = useCallback(
-      async (event: FormEvent<HTMLElement>) => {
-        event.preventDefault();
-        setIsSaving(true);
-        try {
-          await createData(
-            "messages",
-            {
-              map: mapId,
-              message: feedback,
-              read: isAdmin,
-              created_by: policy.userName,
-              type: messageType
-            },
-            {
-              requestKey: `create-msg-${mapId}`
-            }
-          );
-          setFeedback("");
-        } catch (error) {
-          notifyError(error);
-        } finally {
-          setIsSaving(false);
-        }
-      },
-      [feedback]
-    );
+    const handleSubmitFeedback = async (event: FormEvent<HTMLElement>) => {
+      event.preventDefault();
+      setIsSaving(true);
+      try {
+        await createData(
+          "messages",
+          {
+            map: mapId,
+            message: feedback,
+            read: isAdmin,
+            created_by: policy.userName,
+            type: messageType
+          },
+          {
+            requestKey: `create-msg-${mapId}`
+          }
+        );
+        setFeedback("");
+      } catch (error) {
+        notifyError(error);
+      } finally {
+        setIsSaving(false);
+      }
+    };
 
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>

@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
 
 export function useLocalStorage<T = string | boolean>(
   key: string,
@@ -14,34 +14,31 @@ export function useLocalStorage<T = string | boolean>(
     }
   });
 
-  const setValue = useCallback(
-    (value: T | ((val: T) => T)) => {
-      try {
-        const valueToStore =
-          value instanceof Function ? value(storedValue) : value;
+  const setValue = (value: T | ((val: T) => T)) => {
+    try {
+      const valueToStore =
+        value instanceof Function ? value(storedValue) : value;
 
-        if (valueToStore === null || valueToStore === "") {
-          window.localStorage.removeItem(key);
-          setStoredValue(initialValue);
-        } else {
-          setStoredValue(valueToStore);
-          window.localStorage.setItem(key, JSON.stringify(valueToStore));
-        }
-      } catch (error) {
-        console.error(`Error setting localStorage key "${key}":`, error);
+      if (valueToStore === null || valueToStore === "") {
+        window.localStorage.removeItem(key);
+        setStoredValue(initialValue);
+      } else {
+        setStoredValue(valueToStore);
+        window.localStorage.setItem(key, JSON.stringify(valueToStore));
       }
-    },
-    [key, storedValue, initialValue]
-  );
+    } catch (error) {
+      console.error(`Error setting localStorage key "${key}":`, error);
+    }
+  };
 
-  const removeValue = useCallback(() => {
+  const removeValue = () => {
     try {
       window.localStorage.removeItem(key);
       setStoredValue(initialValue);
     } catch (error) {
       console.error(`Error removing localStorage key "${key}":`, error);
     }
-  }, [key, initialValue]);
+  };
 
   return [storedValue, setValue, removeValue] as const;
 }

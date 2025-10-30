@@ -1,10 +1,9 @@
-import { memo } from "react";
 import { Badge } from "react-bootstrap";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import { UserRoleBadgeProps } from "../../utils/interface";
 import { useTranslation } from "react-i18next";
 
-const UserRoleBadge = memo(({ role }: UserRoleBadgeProps) => {
+const UserRoleBadge = ({ role }: UserRoleBadgeProps) => {
   const { t } = useTranslation();
 
   if (!role) return <Badge bg="secondary">?</Badge>;
@@ -19,6 +18,6 @@ const UserRoleBadge = memo(({ role }: UserRoleBadgeProps) => {
     default:
       return <Badge bg="secondary">?</Badge>;
   }
-});
+};
 
 export default UserRoleBadge;

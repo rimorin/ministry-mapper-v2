@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, FormEvent, useRef } from "react";
+import { useEffect, useState, FormEvent, useRef } from "react";
 import {
   ControlPosition,
   MapControl,
@@ -64,41 +64,37 @@ export const GmapAutocomplete = ({
     return () => clearTimeout(timerId);
   }, [places, inputValue, origin, selectedValue]);
 
-  const onInputChange = useCallback(
-    (event: FormEvent<HTMLInputElement>) => {
-      const value = (event.target as HTMLInputElement).value;
-      setInputValue(value);
-      if (value !== selectedValue) {
-        setSelectedValue("");
-      }
-    },
-    [selectedValue]
-  );
+  const onInputChange = (event: FormEvent<HTMLInputElement>) => {
+    const value = (event.target as HTMLInputElement).value;
+    setInputValue(value);
+    if (value !== selectedValue) {
+      setSelectedValue("");
+    }
+  };
 
-  const handleSuggestionClick = useCallback(
-    async (suggestion: google.maps.places.AutocompleteSuggestion) => {
-      if (!places || !suggestion.placePrediction) return;
+  const handleSuggestionClick = async (
+    suggestion: google.maps.places.AutocompleteSuggestion
+  ) => {
+    if (!places || !suggestion.placePrediction) return;
 
-      const place = suggestion.placePrediction.toPlace();
+    const place = suggestion.placePrediction.toPlace();
 
-      try {
-        await place.fetchFields({
-          fields: ["location", "displayName", "formattedAddress"]
-        });
+    try {
+      await place.fetchFields({
+        fields: ["location", "displayName", "formattedAddress"]
+      });
 
-        const address = place.formattedAddress || "";
-        setInputValue(address);
-        setSelectedValue(address);
-        setSuggestions([]);
-        onPlaceSelect(place);
-        sessionTokenRef.current = new places.AutocompleteSessionToken();
-      } catch (error) {
-        notifyError(error);
-        onPlaceSelect(null);
-      }
-    },
-    [places, onPlaceSelect]
-  );
+      const address = place.formattedAddress || "";
+      setInputValue(address);
+      setSelectedValue(address);
+      setSuggestions([]);
+      onPlaceSelect(place);
+      sessionTokenRef.current = new places.AutocompleteSessionToken();
+    } catch (error) {
+      notifyError(error);
+      onPlaceSelect(null);
+    }
+  };
 
   const handleClearInput = () => {
     setInputValue("");

@@ -1,7 +1,7 @@
 import { latlongInterface, territorySingleProps } from "../../utils/interface";
 import { DEFAULT_AGGREGATES, DEFAULT_COORDINATES } from "../../utils/constants";
 import { AdvancedMarker, Map } from "@vis.gl/react-google-maps";
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import HouseStatus from "./house";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import CurrentLocationMarker from "../statics/currentlocator";
@@ -31,7 +31,7 @@ const TerritoryMapView = ({
     }
   }, []);
 
-  const houseMarkers = useMemo(() => {
+  const houseMarkers = () => {
     return houses?.units.map((element, index) => {
       if (!element.coordinates?.lat || !element.coordinates?.lng) return null;
 
@@ -64,7 +64,7 @@ const TerritoryMapView = ({
         </AdvancedMarker>
       );
     });
-  }, [houses, policy, aggregates, handleHouseUpdate]);
+  };
 
   return (
     <div className={policy.isFromAdmin() ? "map-body-admin" : "gmap-body"}>
@@ -85,7 +85,7 @@ const TerritoryMapView = ({
             <CurrentLocationMarker />
           </AdvancedMarker>
         )}
-        {houseMarkers}
+        {houseMarkers()}
       </Map>
     </div>
   );

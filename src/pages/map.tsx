@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, lazy, useContext } from "react";
+import { useEffect, useState, lazy, useContext } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -68,17 +68,17 @@ const Map = () => {
 
   const { showModal } = useModalManagement();
 
-  const toggleLegend = useCallback(() => {
+  const toggleLegend = () => {
     setShowLegend((prevShowLegend) => !prevShowLegend);
-  }, []);
+  };
 
-  const toggleLanguageSelector = useCallback(() => {
+  const toggleLanguageSelector = () => {
     setShowLanguageSelector(
       (prevShowLanguageSelector) => !prevShowLanguageSelector
     );
-  }, []);
+  };
 
-  const handleMessageClick = useCallback(() => {
+  const handleMessageClick = () => {
     if (hasPinnedMessages) {
       setReadPinnedMessages("true");
     }
@@ -90,127 +90,117 @@ const Map = () => {
       messageType: MESSAGE_TYPES.PUBLISHER,
       assignmentId: id
     });
-  }, [
-    hasPinnedMessages,
-    readPinnedMessages,
-    mapDetails?.name,
-    mapDetails?.id,
-    id
-  ]);
+  };
 
-  const toggleMapView = useCallback(() => {
+  const toggleMapView = () => {
     setMapView((prevMapView) => !prevMapView);
-  }, []);
+  };
 
-  const showLocationModal = useCallback(() => {
+  const showLocationModal = () => {
     showModal(GetMapGeolocation, {
       coordinates: coordinates,
       name: mapDetails?.name,
       origin: policy.origin
     });
-  }, [coordinates, policy.origin, mapDetails?.name]);
+  };
 
-  const showExpiryModal = useCallback(() => {
+  const showExpiryModal = () => {
     showModal(ShowExpiry, {
       endtime: tokenEndTime
     });
-  }, [tokenEndTime]);
+  };
 
-  const handleLanguageSelect = useCallback((language: string) => {
+  const handleLanguageSelect = (language: string) => {
     changeLanguage(language);
     toggleLanguageSelector();
-  }, []);
+  };
 
-  const handleOpenThemeSettings = useCallback(() => {
+  const handleOpenThemeSettings = () => {
     showModal(ThemeSettingsModal, {});
-  }, []);
+  };
 
-  const checkPinnedMessages = useCallback(
-    async (map: string) => {
-      if (!map) return;
-      if (readPinnedMessages === "true") return;
-      const pinnedMessages = await getList("messages", {
-        filter: `map = "${map}" && type= "${MESSAGE_TYPES.ADMIN}" && pinned = true`,
-        fields: "id",
-        requestKey: null
-      });
-      setHasPinnedMessages(pinnedMessages.length > 0);
-    },
-    [readPinnedMessages]
-  );
+  const checkPinnedMessages = async (map: string) => {
+    if (!map) return;
+    if (readPinnedMessages === "true") return;
+    const pinnedMessages = await getList("messages", {
+      filter: `map = "${map}" && type= "${MESSAGE_TYPES.ADMIN}" && pinned = true`,
+      fields: "id",
+      requestKey: null
+    });
+    setHasPinnedMessages(pinnedMessages.length > 0);
+  };
 
-  const retrieveLinkData = useCallback(
-    async (id: string): Promise<addressDetails | undefined> => {
-      const linkRecord = await getDataById("assignments", id, {
-        requestKey: null,
-        expand: "map, map.congregation",
-        fields: PB_FIELDS.ASSIGNMENT_LINKS
-      });
-      if (!linkRecord) {
-        setIsLinkExpired(true);
-        return;
-      }
-      const congId = linkRecord.expand?.map.expand?.congregation.id;
-      const congOptions = await getList("options", {
-        filter: `congregation="${congId}"`,
-        requestKey: null,
-        fields: PB_FIELDS.CONGREGATION_OPTIONS,
-        sort: "sequence"
-      });
-      const expiryTimestamp = new Date(linkRecord.expiry_date).getTime();
-      setTokenEndTime(expiryTimestamp);
-      const currentTimestamp = new Date().getTime();
-      const isLinkExpired = currentTimestamp > expiryTimestamp;
-      setIsLinkExpired(isLinkExpired);
-      if (isLinkExpired) {
-        return;
-      }
-      setCoordinates(
-        linkRecord.expand?.map.coordinates || DEFAULT_COORDINATES.Singapore
-      );
-      setPolicy(
-        new Policy(
-          linkRecord.publisher,
-          congOptions.map((option: RecordModel) => {
-            return {
-              id: option.id,
-              code: option.code,
-              description: option.description,
-              isCountable: option.is_countable,
-              isDefault: option.is_default,
-              sequence: option.sequence
-            };
-          }),
-          linkRecord.expand?.map.expand?.congregation.max_tries,
-          linkRecord.expand?.map.expand?.congregation.origin,
-          USER_ACCESS_LEVELS.PUBLISHER.CODE,
-          linkRecord.expand?.map.expand?.congregation.expiry_hours
-        )
-      );
+  const retrieveLinkData = async (
+    id: string
+  ): Promise<addressDetails | undefined> => {
+    const linkRecord = await getDataById("assignments", id, {
+      requestKey: null,
+      expand: "map, map.congregation",
+      fields: PB_FIELDS.ASSIGNMENT_LINKS
+    });
+    if (!linkRecord) {
+      setIsLinkExpired(true);
+      return;
+    }
+    const congId = linkRecord.expand?.map.expand?.congregation.id;
+    const congOptions = await getList("options", {
+      filter: `congregation="${congId}"`,
+      requestKey: null,
+      fields: PB_FIELDS.CONGREGATION_OPTIONS,
+      sort: "sequence"
+    });
+    const expiryTimestamp = new Date(linkRecord.expiry_date).getTime();
+    setTokenEndTime(expiryTimestamp);
+    const currentTimestamp = new Date().getTime();
+    const isLinkExpired = currentTimestamp > expiryTimestamp;
+    setIsLinkExpired(isLinkExpired);
+    if (isLinkExpired) {
+      return;
+    }
+    setCoordinates(
+      linkRecord.expand?.map.coordinates || DEFAULT_COORDINATES.Singapore
+    );
+    setPolicy(
+      new Policy(
+        linkRecord.publisher,
+        congOptions.map((option: RecordModel) => {
+          return {
+            id: option.id,
+            code: option.code,
+            description: option.description,
+            isCountable: option.is_countable,
+            isDefault: option.is_default,
+            sequence: option.sequence
+          };
+        }),
+        linkRecord.expand?.map.expand?.congregation.max_tries,
+        linkRecord.expand?.map.expand?.congregation.origin,
+        USER_ACCESS_LEVELS.PUBLISHER.CODE,
+        linkRecord.expand?.map.expand?.congregation.expiry_hours
+      )
+    );
 
-      const details = {
-        id: linkRecord.map,
-        type: linkRecord.expand?.map.type || TERRITORY_TYPES.MULTIPLE_STORIES,
-        location: linkRecord.expand?.map.location || "",
-        aggregates: {
-          display: linkRecord.expand?.map.progress + "%",
-          value: linkRecord.expand?.map.progress
-        },
-        mapId: linkRecord.expand?.map.code,
-        name: linkRecord.expand?.map.description,
-        coordinates: linkRecord.expand?.map.coordinates
-      } as addressDetails;
+    const details = {
+      id: linkRecord.map,
+      type: linkRecord.expand?.map.type || TERRITORY_TYPES.MULTIPLE_STORIES,
+      location: linkRecord.expand?.map.location || "",
+      aggregates: {
+        display: linkRecord.expand?.map.progress + "%",
+        value: linkRecord.expand?.map.progress
+      },
+      mapId: linkRecord.expand?.map.code,
+      name: linkRecord.expand?.map.description,
+      coordinates: linkRecord.expand?.map.coordinates
+    } as addressDetails;
 
-      if (localStorage.getItem(`${id}-readPinnedMessages`) === null) {
-        checkPinnedMessages(linkRecord.map);
-      }
-      setMapDetails(details);
-      return details;
-    },
-    []
-  );
+    if (localStorage.getItem(`${id}-readPinnedMessages`) === null) {
+      checkPinnedMessages(linkRecord.map);
+    }
+    setMapDetails(details);
+    return details;
+  };
 
-  const getMapData = useCallback(async (linkId: string | undefined) => {
+  const getMapData = async (linkId: string | undefined) => {
     if (!linkId) return;
     try {
       const mapDetails = await retrieveLinkData(linkId);
@@ -253,7 +243,7 @@ const Map = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  };
 
   useEffect(() => {
     if (!id) return;

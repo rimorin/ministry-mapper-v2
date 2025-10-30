@@ -1,10 +1,9 @@
-import { memo } from "react";
 import { Fade, Image } from "react-bootstrap";
 import { backToTopProp } from "../../utils/interface";
 import { useTranslation } from "react-i18next";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 
-const BackToTopButton = memo(({ showButton }: backToTopProp) => {
+const BackToTopButton = ({ showButton }: backToTopProp) => {
   const { t } = useTranslation();
 
   return (
@@ -25,6 +24,6 @@ const BackToTopButton = memo(({ showButton }: backToTopProp) => {
       </div>
     </Fade>
   );
-});
+};
 
 export default BackToTopButton;

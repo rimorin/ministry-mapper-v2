@@ -1,10 +1,9 @@
-import { memo } from "react";
 import { Offcanvas, Table } from "react-bootstrap";
 import { LegendProps } from "../../utils/interface";
 import NotHomeIcon from "../table/nothome";
 import { useTranslation } from "react-i18next";
 
-const Legend = memo(({ showLegend, hideFunction }: LegendProps) => {
+const Legend = ({ showLegend, hideFunction }: LegendProps) => {
   const { t } = useTranslation();
 
   return (
@@ -40,6 +39,6 @@ const Legend = memo(({ showLegend, hideFunction }: LegendProps) => {
       </Offcanvas.Body>
     </Offcanvas>
   );
-});
+};
 
 export default Legend;

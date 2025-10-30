@@ -1,6 +1,7 @@
 import { AuthModel } from "pocketbase";
 import { LinkSession, Policy } from "./policies";
 import { Value } from "react-calendar/dist/shared/types";
+import { MultiValue } from "react-select";
 export interface userInterface {
   user: AuthModel;
 }
@@ -323,8 +324,7 @@ export interface OptionProps {
 }
 
 export interface HouseholdProps {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  handleChange?: any;
+  handleChange?: (option: MultiValue<SelectProps>) => void;
   changeValue?: typeInterface[];
   options: Array<SelectProps>;
 }
@@ -744,3 +744,9 @@ export interface MapSequenceUpdateModalProps
   extends mapInterface,
     congregationInterface,
     footerInterface {}
+
+export interface OptionTooltipProps {
+  id: string;
+  children: React.ReactNode;
+  title: string;
+}

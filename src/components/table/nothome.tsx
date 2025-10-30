@@ -1,9 +1,8 @@
-import { memo } from "react";
 import { nothomeProps } from "../../utils/interface";
 import { Image } from "react-bootstrap";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 
-const NotHomeIcon = memo(({ nhcount, classProp }: nothomeProps) => {
+const NotHomeIcon = ({ nhcount, classProp }: nothomeProps) => {
   let parentClass = "parent-nothome";
   if (classProp) parentClass += ` ${classProp}`;
   return (
@@ -18,5 +17,5 @@ const NotHomeIcon = memo(({ nhcount, classProp }: nothomeProps) => {
       </div>
     </div>
   );
-});
+};
 export default NotHomeIcon;

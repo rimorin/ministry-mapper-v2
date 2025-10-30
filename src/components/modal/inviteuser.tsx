@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useState, FormEvent, useCallback, useMemo } from "react";
+import { useState, FormEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import AsyncSelect from "react-select/async";
@@ -33,94 +33,84 @@ const InviteUser = NiceModal.create(
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
 
-    const customStyles = useMemo(
-      () =>
-        getReactSelectStyles<SelectProps>({
-          isDark: actualTheme === "dark",
-          zIndex: 9999
-        }),
-      [actualTheme]
-    );
+    const customStyles = getReactSelectStyles<SelectProps>({
+      isDark: actualTheme === "dark",
+      zIndex: 9999
+    });
 
-    const getUsersByNames = useCallback(async (inputValue: string) => {
+    const getUsersByNames = async (inputValue: string) => {
       return getPaginatedList("users", 1, 10, {
         filter: `(email ~ "${inputValue}%" || name ~ "${inputValue}") && verified = true`,
         requestKey: `get-users-${inputValue}`
       });
-    }, []);
+    };
 
-    const getRoleDisplayName = useCallback(
-      (roleCode: string): string => {
-        if (roleCode === USER_ACCESS_LEVELS.READ_ONLY.CODE) {
-          return t("user.roles.readOnly", "Read Only");
-        } else if (roleCode === USER_ACCESS_LEVELS.CONDUCTOR.CODE) {
-          return t("user.roles.conductor", "Conductor");
-        } else if (roleCode === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE) {
-          return t("user.roles.administrator", "Administrator");
-        } else if (roleCode === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
-          return t("user.roles.noAccess", "No Access");
-        }
-        return "";
-      },
-      [t]
-    );
+    const getRoleDisplayName = (roleCode: string): string => {
+      if (roleCode === USER_ACCESS_LEVELS.READ_ONLY.CODE) {
+        return t("user.roles.readOnly", "Read Only");
+      } else if (roleCode === USER_ACCESS_LEVELS.CONDUCTOR.CODE) {
+        return t("user.roles.conductor", "Conductor");
+      } else if (roleCode === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE) {
+        return t("user.roles.administrator", "Administrator");
+      } else if (roleCode === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
+        return t("user.roles.noAccess", "No Access");
+      }
+      return "";
+    };
 
-    const handleUserDetails = useCallback(
-      async (event: FormEvent<HTMLElement>) => {
-        event.preventDefault();
-        setIsSaving(true);
-        try {
-          if (userId === uid) {
-            notifyWarning(
-              t("user.dontInviteSelf", "Please do not invite yourself.")
-            );
-            return;
-          }
-          if (
-            await getFirstItemOfList(
-              "roles",
-              `user="${userId}" && congregation="${congregation}"`,
-              {
-                requestKey: `check-role-${userId}-${congregation}`
-              }
-            )
-          ) {
-            notifyWarning(
-              t(
-                "user.alreadyInCongregation",
-                "This user is already part of the congregation."
-              )
-            );
-            return;
-          }
-
-          await createData(
-            "roles",
-            {
-              user: userId,
-              congregation,
-              role: userRole
-            },
-            {
-              requestKey: `create-role-${userId}-${congregation}`
-            }
-          );
-
-          const roleName = getRoleDisplayName(userRole);
+    const handleUserDetails = async (event: FormEvent<HTMLElement>) => {
+      event.preventDefault();
+      setIsSaving(true);
+      try {
+        if (userId === uid) {
           notifyWarning(
-            t("user.accessGranted", "Granted {{role}} access to user.", {
-              role: roleName
-            })
+            t("user.dontInviteSelf", "Please do not invite yourself.")
           );
-          modal.hide();
-        } catch (error) {
-          notifyError(error);
-        } finally {
-          setIsSaving(false);
+          return;
         }
-      },
-      [userId, userRole, uid, congregation, t, getRoleDisplayName, modal]
-    );
+        if (
+          await getFirstItemOfList(
+            "roles",
+            `user="${userId}" && congregation="${congregation}"`,
+            {
+              requestKey: `check-role-${userId}-${congregation}`
+            }
+          )
+        ) {
+          notifyWarning(
+            t(
+              "user.alreadyInCongregation",
+              "This user is already part of the congregation."
+            )
+          );
+          return;
+        }
+
+        await createData(
+          "roles",
+          {
+            user: userId,
+            congregation,
+            role: userRole
+          },
+          {
+            requestKey: `create-role-${userId}-${congregation}`
+          }
+        );
+
+        const roleName = getRoleDisplayName(userRole);
+        notifyWarning(
+          t("user.accessGranted", "Granted {{role}} access to user.", {
+            role: roleName
+          })
+        );
+        modal.hide();
+      } catch (error) {
+        notifyError(error);
+      } finally {
+        setIsSaving(false);
+      }
+    };
 
     const promiseOptions = async (
       inputValue: string

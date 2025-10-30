@@ -1,9 +1,8 @@
-import { memo } from "react";
 import { Container, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 
-const MaintenanceMode = memo(() => {
+const MaintenanceMode = () => {
   const { t } = useTranslation();
 
   return (
@@ -25,6 +24,6 @@ const MaintenanceMode = memo(() => {
       </Card>
     </Container>
   );
-});
+};
 
 export default MaintenanceMode;

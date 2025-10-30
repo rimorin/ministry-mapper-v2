@@ -1,6 +1,6 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useTranslation } from "react-i18next";
-import { useState, FormEvent, useCallback } from "react";
+import { useState, FormEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import Calendar from "react-calendar";
 import { WIKI_CATEGORIES, USER_ACCESS_LEVELS } from "../../utils/constants";
@@ -23,18 +23,15 @@ const ConfirmSlipDetails = NiceModal.create(
     const [linkExpiryHrs, setLinkExpiryHrs] = useState<number | undefined>();
     const [name, setName] = useState<string>("");
 
-    const handleSubmitPersonalSlip = useCallback(
-      async (event: FormEvent<HTMLElement>) => {
-        event.preventDefault();
-        if (!linkExpiryHrs && isPersonalSlip) {
-          notifyWarning(t("slip.selectExpiryValidation"));
-          return;
-        }
-        modal.resolve({ linkExpiryHrs: linkExpiryHrs, publisherName: name });
-        modal.hide();
-      },
-      [linkExpiryHrs, name, isPersonalSlip, notifyWarning, modal, t]
-    );
+    const handleSubmitPersonalSlip = async (event: FormEvent<HTMLElement>) => {
+      event.preventDefault();
+      if (!linkExpiryHrs && isPersonalSlip) {
+        notifyWarning(t("slip.selectExpiryValidation"));
+        return;
+      }
+      modal.resolve({ linkExpiryHrs: linkExpiryHrs, publisherName: name });
+      modal.hide();
+    };
 
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>

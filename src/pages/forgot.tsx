@@ -1,4 +1,4 @@
-import { useCallback, useContext, useState } from "react";
+import { useContext, useState } from "react";
 import { Form, Spinner, FloatingLabel } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
@@ -18,18 +18,15 @@ const ForgotComponent = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const { setFrontPageMode } = useContext(StateContext);
 
-  const handleClearForm = useCallback(() => {
+  const handleClearForm = () => {
     setLoginEmail("");
     setValidated(false);
-  }, []);
+  };
 
-  const handleNavigateToLogin = useCallback(
-    (e: React.MouseEvent<HTMLAnchorElement>) => {
-      e.preventDefault();
-      setFrontPageMode("login");
-    },
-    [setFrontPageMode]
-  );
+  const handleNavigateToLogin = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setFrontPageMode("login");
+  };
 
   const handleForgotPassword = async (
     event: React.FormEvent<HTMLFormElement>

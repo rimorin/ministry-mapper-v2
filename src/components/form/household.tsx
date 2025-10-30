@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import Select from "react-select";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../../hooks/useTheme";
@@ -13,21 +12,13 @@ const HouseholdField = ({
   const { t } = useTranslation();
   const { actualTheme } = useTheme();
 
-  const customStyles = useMemo(
-    () =>
-      getReactSelectStyles<SelectProps, true>({
-        isDark: actualTheme === "dark"
-      }),
-    [actualTheme]
-  );
+  const customStyles = getReactSelectStyles<SelectProps, true>({
+    isDark: actualTheme === "dark"
+  });
 
-  const defaultValue = useMemo(
-    () =>
-      changeValue
-        ?.map((value) => options.find((option) => option.value === value.id))
-        .filter((option): option is SelectProps => option !== undefined),
-    [changeValue, options]
-  );
+  const defaultValue = changeValue
+    ?.map((value) => options.find((option) => option.value === value.id))
+    .filter((option): option is SelectProps => option !== undefined);
 
   return (
     <div className="mb-3">

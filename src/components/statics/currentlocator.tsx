@@ -1,5 +1,3 @@
-import { memo } from "react";
-
 const CurrentLocationMarker = () => (
   <div style={{ position: "relative", width: "12px", height: "12px" }}>
     <div className="current-location-marker">
@@ -8,4 +6,4 @@ const CurrentLocationMarker = () => (
   </div>
 );
 
-export default memo(CurrentLocationMarker);
+export default CurrentLocationMarker;

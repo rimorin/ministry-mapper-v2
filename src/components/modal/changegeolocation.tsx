@@ -1,6 +1,6 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
-import { useState, FormEvent, useCallback, useEffect } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { Modal, Form, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { WIKI_CATEGORIES } from "../../utils/constants";
@@ -78,26 +78,23 @@ const ChangeMapGeolocation = NiceModal.create(
       }
     };
 
-    const handlePlaceSelect = useCallback(
-      (place: google.maps.places.Place | null) => {
-        if (place?.location) {
-          const lat = place.location.lat();
-          const lng = place.location.lng();
-          const newLocation = { lat, lng };
-          setAddressLocation(newLocation);
-          setCurrentCenter(newLocation);
-        }
-      },
-      []
-    );
+    const handlePlaceSelect = (place: google.maps.places.Place | null) => {
+      if (place?.location) {
+        const lat = place.location.lat();
+        const lng = place.location.lng();
+        const newLocation = { lat, lng };
+        setAddressLocation(newLocation);
+        setCurrentCenter(newLocation);
+      }
+    };
 
-    const onMapClick = useCallback((event: MapMouseEvent) => {
+    const onMapClick = (event: MapMouseEvent) => {
       const eventDetails = event.detail;
       setAddressLocation({
         lat: eventDetails.latLng?.lat as number,
         lng: eventDetails.latLng?.lng as number
       });
-    }, []);
+    };
 
     useEffect(() => {
       getCurrentLocation(

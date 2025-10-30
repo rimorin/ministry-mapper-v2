@@ -1,6 +1,6 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
-import { useState, FormEvent, ChangeEvent, useCallback, lazy } from "react";
+import { useState, FormEvent, ChangeEvent, lazy } from "react";
 import { Modal, Form, Collapse } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
@@ -29,6 +29,7 @@ import DateFormat from "../../utils/helpers/dateformat";
 import { updateDataById, callFunction } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import GenericButton from "../navigation/button";
+import { MultiValue } from "react-select";
 const ChangeMapGeolocation = lazy(() => import("./changegeolocation"));
 
 const UpdateUnitStatus = NiceModal.create(
@@ -76,7 +77,7 @@ const UpdateUnitStatus = NiceModal.create(
         : ""
     );
 
-    const handleDeleteProperty = useCallback(async () => {
+    const handleDeleteProperty = async () => {
       setIsSaving(true);
       try {
         await callFunction("/map/code/delete", {
@@ -92,46 +93,34 @@ const UpdateUnitStatus = NiceModal.create(
       } finally {
         setIsSaving(false);
       }
-    }, [mapId, unitNumber]);
+    };
 
-    const handleSubmitClick = useCallback(
-      async (event: FormEvent<HTMLElement>) => {
-        event.preventDefault();
-        const updateData = {
-          type: hhType?.map((type) => type.id) || [],
-          notes: hhNote || "",
-          status: unitStatus || STATUS_CODES.DEFAULT,
-          not_home_tries: hhNhcount ? parseInt(hhNhcount) : 0,
-          dnc_time: hhDnctime ? new Date(hhDnctime).toISOString() : "",
-          coordinates: coordinates ? JSON.stringify(coordinates) : "",
-          updated_by: policy.userName
-        };
+    const handleSubmitClick = async (event: FormEvent<HTMLElement>) => {
+      event.preventDefault();
+      const updateData = {
+        type: hhType?.map((type) => type.id) || [],
+        notes: hhNote || "",
+        status: unitStatus || STATUS_CODES.DEFAULT,
+        not_home_tries: hhNhcount ? parseInt(hhNhcount) : 0,
+        dnc_time: hhDnctime ? new Date(hhDnctime).toISOString() : "",
+        coordinates: coordinates ? JSON.stringify(coordinates) : "",
+        updated_by: policy.userName
+      };
 
-        try {
-          setIsSaving(true);
-          await updateDataById("addresses", addressId, updateData, {
-            requestKey: `update-address-${addressId}`
-          });
-          modal.hide();
-        } catch (error) {
-          notifyError(error);
-        } finally {
-          setIsSaving(false);
-        }
-      },
-      [
-        hhType,
-        hhNote,
-        unitStatus,
-        hhNhcount,
-        hhDnctime,
-        coordinates,
-        addressId,
-        policy.userName
-      ]
-    );
+      try {
+        setIsSaving(true);
+        await updateDataById("addresses", addressId, updateData, {
+          requestKey: `update-address-${addressId}`
+        });
+        modal.hide();
+      } catch (error) {
+        notifyError(error);
+      } finally {
+        setIsSaving(false);
+      }
+    };
 
-    const handleMapCoordinatesClick = useCallback(async () => {
+    const handleMapCoordinatesClick = async () => {
       const result = await showModal(ChangeMapGeolocation, {
         coordinates: coordinates || addressData?.coordinates,
         isSelectOnly: true,
@@ -143,9 +132,9 @@ const UpdateUnitStatus = NiceModal.create(
         setLocation(`${newCoordinates.lat}, ${newCoordinates.lng}`);
         setCoordinates(newCoordinates);
       }
-    }, [coordinates, addressData?.coordinates, policy.origin, addressName]);
+    };
 
-    const handleConfirmDelete = useCallback(() => {
+    const handleConfirmDelete = () => {
       const confirmDelete = window.confirm(
         t(
           "address.deletePropertyWarning",
@@ -159,13 +148,13 @@ const UpdateUnitStatus = NiceModal.create(
       if (confirmDelete) {
         handleDeleteProperty();
       }
-    }, [t, unitNumber, addressName, handleDeleteProperty]);
+    };
 
-    const handleClearNote = useCallback(() => {
+    const handleClearNote = () => {
       setHhNote("");
-    }, []);
+    };
 
-    const handleStatusChange = useCallback((toggleValue: string) => {
+    const handleStatusChange = (toggleValue: string) => {
       let dnctime = undefined;
       setIsNotHome(false);
       setIsDnc(false);
@@ -178,24 +167,23 @@ const UpdateUnitStatus = NiceModal.create(
       setHhNhcount(NOT_HOME_STATUS_CODES.DEFAULT);
       setHhDnctime(dnctime);
       setUnitStatus(toggleValue);
-    }, []);
+    };
 
-    const handleNotHomeCountChange = useCallback((toggleValue: string) => {
+    const handleNotHomeCountChange = (toggleValue: string) => {
       setHhNhcount(toggleValue);
-    }, []);
+    };
 
-    const handleDncDateChange = useCallback((date: unknown) => {
+    const handleDncDateChange = (date: unknown) => {
       const dateValue = date as Date;
       setHhDnctime(dateValue.getTime());
-    }, []);
+    };
 
-    const handleNoteChange = useCallback((e: ChangeEvent<HTMLElement>) => {
+    const handleNoteChange = (e: ChangeEvent<HTMLElement>) => {
       const { value } = e.target as HTMLInputElement;
       setHhNote(value);
-    }, []);
+    };
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleHHTypeChange = useCallback((option: any) => {
+    const handleHHTypeChange = (option: MultiValue<SelectProps>) => {
       setHhtype(
         option.map((opt: SelectProps) => {
           return {
@@ -204,7 +192,7 @@ const UpdateUnitStatus = NiceModal.create(
           };
         })
       );
-    }, []);
+    };
 
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>

@@ -1,4 +1,4 @@
-import { useContext, useState, useCallback } from "react";
+import { useContext, useState } from "react";
 import { Form, Spinner, FloatingLabel } from "react-bootstrap";
 import PasswordChecklist from "react-password-checklist";
 import { useTranslation } from "react-i18next";
@@ -27,13 +27,10 @@ const SignupComponent = () => {
   const [isPasswordValid, setIsPasswordValid] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
 
-  const handleInputChange = useCallback(
-    (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { id, value } = e.target;
-      setFormData((prevData) => ({ ...prevData, [id]: value }));
-    },
-    []
-  );
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData((prevData) => ({ ...prevData, [id]: value }));
+  };
 
   const handleCreateSubmit = async (
     event: React.FormEvent<HTMLFormElement>
@@ -75,7 +72,7 @@ const SignupComponent = () => {
     }
   };
 
-  const resetCreationForm = useCallback(() => {
+  const resetCreationForm = () => {
     setFormData({
       email: "",
       password: "",
@@ -83,11 +80,11 @@ const SignupComponent = () => {
       name: ""
     });
     setValidated(false);
-  }, []);
+  };
 
-  const handleNavigateToLogin = useCallback(() => {
+  const handleNavigateToLogin = () => {
     setFrontPageMode("login");
-  }, [setFrontPageMode]);
+  };
 
   return (
     <Form

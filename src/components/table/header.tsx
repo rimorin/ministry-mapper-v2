@@ -1,9 +1,8 @@
-import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import ZeroPad from "../../utils/helpers/zeropad";
 import { tableHeaderProp } from "../../utils/interface";
 
-const TableHeader = memo(({ floors, maxUnitNumber = 2 }: tableHeaderProp) => {
+const TableHeader = ({ floors, maxUnitNumber = 2 }: tableHeaderProp) => {
   const { t } = useTranslation();
 
   return (
@@ -27,6 +26,6 @@ const TableHeader = memo(({ floors, maxUnitNumber = 2 }: tableHeaderProp) => {
       </thead>
     </>
   );
-});
+};
 
 export default TableHeader;
