@@ -36,8 +36,7 @@ const FeedbackList = ({
       {feedbacks.map((fb) => (
         <ListGroup.Item
           key={fb.id}
-          className="m-2 p-2"
-          variant={fb.pinned ? "primary" : undefined}
+          className={`m-2 p-2 ${fb.pinned ? "bg-primary-subtle border-primary" : ""}`}
         >
           <div
             style={{
