@@ -4,7 +4,7 @@ import { useState, FormEvent, useCallback, useEffect } from "react";
 import { Modal, Form, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { WIKI_CATEGORIES } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import HelpButton from "../navigation/help";
 import {
   ConfigureAddressCoordinatesModalProps,
@@ -27,6 +27,7 @@ const ChangeMapGeolocation = NiceModal.create(
     isSelectOnly = false
   }: ConfigureAddressCoordinatesModalProps) => {
     const { t } = useTranslation();
+    const { notifyError, notifyWarning } = useNotification();
     const [addressLocation, setAddressLocation] =
       useState<latlongInterface>(coordinates);
     const [currentCenter, setCurrentCenter] =
@@ -40,7 +41,7 @@ const ChangeMapGeolocation = NiceModal.create(
       onError: () => void
     ) => {
       if (!navigator.geolocation) {
-        alert(
+        notifyWarning(
           t(
             "errors.geolocationNotSupported",
             "Geolocation is not supported by your browser"
@@ -71,7 +72,7 @@ const ChangeMapGeolocation = NiceModal.create(
         modal.resolve(addressLocation);
         modal.hide();
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       } finally {
         setIsSaving(false);
       }
@@ -107,7 +108,7 @@ const ChangeMapGeolocation = NiceModal.create(
           });
         },
         () => {
-          alert(
+          notifyWarning(
             t(
               "errors.unableToGetLocation",
               "Unable to get your current location. Please check your browser settings."

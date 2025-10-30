@@ -4,11 +4,12 @@ import { deleteDataById, callFunction } from "../utils/pocketbase";
 import { RecordModel } from "pocketbase";
 import { TERRITORY_TYPES, DEFAULT_COORDINATES } from "../utils/constants";
 import { useTranslation } from "react-i18next";
-import errorHandler from "../utils/helpers/errorhandler";
+import useNotification from "./useNotification";
 import useLocalStorage from "./useLocalStorage";
 
 export default function useMapManagement() {
   const { t } = useTranslation();
+  const { notifyError, notifySuccess } = useNotification();
   const [processingMap, setProcessingMap] = useState<{
     isProcessing: boolean;
     mapId: string | null;
@@ -21,21 +22,24 @@ export default function useMapManagement() {
   const [isMapView, setIsMapView] = useLocalStorage("mapView", false);
 
   const deleteMap = useCallback(
-    async (mapId: string, name: string, showAlert: boolean) => {
+    async (mapId: string, name: string, showNotification = true) => {
       setProcessingMap({ isProcessing: true, mapId: mapId });
       try {
         await deleteDataById("maps", mapId, {
           requestKey: `map-del-${mapId}`
         });
-        if (showAlert)
-          alert(t("map.deleteSuccess", "Deleted address, {{name}}.", { name }));
+        if (showNotification) {
+          notifySuccess(
+            t("map.deleteSuccess", "Deleted address, {{name}}.", { name })
+          );
+        }
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       } finally {
         setProcessingMap({ isProcessing: false, mapId: null });
       }
     },
-    [t]
+    [t, notifyError]
   );
 
   const addFloorToMap = useCallback(
@@ -50,29 +54,32 @@ export default function useMapManagement() {
           }
         });
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       } finally {
         setProcessingMap({ isProcessing: false, mapId: null });
       }
     },
-    []
+    [notifyError]
   );
 
-  const resetMap = useCallback(async (mapId: string) => {
-    setProcessingMap({ isProcessing: true, mapId: mapId });
-    try {
-      await callFunction("/map/reset", {
-        method: "POST",
-        body: {
-          map: mapId
-        }
-      });
-    } catch (error) {
-      errorHandler(error);
-    } finally {
-      setProcessingMap({ isProcessing: false, mapId: null });
-    }
-  }, []);
+  const resetMap = useCallback(
+    async (mapId: string) => {
+      setProcessingMap({ isProcessing: true, mapId: mapId });
+      try {
+        await callFunction("/map/reset", {
+          method: "POST",
+          body: {
+            map: mapId
+          }
+        });
+      } catch (error) {
+        notifyError(error);
+      } finally {
+        setProcessingMap({ isProcessing: false, mapId: null });
+      }
+    },
+    [notifyError]
+  );
 
   const processMapRecord = useCallback((mapRecord: RecordModel) => {
     return {

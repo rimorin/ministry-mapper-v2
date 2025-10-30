@@ -1,4 +1,4 @@
-import { lazy, memo, useCallback, useEffect, useState } from "react";
+import { lazy, memo, useCallback, useEffect, useState, FC } from "react";
 import { ButtonGroup, Spinner, Badge } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import {
@@ -9,7 +9,7 @@ import {
 } from "../../utils/constants";
 import { addressDetails } from "../../utils/interface";
 import { LinkSession, Policy } from "../../utils/policies";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 
 import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import ComponentAuthorizer from "./authorizer";
@@ -110,6 +110,7 @@ const useAssignments = (mapId: string) => {
 const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = memo(
   ({ addressElement, policy, userId }) => {
     const { t } = useTranslation();
+    const { notifyError, notifyWarning } = useNotification();
     const { showModal } = useModalManagement();
     const [isSettingPersonalLink, setIsSettingPersonalLink] = useState(false);
     const [isSettingNormalLink, setIsSettingNormalLink] = useState(false);
@@ -119,7 +120,7 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = memo(
 
     const handleButtonClick = useCallback(async (linkType: string) => {
       if (!navigator.share) {
-        alert(UNSUPPORTED_BROWSER_MSG);
+        notifyWarning(UNSUPPORTED_BROWSER_MSG);
         return;
       }
       try {
@@ -157,7 +158,7 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = memo(
         publisherName = ""
       ) => {
         if (!navigator.share) {
-          alert(UNSUPPORTED_BROWSER_MSG);
+          notifyWarning(UNSUPPORTED_BROWSER_MSG);
           return;
         }
         try {
@@ -191,7 +192,7 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = memo(
               return;
             }
           }
-          errorHandler(error, false);
+          notifyError(error, true);
         }
       },
       []

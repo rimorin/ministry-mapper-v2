@@ -1,0 +1,162 @@
+/**
+ * Toast Notification Styles
+ * Follows UX best practices for toast notifications
+ * - Bottom-right positioning (familiar placement)
+ * - 3 second default duration (optimal timing)
+ * - Semantic color variants
+ * - Accessible ARIA support
+ * - Full dark/light mode support
+ */
+
+/* ===== BASE TOAST STYLES (Light Mode) ===== */
+.toast {
+  box-shadow: 0 4px 12px var(--mm-shadow-lg);
+}
+
+.toast-header {
+  font-weight: 600;
+}
+
+/* ===== DARK MODE OVERRIDES ===== */
+[data-bs-theme="dark"] .toast {
+  background-color: var(--mm-gray-100);
+  border-color: var(--mm-gray-800);
+  color: var(--mm-text-body);
+  box-shadow: 0 4px 12px var(--mm-shadow-md);
+}
+
+[data-bs-theme="dark"] .toast-header {
+  background-color: var(--mm-bg-body);
+  border-bottom-color: var(--mm-gray-800);
+  color: var(--mm-text-body);
+}
+
+[data-bs-theme="dark"] .toast-body {
+  color: var(--mm-text-body);
+}
+
+[data-bs-theme="dark"] .toast .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* ===== SEMANTIC COLOR VARIANTS - DARK MODE ===== */
+
+/* Success Variant */
+[data-bs-theme="dark"] .toast.bg-success {
+  background-color: var(--mm-success-dark) !important;
+  border-color: #146c43;
+}
+
+[data-bs-theme="dark"] .toast.bg-success .toast-header {
+  background-color: #146c43;
+  color: var(--mm-white);
+}
+
+[data-bs-theme="dark"] .toast.bg-success .toast-body {
+  color: var(--mm-white);
+}
+
+/* Danger Variant */
+[data-bs-theme="dark"] .toast.bg-danger {
+  background-color: var(--mm-danger) !important;
+  border-color: #b02a37;
+}
+
+[data-bs-theme="dark"] .toast.bg-danger .toast-header {
+  background-color: #b02a37;
+  color: var(--mm-white);
+}
+
+[data-bs-theme="dark"] .toast.bg-danger .toast-body {
+  color: var(--mm-white);
+}
+
+/* Warning Variant */
+[data-bs-theme="dark"] .toast.bg-warning {
+  background-color: #ffc107 !important;
+  border-color: #cc9a06;
+}
+
+[data-bs-theme="dark"] .toast.bg-warning .toast-header {
+  background-color: #cc9a06;
+  color: var(--mm-black);
+}
+
+[data-bs-theme="dark"] .toast.bg-warning .toast-body {
+  color: var(--mm-black);
+}
+
+/* Info Variant */
+[data-bs-theme="dark"] .toast.bg-info {
+  background-color: #0dcaf0 !important;
+  border-color: #0aa2c0;
+}
+
+[data-bs-theme="dark"] .toast.bg-info .toast-header {
+  background-color: #0aa2c0;
+  color: var(--mm-black);
+}
+
+[data-bs-theme="dark"] .toast.bg-info .toast-body {
+  color: var(--mm-black);
+}
+
+/* Primary Variant */
+[data-bs-theme="dark"] .toast.bg-primary {
+  background-color: var(--mm-primary) !important;
+  border-color: #0a58ca;
+}
+
+[data-bs-theme="dark"] .toast.bg-primary .toast-header {
+  background-color: #0a58ca;
+  color: var(--mm-white);
+}
+
+[data-bs-theme="dark"] .toast.bg-primary .toast-body {
+  color: var(--mm-white);
+}
+
+/* Secondary Variant */
+[data-bs-theme="dark"] .toast.bg-secondary {
+  background-color: var(--mm-secondary) !important;
+  border-color: #565e64;
+}
+
+[data-bs-theme="dark"] .toast.bg-secondary .toast-header {
+  background-color: #565e64;
+  color: var(--mm-white);
+}
+
+[data-bs-theme="dark"] .toast.bg-secondary .toast-body {
+  color: var(--mm-white);
+}
+
+/* Light Variant */
+[data-bs-theme="dark"] .toast.bg-light {
+  background-color: var(--mm-gray-50) !important;
+  border-color: var(--mm-gray-100);
+}
+
+[data-bs-theme="dark"] .toast.bg-light .toast-header {
+  background-color: var(--mm-gray-100);
+  color: var(--mm-black);
+}
+
+[data-bs-theme="dark"] .toast.bg-light .toast-body {
+  color: var(--mm-black);
+}
+
+/* Dark Variant */
+[data-bs-theme="dark"] .toast.bg-dark {
+  background-color: var(--mm-bg-body) !important;
+  border-color: #1a1d20;
+}
+
+[data-bs-theme="dark"] .toast.bg-dark .toast-header {
+  background-color: #1a1d20;
+  color: var(--mm-white);
+}
+
+[data-bs-theme="dark"] .toast.bg-dark .toast-body {
+  color: var(--mm-white);
+}

@@ -27,7 +27,7 @@ import {
   rectSortingStrategy
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 
 interface SortableItemProps {
   id: string;
@@ -87,6 +87,7 @@ const ChangeMapSequence = NiceModal.create(
   }: MapSequenceUpdateModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
+    const { notifyError } = useNotification();
     const [isSaving, setIsSaving] = useState(false);
     const [codeList, setCodeList] = useState<string[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
@@ -142,7 +143,7 @@ const ChangeMapSequence = NiceModal.create(
         });
         modal.hide();
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       } finally {
         setIsSaving(false);
       }

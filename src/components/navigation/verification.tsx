@@ -2,7 +2,7 @@ import { Container, Card, Spinner } from "react-bootstrap";
 import { userInterface } from "../../utils/interface";
 import UseAnotherButton from "./useanother";
 import { useCallback, useState } from "react";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import { useTranslation } from "react-i18next";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 
@@ -10,6 +10,7 @@ import { cleanupSession, verifyEmail } from "../../utils/pocketbase";
 
 const VerificationPage = ({ user }: userInterface) => {
   const { t } = useTranslation();
+  const { notifyError, notifySuccess } = useNotification();
   const userEmail = user?.email;
   const [isSending, setIsSending] = useState(false);
 
@@ -17,18 +18,18 @@ const VerificationPage = ({ user }: userInterface) => {
     setIsSending(true);
     try {
       await verifyEmail(userEmail);
-      alert(
+      notifySuccess(
         t(
           "auth.verificationEmailResent",
           "Resent verification email! Please check your inbox or spam folder."
         )
       );
     } catch (error) {
-      errorHandler(error, true);
+      notifyError(error);
     } finally {
       setIsSending(false);
     }
-  }, [userEmail]);
+  }, [userEmail, notifySuccess, notifyError, t]);
 
   const handleClick = useCallback(() => cleanupSession(), []);
 

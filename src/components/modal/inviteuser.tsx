@@ -6,7 +6,7 @@ import AsyncSelect from "react-select/async";
 import { OptionsOrGroups, GroupBase } from "react-select";
 import { RecordModel } from "pocketbase";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import { UserModalProps, SelectProps } from "../../utils/interface";
 import ModalFooter from "../form/footer";
 import UserRoleField from "../form/role";
@@ -26,6 +26,7 @@ const InviteUser = NiceModal.create(
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE
   }: UserModalProps) => {
     const { t } = useTranslation();
+    const { notifyError, notifyWarning } = useNotification();
     const { actualTheme } = useTheme();
     const [userRole, setUserRole] = useState(USER_ACCESS_LEVELS.READ_ONLY.CODE);
     const [userId, setUserId] = useState("");
@@ -70,7 +71,9 @@ const InviteUser = NiceModal.create(
         setIsSaving(true);
         try {
           if (userId === uid) {
-            alert(t("user.dontInviteSelf", "Please do not invite yourself."));
+            notifyWarning(
+              t("user.dontInviteSelf", "Please do not invite yourself.")
+            );
             return;
           }
           if (
@@ -82,7 +85,7 @@ const InviteUser = NiceModal.create(
               }
             )
           ) {
-            alert(
+            notifyWarning(
               t(
                 "user.alreadyInCongregation",
                 "This user is already part of the congregation."
@@ -104,14 +107,14 @@ const InviteUser = NiceModal.create(
           );
 
           const roleName = getRoleDisplayName(userRole);
-          alert(
+          notifyWarning(
             t("user.accessGranted", "Granted {{role}} access to user.", {
               role: roleName
             })
           );
           modal.hide();
         } catch (error) {
-          errorHandler(error);
+          notifyError(error);
         } finally {
           setIsSaving(false);
         }

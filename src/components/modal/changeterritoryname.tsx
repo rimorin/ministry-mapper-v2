@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import HelpButton from "../navigation/help";
@@ -18,6 +18,7 @@ const ChangeTerritoryName = NiceModal.create(
     territoryCode
   }: ChangeTerritoryNameModalProps) => {
     const { t } = useTranslation();
+    const { notifyError } = useNotification();
     const [territoryName, setTerritoryName] = useState(name);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -37,7 +38,7 @@ const ChangeTerritoryName = NiceModal.create(
         modal.resolve(territoryName);
         modal.hide();
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       } finally {
         setIsSaving(false);
       }

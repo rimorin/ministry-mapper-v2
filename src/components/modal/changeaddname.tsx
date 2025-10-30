@@ -4,7 +4,7 @@ import { useState, FormEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import HelpButton from "../navigation/help";
@@ -18,6 +18,7 @@ const ChangeAddressName = NiceModal.create(
     mapId
   }: ChangeAddressNameModalProps) => {
     const { t } = useTranslation();
+    const { notifyError } = useNotification();
     const [addressName, setAddressName] = useState(name);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -36,7 +37,7 @@ const ChangeAddressName = NiceModal.create(
         );
         modal.hide();
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       } finally {
         setIsSaving(false);
       }

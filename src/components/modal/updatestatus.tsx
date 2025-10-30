@@ -10,7 +10,7 @@ import {
   NOT_HOME_STATUS_CODES,
   MIN_START_FLOOR
 } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import {
   latlongInterface,
   SelectProps,
@@ -35,6 +35,7 @@ const UpdateUnitStatus = NiceModal.create(
   ({ addressData, unitDetails, policy }: UpdateAddressStatusModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
+    const { notifyError } = useNotification();
     const { showModal } = useModalManagement();
 
     const unitNumber = unitDetails?.number || "";
@@ -87,7 +88,7 @@ const UpdateUnitStatus = NiceModal.create(
         });
         modal.hide();
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       } finally {
         setIsSaving(false);
       }
@@ -113,7 +114,7 @@ const UpdateUnitStatus = NiceModal.create(
           });
           modal.hide();
         } catch (error) {
-          errorHandler(error);
+          notifyError(error);
         } finally {
           setIsSaving(false);
         }

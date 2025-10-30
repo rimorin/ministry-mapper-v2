@@ -17,7 +17,7 @@ import {
 } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { PB_FIELDS, WIKI_CATEGORIES } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import HelpButton from "../navigation/help";
 import {
   HHOptionProps,
@@ -31,6 +31,7 @@ import GenericButton from "../navigation/button";
 const UpdateCongregationOptions = NiceModal.create(
   ({ currentCongregation }: UpdateCongregationOptionsModalProps) => {
     const { t } = useTranslation();
+    const { notifyError, notifyWarning } = useNotification();
     const modal = useModal();
 
     const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -49,7 +50,7 @@ const UpdateCongregationOptions = NiceModal.create(
         .map((option) => option.code);
       const uniqueCodes = [...new Set(codes)];
       if (codes.length !== uniqueCodes.length) {
-        alert(
+        notifyWarning(
           t(
             "congregation.duplicateOptionCodes",
             "Duplicate option codes found. Please check your input."
@@ -64,7 +65,7 @@ const UpdateCongregationOptions = NiceModal.create(
         .map((option) => option.sequence);
       const uniqueSequences = [...new Set(sequences)];
       if (sequences.length !== uniqueSequences.length) {
-        alert(
+        notifyWarning(
           t(
             "congregation.duplicateSequences",
             "Duplicate option sequences found. Please check your input."
@@ -78,7 +79,7 @@ const UpdateCongregationOptions = NiceModal.create(
         (option) => option.isDefault && !option.isDeleted
       );
       if (defaultOptions.length !== 1) {
-        alert(
+        notifyWarning(
           t(
             "congregation.selectOneDefault",
             "Please select one default option."
@@ -125,7 +126,7 @@ const UpdateCongregationOptions = NiceModal.create(
             options: optionsList
           }
         });
-        alert(
+        notifyWarning(
           t(
             "congregation.optionsUpdated",
             "Congregation household options updated."
@@ -133,7 +134,7 @@ const UpdateCongregationOptions = NiceModal.create(
         );
         window.location.reload();
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       } finally {
         setIsSaving(false);
       }
@@ -384,7 +385,7 @@ const UpdateCongregationOptions = NiceModal.create(
                               onClick={() => {
                                 const newOptions = [...options];
                                 if (newOptions.length === 1) {
-                                  alert(
+                                  notifyWarning(
                                     t(
                                       "congregation.minimumOneOption",
                                       "There must be at least one option in the dropdown list."

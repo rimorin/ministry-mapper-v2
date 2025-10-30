@@ -18,7 +18,7 @@ import { latlongInterface } from "../../utils/interface";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import TravelModeButtons from "../map/travelmodebtn";
 import { callFunction } from "../../utils/pocketbase";
@@ -41,6 +41,7 @@ interface MapDataType {
 const QuickLinkModal = NiceModal.create(
   ({ territoryId }: QuickLinkModalProps) => {
     const { t } = useTranslation();
+    const { notifyError, notifyWarning } = useNotification();
     const modal = useModal();
 
     const [isInputMode, setIsInputMode] = useState(true);
@@ -94,9 +95,9 @@ const QuickLinkModal = NiceModal.create(
         setIsInputMode(false);
       } catch (error) {
         if (error instanceof GeolocationPositionError) {
-          alert(t("errors.unableToGetLocation"));
+          notifyWarning(t("errors.unableToGetLocation"));
         } else {
-          errorHandler(error, false);
+          notifyError(error);
         }
       } finally {
         setIsLoading(false);
@@ -109,7 +110,7 @@ const QuickLinkModal = NiceModal.create(
       body: string
     ) => {
       if (!navigator.share) {
-        alert(UNSUPPORTED_BROWSER_MSG);
+        notifyWarning(UNSUPPORTED_BROWSER_MSG);
         return;
       }
 
@@ -137,7 +138,7 @@ const QuickLinkModal = NiceModal.create(
         if (error instanceof Error && error.name === "AbortError") {
           return;
         }
-        errorHandler(error, false);
+        notifyError(error);
       } finally {
         setIsSharing(false);
       }

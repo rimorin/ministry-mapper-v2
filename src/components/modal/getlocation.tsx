@@ -19,10 +19,12 @@ import {
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import getDirection from "../../utils/helpers/directiongenerator";
 import TravelModeButtons from "../map/travelmodebtn";
+import useNotification from "../../hooks/useNotification";
 
 const GetMapGeolocation = NiceModal.create(
   ({ coordinates, origin, name }: GetMapGeolocationModalProps) => {
     const { t } = useTranslation();
+    const { notifyWarning } = useNotification();
     const [currentCenter, setCurrentCenter] =
       useState<latlongInterface>(coordinates);
     const [currentLocation, setCurrentLocation] = useState<latlongInterface>();
@@ -45,7 +47,7 @@ const GetMapGeolocation = NiceModal.create(
       onError: () => void
     ) => {
       if (!navigator.geolocation) {
-        alert(
+        notifyWarning(
           t(
             "errors.geolocationNotSupported",
             "Geolocation is not supported by your browser"
@@ -101,7 +103,7 @@ const GetMapGeolocation = NiceModal.create(
           });
         },
         () => {
-          alert(
+          notifyWarning(
             t(
               "errors.unableToGetLocation",
               "Unable to get your current location. Please check your browser settings."

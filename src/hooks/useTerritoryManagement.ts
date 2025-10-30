@@ -9,13 +9,14 @@ import {
   unsubscriber
 } from "../utils/pocketbase";
 import { useTranslation } from "react-i18next";
-import errorHandler from "../utils/helpers/errorhandler";
+import useNotification from "./useNotification";
 import useLocalStorage from "./useLocalStorage";
 
 export default function useTerritoryManagement({
   congregationCode
 }: TerritoryManagementOptions) {
   const { t } = useTranslation();
+  const { notifyError } = useNotification();
   const [isProcessingTerritory, setIsProcessingTerritory] =
     useState<boolean>(false);
   const [territories, setTerritories] = useState(
@@ -46,7 +47,7 @@ export default function useTerritoryManagement({
       setTerritoryCodeCache(eventKey as string);
       toggleTerritoryListing();
     },
-    [toggleTerritoryListing]
+    [toggleTerritoryListing, setTerritoryCodeCache]
   );
 
   const deleteTerritory = useCallback(async () => {
@@ -58,18 +59,19 @@ export default function useTerritoryManagement({
       await deleteDataById("territories", selectedTerritory.id, {
         requestKey: `territory-del-${congregationCode}-${selectedTerritory.code}`
       });
-      alert(
-        t("territory.deleteSuccess", "Deleted territory, {{code}}.", {
-          code: selectedTerritory.code
-        })
-      );
       window.location.reload();
     } catch (error) {
-      errorHandler(error);
+      notifyError(error);
     } finally {
       setIsProcessingTerritory(false);
     }
-  }, [selectedTerritory.id, selectedTerritory.code, congregationCode]);
+  }, [
+    selectedTerritory.id,
+    selectedTerritory.code,
+    congregationCode,
+    t,
+    notifyError
+  ]);
 
   const resetTerritory = useCallback(async () => {
     if (!selectedTerritory.code) return;
@@ -82,11 +84,11 @@ export default function useTerritoryManagement({
         }
       });
     } catch (error) {
-      errorHandler(error);
+      notifyError(error);
     } finally {
       setIsProcessingTerritory(false);
     }
-  }, [selectedTerritory.code, selectedTerritory.id]);
+  }, [selectedTerritory.code, selectedTerritory.id, notifyError]);
 
   const processCongregationTerritories = useCallback(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -107,7 +109,7 @@ export default function useTerritoryManagement({
           });
         }
       } catch (error) {
-        console.error("Error processing congregation territories: ", error);
+        notifyError(error);
       }
       return territoryList;
     },

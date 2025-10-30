@@ -6,13 +6,14 @@ import {
 } from "../utils/interface";
 import { Policy } from "../utils/policies";
 import { DEFAULT_SELF_DESTRUCT_HOURS } from "../utils/constants";
-import errorHandler from "../utils/helpers/errorhandler";
+import useNotification from "./useNotification";
 import getCongregationUsers from "../utils/helpers/getcongregationusers";
 import useLocalStorage from "./useLocalStorage";
 
 export default function useCongregationManagement({
   userId
 }: CongregationManagementOptions) {
+  const { notifyError } = useNotification();
   const [congregationName, setCongregationName] = useState<string>("");
   const [congregationUsers, setCongregationUsers] = useState(
     new Map<string, userDetails>()
@@ -53,11 +54,11 @@ export default function useCongregationManagement({
       );
       toggleUserListing();
     } catch (error) {
-      errorHandler(error);
+      notifyError(error);
     } finally {
       setIsShowingUserListing(false);
     }
-  }, [congregationCode, userId, toggleUserListing]);
+  }, [congregationCode, userId, toggleUserListing, notifyError]);
 
   const handleCongregationSelect = useCallback(
     (newCongCode: string | null) => {

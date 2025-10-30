@@ -8,7 +8,7 @@ import {
   WIKI_CATEGORIES,
   USER_ACCESS_LEVELS
 } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import HelpButton from "../navigation/help";
 import ModalFooter from "../form/footer";
 import { UpdateCongregationSettingsModalProps } from "../../utils/interface";
@@ -24,6 +24,7 @@ const UpdateCongregationSettings = NiceModal.create(
   }: UpdateCongregationSettingsModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
+    const { notifyError, notifyWarning } = useNotification();
 
     const [maxTries, setMaxTries] = useState(currentMaxTries);
     const [defaultExpiryHrs, setDefaultExpiryHrs] = useState(
@@ -48,12 +49,12 @@ const UpdateCongregationSettings = NiceModal.create(
             requestKey: `congregations-details-${currentCongregation}`
           }
         );
-        alert(
+        notifyWarning(
           t("congregation.settingsUpdated", "Congregation settings updated.")
         );
         window.location.reload();
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       } finally {
         setIsSaving(false);
       }
