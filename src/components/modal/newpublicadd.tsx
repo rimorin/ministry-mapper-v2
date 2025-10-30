@@ -12,7 +12,7 @@ import {
 } from "../../utils/constants";
 import isValidMapCode from "../../utils/helpers/checkvalidmapcd";
 import isValidMapSequence from "../../utils/helpers/checkvalidseq";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import processSequence from "../../utils/helpers/processsequence";
 import {
   NewPublicAddressModalProps,
@@ -37,6 +37,7 @@ const NewPublicAddress = NiceModal.create(
   }: NewPublicAddressModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
+    const { notifyError, notifyWarning } = useNotification();
     const { showModal } = useModalManagement();
     const [mapCode, setMapCode] = useState("");
     const [name, setName] = useState("");
@@ -56,12 +57,12 @@ const NewPublicAddress = NiceModal.create(
       event.preventDefault();
 
       if (!isValidMapCode(mapCode)) {
-        alert(t("map.invalidMapNumber"));
+        notifyWarning(t("map.invalidMapNumber"));
         return;
       }
 
       if (!isValidMapSequence(sequence, TERRITORY_TYPES.MULTIPLE_STORIES)) {
-        alert(t("map.invalidSequence"));
+        notifyWarning(t("map.invalidSequence"));
         return;
       }
 
@@ -82,7 +83,7 @@ const NewPublicAddress = NiceModal.create(
         });
         modal.hide();
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       } finally {
         setIsSaving(false);
       }

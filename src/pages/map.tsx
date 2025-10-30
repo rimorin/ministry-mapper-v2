@@ -18,7 +18,7 @@ import InvalidPage from "../components/statics/invalidpage";
 import MainTable from "../components/table/map";
 import MapPlaceholder from "../components/statics/placeholder";
 import TopNavbar from "../components/navigation/topnavbar";
-import errorHandler from "../utils/helpers/errorhandler";
+import useNotification from "../hooks/useNotification";
 import {
   TERRITORY_TYPES,
   WIKI_CATEGORIES,
@@ -46,6 +46,7 @@ const ThemeSettingsModal = lazy(
 const Map = () => {
   const { id } = useParams();
   const { t } = useTranslation();
+  const { notifyError } = useNotification();
   const { currentLanguage, changeLanguage, languageOptions } =
     useContext(LanguageContext);
   const [isLinkExpired, setIsLinkExpired] = useState(false);
@@ -248,7 +249,7 @@ const Map = () => {
         mapId
       );
     } catch (error) {
-      errorHandler(error, false);
+      notifyError(error, true);
     } finally {
       setIsLoading(false);
     }

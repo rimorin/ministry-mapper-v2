@@ -4,13 +4,14 @@ import { useTranslation } from "react-i18next";
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import ModalFooter from "../form/footer";
 import { UpdateProfileModalProps } from "../../utils/interface";
 import { updateDataById } from "../../utils/pocketbase";
 
 const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
   const { t } = useTranslation();
+  const { notifyError, notifyWarning } = useNotification();
   const modal = useModal();
 
   const [isSaving, setIsSaving] = useState(false);
@@ -30,10 +31,10 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
           requestKey: `update-name-${user?.id}`
         }
       );
-      alert(t("profile.updateSuccess"));
+      notifyWarning(t("profile.updateSuccess"));
       modal.hide();
     } catch (error) {
-      errorHandler(error);
+      notifyError(error);
     } finally {
       setIsSaving(false);
     }

@@ -14,13 +14,14 @@ import {
 import { useTranslation } from "react-i18next";
 import { DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION } from "../../utils/constants";
 import { GmapAutocompleteProps } from "../../utils/interface";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 
 export const GmapAutocomplete = ({
   onPlaceSelect,
   origin = DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION
 }: GmapAutocompleteProps) => {
   const { t } = useTranslation();
+  const { notifyError } = useNotification();
   const places = useMapsLibrary("places");
   const sessionTokenRef =
     useRef<google.maps.places.AutocompleteSessionToken | null>(null);
@@ -55,7 +56,7 @@ export const GmapAutocomplete = ({
           setSuggestions(res.suggestions.filter((s) => s.placePrediction));
         })
         .catch((error) => {
-          errorHandler(error);
+          notifyError(error);
           setSuggestions([]);
         });
     }, 300);
@@ -92,7 +93,7 @@ export const GmapAutocomplete = ({
         onPlaceSelect(place);
         sessionTokenRef.current = new places.AutocompleteSessionToken();
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
         onPlaceSelect(null);
       }
     },

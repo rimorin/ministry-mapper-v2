@@ -4,7 +4,7 @@ import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import HelpButton from "../navigation/help";
@@ -18,6 +18,7 @@ const NewTerritoryCode = NiceModal.create(
     congregation
   }: NewTerritoryCodeModalProps) => {
     const { t } = useTranslation();
+    const { notifyError, notifyWarning } = useNotification();
     const [code, setCode] = useState("");
     const [name, setName] = useState("");
     const [isSaving, setIsSaving] = useState(false);
@@ -34,7 +35,7 @@ const NewTerritoryCode = NiceModal.create(
             `code="${code}" && congregation="${congregation}"`
           )
         ) {
-          alert(
+          notifyWarning(
             t("territory.codeAlreadyExists", "Territory code already exists.")
           );
           return;
@@ -50,7 +51,7 @@ const NewTerritoryCode = NiceModal.create(
             requestKey: `create-territory-${congregation}-${code}`
           }
         );
-        alert(
+        notifyWarning(
           t("territory.createdSuccess", "Created territory, {{name}}.", {
             name
           })
@@ -58,7 +59,7 @@ const NewTerritoryCode = NiceModal.create(
         window.location.reload();
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (error: any) {
-        errorHandler(error);
+        notifyError(error);
       } finally {
         setIsSaving(false);
       }

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { useState, FormEvent, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import { UserModalProps } from "../../utils/interface";
 import ModalFooter from "../form/footer";
 import UserRoleField from "../form/role";
@@ -19,6 +19,7 @@ const UpdateUser = NiceModal.create(
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE
   }: UserModalProps) => {
     const { t } = useTranslation();
+    const { notifyError } = useNotification();
     const [userRole, setUserRole] = useState(role);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -45,7 +46,7 @@ const UpdateUser = NiceModal.create(
           modal.resolve(userRole);
           modal.hide();
         } catch (error) {
-          errorHandler(error);
+          notifyError(error);
         } finally {
           setIsSaving(false);
         }

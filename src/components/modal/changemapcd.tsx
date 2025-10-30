@@ -4,7 +4,7 @@ import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import HelpButton from "../navigation/help";
@@ -18,6 +18,7 @@ const ChangeMapCode = NiceModal.create(
     mapCode
   }: ChangeAddressMapCodeModalProps) => {
     const { t } = useTranslation();
+    const { notifyError, notifyWarning } = useNotification();
     const [newMapCode, setNewMapCode] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -26,7 +27,9 @@ const ChangeMapCode = NiceModal.create(
       event.preventDefault();
 
       if (newMapCode === mapCode) {
-        alert(t("map.enterNewMapNumber", "Please enter a new map number"));
+        notifyWarning(
+          t("map.enterNewMapNumber", "Please enter a new map number")
+        );
         return;
       }
       setIsSaving(true);
@@ -41,7 +44,7 @@ const ChangeMapCode = NiceModal.create(
         );
         modal.hide();
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       } finally {
         setIsSaving(false);
       }

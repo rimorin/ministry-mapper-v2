@@ -3,7 +3,7 @@ import { Form, Spinner, FloatingLabel } from "react-bootstrap";
 import PasswordChecklist from "react-password-checklist";
 import { useTranslation } from "react-i18next";
 
-import errorHandler from "../utils/helpers/errorhandler";
+import useNotification from "../hooks/useNotification";
 import { PASSWORD_POLICY, MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
 import { StateContext } from "../components/utils/context";
 import { createData, verifyEmail } from "../utils/pocketbase";
@@ -14,6 +14,7 @@ const { VITE_PRIVACY_URL, VITE_TERMS_URL } = import.meta.env;
 
 const SignupComponent = () => {
   const { t } = useTranslation();
+  const { notifyError, notifyWarning } = useNotification();
   const { setFrontPageMode } = useContext(StateContext);
 
   const [formData, setFormData] = useState({
@@ -59,7 +60,7 @@ const SignupComponent = () => {
         }
       );
       await verifyEmail(formData.email);
-      alert(
+      notifyWarning(
         t(
           "auth.accountCreated",
           "Account created! Please check your email for verification procedures."
@@ -68,7 +69,7 @@ const SignupComponent = () => {
       setFrontPageMode("login");
     } catch (err) {
       setValidated(false);
-      errorHandler(err);
+      notifyError(err);
     } finally {
       setIsCreating(false);
     }

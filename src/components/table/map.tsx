@@ -15,7 +15,7 @@ import {
 import PrivateTerritoryTable from "./privatetable";
 import PublicTerritoryTable from "./publictable";
 import TerritoryMapView from "./mapmode";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import MapPlaceholder from "../statics/placeholder";
 
 import useVisibilityChange from "../../hooks/useVisibilityManagement";
@@ -130,6 +130,7 @@ const MainTable = ({
   const mapName = addressDetails?.name;
   const mapType = addressDetails?.type;
   const { t } = useTranslation();
+  const { notifyError, notifyWarning } = useNotification();
   const { showModal } = useModalManagement();
   const addresses = useAddresses(mapId, policy.getOptionMap(), assignmentId);
 
@@ -144,7 +145,7 @@ const MainTable = ({
           }
         });
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       }
     },
     [mapId]
@@ -217,7 +218,7 @@ const MainTable = ({
           }
         });
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       }
     },
     [mapId]
@@ -300,12 +301,12 @@ const MainTable = ({
         0
       );
       if (totalUnits === 1) {
-        alert(t("unit.requireOneUnitValidation"));
+        notifyWarning(t("unit.requireOneUnitValidation"));
         return;
       }
       handleUnitDelete(unitno || "");
     },
-    [floorList]
+    [floorList, notifyWarning, t, handleUnitDelete]
   );
   if (floorList.length === 0) {
     return <MapPlaceholder policy={policy} />;

@@ -3,7 +3,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useState, FormEvent, useEffect, useCallback } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import ModalFooter from "../form/footer";
 import GenericTextAreaField from "../form/textarea";
 import HelpButton from "../navigation/help";
@@ -108,6 +108,7 @@ const UpdateMapMessages = NiceModal.create(
     assignmentId
   }: UpdateAddressFeedbackModalProps) => {
     const { t } = useTranslation();
+    const { notifyError } = useNotification();
     const [feedback, setFeedback] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -136,7 +137,7 @@ const UpdateMapMessages = NiceModal.create(
           );
           setFeedback("");
         } catch (error) {
-          errorHandler(error);
+          notifyError(error);
         } finally {
           setIsSaving(false);
         }

@@ -14,7 +14,7 @@ import {
   requestOTP
 } from "../utils/pocketbase";
 
-import errorHandler from "../utils/helpers/errorhandler";
+import useNotification from "../hooks/useNotification";
 import { StateContext } from "../components/utils/context";
 import GenericButton from "../components/navigation/button";
 import { getAssetUrl } from "../utils/helpers/assetpath";
@@ -24,6 +24,7 @@ import { getDisabledStyle } from "../utils/helpers/disabledstyle";
 
 const LoginComponent = () => {
   const { t } = useTranslation();
+  const { notifyError, notifyWarning, notifyInfo } = useNotification();
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -54,7 +55,7 @@ const LoginComponent = () => {
     try {
       setOtpSessionId(await requestOTP(email));
     } catch (err) {
-      errorHandler(err);
+      notifyError(err);
     }
   }, []);
 
@@ -69,7 +70,7 @@ const LoginComponent = () => {
         const mfaId = err.response?.mfaId;
         setValidated(false);
         if (!mfaId) {
-          errorHandler(err);
+          notifyError(err);
           return;
         }
         await handleOtpRequest(processedEmail);
@@ -88,7 +89,7 @@ const LoginComponent = () => {
         setIsLogin(true);
         await authenticateOTP(otpSessionId, otpCode, mfaId);
       } catch (err) {
-        errorHandler(err);
+        notifyError(err);
       } finally {
         setIsLogin(false);
       }
@@ -115,7 +116,7 @@ const LoginComponent = () => {
       setOtpCode(text);
     } catch (err) {
       if (err instanceof Error && err.name === "NotAllowedError") {
-        alert(
+        notifyWarning(
           t(
             "auth.clipboardDenied",
             "Permission to access clipboard was denied."
@@ -123,7 +124,7 @@ const LoginComponent = () => {
         );
         return;
       }
-      errorHandler(err);
+      notifyError(err);
     }
   }, []);
 
@@ -145,7 +146,7 @@ const LoginComponent = () => {
 
   const handleResendOtp = useCallback(async () => {
     await handleOtpRequest(processEmail(loginEmail));
-    alert(t("auth.otpSentAlert", "OTP sent to your email"));
+    notifyInfo(t("auth.otpSentAlert", "OTP sent to your email"));
   }, [loginEmail, processEmail, handleOtpRequest, t]);
 
   const handleClearOtpCode = useCallback(() => {
@@ -156,7 +157,7 @@ const LoginComponent = () => {
     setIsOAuthLoading(true);
     authenticateOAuth2(provider)
       .catch((err) => {
-        errorHandler(err);
+        notifyError(err);
       })
       .finally(() => {
         setIsOAuthLoading(false);

@@ -8,7 +8,8 @@ import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import HelpButton from "../navigation/help";
 import { ConfirmSlipDetailsModalProps } from "../../utils/interface";
-import { Value } from "react-calendar/dist/cjs/shared/types";
+import type { Value } from "react-calendar/dist/shared/types";
+import useNotification from "../../hooks/useNotification";
 
 const ConfirmSlipDetails = NiceModal.create(
   ({
@@ -17,6 +18,7 @@ const ConfirmSlipDetails = NiceModal.create(
     isPersonalSlip = true
   }: ConfirmSlipDetailsModalProps) => {
     const { t } = useTranslation();
+    const { notifyWarning } = useNotification();
     const modal = useModal();
     const [linkExpiryHrs, setLinkExpiryHrs] = useState<number | undefined>();
     const [name, setName] = useState<string>("");
@@ -25,13 +27,13 @@ const ConfirmSlipDetails = NiceModal.create(
       async (event: FormEvent<HTMLElement>) => {
         event.preventDefault();
         if (!linkExpiryHrs && isPersonalSlip) {
-          alert(t("slip.selectExpiryValidation"));
+          notifyWarning(t("slip.selectExpiryValidation"));
           return;
         }
         modal.resolve({ linkExpiryHrs: linkExpiryHrs, publisherName: name });
         modal.hide();
       },
-      [linkExpiryHrs, name]
+      [linkExpiryHrs, name, isPersonalSlip, notifyWarning, modal, t]
     );
 
     return (

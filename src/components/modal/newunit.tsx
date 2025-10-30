@@ -8,7 +8,7 @@ import {
   TERRITORY_TYPES,
   WIKI_CATEGORIES
 } from "../../utils/constants";
-import errorHandler from "../../utils/helpers/errorhandler";
+import useNotification from "../../hooks/useNotification";
 import { NewUnitModalProps } from "../../utils/interface";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
@@ -22,6 +22,7 @@ const NewUnit = NiceModal.create(
     addressData
   }: NewUnitModalProps) => {
     const { t } = useTranslation();
+    const { notifyError, notifyWarning } = useNotification();
     const [unit, setUnit] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -31,7 +32,7 @@ const NewUnit = NiceModal.create(
       setIsSaving(true);
       try {
         if (!/^[a-zA-Z0-9\-*]+$/.test(unit)) {
-          alert(t("unit.alphanumericDashHyphenValidation"));
+          notifyWarning(t("unit.alphanumericDashHyphenValidation"));
           return;
         }
         await callFunction("/map/code/add", {
@@ -43,7 +44,7 @@ const NewUnit = NiceModal.create(
         });
         modal.hide();
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       } finally {
         setIsSaving(false);
       }

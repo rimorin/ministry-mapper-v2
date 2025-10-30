@@ -22,7 +22,7 @@ import {
   PB_FIELDS,
   DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION
 } from "../utils/constants";
-import errorHandler from "../utils/helpers/errorhandler";
+import useNotification from "../hooks/useNotification";
 
 // Import custom hooks
 import useTerritoryManagement from "../hooks/useTerritoryManagement";
@@ -95,6 +95,7 @@ const QuickLinkModal = lazy(() => import("../components/modal/getquicklink"));
 
 function Admin({ user }: adminProps) {
   const { t } = useTranslation();
+  const { notifyError, notifyWarning } = useNotification();
   const userId = user?.id as string;
   const userName = user?.name as string;
   const userEmail = user?.email as string;
@@ -228,7 +229,9 @@ function Admin({ user }: adminProps) {
       });
 
       if (assignments.length === 0) {
-        alert(t("assignments.noAssignmentsFound", "No assignments found."));
+        notifyWarning(
+          t("assignments.noAssignmentsFound", "No assignments found.")
+        );
         return;
       }
 
@@ -276,7 +279,7 @@ function Admin({ user }: adminProps) {
         setSortedAddressList(
           sortedAddressList.filter((address) => address.id !== mapId)
         );
-        alert(
+        notifyWarning(
           t(
             "territory.changeSuccess",
             "Changed territory of {{name}} from {{oldCode}} to {{newCode}}.",
@@ -288,7 +291,7 @@ function Admin({ user }: adminProps) {
           )
         );
       } catch (error) {
-        errorHandler(error);
+        notifyError(error);
       }
     },
     [values, selectedTerritory.id, selectedTerritory.code]
@@ -304,7 +307,7 @@ function Admin({ user }: adminProps) {
     if (userRoles.length === 0) {
       setIsLoading(false);
       setIsUnauthorised(true);
-      errorHandler(`Unauthorised access by ${userEmail}`, false);
+      notifyError(`Unauthorised access by ${userEmail}`, true);
       return;
     }
 
@@ -344,7 +347,7 @@ function Admin({ user }: adminProps) {
     });
 
     if (!congDetails) {
-      alert(t("congregation.notFound", "Congregation not found."));
+      notifyWarning(t("congregation.notFound", "Congregation not found."));
       return;
     }
 
@@ -474,7 +477,9 @@ function Admin({ user }: adminProps) {
 
   const handlePasswordReset = useCallback(async () => {
     await requestPasswordReset();
-    alert(t("auth.passwordResetConfirmation", "Password reset email sent."));
+    notifyWarning(
+      t("auth.passwordResetConfirmation", "Password reset email sent.")
+    );
   }, []);
 
   useEffect(() => {
