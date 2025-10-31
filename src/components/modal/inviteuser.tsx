@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, use } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import AsyncSelect from "react-select/async";
@@ -16,7 +16,7 @@ import {
   getFirstItemOfList,
   getPaginatedList
 } from "../../utils/pocketbase";
-import { useTheme } from "../../hooks/useTheme";
+import { ThemeContext } from "../utils/context";
 import { getReactSelectStyles } from "../../utils/helpers/reactSelectStyles";
 
 const InviteUser = NiceModal.create(
@@ -27,7 +27,7 @@ const InviteUser = NiceModal.create(
   }: UserModalProps) => {
     const { t } = useTranslation();
     const { notifyError, notifyWarning } = useNotification();
-    const { actualTheme } = useTheme();
+    const { actualTheme } = use(ThemeContext);
     const [userRole, setUserRole] = useState(USER_ACCESS_LEVELS.READ_ONLY.CODE);
     const [userId, setUserId] = useState("");
     const [isSaving, setIsSaving] = useState(false);

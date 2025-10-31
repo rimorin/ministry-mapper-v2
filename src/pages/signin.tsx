@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import {
   Form,
   Spinner,
@@ -37,7 +37,7 @@ const LoginComponent = () => {
 
   const otpInputRef = useRef<HTMLInputElement>(null);
 
-  const { setFrontPageMode } = useContext(StateContext);
+  const { setFrontPageMode } = use(StateContext);
 
   // Auto-focus OTP input when OTP form is shown
   useEffect(() => {

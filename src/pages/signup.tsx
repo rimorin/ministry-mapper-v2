@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { use, useState } from "react";
 import { Form, Spinner, FloatingLabel } from "react-bootstrap";
 import PasswordChecklist from "react-password-checklist";
 import { useTranslation } from "react-i18next";
@@ -15,7 +15,7 @@ const { VITE_PRIVACY_URL, VITE_TERMS_URL } = import.meta.env;
 const SignupComponent = () => {
   const { t } = useTranslation();
   const { notifyError, notifyWarning } = useNotification();
-  const { setFrontPageMode } = useContext(StateContext);
+  const { setFrontPageMode } = use(StateContext);
 
   const [formData, setFormData] = useState({
     email: "",

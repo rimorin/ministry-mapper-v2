@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, use, useState, ReactNode } from "react";
 import { ToastContainer as BSToastContainer, Toast } from "react-bootstrap";
 
 export type ToastVariant =
@@ -41,7 +41,7 @@ const DEFAULT_DELAY = 3000;
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export const useToast = () => {
-  const context = useContext(ToastContext);
+  const context = use(ToastContext);
   if (!context) {
     throw new Error("useToast must be used within a ToastProvider");
   }

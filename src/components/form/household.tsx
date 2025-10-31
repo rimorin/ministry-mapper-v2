@@ -1,6 +1,7 @@
+import { use } from "react";
 import Select from "react-select";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "../../hooks/useTheme";
+import { ThemeContext } from "../utils/context";
 import { HouseholdProps, SelectProps } from "../../utils/interface";
 import { getReactSelectStyles } from "../../utils/helpers/reactSelectStyles";
 
@@ -10,7 +11,7 @@ const HouseholdField = ({
   options
 }: HouseholdProps) => {
   const { t } = useTranslation();
-  const { actualTheme } = useTheme();
+  const { actualTheme } = use(ThemeContext);
 
   const customStyles = getReactSelectStyles<SelectProps, true>({
     isDark: actualTheme === "dark"

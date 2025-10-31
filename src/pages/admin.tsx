@@ -1,6 +1,6 @@
 import "../css/admin.css";
 
-import { useEffect, useContext, lazy } from "react";
+import { useEffect, use, lazy } from "react";
 import { Container, Navbar, Spinner, Image } from "react-bootstrap";
 
 import { AuthRecord } from "pocketbase";
@@ -181,7 +181,7 @@ function Admin({ user }: adminProps) {
   const { showModal } = useModalManagement();
 
   const { currentLanguage, changeLanguage, languageOptions } =
-    useContext(LanguageContext);
+    use(LanguageContext);
 
   const logoutUser = () => cleanupSession();
 
