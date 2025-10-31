@@ -138,6 +138,13 @@ const LoginComponent = () => {
     setOtpCode("");
   };
 
+  const handleBackToSignIn = () => {
+    setOtpSessionId("");
+    setOtpCode("");
+    setMfaId("");
+    setValidated(false);
+  };
+
   const handleOAuthSignIn = (provider: string) => {
     setIsOAuthLoading(true);
     authenticateOAuth2(provider)
@@ -392,6 +399,19 @@ const LoginComponent = () => {
                 disabled={isLogin}
               />
             </div>
+          </Form.Group>
+          <Form.Group className="text-center mt-3">
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (!isLogin) handleBackToSignIn();
+              }}
+              className="link-secondary text-decoration-none small"
+              style={getDisabledStyle(isLogin)}
+            >
+              {t("auth.backToSignIn", "Back to Sign In")}
+            </a>
           </Form.Group>
         </AuthContainer>
       )}
