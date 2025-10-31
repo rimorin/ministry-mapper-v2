@@ -1,3 +1,17 @@
+# [1.14.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.13.0...v1.14.0) (2025-10-31)
+
+
+### Bug Fixes
+
+* mismatch of territory change message ([3a5a3c2](https://github.com/rimorin/ministry-mapper-v2/commit/3a5a3c23b9e1a7ed845c2e0d17da232c234a6998))
+* missing dark mode for pinned messages ([9d7a3ce](https://github.com/rimorin/ministry-mapper-v2/commit/9d7a3ce068424a1f8d103032243c9d74cb9c41e9))
+* prevent service worker from serving HTML for missing chunks ([911d76f](https://github.com/rimorin/ministry-mapper-v2/commit/911d76fddf78d7aad6ecdfe9da1c45908c98a63a))
+
+
+### Features
+
+* add back button during otp ([a8f3b8a](https://github.com/rimorin/ministry-mapper-v2/commit/a8f3b8a1061e00b6e6cbcc7ba2b2c03cab5e0fee))
+
 # [1.13.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.12.1...v1.13.0) (2025-10-30)
 
 
