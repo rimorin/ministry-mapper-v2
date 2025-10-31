@@ -77,6 +77,7 @@
     "verify": "验证",
     "paste": "粘贴",
     "clipboardDenied": "访问剪贴板的权限被拒绝。",
+    "backToSignIn": "返回登录",
     "orContinueWith": "或继续使用",
     "or": "或",
     "signInWithGoogle": "使用 Google 登录",

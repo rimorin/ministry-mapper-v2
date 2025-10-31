@@ -77,6 +77,7 @@
     "verify": "Verify",
     "paste": "Paste",
     "clipboardDenied": "Permission to access clipboard was denied.",
+    "backToSignIn": "Back to Sign In",
     "orContinueWith": "Or continue with",
     "or": "Or",
     "signInWithGoogle": "Sign in with Google",
