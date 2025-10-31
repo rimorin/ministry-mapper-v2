@@ -53,9 +53,9 @@ export default defineConfig(() => {
         manifest: false,
         workbox: {
           globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-          skipWaiting: true,
-          clientsClaim: true,
           cleanupOutdatedCaches: true,
+          navigateFallback: "/index.html",
+          navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/, /^\/assets\//],
           runtimeCaching: [
             {
               urlPattern: ({ url }) =>
@@ -80,9 +80,7 @@ export default defineConfig(() => {
                 }
               }
             }
-          ],
-          navigateFallback: "/index.html",
-          navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/]
+          ]
         }
       })
     ],
