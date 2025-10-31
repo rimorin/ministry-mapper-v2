@@ -1,13 +1,14 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import { use } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "../../hooks/useTheme";
+import { ThemeContext } from "../utils/context";
 import { ThemeMode } from "../../utils/interface";
 
 const ThemeSettingsModal = NiceModal.create(() => {
   const modal = useModal();
   const { t } = useTranslation();
-  const { theme, setTheme } = useTheme();
+  const { theme, setTheme } = use(ThemeContext);
 
   const handleThemeChange = (selectedTheme: ThemeMode) => {
     setTheme(selectedTheme);

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, lazy, Suspense } from "react";
+import { use, useEffect, useState, lazy, Suspense } from "react";
 import { Container, Navbar, Image } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { MINISTRY_MAPPER_WIKI_PAGE } from "../utils/constants";
@@ -26,9 +26,9 @@ const Admin = lazy(() => import("./admin"));
 
 const FrontPage = () => {
   const { t } = useTranslation();
-  const context = useContext(StateContext);
+  const context = use(StateContext);
   const { currentLanguage, changeLanguage, languageOptions } =
-    useContext(LanguageContext);
+    use(LanguageContext);
 
   const { showLanguageSelector, toggleLanguageSelector } = useUIState();
   const [loginUser, setLoginUser] = useState<AuthModel>(getUser() as AuthModel);

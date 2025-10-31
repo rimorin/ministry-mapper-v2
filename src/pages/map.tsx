@@ -1,4 +1,4 @@
-import { useEffect, useState, lazy, useContext } from "react";
+import { useEffect, useState, lazy, use } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -48,7 +48,7 @@ const Map = () => {
   const { t } = useTranslation();
   const { notifyError } = useNotification();
   const { currentLanguage, changeLanguage, languageOptions } =
-    useContext(LanguageContext);
+    use(LanguageContext);
   const [isLinkExpired, setIsLinkExpired] = useState(false);
   const [tokenEndTime, setTokenEndTime] = useState(0);
   const [showLegend, setShowLegend] = useState(false);

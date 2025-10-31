@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { use, useState } from "react";
 import { Form, Spinner, FloatingLabel } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
@@ -16,7 +16,7 @@ const ForgotComponent = () => {
   const [loginEmail, setLoginEmail] = useState("");
   const [validated, setValidated] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const { setFrontPageMode } = useContext(StateContext);
+  const { setFrontPageMode } = use(StateContext);
 
   const handleClearForm = () => {
     setLoginEmail("");

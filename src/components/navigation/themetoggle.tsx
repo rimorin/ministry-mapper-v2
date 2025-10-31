@@ -1,9 +1,9 @@
-import { FC, lazy } from "react";
+import { FC, lazy, use } from "react";
 import { Button, Image } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { useTheme } from "../../hooks/useTheme";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
+import { ThemeContext } from "../utils/context";
 
 const ThemeSettingsModal = lazy(() => import("../modal/themesettings"));
 
@@ -13,7 +13,7 @@ interface ThemeToggleProps {
 
 const ThemeToggle: FC<ThemeToggleProps> = ({ className = "" }) => {
   const { t } = useTranslation();
-  const { actualTheme } = useTheme();
+  const { actualTheme } = use(ThemeContext);
   const { showModal } = useModalManagement();
 
   const handleOpenThemeSettings = () => {
