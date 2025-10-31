@@ -278,11 +278,9 @@ function Admin({ user }: adminProps) {
       notifyWarning(
         t(
           "territory.changeSuccess",
-          "Changed territory of {{name}} from {{oldCode}} to {{newCode}}.",
+          "Territory {{code}} updated successfully.",
           {
-            name: details.name,
-            oldCode: selectedTerritory.code,
-            newCode: newTerritoryCode
+            code: newTerritoryCode
           }
         )
       );
