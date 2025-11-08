@@ -1,28 +1,23 @@
 import React, { useEffect, useState } from "react";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { DEFAULT_COORDINATES, USER_ACCESS_LEVELS } from "../../utils/constants";
-import {
-  AdvancedMarker,
-  ControlPosition,
-  Map as Gmap,
-  MapControl
-} from "@vis.gl/react-google-maps";
-import CurrentLocationMarker from "../statics/currentlocator";
+import { currentLocationIcon } from "../../utils/helpers/mapicons";
 import {
   addressDetails,
   latlongInterface,
   MapViewProps
 } from "../../utils/interface";
 import { Card, Table } from "react-bootstrap";
-import AddressMarker from "./mapmarker";
+import AddressMarker from "../map/marker";
 import AssignmentButtonGroup from "./assignmentbtn";
 import { getUser } from "../../utils/pocketbase";
 import ComponentAuthorizer from "./authorizer";
 import MapPlaceholder from "../statics/placeholder";
+import { MapController } from "../map/mapcontroller";
+import CustomControl from "../map/customcontrol";
 
 const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
-  const defaultCenter =
-    sortedAddressList[0]?.coordinates || DEFAULT_COORDINATES;
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [currentLocation, setCurrentLocation] = useState<latlongInterface>();
   const [center, setCenter] = useState<latlongInterface>();
   const [selectedAddress, setSelectedAddress] = useState<addressDetails | null>(
@@ -30,69 +25,54 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
   );
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setCurrentLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        });
-      });
-    }
+    navigator.geolocation?.getCurrentPosition((pos) =>
+      setCurrentLocation({
+        lat: pos.coords.latitude,
+        lng: pos.coords.longitude
+      })
+    );
     setIsLoading(false);
-
-    return () => {
-      setIsLoading(true);
-      setSelectedAddress(null);
-    };
   }, []);
 
-  // if loading show a placeholder with the appropriate height
-  if (isLoading) {
-    return <MapPlaceholder policy={policy} rows={6} columns={3} />;
-  }
+  if (isLoading) return <MapPlaceholder policy={policy} rows={6} columns={3} />;
+  if (!sortedAddressList.length) return <div>No addresses found</div>;
 
-  if (sortedAddressList.length === 0) {
-    return <div>No addresses found</div>;
-  }
+  const defaultCenter = sortedAddressList[0].coordinates || DEFAULT_COORDINATES;
 
   return (
     <div className="map-view-admin">
-      <Gmap
-        mapId={`map-territory`}
-        center={center}
-        defaultCenter={defaultCenter}
-        defaultZoom={18}
-        cameraControlOptions={{
-          position: ControlPosition.RIGHT_TOP
-        }}
-        fullscreenControl={false}
-        streetViewControl={false}
-        clickableIcons={false}
-        gestureHandling="greedy"
-        onCenterChanged={(center) => setCenter(center.detail.center)}
+      <MapContainer
+        center={[defaultCenter.lat, defaultCenter.lng]}
+        zoom={18}
+        style={{ height: "100%", width: "100%" }}
+        zoomControl
+        scrollWheelZoom
+        attributionControl={false}
       >
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <MapController
+          center={center}
+          onMapClick={() => setSelectedAddress(null)}
+        />
         {currentLocation && (
-          <AdvancedMarker position={currentLocation} draggable={false}>
-            <CurrentLocationMarker />
-          </AdvancedMarker>
+          <Marker
+            position={[currentLocation.lat, currentLocation.lng]}
+            icon={currentLocationIcon}
+          />
         )}
-        {sortedAddressList &&
-          sortedAddressList.map((addressElement) => {
-            const isSelected = selectedAddress?.id === addressElement.id;
-            return (
-              <AddressMarker
-                key={`map-marker-${addressElement.id}`}
-                addressElement={addressElement}
-                isSelected={isSelected}
-                onClick={() => {
-                  setSelectedAddress(addressElement);
-                  setCenter(addressElement.coordinates);
-                }}
-              />
-            );
-          })}
+        {sortedAddressList.map((addressElement) => (
+          <AddressMarker
+            key={addressElement.id}
+            addressElement={addressElement}
+            isSelected={selectedAddress?.id === addressElement.id}
+            onClick={() => {
+              setSelectedAddress(addressElement);
+              setCenter(addressElement.coordinates);
+            }}
+          />
+        ))}
         {selectedAddress && (
-          <MapControl position={ControlPosition.RIGHT_BOTTOM}>
+          <CustomControl position="bottomright">
             <Card className="marker-info-card">
               <Card.Header className="text-center py-2">
                 <b>{selectedAddress.name}</b>
@@ -122,7 +102,7 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
                 >
                   <div className="text-center">
                     <AssignmentButtonGroup
-                      key={`marker-assignments-${selectedAddress.id}`}
+                      key={selectedAddress.id}
                       addressElement={selectedAddress}
                       policy={policy}
                       userId={getUser("id") as string}
@@ -131,9 +111,9 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
                 </ComponentAuthorizer>
               </Card.Body>
             </Card>
-          </MapControl>
+          </CustomControl>
         )}
-      </Gmap>
+      </MapContainer>
     </div>
   );
 };

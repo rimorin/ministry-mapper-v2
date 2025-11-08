@@ -277,8 +277,6 @@
     "messagesOn": "{{name}}のメッセージ"
   },
   "navigation": {
-    "map": "マップ",
-    "list": "リスト",
     "help": "ヘルプ",
     "legend": "凡例",
     "listView": "リスト表示",
@@ -286,10 +284,8 @@
     "direction": "方向",
     "backToTop": "トップへ",
     "about": "情報",
-    "walkMode": "徒歩モード",
-    "driveMode": "車モード",
-    "transitMode": "公共交通機関",
-    "transportModes": "移動モード",
+    "walkMode": "徒歩",
+    "driveMode": "車",
     "openMaps": "マップ表示",
     "generateLink": "クイックリンク"
   },
@@ -374,5 +370,8 @@
     "system": "システム",
     "systemDescription": "デバイスの設定に従います",
     "theme": "テーマ"
+  },
+  "location": {
+    "arrivedAtDestination": "目的地に到着しました"
   }
 }

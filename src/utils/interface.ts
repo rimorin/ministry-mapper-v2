@@ -247,9 +247,7 @@ export interface territorySingleProps {
   houses: floorDetails;
   policy: Policy;
   addressDetails: addressDetails;
-  handleHouseUpdate: (
-    event: React.MouseEvent<HTMLElement> | google.maps.MapMouseEvent
-  ) => void;
+  handleHouseUpdate: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
 export interface SignInDifferentProps {
@@ -624,29 +622,20 @@ export interface MapViewProps {
   policy: Policy;
 }
 
-export interface GmapAutocompleteProps {
-  onPlaceSelect: (place: google.maps.places.Place | null) => void;
-  origin: string;
-}
-
 export interface MissingSetupPageProps {
   message: string;
 }
 
 export interface MapControlProps {
   onClick: () => void;
-  isLocating?: boolean;
 }
 
-export interface ControlPanelProps {
-  lat: number;
-  lng: number;
-  name?: string;
-}
+export type TravelMode = "WALKING" | "DRIVING";
 
 export interface TravelModeButtonsProps {
-  travelMode: google.maps.TravelMode;
-  onTravelModeChange: (travelMode: google.maps.TravelMode) => void;
+  travelMode: TravelMode;
+  onTravelModeChange: (travelMode: TravelMode) => void;
+  isLoading?: boolean;
 }
 
 export interface CircularProgressProps {
@@ -657,6 +646,7 @@ export interface CircularProgressProps {
   backgroundColor: string;
   hasAssignments: boolean;
   hasPersonal: boolean;
+  isSelected?: boolean;
   children?: React.ReactNode;
 }
 

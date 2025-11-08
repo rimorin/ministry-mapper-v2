@@ -277,8 +277,6 @@
     "messagesOn": "{{name}} 上的消息"
   },
   "navigation": {
-    "map": "地图",
-    "list": "列表",
     "help": "帮助",
     "legend": "图例",
     "listView": "列表视图",
@@ -286,10 +284,8 @@
     "direction": "方向",
     "backToTop": "返回顶部",
     "about": "关于",
-    "walkMode": "步行模式",
-    "driveMode": "驾驶模式",
-    "transitMode": "公交模式",
-    "transportModes": "交通模式",
+    "walkMode": "步行",
+    "driveMode": "驾驶",
     "openMaps": "打开地图",
     "generateLink": "快速链接"
   },
@@ -375,5 +371,8 @@
     "system": "系统",
     "systemDescription": "跟随您的设备设置",
     "theme": "主题"
+  },
+  "location": {
+    "arrivedAtDestination": "您已到达目的地"
   }
 }

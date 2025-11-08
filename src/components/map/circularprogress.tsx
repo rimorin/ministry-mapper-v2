@@ -9,25 +9,36 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   backgroundColor,
   hasAssignments,
   hasPersonal,
+  isSelected = false,
   children
 }) => {
+  const center = size / 2;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (progress / 100) * circumference;
+  const offset = circumference * (1 - progress / 100);
 
   return (
     <div
       className="circular-progress-container"
-      style={{ width: size, height: size, backgroundColor: backgroundColor }}
+      style={{ width: size, height: size, backgroundColor }}
     >
       <svg width={size} height={size} className="circular-progress">
+        {isSelected && (
+          <circle
+            className="selected-marker-ring"
+            fill="none"
+            cx={center}
+            cy={center}
+            r={radius + strokeWidth + 2}
+          />
+        )}
         <circle
           className="circular-progress-background"
           stroke={backgroundColor}
           strokeWidth={strokeWidth}
           fill="none"
-          cx={size / 2}
-          cy={size / 2}
+          cx={center}
+          cy={center}
           r={radius}
         />
         <circle
@@ -35,28 +46,29 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
           stroke={highlightColor}
           strokeWidth={strokeWidth}
           fill="none"
-          cx={size / 2}
-          cy={size / 2}
+          cx={center}
+          cy={center}
           r={radius}
-          style={{ strokeDasharray: circumference, strokeDashoffset: offset }}
+          style={{
+            strokeDasharray: circumference,
+            strokeDashoffset: offset
+          }}
         />
         {hasAssignments && (
           <circle
             className="circular-progress-assignments"
-            strokeWidth={5}
             fill="none"
-            cx={size / 2}
-            cy={size / 2}
+            cx={center}
+            cy={center}
             r={radius - strokeWidth - 2}
           />
         )}
         {hasPersonal && (
           <circle
             className="circular-progress-personal"
-            strokeWidth={3}
             fill="none"
-            cx={size / 2}
-            cy={size / 2}
+            cx={center}
+            cy={center}
             r={radius - strokeWidth - 6}
           />
         )}

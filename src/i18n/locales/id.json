@@ -248,8 +248,6 @@
     "messagesOn": "Pesan di {{name}}"
   },
   "navigation": {
-    "map": "Peta",
-    "list": "Daftar",
     "help": "Bantuan",
     "legend": "Legenda",
     "listView": "Tampilan Daftar",
@@ -257,10 +255,8 @@
     "direction": "Arah",
     "backToTop": "Kembali ke Atas",
     "about": "Tentang",
-    "walkMode": "Mode Jalan",
-    "driveMode": "Mode Mengemudi",
-    "transitMode": "Mode Transit",
-    "transportModes": "Mode Transportasi",
+    "walkMode": "Jalan",
+    "driveMode": "Mengemudi",
     "openMaps": "Buka Peta",
     "generateLink": "Tautan Cepat"
   },
@@ -375,5 +371,8 @@
     "system": "Sistem",
     "systemDescription": "Mengikuti pengaturan perangkat Anda",
     "theme": "Tema"
+  },
+  "location": {
+    "arrivedAtDestination": "Anda telah sampai di tujuan"
   }
 }

@@ -277,8 +277,6 @@
     "messagesOn": "{{name}}의 메시지"
   },
   "navigation": {
-    "map": "맵",
-    "list": "목록",
     "help": "도움말",
     "legend": "범례",
     "listView": "목록 보기",
@@ -286,10 +284,8 @@
     "direction": "방향",
     "backToTop": "맨 위로",
     "about": "정보",
-    "walkMode": "도보 모드",
-    "driveMode": "운전 모드",
-    "transitMode": "대중교통 모드",
-    "transportModes": "이동 모드",
+    "walkMode": "도보",
+    "driveMode": "운전",
     "openMaps": "맵 열기",
     "generateLink": "퀵 링크"
   },
@@ -374,5 +370,8 @@
     "system": "시스템",
     "systemDescription": "기기 설정을 따릅니다",
     "theme": "테마"
+  },
+  "location": {
+    "arrivedAtDestination": "목적지에 도착했습니다"
   }
 }

@@ -1,54 +1,62 @@
 import React from "react";
-import { ButtonGroup } from "react-bootstrap";
+import { ButtonGroup, Button, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import GenericButton from "../navigation/button";
-
-interface TravelModeButtonsProps {
-  travelMode: google.maps.TravelMode;
-  onTravelModeChange: (mode: google.maps.TravelMode) => void;
-}
+import { TravelMode, TravelModeButtonsProps } from "../../utils/interface";
 
 const TravelModeButtons: React.FC<TravelModeButtonsProps> = ({
   travelMode,
-  onTravelModeChange
+  onTravelModeChange,
+  isLoading = false
 }) => {
   const { t } = useTranslation();
 
+  const modes: Array<{
+    value: TravelMode;
+    icon: string;
+    label: string;
+    position: string;
+  }> = [
+    {
+      value: "WALKING",
+      icon: "🚶",
+      label: t("navigation.walkMode", "Walk"),
+      position: "first"
+    },
+    {
+      value: "DRIVING",
+      icon: "🚗",
+      label: t("navigation.driveMode", "Drive"),
+      position: "last"
+    }
+  ];
+
   return (
-    <ButtonGroup className="m-2" aria-label={t("navigation.transportModes")}>
-      <GenericButton
-        size="sm"
-        variant={
-          travelMode === google.maps.TravelMode.WALKING
-            ? "primary"
-            : "secondary"
-        }
-        aria-label={t("navigation.walkMode")}
-        onClick={() => onTravelModeChange(google.maps.TravelMode.WALKING)}
-        label="🚶"
-      />
-      <GenericButton
-        size="sm"
-        variant={
-          travelMode === google.maps.TravelMode.DRIVING
-            ? "primary"
-            : "secondary"
-        }
-        aria-label={t("navigation.driveMode")}
-        onClick={() => onTravelModeChange(google.maps.TravelMode.DRIVING)}
-        label="🚗"
-      />
-      <GenericButton
-        size="sm"
-        variant={
-          travelMode === google.maps.TravelMode.TRANSIT
-            ? "primary"
-            : "secondary"
-        }
-        aria-label={t("navigation.transitMode")}
-        onClick={() => onTravelModeChange(google.maps.TravelMode.TRANSIT)}
-        label="🚌"
-      />
+    <ButtonGroup className="shadow-sm travel-mode-button-group">
+      {modes.map((mode) => {
+        const isActive = travelMode === mode.value;
+        return (
+          <Button
+            key={mode.value}
+            size="sm"
+            variant={isActive ? "primary" : "light"}
+            aria-label={mode.label}
+            aria-pressed={isActive}
+            onClick={() => onTravelModeChange(mode.value)}
+            disabled={isLoading}
+            className={`travel-mode-btn ${mode.position}${isActive ? " active" : ""}${isLoading ? " loading" : ""}`}
+          >
+            {isLoading && isActive && (
+              <div
+                className={`travel-mode-btn-spinner-overlay ${mode.position}`}
+              >
+                <Spinner animation="border" size="sm" variant="primary" />
+              </div>
+            )}
+            <span className="travel-mode-btn-icon">{mode.icon}</span>
+            <span className="travel-mode-btn-label">{mode.label}</span>
+          </Button>
+        );
+      })}
     </ButtonGroup>
   );
 };

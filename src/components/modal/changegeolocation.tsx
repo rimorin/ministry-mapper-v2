@@ -1,22 +1,95 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-
 import { useState, FormEvent, useEffect } from "react";
-import { Modal, Form, Spinner } from "react-bootstrap";
+import { Modal, Form, Spinner, Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import {
+  MapContainer,
+  TileLayer,
+  Marker,
+  useMap,
+  useMapEvents
+} from "react-leaflet";
+import { GeoSearchControl, LocationIQProvider } from "leaflet-geosearch";
 import { WIKI_CATEGORIES } from "../../utils/constants";
+import {
+  currentLocationIcon,
+  addressMarkerIcon
+} from "../../utils/helpers/mapicons";
 import useNotification from "../../hooks/useNotification";
 import HelpButton from "../navigation/help";
 import {
   ConfigureAddressCoordinatesModalProps,
   latlongInterface
 } from "../../utils/interface";
-import { AdvancedMarker, Map, MapMouseEvent } from "@vis.gl/react-google-maps";
-import { GmapAutocomplete } from "../map/mapautocomplete";
-import { ControlPanel } from "../map/mapinfopanel";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
-import CurrentLocationMarker from "../statics/currentlocator";
 import { updateDataById } from "../../utils/pocketbase";
 import GenericButton from "../navigation/button";
+import { MapController } from "../map/mapcontroller";
+import CustomControl from "../map/customcontrol";
+import "leaflet-geosearch/dist/geosearch.css";
+import "../../css/geosearch.css";
+
+const MapClickHandler = ({
+  onMapClick
+}: {
+  onMapClick: (latlng: latlongInterface) => void;
+}) => {
+  useMapEvents({
+    click: (e) => onMapClick({ lat: e.latlng.lat, lng: e.latlng.lng })
+  });
+  return null;
+};
+
+const SearchControl = ({
+  onLocationSelect,
+  origin
+}: {
+  onLocationSelect: (location: latlongInterface) => void;
+  origin: string;
+}) => {
+  const map = useMap();
+
+  useEffect(() => {
+    const providerParams: Record<string, string | number> = {
+      key: import.meta.env.VITE_LOCATIONIQ_API_KEY,
+      limit: 5,
+      addressdetails: 1
+    };
+
+    if (origin) {
+      providerParams.countrycodes = origin.toLowerCase();
+    }
+
+    const provider = new LocationIQProvider({ params: providerParams });
+
+    const searchControl = GeoSearchControl({
+      provider,
+      style: "bar",
+      showMarker: false,
+      maxSuggestions: 5,
+      autoComplete: true,
+      autoCompleteDelay: 300,
+      autoClose: true,
+      retainZoomLevel: true
+    });
+
+    map.addControl(searchControl);
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handleLocationSelect = (event: any) => {
+      onLocationSelect({ lat: event.location.y, lng: event.location.x });
+    };
+
+    map.on("geosearch/showlocation", handleLocationSelect);
+
+    return () => {
+      map.off("geosearch/showlocation", handleLocationSelect);
+      map.removeControl(searchControl);
+    };
+  }, [map, onLocationSelect, origin]);
+
+  return null;
+};
 
 const ChangeMapGeolocation = NiceModal.create(
   ({
@@ -30,28 +103,10 @@ const ChangeMapGeolocation = NiceModal.create(
     const { notifyError, notifyWarning } = useNotification();
     const [addressLocation, setAddressLocation] =
       useState<latlongInterface>(coordinates);
-    const [currentCenter, setCurrentCenter] =
-      useState<latlongInterface>(coordinates);
+    const [center, setCenter] = useState<latlongInterface>(coordinates);
     const [currentLocation, setCurrentLocation] = useState<latlongInterface>();
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
-
-    const getCurrentLocation = (
-      onSuccess: (position: GeolocationPosition) => void,
-      onError: () => void
-    ) => {
-      if (!navigator.geolocation) {
-        notifyWarning(
-          t(
-            "errors.geolocationNotSupported",
-            "Geolocation is not supported by your browser"
-          )
-        );
-        onError();
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(onSuccess, onError);
-    };
 
     const handleUpdateGeoLocation = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
@@ -61,12 +116,8 @@ const ChangeMapGeolocation = NiceModal.create(
           await updateDataById(
             "maps",
             mapId,
-            {
-              coordinates: JSON.stringify(addressLocation)
-            },
-            {
-              requestKey: `update-map-coordinates-${mapId}`
-            }
+            { coordinates: JSON.stringify(addressLocation) },
+            { requestKey: `update-map-coordinates-${mapId}` }
           );
         }
         modal.resolve(addressLocation);
@@ -78,32 +129,24 @@ const ChangeMapGeolocation = NiceModal.create(
       }
     };
 
-    const handlePlaceSelect = (place: google.maps.places.Place | null) => {
-      if (place?.location) {
-        const lat = place.location.lat();
-        const lng = place.location.lng();
-        const newLocation = { lat, lng };
-        setAddressLocation(newLocation);
-        setCurrentCenter(newLocation);
-      }
-    };
-
-    const onMapClick = (event: MapMouseEvent) => {
-      const eventDetails = event.detail;
-      setAddressLocation({
-        lat: eventDetails.latLng?.lat as number,
-        lng: eventDetails.latLng?.lng as number
-      });
-    };
-
     useEffect(() => {
-      getCurrentLocation(
-        (position) => {
+      if (!navigator.geolocation) {
+        notifyWarning(
+          t(
+            "errors.geolocationNotSupported",
+            "Geolocation is not supported by your browser"
+          )
+        );
+        modal.hide();
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (pos) =>
           setCurrentLocation({
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          });
-        },
+            lat: pos.coords.latitude,
+            lng: pos.coords.longitude
+          }),
         () => {
           notifyWarning(
             t(
@@ -114,7 +157,7 @@ const ChangeMapGeolocation = NiceModal.create(
           modal.hide();
         }
       );
-    }, []);
+    }, [modal, notifyWarning, t]);
 
     return (
       <Modal
@@ -137,38 +180,59 @@ const ChangeMapGeolocation = NiceModal.create(
               height: window.innerHeight < 700 ? "75dvh" : "80dvh"
             }}
           >
-            <Map
-              mapId="change-address-geolocation"
-              clickableIcons={false}
-              center={currentCenter}
-              onCenterChanged={(center) =>
-                setCurrentCenter(center.detail.center)
-              }
-              defaultZoom={16}
-              onClick={onMapClick}
-              fullscreenControl={false}
-              streetViewControl={false}
-              gestureHandling="greedy"
+            <MapContainer
+              center={[coordinates.lat, coordinates.lng]}
+              zoom={16}
+              style={{ height: "100%", width: "100%" }}
+              zoomControl
+              scrollWheelZoom
+              attributionControl={false}
             >
+              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+              <SearchControl
+                onLocationSelect={(location) => {
+                  setAddressLocation(location);
+                  setCenter(location);
+                }}
+                origin={origin}
+              />
+              <MapController center={center} />
+              <MapClickHandler onMapClick={setAddressLocation} />
               {currentLocation && (
-                <AdvancedMarker position={currentLocation} draggable={false}>
-                  <CurrentLocationMarker />
-                </AdvancedMarker>
+                <>
+                  <Marker
+                    position={[currentLocation.lat, currentLocation.lng]}
+                    icon={currentLocationIcon}
+                  />
+                  <CustomControl position="topright">
+                    <MapCurrentTarget
+                      onClick={() => {
+                        setCenter({ ...currentLocation });
+                      }}
+                    />
+                  </CustomControl>
+                </>
               )}
               {addressLocation && (
-                <ControlPanel
-                  lat={addressLocation.lat}
-                  lng={addressLocation.lng}
-                  name={name}
+                <Marker
+                  position={[addressLocation.lat, addressLocation.lng]}
+                  icon={addressMarkerIcon}
                 />
               )}
-              <GmapAutocomplete
-                origin={origin}
-                onPlaceSelect={handlePlaceSelect}
-              />
-              <MapCurrentTarget onClick={() => setCurrentCenter(coordinates)} />
-              {addressLocation && <AdvancedMarker position={addressLocation} />}
-            </Map>
+              {addressLocation && name && (
+                <CustomControl position="bottomleft">
+                  <Card className="map-control-panel">
+                    <Card.Body className="d-flex align-items-center">
+                      <i
+                        className="bi bi-geo-alt-fill text-primary"
+                        style={{ fontSize: "1.1rem" }}
+                      ></i>
+                      <span className="map-control-panel-name">{name}</span>
+                    </Card.Body>
+                  </Card>
+                </CustomControl>
+              )}
+            </MapContainer>
           </Modal.Body>
           <Modal.Footer className="justify-content-around">
             <GenericButton
