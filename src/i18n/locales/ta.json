@@ -248,8 +248,6 @@
     "messagesOn": "{{name}} இல் உள்ள செய்திகள்"
   },
   "navigation": {
-    "map": "வரைபடம்",
-    "list": "பட்டியல்",
     "help": "உதவி",
     "legend": "விளக்கம்",
     "listView": "பட்டியல் காட்சி",
@@ -257,10 +255,8 @@
     "direction": "திசை",
     "backToTop": "மேலே செல்",
     "about": "பற்றி",
-    "walkMode": "நடை முறை",
-    "driveMode": "ஓட்டுதல் முறை",
-    "transitMode": "பொதுப்போக்குவரத்து முறை",
-    "transportModes": "போக்குவரத்து முறைகள்",
+    "walkMode": "நடை",
+    "driveMode": "ஓட்டுதல்",
     "openMaps": "வரைபடங்களைத் திறக்கவும்",
     "generateLink": "விரைவு இணைப்பு"
   },
@@ -374,5 +370,8 @@
     "system": "கணினி",
     "systemDescription": "உங்கள் சாதன அமைப்புகளைப் பின்பற்றும்",
     "theme": "தீம்"
+  },
+  "location": {
+    "arrivedAtDestination": "நீங்கள் உங்கள் இலக்கை அடைந்துவிட்டீர்கள்"
   }
 }

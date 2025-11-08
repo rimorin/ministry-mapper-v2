@@ -1,27 +1,28 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Modal, Badge, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import {
-  ControlPosition,
-  Map,
-  MapControl,
-  useMap,
-  useMapsLibrary
-} from "@vis.gl/react-google-maps";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import {
   USER_ACCESS_LEVELS,
   UNSUPPORTED_BROWSER_MSG,
   DEFAULT_COORDINATES
 } from "../../utils/constants";
-import { latlongInterface } from "../../utils/interface";
+import {
+  currentLocationIcon,
+  destinationIcon
+} from "../../utils/helpers/mapicons";
+import { latlongInterface, TravelMode } from "../../utils/interface";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import useNotification from "../../hooks/useNotification";
 import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import TravelModeButtons from "../map/travelmodebtn";
+import CustomControl from "../map/customcontrol";
+import RoutingService from "../map/routingservice";
 import { callFunction } from "../../utils/pocketbase";
+import { MapController } from "../map/mapcontroller";
 
 interface QuickLinkModalProps {
   territoryId: string;
@@ -53,22 +54,20 @@ const QuickLinkModal = NiceModal.create(
     const [currentCenter, setCurrentCenter] = useState<latlongInterface>(
       DEFAULT_COORDINATES.Singapore
     );
-    const [travelMode, setTravelMode] = useState<google.maps.TravelMode>(
-      google.maps.TravelMode.WALKING
-    );
-    const [isCalculating, setIsCalculating] = useState(true);
+    const [travelMode, setTravelMode] = useState<TravelMode>(() => {
+      const saved = localStorage.getItem("preferredTravelMode");
+      return (saved as TravelMode) || "WALKING";
+    });
+    const [isRouteLoading, setIsRouteLoading] = useState(false);
 
-    const map = useMap();
-    const routesLibrary = useMapsLibrary("routes");
-    const [directionsService, setDirectionsService] =
-      useState<google.maps.DirectionsService>();
-    const [directionsRenderer, setDirectionsRenderer] =
-      useState<google.maps.DirectionsRenderer>();
+    const getCurrentPosition = () =>
+      new Promise<GeolocationPosition>((resolve, reject) =>
+        navigator.geolocation.getCurrentPosition(resolve, reject)
+      );
 
-    const getCurrentPosition = (): Promise<GeolocationPosition> => {
-      return new Promise((resolve, reject) => {
-        navigator.geolocation.getCurrentPosition(resolve, reject);
-      });
+    const handleTravelModeChange = (mode: TravelMode) => {
+      setTravelMode(mode);
+      localStorage.setItem("preferredTravelMode", mode);
     };
 
     const handleSubmitPublisher = async (e: React.FormEvent) => {
@@ -113,12 +112,10 @@ const QuickLinkModal = NiceModal.create(
         notifyWarning(UNSUPPORTED_BROWSER_MSG);
         return;
       }
-
-      const url = new URL(`map/${linkId}`, window.location.href);
       await navigator.share({
         title,
         text: body,
-        url: url.toString()
+        url: new URL(`map/${linkId}`, window.location.href).toString()
       });
     };
 
@@ -143,44 +140,6 @@ const QuickLinkModal = NiceModal.create(
         setIsSharing(false);
       }
     };
-
-    useEffect(() => {
-      if (!routesLibrary || !map || isInputMode || !mapData) return;
-      setDirectionsService(new routesLibrary.DirectionsService());
-      setDirectionsRenderer(new routesLibrary.DirectionsRenderer({ map }));
-    }, [routesLibrary, map, isInputMode, mapData]);
-
-    useEffect(() => {
-      if (!directionsService || !directionsRenderer || isInputMode || !mapData)
-        return;
-
-      const initDirections = async () => {
-        try {
-          const direction = await directionsService.route({
-            origin: mapData.origin,
-            destination: mapData.coordinates,
-            travelMode,
-            provideRouteAlternatives: false
-          });
-          directionsRenderer.setDirections(direction);
-          setIsCalculating(false);
-        } catch (error) {
-          console.error("Error calculating directions:", error);
-          setIsCalculating(false);
-        }
-      };
-
-      setIsCalculating(true);
-      initDirections();
-
-      return () => directionsRenderer.setMap(null);
-    }, [
-      directionsService,
-      directionsRenderer,
-      travelMode,
-      isInputMode,
-      mapData
-    ]);
 
     return (
       <Modal
@@ -225,93 +184,111 @@ const QuickLinkModal = NiceModal.create(
               </Modal.Title>
             </Modal.Header>
             <Form onSubmit={handleAssign}>
-              <Modal.Body
-                style={{
-                  height: window.innerHeight < 700 ? "75dvh" : "80dvh"
-                }}
-              >
+              <Modal.Body className="quicklink-modal-body-container">
                 {mapData && (
-                  <Map
-                    mapId="generated-territory-map"
-                    clickableIcons={false}
-                    center={currentCenter}
-                    onCenterChanged={(center) =>
-                      setCurrentCenter(center.detail.center)
-                    }
-                    defaultZoom={16}
-                    fullscreenControl={false}
-                    streetViewControl={false}
-                    gestureHandling="greedy"
-                    mapTypeControl={false}
-                  >
-                    <MapCurrentTarget
-                      isLocating={isCalculating}
-                      onClick={() => setCurrentCenter(mapData.coordinates)}
-                    />
-                    <MapControl position={ControlPosition.TOP_CENTER}>
-                      <div
-                        className="bg-body rounded-3 shadow-lg border p-3 mt-1"
-                        style={{ minWidth: "280px" }}
-                      >
-                        <div className="d-flex justify-content-center gap-3">
+                  <>
+                    <MapContainer
+                      center={[
+                        mapData.coordinates.lat,
+                        mapData.coordinates.lng
+                      ]}
+                      zoom={16}
+                      style={{ height: "100%", width: "100%" }}
+                      zoomControl={true}
+                      scrollWheelZoom={true}
+                      attributionControl={false}
+                    >
+                      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                      <MapController
+                        center={currentCenter}
+                        onCenterChange={setCurrentCenter}
+                      />
+                      {mapData.origin && (
+                        <>
+                          <Marker
+                            position={[mapData.origin.lat, mapData.origin.lng]}
+                            icon={currentLocationIcon}
+                          />
+                          <RoutingService
+                            start={mapData.origin}
+                            end={mapData.coordinates}
+                            travelMode={travelMode}
+                            onLoadingChange={setIsRouteLoading}
+                          />
+                          <CustomControl position="topright">
+                            <MapCurrentTarget
+                              onClick={() =>
+                                setCurrentCenter({ ...mapData.origin })
+                              }
+                            />
+                          </CustomControl>
+                        </>
+                      )}
+                      <Marker
+                        position={[
+                          mapData.coordinates.lat,
+                          mapData.coordinates.lng
+                        ]}
+                        icon={destinationIcon}
+                      />
+                      <CustomControl position="bottomleft">
+                        <TravelModeButtons
+                          travelMode={travelMode}
+                          onTravelModeChange={handleTravelModeChange}
+                          isLoading={isRouteLoading}
+                        />
+                      </CustomControl>
+                    </MapContainer>
+                    <div className="bg-body rounded-3 shadow-lg border p-3 quicklink-stats-panel">
+                      <div className="d-flex justify-content-center gap-3">
+                        <div className="text-center">
+                          <div className="fw-bold text-warning fs-5">
+                            {mapData.not_done}
+                          </div>
+                          <small className="text-body-secondary">
+                            {t("territory.notDone")}
+                          </small>
+                        </div>
+                        <div className="text-center border-start ps-4">
+                          <div className="fw-bold text-info fs-5">
+                            {mapData.not_home}
+                          </div>
+                          <small className="text-body-secondary">
+                            {t("territory.notHome")}
+                          </small>
+                        </div>
+                        <div className="text-center border-start ps-4">
+                          <div className="fw-bold text-success fs-5">
+                            {mapData.progress}%
+                          </div>
+                          <small className="text-body-secondary">
+                            {t("territory.completed")}
+                          </small>
+                        </div>
+                      </div>
+
+                      {mapData.assignees.length > 0 && (
+                        <div className="border-top pt-2 mt-2">
                           <div className="text-center">
-                            <div className="fw-bold text-warning fs-5">
-                              {mapData.not_done}
-                            </div>
-                            <small className="text-body-secondary">
-                              {t("territory.notDone")}
+                            <small className="text-body-secondary fw-medium mb-2 d-block">
+                              {t("territory.assignees")}
                             </small>
-                          </div>
-                          <div className="text-center border-start ps-4">
-                            <div className="fw-bold text-info fs-5">
-                              {mapData.not_home}
+                            <div className="d-flex flex-wrap justify-content-center gap-1">
+                              {mapData.assignees.map((assignee, index) => (
+                                <Badge
+                                  key={index}
+                                  bg="secondary"
+                                  className="px-2 py-1 quicklink-assignee-badge"
+                                >
+                                  {assignee}
+                                </Badge>
+                              ))}
                             </div>
-                            <small className="text-body-secondary">
-                              {t("territory.notHome")}
-                            </small>
-                          </div>
-                          <div className="text-center border-start ps-4">
-                            <div className="fw-bold text-success fs-5">
-                              {mapData.progress}%
-                            </div>
-                            <small className="text-body-secondary">
-                              {t("territory.completed")}
-                            </small>
                           </div>
                         </div>
-
-                        {mapData.assignees.length > 0 && (
-                          <div className="border-top pt-2 mt-2">
-                            <div className="text-center">
-                              <small className="text-body-secondary fw-medium mb-2 d-block">
-                                {t("territory.assignees")}
-                              </small>
-                              <div className="d-flex flex-wrap justify-content-center gap-1">
-                                {mapData.assignees.map((assignee, index) => (
-                                  <Badge
-                                    key={index}
-                                    bg="secondary"
-                                    className="px-2 py-1"
-                                    style={{ fontSize: "0.875rem" }}
-                                  >
-                                    {assignee}
-                                  </Badge>
-                                ))}
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </div>
-                    </MapControl>
-                    <MapControl
-                      position={ControlPosition.INLINE_START_BLOCK_END}
-                    >
-                      <TravelModeButtons
-                        travelMode={travelMode}
-                        onTravelModeChange={setTravelMode}
-                      />
-                    </MapControl>
-                  </Map>
+                      )}
+                    </div>
+                  </>
                 )}
               </Modal.Body>
               {mapData && (
@@ -319,7 +296,7 @@ const QuickLinkModal = NiceModal.create(
                   handleClick={() => modal.hide()}
                   submitLabel={t("generatedMap.share")}
                   isSaving={isSharing}
-                  disableSubmitBtn={isCalculating}
+                  disableSubmitBtn={false}
                   requiredAcLForSave={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
                 />
               )}

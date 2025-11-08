@@ -277,8 +277,6 @@
     "messagesOn": "Messages on {{name}}"
   },
   "navigation": {
-    "map": "Map",
-    "list": "List",
     "help": "Help",
     "legend": "Legend",
     "listView": "List View",
@@ -286,10 +284,8 @@
     "direction": "Direction",
     "backToTop": "Back to top",
     "about": "About",
-    "walkMode": "Walk mode",
-    "driveMode": "Drive mode",
-    "transitMode": "Transit mode",
-    "transportModes": "Transport modes",
+    "walkMode": "Walk",
+    "driveMode": "Drive",
     "openMaps": "Open Maps",
     "generateLink": "Quick Link"
   },
@@ -374,5 +370,8 @@
     "system": "System",
     "systemDescription": "Follows your device settings",
     "theme": "Theme"
+  },
+  "location": {
+    "arrivedAtDestination": "You've reached your destination"
   }
 }

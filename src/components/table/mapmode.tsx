@@ -1,10 +1,13 @@
 import { latlongInterface, territorySingleProps } from "../../utils/interface";
 import { DEFAULT_AGGREGATES, DEFAULT_COORDINATES } from "../../utils/constants";
-import { AdvancedMarker, Map } from "@vis.gl/react-google-maps";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { divIcon } from "leaflet";
 import { useEffect, useState } from "react";
-import HouseStatus from "./house";
+import { currentLocationIcon } from "../../utils/helpers/mapicons";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
-import CurrentLocationMarker from "../statics/currentlocator";
+import { MapController } from "../map/mapcontroller";
+import CustomControl from "../map/customcontrol";
+
 const TerritoryMapView = ({
   houses,
   policy,
@@ -12,81 +15,93 @@ const TerritoryMapView = ({
   handleHouseUpdate
 }: territorySingleProps) => {
   const mapCoordinates = addressDetails?.coordinates;
-  const mapId = addressDetails?.id;
   const aggregates = addressDetails?.aggregates;
   const [currentLocation, setCurrentLocation] = useState<latlongInterface>();
-
   const [center, setCenter] = useState(
     mapCoordinates || DEFAULT_COORDINATES.Singapore
   );
 
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition((position) => {
-        setCurrentLocation({
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        });
+    navigator.geolocation?.getCurrentPosition((position) => {
+      setCurrentLocation({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude
       });
-    }
+    });
   }, []);
 
-  const houseMarkers = () => {
-    return houses?.units.map((element, index) => {
+  const houseMarkers = () =>
+    houses?.units.map((element, index) => {
       if (!element.coordinates?.lat || !element.coordinates?.lng) return null;
 
       const houseType = element.type?.map((type) => type.code).join(", ") || "";
+      const className =
+        policy?.getUnitColor(
+          element,
+          aggregates.value || DEFAULT_AGGREGATES.value
+        ) || "";
+
+      // Use data attributes to pass status info to CSS
+      // CSS renders status icons (✅, ✖️, 🚫, nhcount) via ::after pseudo-elements
+      // This avoids string concatenation and conditional logic in JS
+      const houseIcon = divIcon({
+        html: `<div data-id="${element.id}" data-floor="${element.floor}" data-status="${element.status}" data-nhcount="${element.nhcount}" class="map-marker ${className}">
+          <div class="map-marker-label">${houseType}</div>
+        </div>`,
+        className: "",
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
+      });
 
       return (
-        <AdvancedMarker
+        <Marker
           key={`housemark-${element.id}-${index}`}
-          position={element.coordinates}
-          draggable={false}
-          onClick={handleHouseUpdate}
-        >
-          <div
-            data-id={element.id}
-            data-floor={element.floor}
-            className={`map-marker ${policy?.getUnitColor(
-              element,
-              aggregates.value || DEFAULT_AGGREGATES.value
-            )}`}
-          >
-            <div className="map-marker-label">{houseType}</div>
-            <HouseStatus
-              type={element.type}
-              note={element.note}
-              status={element.status}
-              nhcount={element.nhcount}
-              defaultOption={policy?.defaultType}
-            />
-          </div>
-        </AdvancedMarker>
+          position={[element.coordinates.lat, element.coordinates.lng]}
+          icon={houseIcon}
+          eventHandlers={{
+            click: (e) => {
+              const markerElement = e.sourceTarget.getElement();
+              const targetElement =
+                markerElement?.querySelector("[data-id]") || markerElement;
+              handleHouseUpdate({
+                ...e,
+                currentTarget: targetElement
+              } as unknown as React.MouseEvent<HTMLElement>);
+            }
+          }}
+        />
       );
     });
-  };
 
   return (
     <div className={policy.isFromAdmin() ? "map-body-admin" : "gmap-body"}>
-      <Map
-        mapId={`map-houses-${mapId}`}
-        center={center}
-        defaultCenter={mapCoordinates}
-        defaultZoom={16}
-        fullscreenControl={false}
-        streetViewControl={false}
-        clickableIcons={false}
-        gestureHandling="greedy"
-        onCenterChanged={(center) => setCenter(center.detail.center)}
+      <MapContainer
+        center={[mapCoordinates.lat, mapCoordinates.lng]}
+        zoom={16}
+        style={{ height: "100%", width: "100%" }}
+        zoomControl={true}
+        scrollWheelZoom={true}
+        attributionControl={false}
       >
-        <MapCurrentTarget onClick={() => setCenter(mapCoordinates)} />
+        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <MapController center={center} onCenterChange={setCenter} />
         {currentLocation && (
-          <AdvancedMarker position={currentLocation} draggable={false}>
-            <CurrentLocationMarker />
-          </AdvancedMarker>
+          <>
+            <CustomControl position="topright">
+              <MapCurrentTarget
+                onClick={() => {
+                  setCenter({ ...currentLocation });
+                }}
+              />
+            </CustomControl>
+            <Marker
+              position={[currentLocation.lat, currentLocation.lng]}
+              icon={currentLocationIcon}
+            />
+          </>
         )}
         {houseMarkers()}
-      </Map>
+      </MapContainer>
     </div>
   );
 };

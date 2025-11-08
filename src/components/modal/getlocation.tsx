@@ -2,50 +2,53 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useState, useEffect } from "react";
 import { Image, Modal } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { WIKI_CATEGORIES } from "../../utils/constants";
-import { getAssetUrl } from "../../utils/helpers/assetpath";
+import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import CustomControl from "../map/customcontrol";
+import {
+  WIKI_CATEGORIES,
+  DESTINATION_PROXIMITY_THRESHOLD_METERS
+} from "../../utils/constants";
+import {
+  currentLocationIcon,
+  destinationIcon
+} from "../../utils/helpers/mapicons";
 import HelpButton from "../navigation/help";
 import {
   GetMapGeolocationModalProps,
-  latlongInterface
+  latlongInterface,
+  TravelMode
 } from "../../utils/interface";
-import {
-  ControlPosition,
-  Map,
-  MapControl,
-  useMap,
-  useMapsLibrary
-} from "@vis.gl/react-google-maps";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
-import getDirection from "../../utils/helpers/directiongenerator";
 import TravelModeButtons from "../map/travelmodebtn";
 import useNotification from "../../hooks/useNotification";
+import RoutingService from "../map/routingservice";
+import { MapController } from "../map/mapcontroller";
+import { calculateDistance } from "../../utils/helpers/calculatedistance";
+import getDirection from "../../utils/helpers/directiongenerator";
+import { getAssetUrl } from "../../utils/helpers/assetpath";
 
 const GetMapGeolocation = NiceModal.create(
-  ({ coordinates, origin, name }: GetMapGeolocationModalProps) => {
+  ({ coordinates, name }: GetMapGeolocationModalProps) => {
     const { t } = useTranslation();
     const { notifyWarning } = useNotification();
-    const [currentCenter, setCurrentCenter] =
-      useState<latlongInterface>(coordinates);
+    const [centerOverride, setCenterOverride] =
+      useState<latlongInterface | null>(null);
     const [currentLocation, setCurrentLocation] = useState<latlongInterface>();
-    const [travelMode, setTravelMode] = useState<google.maps.TravelMode>(
-      google.maps.TravelMode.WALKING
-    );
-    const [isCalculating, setIsCalculating] = useState(true);
+    const [travelMode, setTravelMode] = useState<TravelMode>(() => {
+      const saved = localStorage.getItem("preferredTravelMode");
+      return (saved as TravelMode) || "WALKING";
+    });
+    const [isRouteLoading, setIsRouteLoading] = useState(false);
+    const [distanceToDestination, setDistanceToDestination] = useState<
+      number | null
+    >(null);
     const modal = useModal();
 
-    const map = useMap();
+    const isWithinProximity =
+      distanceToDestination !== null &&
+      distanceToDestination <= DESTINATION_PROXIMITY_THRESHOLD_METERS;
 
-    const routesLibrary = useMapsLibrary("routes");
-    const [directionsService, setDirectionsService] =
-      useState<google.maps.DirectionsService>();
-    const [directionsRenderer, setDirectionsRenderer] =
-      useState<google.maps.DirectionsRenderer>();
-
-    const getCurrentLocation = (
-      onSuccess: (position: GeolocationPosition) => void,
-      onError: () => void
-    ) => {
+    useEffect(() => {
       if (!navigator.geolocation) {
         notifyWarning(
           t(
@@ -53,54 +56,28 @@ const GetMapGeolocation = NiceModal.create(
             "Geolocation is not supported by your browser"
           )
         );
-        onError();
         return;
       }
-      navigator.geolocation.getCurrentPosition(onSuccess, onError);
-    };
 
-    useEffect(() => {
-      if (!routesLibrary || !map) return;
-      setDirectionsService(new routesLibrary.DirectionsService());
-      setDirectionsRenderer(
-        new routesLibrary.DirectionsRenderer({
-          map
-        })
-      );
-    }, [routesLibrary, map, travelMode]);
-
-    useEffect(() => {
-      if (!directionsService || !directionsRenderer || !currentLocation) return;
-
-      const initDirections = async () => {
-        try {
-          const direction = await directionsService.route({
-            origin: currentLocation,
-            destination: coordinates,
-            travelMode: travelMode,
-            provideRouteAlternatives: false,
-            region: origin
-          });
-          directionsRenderer.setDirections(direction);
-          setIsCalculating(false);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-
-      setIsCalculating(true);
-      initDirections();
-
-      return () => directionsRenderer.setMap(null);
-    }, [directionsService, directionsRenderer, travelMode, currentLocation]);
-
-    useEffect(() => {
-      getCurrentLocation(
+      navigator.geolocation.getCurrentPosition(
         (position) => {
-          setCurrentLocation({
+          const userLocation = {
             lat: position.coords.latitude,
             lng: position.coords.longitude
-          });
+          };
+          setCurrentLocation(userLocation);
+
+          const distance = calculateDistance(
+            userLocation.lat,
+            userLocation.lng,
+            coordinates.lat,
+            coordinates.lng
+          );
+          setDistanceToDestination(distance);
+
+          if (distance > DESTINATION_PROXIMITY_THRESHOLD_METERS) {
+            setIsRouteLoading(true);
+          }
         },
         () => {
           notifyWarning(
@@ -109,10 +86,14 @@ const GetMapGeolocation = NiceModal.create(
               "Unable to get your current location. Please check your browser settings."
             )
           );
-          modal.hide();
         }
       );
     }, []);
+
+    const handleTravelModeChange = (mode: TravelMode) => {
+      setTravelMode(mode);
+      localStorage.setItem("preferredTravelMode", mode);
+    };
 
     return (
       <Modal {...bootstrapDialog(modal)} fullscreen>
@@ -122,48 +103,79 @@ const GetMapGeolocation = NiceModal.create(
           </Modal.Title>
           <HelpButton link={WIKI_CATEGORIES.CHANGE_ADDRESS_NAME} />
         </Modal.Header>
-        <Modal.Body
-          style={{
-            height: window.innerHeight < 700 ? "75dvh" : "80dvh"
-          }}
-        >
-          <Map
-            mapId="change-address-geolocation"
-            clickableIcons={false}
-            center={currentCenter}
-            onCenterChanged={(center) => setCurrentCenter(center.detail.center)}
-            defaultZoom={16}
-            fullscreenControl={false}
-            streetViewControl={false}
-            gestureHandling="greedy"
+        <Modal.Body className="geolocation-modal-body">
+          <MapContainer
+            center={[coordinates.lat, coordinates.lng]}
+            zoom={16}
+            className="map-container"
+            zoomControl={true}
+            scrollWheelZoom={true}
+            attributionControl={false}
           >
-            <MapControl position={ControlPosition.INLINE_END_BLOCK_END}>
-              <Image
-                src={getAssetUrl("gmaps.svg")}
-                alt={t("navigation.openMaps")}
-                width={24}
-                height={24}
-                style={{
-                  cursor: "pointer",
-                  marginRight: "20px",
-                  marginTop: "15px"
-                }}
-                onClick={() => {
-                  window.open(getDirection(coordinates), "_blank");
-                }}
-              />
-            </MapControl>
-            <MapCurrentTarget
-              isLocating={isCalculating}
-              onClick={() => setCurrentCenter(coordinates)}
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <MapController center={centerOverride} />
+            {currentLocation && (
+              <>
+                <Marker
+                  position={[currentLocation.lat, currentLocation.lng]}
+                  icon={currentLocationIcon}
+                />
+                {!isWithinProximity && (
+                  <RoutingService
+                    start={currentLocation}
+                    end={coordinates}
+                    travelMode={travelMode}
+                    onLoadingChange={setIsRouteLoading}
+                  />
+                )}
+              </>
+            )}
+            <Marker
+              position={[coordinates.lat, coordinates.lng]}
+              icon={destinationIcon}
             />
-            <MapControl position={ControlPosition.INLINE_START_BLOCK_END}>
-              <TravelModeButtons
-                travelMode={travelMode}
-                onTravelModeChange={setTravelMode}
-              />
-            </MapControl>
-          </Map>
+            {currentLocation && (
+              <CustomControl position="topright">
+                <MapCurrentTarget
+                  onClick={() => setCenterOverride({ ...currentLocation })}
+                />
+              </CustomControl>
+            )}
+            <CustomControl position="topright">
+              <div className="map-control-button">
+                <Image
+                  src={getAssetUrl("gmaps.svg")}
+                  alt={t("navigation.openMaps")}
+                  width={24}
+                  height={24}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    window.open(getDirection(coordinates), "_blank");
+                  }}
+                />
+              </div>
+            </CustomControl>
+            {isWithinProximity && (
+              <CustomControl position="bottomleft">
+                <div className="alert alert-success arrival-notification">
+                  <i className="bi bi-check-circle-fill me-2"></i>
+                  {t(
+                    "location.arrivedAtDestination",
+                    "You've reached your destination"
+                  )}
+                </div>
+              </CustomControl>
+            )}
+            {!isWithinProximity && (
+              <CustomControl position="bottomleft">
+                <TravelModeButtons
+                  travelMode={travelMode}
+                  onTravelModeChange={handleTravelModeChange}
+                  isLoading={isRouteLoading}
+                />
+              </CustomControl>
+            )}
+          </MapContainer>
         </Modal.Body>
       </Modal>
     );

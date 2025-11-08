@@ -163,7 +163,7 @@
 .virtual-map-container .map-content-body .navbar {
   overflow: visible;
   position: relative;
-  z-index: 10;
+  z-index: 1060;
 }
 
 .virtual-map-container .map-content-body .table-responsive {

@@ -277,8 +277,6 @@
     "messagesOn": "Mesej pada {{name}}"
   },
   "navigation": {
-    "map": "Peta",
-    "list": "Senarai",
     "help": "Bantuan",
     "legend": "Petunjuk",
     "listView": "Paparan Senarai",
@@ -286,10 +284,8 @@
     "direction": "Arah",
     "backToTop": "Kembali ke atas",
     "about": "Tentang",
-    "walkMode": "Mod jalan kaki",
-    "driveMode": "Mod memandu",
-    "transitMode": "Mod transit",
-    "transportModes": "Mod pengangkutan",
+    "walkMode": "Jalan kaki",
+    "driveMode": "Memandu",
     "openMaps": "Buka Peta",
     "generateLink": "Pautan Pantas"
   },
@@ -374,5 +370,8 @@
     "system": "Sistem",
     "systemDescription": "Mengikut tetapan peranti anda",
     "theme": "Tema"
+  },
+  "location": {
+    "arrivedAtDestination": "Anda telah sampai ke destinasi"
   }
 }

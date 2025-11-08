@@ -98,7 +98,9 @@
   --mm-overlay-white-30: rgba(255, 255, 255, 0.3);
   --mm-overlay-white-40: rgba(255, 255, 255, 0.4);
   --mm-overlay-white-50: rgba(255, 255, 255, 0.5);
+  --mm-overlay-white-60: rgba(255, 255, 255, 0.6);
   --mm-overlay-white-70: rgba(255, 255, 255, 0.7);
+  --mm-overlay-white-80: rgba(255, 255, 255, 0.8);
   --mm-overlay-white-95: rgba(255, 255, 255, 0.95);
 
   /* Black Overlays */
