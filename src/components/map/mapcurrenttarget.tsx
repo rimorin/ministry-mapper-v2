@@ -1,24 +1,18 @@
-import { MapControl, ControlPosition } from "@vis.gl/react-google-maps";
 import { Image } from "react-bootstrap";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 import { MapControlProps } from "../../utils/interface";
 
-export const MapCurrentTarget: React.FC<MapControlProps> = ({
-  onClick,
-  isLocating = false
-}) => {
-  return (
-    <MapControl position={ControlPosition.INLINE_END_BLOCK_END}>
+export const MapCurrentTarget: React.FC<MapControlProps> = ({ onClick }) => (
+  <div className="map-current-target-container">
+    <div className="map-control-button">
       <Image
         src={getAssetUrl("target.svg")}
         alt="Current target"
-        style={{
-          cursor: "pointer",
-          marginRight: "20px",
-          animation: isLocating ? "spinLocator 2s linear infinite" : ""
-        }}
+        width={24}
+        height={24}
+        style={{ cursor: "pointer" }}
         onClick={onClick}
       />
-    </MapControl>
-  );
-};
+    </div>
+  </div>
+);

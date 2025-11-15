@@ -4,11 +4,11 @@ import "../css/common.css";
 import "../css/toast.css";
 import "../css/darkmode.css";
 import "react-calendar/dist/Calendar.css";
+import "leaflet/dist/leaflet.css";
 import { FC, ReactNode } from "react";
 import MaintenanceMiddleware from "../components/middlewares/maintenance";
 import MainMiddleware from "../components/middlewares/main";
 import StateMiddleware from "../components/middlewares/context";
-import MapsMiddleware from "../components/middlewares/googlemap";
 import ThemeMiddleware from "../components/middlewares/theme";
 import { Provider as NiceModelMiddleware } from "@ebay/nice-modal-react";
 import Router from "./router";
@@ -26,11 +26,9 @@ const CombinedMiddleware: FC<CombinedMiddlewareProps> = ({ children }) => (
       <ThemeMiddleware>
         <ToastProvider>
           <MaintenanceMiddleware>
-            <MapsMiddleware>
-              <NiceModelMiddleware>
-                <StateMiddleware>{children}</StateMiddleware>
-              </NiceModelMiddleware>
-            </MapsMiddleware>
+            <NiceModelMiddleware>
+              <StateMiddleware>{children}</StateMiddleware>
+            </NiceModelMiddleware>
           </MaintenanceMiddleware>
         </ToastProvider>
       </ThemeMiddleware>

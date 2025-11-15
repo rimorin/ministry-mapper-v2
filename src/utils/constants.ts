@@ -1,6 +1,8 @@
 import { RuleNames } from "react-password-checklist";
 import { getAssetUrl } from "./helpers/assetpath";
 
+const DESTINATION_PROXIMITY_THRESHOLD_METERS = 50;
+
 const STATUS_CODES = {
   DEFAULT: "not_done",
   DONE: "done",
@@ -296,5 +298,6 @@ export {
   MESSAGE_TYPES,
   PB_SECURITY_HEADER_KEY,
   PB_FIELDS,
-  SPEED_DIAL
+  SPEED_DIAL,
+  DESTINATION_PROXIMITY_THRESHOLD_METERS
 };

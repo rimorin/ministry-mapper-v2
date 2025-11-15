@@ -357,16 +357,17 @@ const MapListing: React.FC<MapListingProps> = ({
     event: React.MouseEvent<HTMLElement, globalThis.MouseEvent>,
     dropdownId: string
   ) => {
-    const clickPositionY = event.clientY;
+    const button = event.currentTarget;
+    const buttonRect = button.getBoundingClientRect();
     const dropdownHeight = 350; // Estimated dropdown menu height with some buffer
-    const windowInnerHeight = window.innerHeight;
-    const headerOffset = 60; // Account for any sticky headers or navbars
 
-    let dropdownDirection: DropDirection = "down";
-    // Calculate if there's enough space below for the dropdown
-    if (windowInnerHeight - clickPositionY - headerOffset < dropdownHeight) {
-      dropdownDirection = "up";
-    }
+    const spaceBelow = window.innerHeight - buttonRect.bottom;
+    const spaceAbove = buttonRect.top;
+
+    // Drop up if not enough space below AND there's more space above
+    const dropdownDirection: DropDirection =
+      spaceBelow < dropdownHeight && spaceAbove > spaceBelow ? "up" : "down";
+
     setDropDirections((prev) => ({
       ...prev,
       [dropdownId]: dropdownDirection

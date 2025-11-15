@@ -474,7 +474,6 @@ function Admin({ user }: adminProps) {
   }, []);
 
   useEffect(() => {
-    console.log("Congregation code changed:", congregationCode);
     if (!congregationCode) return;
     setUserAccessLevel(congregationAccess.current[congregationCode]);
 

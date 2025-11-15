@@ -12,22 +12,24 @@ export default defineConfig(() => {
         output: {
           manualChunks(id) {
             // Large vendors get their own chunks
-            if (id.includes("node_modules/@sentry")) return "vendor-sentry";
-            if (
-              id.includes("node_modules/react-bootstrap") ||
-              id.includes("node_modules/bootstrap")
-            )
+            if (id.includes("sentry")) return "vendor-sentry";
+            if (id.includes("react-bootstrap") || id.includes("bootstrap"))
               return "vendor-bootstrap";
             if (
-              id.includes("node_modules/react-select") ||
-              id.includes("node_modules/@dnd-kit") ||
-              id.includes("node_modules/react-calendar") ||
-              id.includes("node_modules/react-countdown") ||
-              id.includes("node_modules/react-password-checklist") ||
-              id.includes("node_modules/react-countdown") ||
-              id.includes("node_modules/ebay/nice-modal-react")
+              id.includes("react-select") ||
+              id.includes("@dnd-kit") ||
+              id.includes("react-calendar") ||
+              id.includes("date-utils") ||
+              id.includes("react-countdown") ||
+              id.includes("react-password-checklist") ||
+              id.includes("react-countdown") ||
+              id.includes("nice-modal-react")
             )
               return "vendor-ui";
+
+            if (id.includes("leaflet")) {
+              return "vendor-mapping";
+            }
 
             // Everything else from node_modules
             if (id.includes("node_modules")) {
