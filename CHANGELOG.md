@@ -1,3 +1,15 @@
+# [1.15.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.14.0...v1.15.0) (2025-11-17)
+
+
+### Bug Fixes
+
+* improve address dropdown direction logic ([cecb815](https://github.com/rimorin/ministry-mapper-v2/commit/cecb815e6fb31665f28d59620869a2aa3683b253))
+
+
+### Features
+
+* migration to leaflet mapping library ([89adff3](https://github.com/rimorin/ministry-mapper-v2/commit/89adff32522aa6e8fd09593cfd4bed92b2ace16f))
+
 # [1.14.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.13.0...v1.14.0) (2025-10-31)
 
 
