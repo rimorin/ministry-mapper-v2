@@ -128,7 +128,8 @@ const UpdateMapMessages = NiceModal.create(
             message: feedback,
             read: isAdmin,
             created_by: policy.userName,
-            type: messageType
+            type: messageType,
+            congregation: policy.congregation
           },
           {
             requestKey: `create-msg-${mapId}`

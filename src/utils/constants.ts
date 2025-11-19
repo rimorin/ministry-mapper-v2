@@ -177,6 +177,7 @@ const CLOUD_FUNCTIONS_CALLS = {
 const PB_SECURITY_HEADER_KEY = "link-id";
 
 const PB_FIELDS = {
+  CONGREGATION: "id, name, code, max_tries, origin, expiry_hours",
   CONGREGATION_OPTIONS:
     "id, code, description, is_countable, is_default, sequence",
   MESSAGES: "id, message, created_by, read, pinned, created, type",

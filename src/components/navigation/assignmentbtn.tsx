@@ -174,7 +174,8 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
           user: userId,
           type: linktype,
           expiry_date: addHours(hours),
-          publisher: publisherName
+          publisher: publisherName,
+          congregation: policy.congregation
         },
         {
           requestKey: `create-assignment-${mapId}-${userId}`
