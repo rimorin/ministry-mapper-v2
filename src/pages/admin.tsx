@@ -332,9 +332,10 @@ function Admin({ user }: adminProps) {
     setCongregationCode(initialSelectedCode);
   };
 
-  const fetchCongregationData = async (code: string) => {
-    const congDetails = await getDataById("congregations", code, {
-      requestKey: `congregation-${code}`
+  const fetchCongregationData = async (id: string) => {
+    const congDetails = await getDataById("congregations", id, {
+      requestKey: `congregation-${id}`,
+      fields: PB_FIELDS.CONGREGATION
     });
 
     if (!congDetails) {
@@ -343,8 +344,8 @@ function Admin({ user }: adminProps) {
     }
 
     const congOptions = await getList("options", {
-      filter: `congregation="${code}"`,
-      requestKey: `congregation-options-${code}`,
+      filter: `congregation="${id}"`,
+      requestKey: `congregation-options-${id}`,
       fields: PB_FIELDS.CONGREGATION_OPTIONS,
       sort: "sequence"
     });
@@ -369,14 +370,15 @@ function Admin({ user }: adminProps) {
         }),
         congDetails.max_tries || DEFAULT_CONGREGATION_MAX_TRIES,
         congDetails.origin || DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
-        congregationAccess.current[code],
-        congDetails.expiry_hours || DEFAULT_SELF_DESTRUCT_HOURS
+        congregationAccess.current[id],
+        congDetails.expiry_hours || DEFAULT_SELF_DESTRUCT_HOURS,
+        congDetails.id
       )
     );
 
     const territoryDetails = await getList("territories", {
-      filter: `congregation="${code}"`,
-      requestKey: `territories-${code}`,
+      filter: `congregation="${id}"`,
+      requestKey: `territories-${id}`,
       sort: "code",
       fields: PB_FIELDS.TERRITORIES
     });

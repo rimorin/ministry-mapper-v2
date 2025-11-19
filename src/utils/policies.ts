@@ -32,13 +32,15 @@ export class Policy {
   origin: string;
   options: Array<HHOptionProps>;
   defaultExpiryHours: number;
+  congregation: string;
   constructor(
     userName = "",
     options?: Array<HHOptionProps>,
     maxtries = DEFAULT_CONGREGATION_MAX_TRIES,
     origin = DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
     userRole = USER_ACCESS_LEVELS.CONDUCTOR.CODE,
-    defaultExpiryHours = DEFAULT_SELF_DESTRUCT_HOURS
+    defaultExpiryHours = DEFAULT_SELF_DESTRUCT_HOURS,
+    congregation = ""
   ) {
     this.userName = userName;
     this.userRole = userRole;
@@ -48,6 +50,7 @@ export class Policy {
     this.defaultExpiryHours = defaultExpiryHours;
     this.origin = origin;
     this.options = options || [];
+    this.congregation = congregation;
     options?.forEach((option) => {
       if (option.isCountable) {
         this.countableTypes.push(option.id);
