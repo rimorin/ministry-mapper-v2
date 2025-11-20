@@ -1,3 +1,10 @@
+# [1.16.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.15.0...v1.16.0) (2025-11-20)
+
+
+### Features
+
+* enhancement on endpoint rules ([b428f17](https://github.com/rimorin/ministry-mapper-v2/commit/b428f1721a5e985d451166cd0eae1ba85d7523f4))
+
 # [1.15.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.14.0...v1.15.0) (2025-11-17)
 
 
