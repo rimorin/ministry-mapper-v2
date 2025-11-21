@@ -3,6 +3,11 @@ import { createRoot } from "react-dom/client";
 import "../instrument";
 import Main from "./pages/index";
 
+// This automatically reloads when chunks fail to load after a fresh deployment
+window.addEventListener("vite:preloadError", () => {
+  window.location.reload();
+});
+
 const rootElement = document.getElementById("root");
 
 if (rootElement) {
