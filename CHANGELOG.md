@@ -1,3 +1,10 @@
+## [1.16.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.16.0...v1.16.1) (2025-11-22)
+
+
+### Bug Fixes
+
+* handle failed dynamic imports on new deployments ([d8218e4](https://github.com/rimorin/ministry-mapper-v2/commit/d8218e46b10b11406681bb0f19c27373f05bf2fc))
+
 # [1.16.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.15.0...v1.16.0) (2025-11-20)
 
 
