@@ -8,8 +8,6 @@ const MissingSetupPage: React.FC<MissingSetupPageProps> = ({ message }) => {
 
   // Map known error messages to translation keys
   const getTranslationKey = (msg: string): string => {
-    if (msg.includes("Google Maps API Key"))
-      return "errors.missingGoogleMapsApiKey";
     if (msg.includes("PocketBase URL")) return "errors.missingPocketBaseUrl";
     return "errors.missingSetup";
   };

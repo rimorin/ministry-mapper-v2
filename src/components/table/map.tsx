@@ -154,20 +154,12 @@ const MainTable = ({
     });
   };
 
-  const getIdFromEvent = (
-    event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>
-  ) => {
-    if ("domEvent" in event) {
-      // event is a GoogleMapMouseEvent
-      const domEvent = event.domEvent.target as HTMLElement;
-      return domEvent.dataset.id;
-    }
-    // event is a React.MouseEvent
+  const getIdFromEvent = (event: React.MouseEvent<HTMLElement>) => {
     return event.currentTarget.dataset.id;
   };
 
   const getUnitDetails = (
-    event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>,
+    event: React.MouseEvent<HTMLElement>,
     addresses: Map<string, unitDetails>
   ) => {
     const id = getIdFromEvent(event) || "";
@@ -252,9 +244,7 @@ const MainTable = ({
     return { floorList, maxUnitLength };
   };
 
-  const handleHouseUpdate = (
-    event: google.maps.MapMouseEvent | React.MouseEvent<HTMLElement>
-  ) => {
+  const handleHouseUpdate = (event: React.MouseEvent<HTMLElement>) => {
     handleUpdateUnitStatus(getUnitDetails(event, addresses));
   };
 

@@ -295,7 +295,6 @@
   },
   "errors": {
     "missingSetup": "Missing setup",
-    "missingGoogleMapsApiKey": "Missing Google Maps API Key",
     "missingPocketBaseUrl": "Missing PocketBase URL",
     "invalidRequest": "Invalid Request",
     "linkExpired": "This link has expired ⌛",

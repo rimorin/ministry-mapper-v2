@@ -295,7 +295,6 @@
   },
   "errors": {
     "missingSetup": "缺少设置",
-    "missingGoogleMapsApiKey": "缺少谷歌地图API密钥",
     "missingPocketBaseUrl": "缺少PocketBase URL",
     "invalidRequest": "无效请求",
     "linkExpired": "此链接已过期 ⌛",
