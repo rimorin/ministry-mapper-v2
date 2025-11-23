@@ -295,7 +295,6 @@
   },
   "errors": {
     "missingSetup": "Persediaan hilang",
-    "missingGoogleMapsApiKey": "Kunci API Google Maps hilang",
     "missingPocketBaseUrl": "URL PocketBase hilang",
     "invalidRequest": "Permintaan Tidak Sah",
     "linkExpired": "Pautan ini telah tamat tempoh ⌛",

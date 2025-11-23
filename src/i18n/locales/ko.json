@@ -295,7 +295,6 @@
   },
   "errors": {
     "missingSetup": "설정 누락",
-    "missingGoogleMapsApiKey": "Google Maps API 키 누락",
     "missingPocketBaseUrl": "PocketBase URL 누락",
     "invalidRequest": "잘못된 요청",
     "linkExpired": "이 링크는 만료되었습니다 ⌛",

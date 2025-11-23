@@ -295,7 +295,6 @@
   },
   "errors": {
     "missingSetup": "設定不足",
-    "missingGoogleMapsApiKey": "Google MapsのAPIキーがありません",
     "missingPocketBaseUrl": "PocketBase URLがありません",
     "invalidRequest": "無効なリクエスト",
     "linkExpired": "リンクの有効期限が切れました ⌛",

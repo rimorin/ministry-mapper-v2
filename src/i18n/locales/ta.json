@@ -295,7 +295,6 @@
   },
   "errors": {
     "missingSetup": "அமைப்பு காணப்படவில்லை",
-    "missingGoogleMapsApiKey": "Google Maps API திறவுகோல் காணப்படவில்லை",
     "missingPocketBaseUrl": "PocketBase URL காணப்படவில்லை",
     "invalidRequest": "தவறான கோரிக்கை",
     "linkExpired": "இந்த இணைப்பு காலாவதியாகிவிட்டது ⌛",
