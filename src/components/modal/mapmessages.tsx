@@ -23,9 +23,9 @@ import {
   createData,
   deleteDataById,
   getList,
-  setupRealtimeListener,
   updateDataById
 } from "../../utils/pocketbase";
+import useRealtimeSubscription from "../../hooks/useRealtime";
 
 const useMessages = (mapId: string, assignmentId?: string) => {
   const [messages, setMessages] = useState<Array<Message>>([]);
@@ -57,41 +57,41 @@ const useMessages = (mapId: string, assignmentId?: string) => {
   useEffect(() => {
     if (!mapId) return;
     fetchFeedbacks();
+  }, [mapId]);
 
-    const msgSubheader = {
-      filter: `map="${mapId}"`,
-      requestKey: null,
-      fields: PB_FIELDS.MESSAGES
-    } as RecordSubscribeOptions;
-
-    if (assignmentId) {
-      msgSubheader.headers = {
+  const msgSubheader = {
+    filter: `map="${mapId}"`,
+    fields: PB_FIELDS.MESSAGES,
+    ...(assignmentId && {
+      headers: {
         [PB_SECURITY_HEADER_KEY]: assignmentId as string
-      };
-    }
+      }
+    })
+  } as RecordSubscribeOptions;
 
-    setupRealtimeListener(
-      "messages",
-      (data) => {
-        const { action, record: msgData } = data;
-        setMessages((prev) => {
-          switch (action) {
-            case "update":
-              return prev.map((msg) =>
-                msg.id === msgData.id ? processRecord(msgData) : msg
-              );
-            case "delete":
-              return prev.filter((msg) => msg.id !== msgData.id);
-            case "create":
-              return [...prev, processRecord(msgData)];
-            default:
-              return prev;
-          }
-        });
-      },
-      msgSubheader
-    );
-  }, [mapId, assignmentId]);
+  useRealtimeSubscription(
+    "messages",
+    (data) => {
+      const { action, record: msgData } = data;
+      setMessages((prev) => {
+        switch (action) {
+          case "update":
+            return prev.map((msg) =>
+              msg.id === msgData.id ? processRecord(msgData) : msg
+            );
+          case "delete":
+            return prev.filter((msg) => msg.id !== msgData.id);
+          case "create":
+            return [...prev, processRecord(msgData)];
+          default:
+            return prev;
+        }
+      });
+    },
+    msgSubheader,
+    [mapId, assignmentId],
+    !!mapId
+  );
 
   useVisibilityChange(fetchFeedbacks);
 

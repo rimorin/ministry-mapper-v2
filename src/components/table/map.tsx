@@ -19,14 +19,11 @@ import useNotification from "../../hooks/useNotification";
 import MapPlaceholder from "../statics/placeholder";
 
 import useVisibilityChange from "../../hooks/useVisibilityManagement";
-import { RecordModel, RecordSubscribeOptions } from "pocketbase";
-import {
-  getList,
-  setupRealtimeListener,
-  callFunction
-} from "../../utils/pocketbase";
+import { RecordModel } from "pocketbase";
+import { getList, callFunction } from "../../utils/pocketbase";
 import { useTranslation } from "react-i18next";
 import { useModalManagement } from "../../hooks/useModalManagement";
+import useRealtimeSubscription from "../../hooks/useRealtime";
 const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
 
 const useAddresses = (
@@ -67,7 +64,6 @@ const useAddresses = (
     });
 
     const addressMap = new Map();
-
     addresses.forEach((address) => {
       addressMap.set(address.id, createUnitDetails(address));
     });
@@ -75,43 +71,42 @@ const useAddresses = (
     setAddresses(addressMap);
   };
 
+  const handleSubscription = (data: {
+    action: string;
+    record: RecordModel;
+  }) => {
+    const addressId = data.record.id;
+    const addressData = data.record;
+    const dataAction = data.action;
+    setAddresses((prev) => {
+      const newAddresses = new Map(prev);
+      if (dataAction === "update" || dataAction === "create") {
+        newAddresses.set(addressId, createUnitDetails(addressData));
+      } else if (dataAction === "delete") {
+        newAddresses.delete(addressId);
+      }
+      return newAddresses;
+    });
+  };
+
   useEffect(() => {
-    if (!mapId) return;
-    const subOptions = {
-      filter: `map="${mapId}"`,
-      requestKey: null,
-      fields: PB_FIELDS.ADDRESSES
-    } as RecordSubscribeOptions;
-
-    if (assignmentId) {
-      subOptions["headers"] = {
-        [PB_SECURITY_HEADER_KEY]: assignmentId
-      };
-    }
-
-    setupRealtimeListener(
-      "addresses",
-      (data) => {
-        const addressId = data.record.id;
-        const addressData = data.record;
-        const dataAction = data.action;
-        setAddresses((prev) => {
-          const newAddresses = new Map(prev);
-          if (dataAction === "update" || dataAction === "create") {
-            newAddresses.set(addressId, createUnitDetails(addressData));
-          } else if (dataAction === "delete") {
-            newAddresses.delete(addressId);
-          }
-
-          return newAddresses;
-        });
-      },
-      subOptions
-    );
-
     fetchAddressData();
   }, [mapId]);
 
+  useRealtimeSubscription(
+    "addresses",
+    handleSubscription,
+    {
+      filter: `map="${mapId}"`,
+      fields: PB_FIELDS.ADDRESSES,
+      ...(assignmentId && {
+        headers: {
+          [PB_SECURITY_HEADER_KEY]: assignmentId
+        }
+      })
+    },
+    [mapId, assignmentId]
+  );
   useVisibilityChange(fetchAddressData);
 
   return addresses;

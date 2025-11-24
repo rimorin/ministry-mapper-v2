@@ -3,11 +3,7 @@ import {
   territoryDetails,
   TerritoryManagementOptions
 } from "../utils/interface";
-import {
-  deleteDataById,
-  callFunction,
-  unsubscriber
-} from "../utils/pocketbase";
+import { deleteDataById, callFunction } from "../utils/pocketbase";
 import useNotification from "./useNotification";
 import useLocalStorage from "./useLocalStorage";
 
@@ -49,8 +45,6 @@ export default function useTerritoryManagement({
     if (!selectedTerritory.id) return;
     setIsProcessingTerritory(true);
     try {
-      // kill all subscriptions before deleting
-      unsubscriber(["maps", "addresses", "messages", "assignments"]);
       await deleteDataById("territories", selectedTerritory.id, {
         requestKey: `territory-del-${congregationCode}-${selectedTerritory.code}`
       });

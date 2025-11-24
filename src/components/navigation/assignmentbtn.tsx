@@ -16,11 +16,8 @@ import ComponentAuthorizer from "./authorizer";
 import addHours from "../../utils/helpers/addhours";
 import { RecordModel } from "pocketbase";
 import useVisibilityChange from "../../hooks/useVisibilityManagement";
-import {
-  getList,
-  setupRealtimeListener,
-  createData
-} from "../../utils/pocketbase";
+import { getList, createData } from "../../utils/pocketbase";
+import useRealtimeSubscription from "../../hooks/useRealtime";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import GenericButton from "./button";
 const ConfirmSlipDetails = lazy(
@@ -81,27 +78,29 @@ const useAssignments = (mapId: string) => {
   useEffect(() => {
     if (!mapId) return;
     retrieveAssignments();
-    setupRealtimeListener(
-      "assignments",
-      (data) => {
-        const { action, record } = data;
-        const isPersonal = record.type === LINK_TYPES.PERSONAL;
-
-        if (action === "delete" || action === "update" || action === "create") {
-          if (isPersonal) {
-            setPersonalLinks((prev) => updateLinks(prev, record, action));
-          } else {
-            setNormalLinks((prev) => updateLinks(prev, record, action));
-          }
-        }
-      },
-      {
-        filter: `map='${mapId}'`,
-        requestKey: null,
-        fields: PB_FIELDS.ASSIGNMENTS
-      }
-    );
   }, [mapId]);
+
+  useRealtimeSubscription(
+    "assignments",
+    (data) => {
+      const { action, record } = data;
+      const isPersonal = record.type === LINK_TYPES.PERSONAL;
+
+      if (action === "delete" || action === "update" || action === "create") {
+        if (isPersonal) {
+          setPersonalLinks((prev) => updateLinks(prev, record, action));
+        } else {
+          setNormalLinks((prev) => updateLinks(prev, record, action));
+        }
+      }
+    },
+    {
+      filter: `map='${mapId}'`,
+      fields: PB_FIELDS.ASSIGNMENTS
+    },
+    [mapId],
+    !!mapId
+  );
 
   useVisibilityChange(retrieveAssignments);
 

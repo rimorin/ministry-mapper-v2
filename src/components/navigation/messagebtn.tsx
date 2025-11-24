@@ -10,7 +10,8 @@ import { Policy } from "../../utils/policies";
 import { useTranslation } from "react-i18next";
 
 import useVisibilityChange from "../../hooks/useVisibilityManagement";
-import { getList, setupRealtimeListener } from "../../utils/pocketbase";
+import { getList } from "../../utils/pocketbase";
+import useRealtimeSubscription from "../../hooks/useRealtime";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import GenericButton from "./button";
 const UpdateMapMessages = lazy(() => import("../modal/mapmessages"));
@@ -35,24 +36,25 @@ const useUnreadMessages = (mapId: string) => {
   useEffect(() => {
     if (!mapId) return;
     fetchUnreadMsgs();
+  }, [mapId]);
 
-    setupRealtimeListener(
-      "messages",
-      (data) => {
-        const { action } = data;
-        if (action === "create") {
-          setUnreadMsgCount((prevCount) => prevCount + 1);
-        } else if (action === "update") {
-          setUnreadMsgCount((prevCount) => prevCount - 1);
-        }
-      },
-      {
-        filter: `map = "${mapId}" && type!= "${MESSAGE_TYPES.ADMIN}"`,
-        fields: "id",
-        requestKey: null
+  useRealtimeSubscription(
+    "messages",
+    (data) => {
+      const { action } = data;
+      if (action === "create") {
+        setUnreadMsgCount((prevCount) => prevCount + 1);
+      } else if (action === "update") {
+        setUnreadMsgCount((prevCount) => prevCount - 1);
       }
-    );
-  }, []);
+    },
+    {
+      filter: `map = "${mapId}" && type!= "${MESSAGE_TYPES.ADMIN}"`,
+      fields: "id"
+    },
+    [mapId],
+    !!mapId
+  );
 
   useVisibilityChange(fetchUnreadMsgs);
 

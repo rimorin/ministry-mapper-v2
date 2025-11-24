@@ -3,10 +3,8 @@ import { Marker } from "react-leaflet";
 import { divIcon } from "leaflet";
 import { addressDetails } from "../../utils/interface";
 import { LINK_TYPES } from "../../utils/constants";
-import {
-  getFirstItemOfList,
-  setupRealtimeListener
-} from "../../utils/pocketbase";
+import { getFirstItemOfList } from "../../utils/pocketbase";
+import useRealtimeSubscription from "../../hooks/useRealtime";
 
 interface AddressMarkerProps {
   addressElement: addressDetails;
@@ -28,34 +26,40 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
   const [hasAssignments, setHasAssignments] = useState(false);
   const [hasPersonal, setHasPersonal] = useState(false);
 
+  const mapId = addressElement.id;
+
+  const fetchData = async () => {
+    const [assignments, personal] = await Promise.all([
+      getFirstItemOfList(
+        "assignments",
+        `map="${mapId}" && type="${LINK_TYPES.ASSIGNMENT}"`,
+        { fields: "id", requestKey: `marker-assignments-${mapId}` }
+      ),
+      getFirstItemOfList(
+        "assignments",
+        `map="${mapId}" && type="${LINK_TYPES.PERSONAL}"`,
+        { fields: "id", requestKey: `marker-personal-${mapId}` }
+      )
+    ]);
+
+    setHasAssignments(!!assignments);
+    setHasPersonal(!!personal);
+  };
+
   useEffect(() => {
-    const mapId = addressElement.id;
-    const fetchData = async () => {
-      const [assignments, personal] = await Promise.all([
-        getFirstItemOfList(
-          "assignments",
-          `map="${mapId}" && type="${LINK_TYPES.ASSIGNMENT}"`,
-          { fields: "id", requestKey: `marker-assignments-${mapId}` }
-        ),
-        getFirstItemOfList(
-          "assignments",
-          `map="${mapId}" && type="${LINK_TYPES.PERSONAL}"`,
-          { fields: "id", requestKey: `marker-personal-${mapId}` }
-        )
-      ]);
-
-      setHasAssignments(!!assignments);
-      setHasPersonal(!!personal);
-    };
-
-    setupRealtimeListener("assignments", fetchData, {
-      filter: `map="${mapId}"`,
-      fields: "id",
-      requestKey: null
-    });
-
     fetchData();
-  }, [addressElement.id]);
+  }, [mapId]);
+
+  useRealtimeSubscription(
+    "assignments",
+    fetchData,
+    {
+      filter: `map="${mapId}"`,
+      fields: "id"
+    },
+    [mapId],
+    !!mapId
+  );
 
   const wrapperClasses = [
     isSelected && "marker-selected",
