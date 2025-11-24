@@ -1,3 +1,10 @@
+## [1.16.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.16.1...v1.16.2) (2025-11-24)
+
+
+### Bug Fixes
+
+* realtime listener unsub logic ([88e3e56](https://github.com/rimorin/ministry-mapper-v2/commit/88e3e56cb43e3769fd1997e3dda0e7009af0a545))
+
 ## [1.16.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.16.0...v1.16.1) (2025-11-22)
 
 
