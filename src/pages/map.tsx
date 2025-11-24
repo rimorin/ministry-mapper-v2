@@ -1,13 +1,7 @@
 import { useEffect, useState, lazy, use } from "react";
 import { useTranslation } from "react-i18next";
 
-import {
-  configureHeader,
-  getDataById,
-  getList,
-  setupRealtimeListener,
-  unsubscriber
-} from "../utils/pocketbase";
+import { configureHeader, getDataById, getList } from "../utils/pocketbase";
 import { Image, Nav, Navbar } from "react-bootstrap";
 import { addressDetails, latlongInterface } from "../utils/interface";
 import { Policy } from "../utils/policies";
@@ -36,6 +30,7 @@ import useVisibilityChange from "../hooks/useVisibilityManagement";
 import { LanguageContext } from "../i18n/LanguageContext";
 import LanguageSelector from "../i18n/LanguageSelector";
 import { useModalManagement } from "../hooks/useModalManagement";
+import useRealtimeSubscription from "../hooks/useRealtime";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 const UpdateMapMessages = lazy(() => import("../components/modal/mapmessages"));
 const ShowExpiry = lazy(() => import("../components/modal/slipexpiry"));
@@ -208,37 +203,7 @@ const Map = () => {
       if (!mapDetails) {
         return;
       }
-      const mapId = mapDetails.id;
-      setupRealtimeListener(
-        "maps",
-        (data) => {
-          const mapData = data.record;
-          setMapDetails((prevDetails) => {
-            if (!prevDetails) return prevDetails;
-            return {
-              ...prevDetails,
-              aggregates: {
-                display: mapData.progress + "%",
-                value: mapData.progress,
-                notDone: mapData.aggregates?.not_done,
-                notHome: mapData.aggregates?.not_home
-              },
-              location: mapData.location,
-              name: mapData.description,
-              coordinates: mapData.coordinates
-            };
-          });
-        },
-        {
-          filter: `id="${mapId}"`,
-          requestKey: null,
-          fields: PB_FIELDS.MAPS,
-          headers: {
-            [PB_SECURITY_HEADER_KEY]: linkId as string
-          }
-        },
-        mapId
-      );
+      return mapDetails.id;
     } catch (error) {
       notifyError(error, true);
     } finally {
@@ -246,14 +211,48 @@ const Map = () => {
     }
   };
 
+  const [mapId, setMapId] = useState<string | undefined>();
+
   useEffect(() => {
     if (!id) return;
-    configureHeader(id);
-    getMapData(id);
-    return () => {
-      unsubscriber(["maps", "addresses"]);
+    const init = async (linkId: string) => {
+      configureHeader(linkId);
+      const resolvedMapId = await getMapData(linkId);
+      setMapId(resolvedMapId);
     };
+    init(id);
   }, [id]);
+
+  useRealtimeSubscription(
+    "maps",
+    (data) => {
+      const mapData = data.record;
+      setMapDetails((prevDetails) => {
+        if (!prevDetails) return prevDetails;
+        return {
+          ...prevDetails,
+          aggregates: {
+            display: mapData.progress + "%",
+            value: mapData.progress,
+            notDone: mapData.aggregates?.not_done,
+            notHome: mapData.aggregates?.not_home
+          },
+          location: mapData.location,
+          name: mapData.description,
+          coordinates: mapData.coordinates
+        };
+      });
+    },
+    {
+      filter: `id="${mapId}"`,
+      fields: PB_FIELDS.MAPS,
+      headers: {
+        [PB_SECURITY_HEADER_KEY]: id as string
+      }
+    },
+    [mapId, id],
+    !!mapId && !!id
+  );
   useVisibilityChange(() => getMapData(id));
 
   if (isLoading) {

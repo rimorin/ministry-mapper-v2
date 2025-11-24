@@ -360,38 +360,13 @@ const getPaginatedList = async (
  * @param topic - The subscription topic (default "*" for all changes)
  * @throws Will throw errors except for aborted subscriptions
  */
-const setupRealtimeListener = async (
+const setupRealtimeListener = (
   collectionName: string,
   callback: (data: RecordSubscription<RecordModel>) => void,
-  options: RecordSubscribeOptions,
+  options?: RecordSubscribeOptions,
   topic = "*"
 ) => {
-  try {
-    return await pb
-      .collection(collectionName)
-      .subscribe(topic, callback, options);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } catch (error: any) {
-    if (error.isAbort) {
-      console.log("Subscription aborted:", error);
-      return;
-    }
-    throw error;
-  }
-};
-
-/**
- * Unsubscribes from all realtime subscriptions for the provided collections
- *
- * @param collections - Array of collection names to unsubscribe from
- * @returns Promise that resolves when all unsubscriptions are complete
- */
-const unsubscriber = async (collections: string[]) => {
-  if (!collections || collections.length === 0) return;
-
-  return Promise.all(
-    collections.map((collection) => pb.collection(collection).unsubscribe())
-  );
+  return pb.collection(collectionName).subscribe(topic, callback, options);
 };
 
 /**
@@ -445,7 +420,6 @@ export {
   getList,
   getPaginatedList,
   setupRealtimeListener,
-  unsubscriber,
   updateDataById,
   getFirstItemOfList,
   authenticateEmailAndPassword,

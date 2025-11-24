@@ -526,7 +526,7 @@ const MapListing: React.FC<MapListingProps> = ({
       rowHeight={getRowHeight}
       rowComponent={MapRow}
       rowProps={rowProps}
-      overscanCount={5}
+      overscanCount={3}
     />
   );
 };

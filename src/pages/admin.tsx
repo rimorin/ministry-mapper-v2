@@ -29,6 +29,7 @@ import useTerritoryManagement from "../hooks/useTerritoryManagement";
 import useMapManagement from "../hooks/useMapManagement";
 import useCongregationManagement from "../hooks/useCongManagement";
 import useUIState from "../hooks/useUIManagement";
+import useRealtimeSubscription from "../hooks/useRealtime";
 
 // Import components
 import TerritoryListing from "../components/navigation/territorylist";
@@ -52,9 +53,7 @@ import {
   getList,
   getDataById,
   getUser,
-  setupRealtimeListener,
-  requestPasswordReset,
-  unsubscriber
+  requestPasswordReset
 } from "../utils/pocketbase";
 import { LanguageContext } from "../i18n/LanguageContext";
 import { useModalManagement } from "../hooks/useModalManagement";
@@ -478,44 +477,35 @@ function Admin({ user }: adminProps) {
   useEffect(() => {
     if (!congregationCode) return;
     setUserAccessLevel(congregationAccess.current[congregationCode]);
-
     fetchCongregationData(congregationCode);
-
-    setupRealtimeListener(
-      "territories",
-      (data) => {
-        const territoryData = data.record;
-        setTerritories((prev) => {
-          const updatedTerritories = new Map(prev);
-          if (data.action === "delete") {
-            updatedTerritories.delete(territoryData.id);
-          } else {
-            updatedTerritories.set(territoryData.id, {
-              id: territoryData.id,
-              code: territoryData.code,
-              name: territoryData.description,
-              aggregates: territoryData.progress
-            });
-          }
-          return updatedTerritories;
-        });
-      },
-      {
-        filter: `congregation="${congregationCode}"`,
-        requestKey: null,
-        fields: PB_FIELDS.TERRITORIES
-      }
-    );
-    return () => {
-      unsubscriber([
-        "territories",
-        "maps",
-        "addresses",
-        "messages",
-        "assignments"
-      ]);
-    };
   }, [congregationCode]);
+
+  useRealtimeSubscription(
+    "territories",
+    (data) => {
+      const territoryData = data.record;
+      setTerritories((prev) => {
+        const updatedTerritories = new Map(prev);
+        if (data.action === "delete") {
+          updatedTerritories.delete(territoryData.id);
+        } else {
+          updatedTerritories.set(territoryData.id, {
+            id: territoryData.id,
+            code: territoryData.code,
+            name: territoryData.description,
+            aggregates: territoryData.progress
+          });
+        }
+        return updatedTerritories;
+      });
+    },
+    {
+      filter: `congregation="${congregationCode}"`,
+      fields: PB_FIELDS.TERRITORIES
+    },
+    [congregationCode],
+    !!congregationCode
+  );
 
   useEffect(() => {
     if (!selectedTerritory.id) return;
@@ -526,43 +516,41 @@ function Admin({ user }: adminProps) {
       code: selectedTerritoryData?.code,
       name: selectedTerritoryData?.name
     }));
-    setupRealtimeListener(
-      "maps",
-      (data) => {
-        const mapId = data.record.id;
-        const dataAction = data.action;
-        setSortedAddressList((prevList) => {
-          let updatedList = [] as Array<addressDetails>;
-          if (dataAction === "update") {
-            updatedList = prevList.map((map) => {
-              if (map.id === mapId) {
-                return processMapRecord(data.record);
-              }
-              return map;
-            });
-          } else if (dataAction === "create") {
-            updatedList = [...prevList, processMapRecord(data.record)];
-          } else if (dataAction === "delete") {
-            updatedList = prevList.filter((address) => address.id !== mapId);
-          }
-          updatedList.sort((a, b) => a.mapId.localeCompare(b.mapId));
-          return updatedList;
-        });
-        if (dataAction === "create") {
-          setAccordionKeys((prev) => [...prev, mapId]);
-        }
-      },
-      {
-        filter: `territory="${selectedTerritory.id}"`,
-        requestKey: null,
-        fields: PB_FIELDS.MAPS
-      }
-    );
     return () => {
-      unsubscriber(["addresses", "maps", "assignments", "messages"]);
       setSortedAddressList([]);
     };
   }, [selectedTerritory.id]);
+
+  useRealtimeSubscription(
+    "maps",
+    (data) => {
+      const mapId = data.record.id;
+      const dataAction = data.action;
+      setSortedAddressList((prevList) => {
+        let updatedList = [] as Array<addressDetails>;
+        if (dataAction === "update") {
+          updatedList = prevList.map((map) =>
+            map.id === mapId ? processMapRecord(data.record) : map
+          );
+        } else if (dataAction === "create") {
+          updatedList = [...prevList, processMapRecord(data.record)];
+        } else if (dataAction === "delete") {
+          updatedList = prevList.filter((address) => address.id !== mapId);
+        }
+        updatedList.sort((a, b) => a.mapId.localeCompare(b.mapId));
+        return updatedList;
+      });
+      if (dataAction === "create") {
+        setAccordionKeys((prev) => [...prev, mapId]);
+      }
+    },
+    {
+      filter: `territory="${selectedTerritory.id}"`,
+      fields: PB_FIELDS.MAPS
+    },
+    [selectedTerritory.id],
+    !!selectedTerritory.id
+  );
 
   useVisibilityChange(() => setupAddresses(selectedTerritory.id));
 
