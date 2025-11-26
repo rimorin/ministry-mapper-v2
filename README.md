@@ -2,8 +2,6 @@
 
 **Important Notice**: Ministry Mapper tracks residential addresses, which may be subject to data privacy laws. These laws vary significantly between countries and regions (such as GDPR in Europe, CCPA in California, LGPD in Brazil, etc.). Please thoroughly review your local regulations and ensure compliance before using Ministry Mapper to avoid legal issues.
 
-**Map Service Availability Notice**: Ministry Mapper relies on Google Maps API, which may have limited functionality or be completely unavailable in certain countries or regions due to local restrictions. Please verify Google Maps availability in your area before implementing Ministry Mapper for your local territories.
-
 A web application for the field ministry.
 
 ## Introduction
@@ -42,11 +40,33 @@ Adopting Ministry Mapper is a forward-thinking move, but it's important to consi
 
 ### Technical Overview
 
-Ministry Mapper is a web application built using ReactJs, Typescript, and Pocketbase. It leverages [Pocketbase](https://pocketbase.io) for data storage, synchronization, and user management. The application can be hosted on any cloud infrastructure provider such as Vercel, Netlify, or AWS.
+Ministry Mapper is a modern web application built with cutting-edge technologies:
 
-To ensure a level of operational reliability, Ministry Mapper leverages Sentry for comprehensive error tracking and monitoring. This integration not only enhances the user experience by minimizing disruptions but also provides valuable insights for continuous improvement and swift issue resolution.
+**Core Technologies:**
+- **React 19** with the new React Compiler for optimized performance
+- **TypeScript** for type-safe development
+- **Vite** as the build tool
+- **Wouter** for lightweight routing
+- **PocketBase** for backend data storage, synchronization, and user management
 
-For territory management, Ministry Mapper utilizes Google Maps API to display territories and facilitate efficient navigation. This feature enhances the user experience by providing a visual representation of territories and enabling users to easily locate and access specific areas.
+**Key Features:**
+- **Progressive Web App (PWA)**: Installable on devices with offline capabilities
+- **Leaflet Mapping Library**: Uses OpenStreetMap data with the Leaflet library, providing universal availability without geographic restrictions
+- **Internationalization (i18n)**: Multi-language support for global congregations
+- **Dark Mode**: Built-in theme support for user preference
+- **Real-time Collaboration**: Live updates across all users
+- **Virtual Listing**: Optimized performance for handling large territory datasets
+- **Drag & Drop Sequencing**: Intuitive territory reordering
+- **Territory Quick Links**: Fast sharing and access to specific territories
+- **Google OAuth**: Streamlined authentication option
+
+**Monitoring & Quality:**
+- **Sentry Integration**: Comprehensive error tracking and performance monitoring
+- **Automated Testing**: Vitest for unit and integration tests
+- **Code Quality Tools**: ESLint, Prettier, Husky, and lint-staged for consistent code standards
+- **Semantic Release**: Automated versioning and changelog generation
+
+The application can be hosted on any cloud infrastructure provider such as Vercel, Netlify, or AWS.
 
 ### Deployment
 
@@ -67,23 +87,39 @@ For territory management, Ministry Mapper utilizes Google Maps API to display te
   1. Setup .env with the following environment variables and their values.
      - VITE_SYSTEM_ENVIRONMENT=local
      - VITE_VERSION=$npm_package_version
-     - VITE_GOOGLE_MAPS_API_KEY=
+     - VITE_OPENROUTE_API_KEY= (OpenRouteService API key for routing)
+     - VITE_LOCATIONIQ_API_KEY= (LocationIQ API key for geocoding)
      - VITE_PRIVACY_URL=
      - VITE_TERMS_URL=
      - VITE_ABOUT_URL=
      - VITE_POCKETBASE_URL=
      - VITE_SENTRY_DSN=
-  2. Restart shell and run `npm start`
+  2. Install dependencies: `npm install`
+  3. Run `npm start` to start the development server
 
 - Production deployment
   1. Run `npm run build`
   2. When building, ensure the following environment variables are configured.
      - VITE_SYSTEM_ENVIRONMENT=production
      - VITE_VERSION=$npm_package_version
-     - VITE_GOOGLE_MAPS_API_KEY=
+     - VITE_OPENROUTE_API_KEY= (OpenRouteService API key for routing)
+     - VITE_LOCATIONIQ_API_KEY= (LocationIQ API key for geocoding)
      - VITE_PRIVACY_URL=
      - VITE_TERMS_URL=
      - VITE_ABOUT_URL=
      - VITE_POCKETBASE_URL=
      - VITE_SENTRY_DSN=
   3. Copy the contents of the `build` folder to your hosting provider.
+
+### Development
+
+**Requirements:**
+- Node.js >= 22.0.0
+
+**Available Scripts:**
+- `npm start` - Start development server
+- `npm run build` - Build for production
+- `npm test` - Run tests
+- `npm run prettier` - Check code formatting
+- `npm run prettier:fix` - Fix code formatting
+- `npm run serve` - Preview production build locally
