@@ -184,7 +184,6 @@ const Map = () => {
         display: linkRecord.expand?.map.progress + "%",
         value: linkRecord.expand?.map.progress
       },
-      mapId: linkRecord.expand?.map.code,
       name: linkRecord.expand?.map.description,
       coordinates: linkRecord.expand?.map.coordinates
     } as addressDetails;

@@ -14,10 +14,6 @@ interface mapInterface {
   mapId: string;
 }
 
-interface mapCodeInterface {
-  mapCode: string;
-}
-
 interface congregationInterface {
   congregation: string;
 }
@@ -107,10 +103,7 @@ export interface territoryDetails extends nameInterface {
   aggregates: number;
 }
 
-export interface addressDetails
-  extends nameInterface,
-    mapInterface,
-    coordinatesInterface {
+export interface addressDetails extends nameInterface, coordinatesInterface {
   id: string;
   assigneeDetailsList: Array<LinkSession>;
   personalDetailsList: Array<LinkSession>;
@@ -118,6 +111,7 @@ export interface addressDetails
   type: string;
   location?: string;
   aggregates: AggregatesProps;
+  sequence: number;
 }
 
 export interface FormProps {
@@ -303,9 +297,7 @@ export interface UserRoleProps {
 }
 
 export interface UserModalProps
-  extends nameInterface,
-    congregationInterface,
-    footerInterface {
+  extends nameInterface, congregationInterface, footerInterface {
   email?: string | null;
   uid: string;
   role?: string | undefined;
@@ -354,17 +346,7 @@ export interface AssignmentModalProps extends congregationInterface {
 }
 
 export interface ChangeAddressNameModalProps
-  extends nameInterface,
-    footerInterface,
-    congregationInterface,
-    mapInterface {}
-
-export interface ChangeAddressMapCodeModalProps
-  extends mapInterface,
-    mapCodeInterface,
-    footerInterface {
-  territoryCode: string | undefined;
-}
+  extends nameInterface, footerInterface, congregationInterface, mapInterface {}
 
 export interface latlongInterface {
   lat: number;
@@ -380,7 +362,8 @@ export interface originInterface {
 }
 
 export interface ConfigureAddressCoordinatesModalProps
-  extends mapInterface,
+  extends
+    mapInterface,
     congregationInterface,
     footerInterface,
     coordinatesInterface,
@@ -390,20 +373,16 @@ export interface ConfigureAddressCoordinatesModalProps
 }
 
 export interface GetMapGeolocationModalProps
-  extends coordinatesInterface,
-    originInterface,
-    nameInterface {}
+  extends coordinatesInterface, originInterface, nameInterface {}
 
 export interface ChangeTerritoryCodeModalProps
-  extends congregationInterface,
-    footerInterface {
+  extends congregationInterface, footerInterface {
   territoryCode: string;
   territoryId: string;
 }
 
 export interface ChangeTerritoryNameModalProps
-  extends congregationInterface,
-    footerInterface {
+  extends congregationInterface, footerInterface {
   name: string | undefined;
   territoryCode: string;
 }
@@ -421,9 +400,7 @@ export interface UpdateCongregationSettingsModalProps {
 }
 
 export interface NewPrivateAddressModalProps
-  extends congregationInterface,
-    footerInterface,
-    originInterface {
+  extends congregationInterface, footerInterface, originInterface {
   territoryCode: string;
   defaultType: string;
 }
@@ -431,13 +408,10 @@ export interface NewPrivateAddressModalProps
 export type NewPublicAddressModalProps = NewPrivateAddressModalProps;
 
 export interface NewTerritoryCodeModalProps
-  extends congregationInterface,
-    footerInterface {}
+  extends congregationInterface, footerInterface {}
 
 export interface NewUnitModalProps
-  extends mapInterface,
-    footerInterface,
-    congregationInterface {
+  extends mapInterface, footerInterface, congregationInterface {
   addressData: addressDetails;
   defaultType: string;
 }
@@ -451,9 +425,7 @@ export interface ConfirmSlipDetailsModalProps {
 }
 
 export interface UpdateAddressFeedbackModalProps
-  extends nameInterface,
-    mapInterface,
-    footerInterface {
+  extends nameInterface, mapInterface, footerInterface {
   helpLink: string;
   currentName: string;
   policy: Policy;
@@ -562,7 +534,6 @@ export interface MapRowProps {
       currentMapName: string,
       coordinates: latlongInterface
     ) => void;
-    handleShowChangeMapCode: (mapId: string, mapCode: string) => void;
     handleChangeTerritory: (mapId: string, mapName: string) => void;
     handleShowChangeName: (mapId: string, mapName: string) => void;
     handleShowAddUnit: (mapId: string, addressElement: addressDetails) => void;
@@ -731,9 +702,11 @@ export interface ThemeContextType {
 }
 
 export interface MapSequenceUpdateModalProps
-  extends mapInterface,
-    congregationInterface,
-    footerInterface {}
+  extends mapInterface, congregationInterface, footerInterface {}
+
+export interface TerritoryMapSequenceModalProps extends footerInterface {
+  territoryId: string;
+}
 
 export interface OptionTooltipProps {
   id: string;

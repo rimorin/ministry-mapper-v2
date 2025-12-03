@@ -91,6 +91,9 @@ const ChangeTerritoryCode = lazy(
   () => import("../components/modal/changeterritorycd")
 );
 const QuickLinkModal = lazy(() => import("../components/modal/getquicklink"));
+const ChangeTerritoryMapSequence = lazy(
+  () => import("../components/modal/territorymapsequence")
+);
 
 function Admin({ user }: adminProps) {
   const { t } = useTranslation();
@@ -396,12 +399,12 @@ function Admin({ user }: adminProps) {
     setIsLoading(false);
   };
 
-  const setupAddresses = async (territoryId: string) => {
+  const setupMaps = async (territoryId: string) => {
     if (!territoryId) return;
     const maps = await getList("maps", {
       filter: `territory="${territoryId}"`,
       requestKey: null,
-      sort: "code",
+      sort: "sequence",
       fields: PB_FIELDS.MAPS
     });
     const newMapViews = new Map<string, boolean>();
@@ -509,7 +512,7 @@ function Admin({ user }: adminProps) {
 
   useEffect(() => {
     if (!selectedTerritory.id) return;
-    setupAddresses(selectedTerritory.id);
+    setupMaps(selectedTerritory.id);
     const selectedTerritoryData = territories.get(selectedTerritory.id);
     setSelectedTerritory((prev) => ({
       ...prev,
@@ -537,7 +540,7 @@ function Admin({ user }: adminProps) {
         } else if (dataAction === "delete") {
           updatedList = prevList.filter((address) => address.id !== mapId);
         }
-        updatedList.sort((a, b) => a.mapId.localeCompare(b.mapId));
+        updatedList.sort((a, b) => a.sequence - b.sequence);
         return updatedList;
       });
       if (dataAction === "create") {
@@ -552,7 +555,7 @@ function Admin({ user }: adminProps) {
     !!selectedTerritory.id
   );
 
-  useVisibilityChange(() => setupAddresses(selectedTerritory.id));
+  useVisibilityChange(() => setupMaps(selectedTerritory.id));
 
   if (isLoading) return <Loader />;
   if (isUnauthorised) {
@@ -747,6 +750,16 @@ function Admin({ user }: adminProps) {
                     }}
                   >
                     {t("territory.changeName", "Change Name")}
+                  </GenericDropdownItem>
+                  <GenericDropdownItem
+                    onClick={() =>
+                      showModal(ChangeTerritoryMapSequence, {
+                        footerSaveAcl: userAccessLevel,
+                        territoryId: selectedTerritory.id
+                      })
+                    }
+                  >
+                    {t("territory.changeSequence", "Change Sequence")}
                   </GenericDropdownItem>
                   <GenericDropdownItem
                     onClick={() => {

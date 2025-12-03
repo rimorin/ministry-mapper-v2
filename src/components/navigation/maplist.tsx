@@ -28,7 +28,7 @@ import "../../css/virtualmaps.css";
 
 const GetMapGeolocation = lazy(() => import("../modal/getlocation"));
 const ChangeMapGeoLocation = lazy(() => import("../modal/changegeolocation"));
-const ChangeMapCode = lazy(() => import("../modal/changemapcd"));
+
 const ChangeAddressName = lazy(() => import("../modal/changeaddname"));
 const NewUnit = lazy(() => import("../modal/newunit"));
 const ChangeMapSequence = lazy(() => import("../modal/sequenceupdate"));
@@ -53,7 +53,6 @@ function MapRow({
     handleToggleMapView,
     handleShowGetLocation,
     handleShowChangeLocation,
-    handleShowChangeMapCode,
     handleChangeTerritory,
     handleShowChangeName,
     handleShowAddUnit,
@@ -65,12 +64,7 @@ function MapRow({
     handleSequenceUpdate
   } = handlers;
 
-  const {
-    id: mapId,
-    mapId: mapCode,
-    name: mapName,
-    type: mapType
-  } = addressElement;
+  const { id: mapId, name: mapName, type: mapType } = addressElement;
   const completeValue =
     addressElement.aggregates?.value || DEFAULT_AGGREGATES.value;
   const completedPercent =
@@ -187,11 +181,7 @@ function MapRow({
                     >
                       {t("address.changeLocation", "Change Location")}
                     </GenericDropdownItem>
-                    <GenericDropdownItem
-                      onClick={() => handleShowChangeMapCode(mapId, mapCode)}
-                    >
-                      {t("address.changeMapNumber", "Change Map Number")}
-                    </GenericDropdownItem>
+
                     <GenericDropdownItem
                       onClick={() => handleChangeTerritory(mapId, mapName)}
                     >
@@ -404,14 +394,6 @@ const MapListing: React.FC<MapListingProps> = ({
     });
   };
 
-  const handleShowChangeMapCode = (mapId: string, mapCode: string) => {
-    showModal(ChangeMapCode, {
-      footerSaveAcl: userAccessLevel,
-      mapId,
-      mapCode
-    });
-  };
-
   const handleChangeTerritory = (mapId: string, mapName: string) => {
     setValues({
       ...values,
@@ -504,7 +486,6 @@ const MapListing: React.FC<MapListingProps> = ({
       handleToggleMapView,
       handleShowGetLocation,
       handleShowChangeLocation,
-      handleShowChangeMapCode,
       handleChangeTerritory,
       handleShowChangeName,
       handleShowAddUnit,
