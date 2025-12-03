@@ -33,24 +33,38 @@
   border-radius: 0.5rem;
 }
 
-.sortable-item {
+.sortable-list {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-  min-height: 100px;
-  padding: 1.25rem;
-  aspect-ratio: 1;
+  padding: 1rem;
+  background: var(--mm-gray-50);
+  border-radius: 0.5rem;
+}
+
+.sortable-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
   background: var(--mm-white);
   border: 1px solid var(--mm-gray-200);
-  border-radius: 0.75rem;
+  border-radius: 0.5rem;
   cursor: grab;
   user-select: none;
   touch-action: none;
   transition: var(--mm-transition-base);
-  position: relative;
   box-shadow: 0 2px 4px var(--mm-shadow-md);
+}
+
+.sortable-grid .sortable-item {
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100px;
+  padding: 1.25rem;
+  aspect-ratio: 1;
+  border-radius: 0.75rem;
+  position: relative;
 }
 
 .sortable-item:hover {
@@ -64,9 +78,6 @@
 }
 
 .sortable-item-sequence {
-  position: absolute;
-  top: 0.5rem;
-  left: 0.5rem;
   font-size: 0.75rem;
   color: var(--mm-white);
   background: var(--mm-secondary);
@@ -77,13 +88,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   line-height: 1;
+}
+
+.sortable-grid .sortable-item-sequence {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
 }
 
 .sortable-item-code {
   font-weight: 600;
-  font-size: 1.25rem;
+  font-size: 0.95rem;
   color: var(--mm-text-body);
+  flex: 1;
+}
+
+.sortable-grid .sortable-item-code {
+  font-size: 1.25rem;
   text-align: center;
 }
 
@@ -91,7 +114,6 @@
   opacity: 0.9;
   box-shadow: 0 8px 24px var(--mm-shadow-xl);
   border-color: var(--mm-primary);
-  background: var(--mm-white);
   transform: rotate(3deg) scale(1.05);
   z-index: 1000;
 }

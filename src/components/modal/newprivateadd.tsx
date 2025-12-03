@@ -10,7 +10,7 @@ import {
   DEFAULT_COORDINATES,
   MIN_START_FLOOR
 } from "../../utils/constants";
-import isValidMapCode from "../../utils/helpers/checkvalidmapcd";
+
 import isValidMapSequence from "../../utils/helpers/checkvalidseq";
 import useNotification from "../../hooks/useNotification";
 import processSequence from "../../utils/helpers/processsequence";
@@ -37,7 +37,6 @@ const NewPrivateAddress = NiceModal.create(
     const { t } = useTranslation();
     const { notifyError, notifyWarning } = useNotification();
     const { showModal } = useModalManagement();
-    const [mapCode, setMapCode] = useState("");
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");
     const [coordinates, setCoordinates] = useState<latlongInterface>(
@@ -46,17 +45,10 @@ const NewPrivateAddress = NiceModal.create(
     const [sequence, setSequence] = useState("");
     const [isSaving, setIsSaving] = useState(false);
 
-    const modalDescription = t("map.mapNumber");
-
     const handleCreateTerritoryAddress = async (
       event: FormEvent<HTMLElement>
     ) => {
       event.preventDefault();
-
-      if (!isValidMapCode(mapCode)) {
-        notifyWarning(t("map.invalidMapNumber"));
-        return;
-      }
 
       if (!isValidMapSequence(sequence, TERRITORY_TYPES.SINGLE_STORY)) {
         notifyWarning(t("map.invalidSequence"));
@@ -68,7 +60,6 @@ const NewPrivateAddress = NiceModal.create(
         await callFunction("/map/add", {
           method: "POST",
           body: {
-            code: mapCode,
             name: name,
             sequence: sequence,
             type: TERRITORY_TYPES.SINGLE_STORY,
@@ -114,18 +105,6 @@ const NewPrivateAddress = NiceModal.create(
             }}
           >
             <p>{t("map.singleStoryDescription")}</p>
-            <GenericInputField
-              inputType="number"
-              label={modalDescription}
-              name="refNo"
-              handleChange={(e: ChangeEvent<HTMLElement>) => {
-                const { value } = e.target as HTMLInputElement;
-                setMapCode(value);
-              }}
-              changeValue={mapCode}
-              required={true}
-              information={t("map.uniqueIdentifierInfo")}
-            />
             <GenericInputField
               label={t("map.mapName")}
               name="name"

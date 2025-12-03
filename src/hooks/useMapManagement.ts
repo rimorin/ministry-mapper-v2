@@ -87,9 +87,9 @@ export default function useMapManagement() {
         notDone: mapRecord.aggregates?.notDone || 0,
         notHome: mapRecord.aggregates?.notHome || 0
       },
-      mapId: mapRecord.code,
       name: mapRecord.description,
-      coordinates: mapRecord.coordinates || DEFAULT_COORDINATES.Singapore
+      coordinates: mapRecord.coordinates || DEFAULT_COORDINATES.Singapore,
+      sequence: mapRecord.sequence
     } as addressDetails;
   };
 
