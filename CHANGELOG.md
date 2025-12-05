@@ -1,3 +1,10 @@
+# [1.17.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.16.2...v1.17.0) (2025-12-05)
+
+
+### Features
+
+* implement territory map sequence dnd UI ([8148639](https://github.com/rimorin/ministry-mapper-v2/commit/8148639cbf39affb68e80f5c1853406b815b33a6))
+
 ## [1.16.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.16.1...v1.16.2) (2025-11-24)
 
 
