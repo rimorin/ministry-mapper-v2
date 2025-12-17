@@ -126,7 +126,8 @@
     "deleteSuccess": "Wilayah {{code}} telah dihapus.",
     "noTerritories": "Tidak Ada Wilayah",
     "noTerritoriesDescription": "Buat wilayah baru untuk memulai.",
-    "territoryCode": "Kode Wilayah"
+    "territoryCode": "Kode Wilayah",
+    "changeSequence": "Ubah Urutan"
   },
   "address": {
     "address": "Alamat",
@@ -261,7 +262,9 @@
     "generateLink": "Tautan Cepat"
   },
   "map": {
-    "newMap": "Peta Baru",
+    "createMap": "Buat Peta",
+    "mapType": "Jenis Peta",
+    "mapTypeInfo": "Pilih apakah ini adalah peta bertingkat atau satu lantai.",
     "multiStory": "Bertingkat",
     "singleStory": "Satu Lantai",
     "createMultiStory": "Buat Peta Bertingkat",
@@ -272,10 +275,8 @@
     "coordinatesInfo": "Garis Lintang dan Bujur peta. Ini digunakan untuk tujuan arah.",
     "multiStoryDescription": "Peta ini akan mencakup beberapa lantai, masing-masing berisi beberapa unit. Peta ini dirancang untuk mengatur dan menampilkan unit di berbagai lantai secara efisien.",
     "singleStoryDescription": "Ini adalah peta dengan daftar properti satu lantai",
-    "houseSequence": "Urutan Rumah",
-    "unitSequence": "Urutan Unit",
-    "houseSequenceInfo": "Urutan rumah dengan pemisah koma. Misalnya, 1A,1B,2A ...",
-    "unitSequenceInfo": "Urutan unit dengan pemisah koma. Misalnya, 301,303,305 ...",
+    "sequence": "Urutan",
+    "sequenceExplanation": "Masukkan nomor rumah atau unit yang dipisahkan dengan koma. Misalnya: 1A, 1B, 2A atau 301, 303, 305. Sistem akan membuat alamat sesuai urutan yang Anda masukkan.",
     "invalidSequence": "Urutan tidak valid",
     "clickToSelectLocation": "Klik untuk memilih lokasi",
     "deleteSuccess": "Alamat dihapus, {{name}}.",

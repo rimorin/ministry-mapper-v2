@@ -9,20 +9,16 @@ const isValidMapSequence = (
   postalType = TERRITORY_TYPES.SINGLE_STORY
 ) => {
   if (!sequence) return false;
-  const units = sequence.split(",");
+  const units = sequence.split(",").map((unit) => unit.trim());
   if (units.length === 0) return false;
-  for (let index = 0; index < units.length; index++) {
-    const unitValue = units[index].trim();
-    // check if unit is blank after trimming
-    if (!unitValue) return false;
-    // check if there are special chars
-    if (SPECIAL_CHARACTERS.test(unitValue)) return false;
-    if (postalType === TERRITORY_TYPES.MULTIPLE_STORIES) {
-      // if public, check if unit is numeric only
-      if (!NUMERIC_CHARACTERS.test(unitValue)) return false;
-    }
-  }
-  return true;
+
+  const isMultiStory = postalType === TERRITORY_TYPES.MULTIPLE_STORIES;
+
+  return units.every((unit) => {
+    if (!unit) return false;
+    if (SPECIAL_CHARACTERS.test(unit)) return false;
+    return !isMultiStory || NUMERIC_CHARACTERS.test(unit);
+  });
 };
 
 export default isValidMapSequence;

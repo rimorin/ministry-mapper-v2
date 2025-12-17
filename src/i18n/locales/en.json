@@ -126,10 +126,13 @@
     "deleteSuccess": "Deleted territory, {{code}}.",
     "noTerritories": "No Territories",
     "noTerritoriesDescription": "Create a new territory to get started.",
-    "territoryCode": "Territory Code"
+    "territoryCode": "Territory Code",
+    "changeSequence": "Change Sequence"
   },
   "map": {
-    "newMap": "New Map",
+    "createMap": "Create Map",
+    "mapType": "Map Type",
+    "mapTypeInfo": "Select whether this is a multi-story or single-story map.",
     "multiStory": "Multi-story",
     "singleStory": "Single-Story",
     "createMultiStory": "Create Multi Story Map",
@@ -140,10 +143,8 @@
     "coordinatesInfo": "Latitude and Longitude of the map. This is used for direction purposes.",
     "multiStoryDescription": "This map will include multiple floors, each containing several units. The map is designed to organize and display units across different floors efficiently.",
     "singleStoryDescription": "This is a map with a list of single-story properties",
-    "houseSequence": "House Sequence",
-    "unitSequence": "Unit Sequence",
-    "houseSequenceInfo": "House sequence with comma separator. For eg, 1A,1B,2A ...",
-    "unitSequenceInfo": "Unit sequence with comma separator. For eg, 301,303,305 ...",
+    "sequence": "Sequence",
+    "sequenceExplanation": "Enter house or unit numbers separated by commas. For example: 1A, 1B, 2A or 301, 303, 305. The system will create addresses in the order you enter them.",
     "invalidSequence": "Invalid sequence",
     "clickToSelectLocation": "Click to select location",
     "deleteSuccess": "Deleted address, {{name}}.",

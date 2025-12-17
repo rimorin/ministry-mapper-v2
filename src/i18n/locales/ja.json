@@ -126,10 +126,13 @@
     "deleteSuccess": "区域 {{code}} を削除しました。",
     "noTerritories": "区域がありません",
     "noTerritoriesDescription": "新しい区域を作成して開始してください。",
-    "territoryCode": "区域コード"
+    "territoryCode": "区域コード",
+    "changeSequence": "順序変更"
   },
   "map": {
-    "newMap": "新規マップ",
+    "createMap": "マップ作成",
+    "mapType": "マップタイプ",
+    "mapTypeInfo": "複数階または一戸建てのマップかを選択してください。",
     "multiStory": "複数階",
     "singleStory": "一戸建て",
     "createMultiStory": "複数階マップ作成",
@@ -140,10 +143,8 @@
     "coordinatesInfo": "マップの緯度と経度。方向表示に使用。",
     "multiStoryDescription": "このマップには複数の階があり、各階に複数のユニットが含まれます。",
     "singleStoryDescription": "一戸建て物件のリストのマップです",
-    "houseSequence": "家順序",
-    "unitSequence": "ユニット順序",
-    "houseSequenceInfo": "カンマ区切りの家順序。例：1A,1B,2A ...",
-    "unitSequenceInfo": "カンマ区切りのユニット順序。例：301,303,305 ...",
+    "sequence": "順序",
+    "sequenceExplanation": "カンマで区切られた家またはユニット番号を入力してください。例：1A, 1B, 2A または 301, 303, 305。システムは入力した順序で住所を作成します。",
     "invalidSequence": "無効な順序",
     "clickToSelectLocation": "クリックして位置選択",
     "deleteSuccess": "住所が削除されました, {{name}}.",
