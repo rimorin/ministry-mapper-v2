@@ -126,10 +126,13 @@
     "deleteSuccess": "已删除领土 {{code}}。",
     "noTerritories": "没有领土",
     "noTerritoriesDescription": "创建一个新领土以开始。",
-    "territoryCode": "领土代码"
+    "territoryCode": "领土代码",
+    "changeSequence": "更改顺序"
   },
   "map": {
-    "newMap": "新地图",
+    "createMap": "创建地图",
+    "mapType": "地图类型",
+    "mapTypeInfo": "选择这是多层楼还是单层楼地图。",
     "multiStory": "多层楼",
     "singleStory": "单层楼",
     "createMultiStory": "创建多层楼地图",
@@ -140,10 +143,8 @@
     "coordinatesInfo": "地图的纬度和经度。用于方向指引。",
     "multiStoryDescription": "此地图将包括多个楼层，每个楼层包含几个单元。该地图旨在有效地组织和显示不同楼层的单元。",
     "singleStoryDescription": "这是一张单层物业列表的地图",
-    "houseSequence": "房屋序列",
-    "unitSequence": "单元序列",
-    "houseSequenceInfo": "用逗号分隔的房屋序列。例如，1A,1B,2A ...",
-    "unitSequenceInfo": "用逗号分隔的单元序列。例如，301,303,305 ...",
+    "sequence": "序列",
+    "sequenceExplanation": "输入用逗号分隔的房屋或单元号码。例如：1A, 1B, 2A 或 301, 303, 305。系统将按您输入的顺序创建地址。",
     "invalidSequence": "无效的序列",
     "clickToSelectLocation": "点击选择位置",
     "deleteSuccess": "地址已删除, {{name}}.",

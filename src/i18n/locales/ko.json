@@ -126,10 +126,13 @@
     "deleteSuccess": "구역 {{code}}을(를) 삭제했습니다.",
     "noTerritories": "구역 없음",
     "noTerritoriesDescription": "새 구역을 만들어 시작하세요.",
-    "territoryCode": "구역 코드"
+    "territoryCode": "구역 코드",
+    "changeSequence": "순서 변경"
   },
   "map": {
-    "newMap": "새 맵",
+    "createMap": "맵 생성",
+    "mapType": "맵 유형",
+    "mapTypeInfo": "다층 또는 단층 맵인지 선택하세요.",
     "multiStory": "다층",
     "singleStory": "단층",
     "createMultiStory": "다층 맵 생성",
@@ -140,10 +143,8 @@
     "coordinatesInfo": "맵의 위도와 경도. 방향 안내에 사용됩니다.",
     "multiStoryDescription": "이 맵에는 여러 층이 포함되며, 각 층에는 여러 단위가 있습니다.",
     "singleStoryDescription": "단층 속성 목록이 있는 맵입니다",
-    "houseSequence": "주택 순서",
-    "unitSequence": "단위 순서",
-    "houseSequenceInfo": "쉼표로 구분된 주택 순서. 예: 1A,1B,2A ...",
-    "unitSequenceInfo": "쉼표로 구분된 단위 순서. 예: 301,303,305 ...",
+    "sequence": "순서",
+    "sequenceExplanation": "쉼표로 구분된 주택 또는 단위 번호를 입력하세요. 예: 1A, 1B, 2A 또는 301, 303, 305. 시스템은 입력한 순서대로 주소를 생성합니다.",
     "invalidSequence": "잘못된 순서",
     "clickToSelectLocation": "위치 선택하려면 클릭",
     "deleteSuccess": "주소가 삭제되었습니다, {{name}}.",

@@ -18,6 +18,7 @@ import {
   NewPrivateAddressModalProps,
   latlongInterface
 } from "../../utils/interface";
+import FloorField from "../form/floors";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import GenericTextAreaField from "../form/textarea";
@@ -26,7 +27,7 @@ import ChangeMapGeolocation from "./changegeolocation";
 import { callFunction } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
 
-const NewPrivateAddress = NiceModal.create(
+const NewMap = NiceModal.create(
   ({
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE,
     congregation,
@@ -43,14 +44,18 @@ const NewPrivateAddress = NiceModal.create(
       DEFAULT_COORDINATES.Singapore
     );
     const [sequence, setSequence] = useState("");
+    const [mapType, setMapType] = useState(TERRITORY_TYPES.MULTIPLE_STORIES);
+    const [floors, setFloors] = useState(MIN_START_FLOOR);
     const [isSaving, setIsSaving] = useState(false);
+
+    const isMultiStory = mapType === TERRITORY_TYPES.MULTIPLE_STORIES;
 
     const handleCreateTerritoryAddress = async (
       event: FormEvent<HTMLElement>
     ) => {
       event.preventDefault();
 
-      if (!isValidMapSequence(sequence, TERRITORY_TYPES.SINGLE_STORY)) {
+      if (!isValidMapSequence(sequence, mapType)) {
         notifyWarning(t("map.invalidSequence"));
         return;
       }
@@ -60,13 +65,13 @@ const NewPrivateAddress = NiceModal.create(
         await callFunction("/map/add", {
           method: "POST",
           body: {
-            name: name,
-            sequence: sequence,
-            type: TERRITORY_TYPES.SINGLE_STORY,
+            name,
+            sequence,
+            type: mapType,
             coordinates: JSON.stringify(coordinates),
-            congregation: congregation,
+            congregation,
             territory: territoryCode,
-            floors: MIN_START_FLOOR
+            floors: isMultiStory ? floors : MIN_START_FLOOR
           }
         });
         modal.resolve();
@@ -94,8 +99,14 @@ const NewPrivateAddress = NiceModal.create(
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
-          <Modal.Title>{t("map.createSingleStory")}</Modal.Title>
-          <HelpButton link={WIKI_CATEGORIES.CREATE_PRIVATE_ADDRESS} />
+          <Modal.Title>{t("map.createMap")}</Modal.Title>
+          <HelpButton
+            link={
+              isMultiStory
+                ? WIKI_CATEGORIES.CREATE_PUBLIC_ADDRESS
+                : WIKI_CATEGORIES.CREATE_PRIVATE_ADDRESS
+            }
+          />
         </Modal.Header>
         <Form onSubmit={handleCreateTerritoryAddress}>
           <Modal.Body
@@ -104,14 +115,35 @@ const NewPrivateAddress = NiceModal.create(
               overflowY: "auto"
             }}
           >
-            <p>{t("map.singleStoryDescription")}</p>
+            <Form.Group className="mb-3" controlId="basicFormMapType">
+              <Form.Label>{t("map.mapType")}</Form.Label>
+              <Form.Select
+                value={mapType}
+                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
+                  setMapType(e.target.value)
+                }
+                required
+              >
+                <option value={TERRITORY_TYPES.MULTIPLE_STORIES}>
+                  {t("map.multiStory")}
+                </option>
+                <option value={TERRITORY_TYPES.SINGLE_STORY}>
+                  {t("map.singleStory")}
+                </option>
+              </Form.Select>
+              <Form.Text muted>{t("map.mapTypeInfo")}</Form.Text>
+            </Form.Group>
+            <p>
+              {isMultiStory
+                ? t("map.multiStoryDescription")
+                : t("map.singleStoryDescription")}
+            </p>
             <GenericInputField
               label={t("map.mapName")}
               name="name"
-              handleChange={(e: ChangeEvent<HTMLElement>) => {
-                const { value } = e.target as HTMLInputElement;
-                setName(value);
-              }}
+              handleChange={(e: ChangeEvent<HTMLElement>) =>
+                setName((e.target as HTMLInputElement).value)
+              }
               changeValue={name}
               required={true}
               information={t("map.descriptionInfo")}
@@ -128,16 +160,28 @@ const NewPrivateAddress = NiceModal.create(
               information={t("map.coordinatesInfo")}
               autoComplete="off"
             />
+            {isMultiStory && (
+              <FloorField
+                handleChange={(e: ChangeEvent<HTMLElement>) =>
+                  setFloors(Number((e.target as HTMLInputElement).value))
+                }
+                changeValue={floors}
+              />
+            )}
             <GenericTextAreaField
-              label={t("map.houseSequence")}
+              label={t("map.sequence")}
               name="units"
-              placeholder={t("map.houseSequenceInfo")}
-              handleChange={(e: ChangeEvent<HTMLElement>) => {
-                const { value } = e.target as HTMLInputElement;
-                setSequence(processSequence(value));
-              }}
+              handleChange={(e: ChangeEvent<HTMLElement>) =>
+                setSequence(
+                  processSequence(
+                    (e.target as HTMLInputElement).value,
+                    isMultiStory
+                  )
+                )
+              }
               changeValue={sequence}
               required={true}
+              information={t("map.sequenceExplanation")}
             />
           </Modal.Body>
           <ModalFooter
@@ -152,4 +196,4 @@ const NewPrivateAddress = NiceModal.create(
   }
 );
 
-export default NewPrivateAddress;
+export default NewMap;

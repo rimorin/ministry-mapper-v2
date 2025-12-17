@@ -79,8 +79,7 @@ const UpdateCongregationOptions = lazy(
 const NewTerritoryCode = lazy(
   () => import("../components/modal/newterritorycd")
 );
-const NewSingleMap = lazy(() => import("../components/modal/newpublicadd"));
-const NewMultiMap = lazy(() => import("../components/modal/newprivateadd"));
+const NewMap = lazy(() => import("../components/modal/newmap"));
 const InviteUser = lazy(() => import("../components/modal/inviteuser"));
 const GetProfile = lazy(() => import("../components/modal/profile"));
 const GetAssignments = lazy(() => import("../components/modal/assignments"));
@@ -803,40 +802,21 @@ function Admin({ user }: adminProps) {
                 requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
                 userPermission={userAccessLevel}
               >
-                <GenericDropdownButton
-                  className="dropdown-btn"
+                <GenericButton
+                  className="m-1"
                   variant="outline-primary"
                   size="sm"
-                  label={t("map.newMap", "New Map")}
-                  align={{ lg: "end" }}
-                >
-                  <GenericDropdownItem
-                    onClick={() =>
-                      showModal(NewSingleMap, {
-                        footerSaveAcl: userAccessLevel,
-                        congregation: congregationCode,
-                        territoryCode: selectedTerritory.id,
-                        defaultType: policy.defaultType,
-                        origin: policy.origin
-                      })
-                    }
-                  >
-                    {t("map.multiStory", "Multi-story")}
-                  </GenericDropdownItem>
-                  <GenericDropdownItem
-                    onClick={() =>
-                      showModal(NewMultiMap, {
-                        footerSaveAcl: userAccessLevel,
-                        congregation: congregationCode,
-                        territoryCode: selectedTerritory.id,
-                        defaultType: policy.defaultType,
-                        origin: policy.origin
-                      })
-                    }
-                  >
-                    {t("map.singleStory", "Single-Story")}
-                  </GenericDropdownItem>
-                </GenericDropdownButton>
+                  label={t("map.createMap", "Create Map")}
+                  onClick={() =>
+                    showModal(NewMap, {
+                      footerSaveAcl: userAccessLevel,
+                      congregation: congregationCode,
+                      territoryCode: selectedTerritory.id,
+                      defaultType: policy.defaultType,
+                      origin: policy.origin
+                    })
+                  }
+                />
               </ComponentAuthorizer>
             )}
             <ComponentAuthorizer

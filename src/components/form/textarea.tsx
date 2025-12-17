@@ -9,7 +9,8 @@ const GenericTextAreaField = ({
   placeholder,
   rows = 3,
   required = false,
-  readOnly = false
+  readOnly = false,
+  information
 }: FormProps) => {
   return (
     <Form.Group className="mb-3" controlId={`formBasic${name}TextAreaField`}>
@@ -24,6 +25,7 @@ const GenericTextAreaField = ({
         required={required}
         readOnly={readOnly}
       />
+      {information && <Form.Text muted>{information}</Form.Text>}
     </Form.Group>
   );
 };
