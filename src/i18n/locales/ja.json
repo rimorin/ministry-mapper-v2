@@ -248,7 +248,9 @@
     "defaultSlipExpiry": "デフォルト期限時間",
     "optionsUpdated": "会衆世帯オプションを更新しました。",
     "duplicateOptionCodes": "重複するオプションコードが見つかりました。入力内容を確認してください。",
-    "notFound": "会衆が見つかりません。"
+    "notFound": "会衆が見つかりません。",
+    "dragToReorder": "ドラッグして並び替え",
+    "dragEditHint": "行をドラッグするか、矢印ボタンで順序を変更します。フィールドをクリックして編集します。"
   },
   "assignment": {
     "assignment": "割当",

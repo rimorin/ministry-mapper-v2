@@ -248,7 +248,9 @@
     "defaultSlipExpiry": "Default Slip Expiry Hours",
     "optionsUpdated": "Congregation household options updated.",
     "duplicateOptionCodes": "Duplicate option codes found. Please check your input.",
-    "notFound": "Congregation not found."
+    "notFound": "Congregation not found.",
+    "dragToReorder": "Drag to reorder",
+    "dragEditHint": "Drag rows or use arrow buttons to reorder. Click fields to edit."
   },
   "assignment": {
     "assignment": "Assignment",
