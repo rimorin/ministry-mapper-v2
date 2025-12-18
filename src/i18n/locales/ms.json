@@ -248,7 +248,9 @@
     "defaultSlipExpiry": "Tamat Tempoh Slip Lalai (Jam)",
     "optionsUpdated": "Pilihan isi rumah sidang dikemas kini.",
     "duplicateOptionCodes": "Kod pilihan pendua ditemui. Sila semak input anda.",
-    "notFound": "Jemaat tidak dijumpai."
+    "notFound": "Jemaat tidak dijumpai.",
+    "dragToReorder": "Seret untuk menyusun semula",
+    "dragEditHint": "Seret baris atau gunakan butang anak panah untuk menyusun semula. Klik medan untuk mengedit."
   },
   "assignment": {
     "assignment": "Tugasan",

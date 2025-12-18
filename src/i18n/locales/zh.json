@@ -248,7 +248,9 @@
     "defaultSlipExpiry": "默认单到期小时数",
     "optionsUpdated": "会众家庭选项已更新。",
     "duplicateOptionCodes": "发现重复的选项代码。请检查您的输入。",
-    "notFound": "未找到会众。"
+    "notFound": "未找到会众。",
+    "dragToReorder": "拖动以重新排序",
+    "dragEditHint": "拖动行或使用箭头按钮重新排序。点击字段进行编辑。"
   },
   "assignment": {
     "assignment": "分配",

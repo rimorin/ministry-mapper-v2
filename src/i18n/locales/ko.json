@@ -248,7 +248,9 @@
     "defaultSlipExpiry": "기본 슬립 만료 시간",
     "optionsUpdated": "회중 가구 옵션이 업데이트되었습니다.",
     "duplicateOptionCodes": "중복된 옵션 코드가 발견되었습니다. 입력 내용을 확인해주세요.",
-    "notFound": "회중을 찾을 수 없습니다."
+    "notFound": "회중을 찾을 수 없습니다.",
+    "dragToReorder": "재정렬하려면 드래그하세요",
+    "dragEditHint": "행을 드래그하거나 화살표 버튼을 사용하여 순서를 변경하세요. 필드를 클릭하여 편집하세요."
   },
   "assignment": {
     "assignment": "할당",

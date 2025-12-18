@@ -225,7 +225,9 @@
     "defaultSlipExpiry": "Jam Kedaluwarsa Slip Default",
     "optionsUpdated": "Opsi rumah tangga sidang telah diperbarui.",
     "duplicateOptionCodes": "Kode opsi duplikat ditemukan. Silakan periksa masukan Anda.",
-    "notFound": "Jemaat tidak ditemukan."
+    "notFound": "Jemaat tidak ditemukan.",
+    "dragToReorder": "Seret untuk menyusun ulang",
+    "dragEditHint": "Seret baris atau gunakan tombol panah untuk menyusun ulang. Klik kolom untuk mengedit."
   },
   "assignment": {
     "assignment": "Penugasan",
