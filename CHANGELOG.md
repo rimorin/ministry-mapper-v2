@@ -1,3 +1,10 @@
+# [1.18.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.17.0...v1.18.0) (2025-12-19)
+
+
+### Features
+
+* improve UX for cong options module ([207c06c](https://github.com/rimorin/ministry-mapper-v2/commit/207c06c1ce364535a43f356b1642237bdffca9b0))
+
 # [1.17.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.16.2...v1.17.0) (2025-12-05)
 
 
