@@ -8,12 +8,12 @@ import {
 import { useEffect, useState } from "react";
 import Loader from "../components/statics/loader";
 import NavBarBranding from "../components/navigation/branding";
-import { PASSWORD_POLICY, MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
-import PasswordChecklist from "react-password-checklist";
+import { MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
 import { confirmPasswordReset, confirmVerification } from "../utils/pocketbase";
 import { useSearch } from "wouter";
 import { useTranslation } from "react-i18next";
 import GenericButton from "../components/navigation/button";
+import PasswordChecklist from "../components/form/passwordchecklist";
 
 const MODE_RESET_PASSWORD = "resetPassword";
 const MODE_VERIFY_EMAIL = "verifyEmail";
@@ -153,11 +153,10 @@ const UserManagementComponent = () => {
             <Form.Group className="mb-3">
               <div id="password-requirements">
                 <PasswordChecklist
-                  rules={PASSWORD_POLICY}
+                  password={loginPassword}
+                  passwordConfirm={cloginPassword}
                   minLength={MINIMUM_PASSWORD_LENGTH}
-                  value={loginPassword}
-                  valueAgain={cloginPassword}
-                  onChange={(isValid) => setIsLoginPasswordOk(isValid)}
+                  onChange={setIsLoginPasswordOk}
                   messages={{
                     minLength: t(
                       "password.minLength",
