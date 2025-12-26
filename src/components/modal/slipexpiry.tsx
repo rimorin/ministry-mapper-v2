@@ -3,12 +3,34 @@ import { Modal } from "react-bootstrap";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import ModalFooter from "../form/footer";
 import { ExpiryButtonProp } from "../../utils/interface";
-import Countdown from "react-countdown";
 import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+
+const calculateTimeLeft = (endTime: number) => {
+  const diff = Math.max(endTime - Date.now(), 0);
+
+  return {
+    days: Math.floor(diff / 86400000),
+    hours: Math.floor((diff % 86400000) / 3600000),
+    minutes: Math.floor((diff % 3600000) / 60000),
+    seconds: Math.floor((diff % 60000) / 1000)
+  };
+};
 
 const ShowExpiry = NiceModal.create(({ endtime }: ExpiryButtonProp) => {
   const modal = useModal();
   const { t } = useTranslation();
+  const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(endtime));
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft(calculateTimeLeft(endtime));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [endtime]);
+
+  const { days, hours, minutes, seconds } = timeLeft;
 
   return (
     <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
@@ -18,55 +40,12 @@ const ShowExpiry = NiceModal.create(({ endtime }: ExpiryButtonProp) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body className="text-center">
-        <Countdown
-          className="m-1"
-          date={endtime}
-          daysInHours={true}
-          intervalDelay={100}
-          precision={3}
-          renderer={(props) => {
-            const daysDisplay =
-              props.days !== 0 ? (
-                <>
-                  {props.days} {t("common.daysShort", "d")}{" "}
-                </>
-              ) : (
-                <></>
-              );
-            const hoursDisplay =
-              props.hours !== 0 ? (
-                <>
-                  {props.hours} {t("common.hoursShort", "h")}{" "}
-                </>
-              ) : (
-                <></>
-              );
-            const minsDisplay =
-              props.minutes !== 0 ? (
-                <>
-                  {props.minutes} {t("common.minutesShort", "m")}{" "}
-                </>
-              ) : (
-                <></>
-              );
-            const secondsDisplay =
-              props.seconds !== 0 ? (
-                <>
-                  {props.seconds} {t("common.secondsShort", "s")}{" "}
-                </>
-              ) : (
-                <></>
-              );
-            return (
-              <div>
-                {daysDisplay}
-                {hoursDisplay}
-                {minsDisplay}
-                {secondsDisplay}
-              </div>
-            );
-          }}
-        />
+        <div>
+          {days > 0 && `${days}${t("common.daysShort", "d")} `}
+          {hours > 0 && `${hours}${t("common.hoursShort", "h")} `}
+          {minutes > 0 && `${minutes}${t("common.minutesShort", "m")} `}
+          {seconds > 0 && `${seconds}${t("common.secondsShort", "s")}`}
+        </div>
       </Modal.Body>
       <ModalFooter
         handleClick={modal.hide}
