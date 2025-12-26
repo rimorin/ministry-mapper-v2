@@ -183,6 +183,7 @@
     "updatedByOn": "Dikemas kini oleh {{user}} pada {{date}}",
     "deletePropertyWarning": "⚠️ AMARAN: Memadam nombor hartanah \"{{number}}\" bagi \"{{name}}\". Tindakan ini tidak boleh dibatalkan. Teruskan?",
     "clearNote": "Kosongkan Nota",
+    "notesInformation": "Nota hartanah sahaja. Jangan sertakan maklumat peribadi.",
     "resetWarning": "⚠️ AMARAN: Reset semua status hartanah bagi \"{{name}}\" akan reset semua status. Tindakan ini tidak boleh dibatalkan. Teruskan?",
     "deleteWarning": "⚠️ AMARAN: Memadam peta \"{{name}}\" akan membuangnya sepenuhnya. Tindakan ini tidak boleh dibatalkan. Teruskan?",
     "locationWithName": "Lokasi {{name}}",

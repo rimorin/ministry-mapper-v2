@@ -183,6 +183,7 @@
     "updatedByOn": "{{date}}에 {{user}}가 업데이트",
     "deletePropertyWarning": "⚠️ 경고: \"{{name}}\"의 속성 번호 \"{{number}}\"를 삭제합니다. 이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?",
     "clearNote": "메모 지우기",
+    "notesInformation": "부동산 메모만 입력하세요. 개인 정보를 포함하지 마세요.",
     "resetWarning": "⚠️ 경고: \"{{name}}\"의 모든 속성 상태를 초기화하면 모든 상태가 초기화됩니다. 이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?",
     "deleteWarning": "⚠️ 경고: \"{{name}}\" 맵을 삭제하면 완전히 제거됩니다. 이 작업은 되돌릴 수 없습니다. 계속하시겠습니까?",
     "locationWithName": "{{name}} 위치",

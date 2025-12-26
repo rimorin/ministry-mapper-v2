@@ -160,6 +160,7 @@
     "updatedByOn": "Diperbarui oleh {{user}} pada {{date}}",
     "deletePropertyWarning": "⚠️ PERINGATAN: Menghapus nomor properti \"{{number}}\" dari \"{{name}}\". Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
     "clearNote": "Hapus Catatan",
+    "notesInformation": "Catatan properti saja. Jangan sertakan informasi pribadi.",
     "resetWarning": "⚠️ PERINGATAN: Mengatur ulang status semua properti \"{{name}}\" akan mengatur ulang semua status. Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
     "deleteWarning": "⚠️ PERINGATAN: Menghapus peta \"{{name}}\" akan menghapusnya sepenuhnya. Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
     "locationWithName": "Lokasi {{name}}",

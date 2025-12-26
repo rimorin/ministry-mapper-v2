@@ -183,6 +183,7 @@
     "updatedByOn": "{{date}}に{{user}}が更新",
     "deletePropertyWarning": "⚠️ 警告：「{{name}}」の物件番号「{{number}}」を削除します。この操作は元に戻せません。続行しますか？",
     "clearNote": "メモを消去",
+    "notesInformation": "物件メモのみ。個人情報は入力しないでください。",
     "resetWarning": "⚠️ 警告：「{{name}}」のすべての物件状態をリセットします。この操作は元に戻せません。続行しますか？",
     "deleteWarning": "⚠️ 警告：マップ「{{name}}」を完全に削除します。この操作は元に戻せません。続行しますか？",
     "locationWithName": "{{name}}の位置",
