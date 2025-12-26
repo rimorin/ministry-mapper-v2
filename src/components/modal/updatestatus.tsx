@@ -243,6 +243,10 @@ const UpdateUnitStatus = NiceModal.create(
                 name="note"
                 handleChange={handleNoteChange}
                 changeValue={hhNote}
+                information={t(
+                  "address.notesInformation",
+                  "Property notes only. No personal information."
+                )}
               />
             </div>
             {isSingleStory && (

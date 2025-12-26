@@ -184,6 +184,7 @@
     "deletePropertyWarning": "⚠️ WARNING: Deleting property number \"{{number}}\" of \"{{name}}\". This action cannot be undone. Proceed?",
     "deleteFloorWarning": "⚠️ WARNING: Deleting floor {{floor}} of \"{{name}}\". This action cannot be undone. Proceed?",
     "clearNote": "Clear Note",
+    "notesInformation": "Property notes only. No personal information.",
     "resetWarning": "⚠️ WARNING: Resetting all property statuses of \"{{name}}\" will reset all statuses. This action cannot be undone. Proceed?",
     "deleteWarning": "⚠️ WARNING: Deleting map \"{{name}}\" will remove it completely. This action cannot be undone. Proceed?",
     "locationWithName": "{{name}} Location"

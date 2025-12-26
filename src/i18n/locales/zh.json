@@ -184,6 +184,7 @@
     "deletePropertyWarning": "⚠️ 警告：删除\"{{name}}\"的物业编号\"{{number}}\"。此操作无法撤消。是否继续？",
     "deleteFloorWarning": "⚠️ 警告：删除\"{{name}}\"的楼层{{floor}}。此操作无法撤消。是否继续？",
     "clearNote": "清除备注",
+    "notesInformation": "仅限物业备注。请勿包含个人信息。",
     "resetWarning": "⚠️ 警告：重置 \"{{name}}\" 的所有物业状态将重置所有状态。此操作无法撤消。是否继续？",
     "deleteWarning": "⚠️ 警告：删除地图 \"{{name}}\" 将完全移除它。此操作无法撤消。是否继续？",
     "locationWithName": "{{name}} 位置"
