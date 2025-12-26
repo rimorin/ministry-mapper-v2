@@ -5,11 +5,9 @@ import { Form, Row, Col, Modal } from "react-bootstrap";
 import {
   DEFAULT_CONGREGATION_MAX_TRIES,
   DEFAULT_SELF_DESTRUCT_HOURS,
-  WIKI_CATEGORIES,
   USER_ACCESS_LEVELS
 } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
-import HelpButton from "../navigation/help";
 import ModalFooter from "../form/footer";
 import { UpdateCongregationSettingsModalProps } from "../../utils/interface";
 import { updateDataById } from "../../utils/pocketbase";
@@ -67,7 +65,6 @@ const UpdateCongregationSettings = NiceModal.create(
             <Modal.Title>
               {t("congregation.settings", "Congregation Settings")}
             </Modal.Title>
-            <HelpButton link={WIKI_CATEGORIES.MANAGE_CONG_SETTINGS} />
           </Modal.Header>
           <Modal.Body>
             <Form.Group className="mb-3" controlId="formBasicCongName">

@@ -1,7 +1,6 @@
 import { use, useEffect, useState, lazy, Suspense } from "react";
 import { Container, Navbar, Image } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { MINISTRY_MAPPER_WIKI_PAGE } from "../utils/constants";
 import { getAssetUrl } from "../utils/helpers/assetpath";
 import NavBarBranding from "../components/navigation/branding";
 import { StateContext } from "../components/utils/context";
@@ -17,7 +16,8 @@ import GenericButton from "../components/navigation/button";
 import ThemeToggle from "../components/navigation/themetoggle";
 const { VITE_ABOUT_URL } = import.meta.env;
 
-const AboutURL = (VITE_ABOUT_URL || MINISTRY_MAPPER_WIKI_PAGE) as string;
+const AboutURL = (VITE_ABOUT_URL ||
+  "https://doc.ministry-mapper.com/user-guide") as string;
 
 const SignupComponent = lazy(() => import("./signup"));
 const LoginComponent = lazy(() => import("./signin"));

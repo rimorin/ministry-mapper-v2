@@ -3,16 +3,11 @@ import { useTranslation } from "react-i18next";
 
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
-import {
-  USER_ACCESS_LEVELS,
-  TERRITORY_TYPES,
-  WIKI_CATEGORIES
-} from "../../utils/constants";
+import { USER_ACCESS_LEVELS, TERRITORY_TYPES } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import { NewUnitModalProps } from "../../utils/interface";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
-import HelpButton from "../navigation/help";
 import { callFunction } from "../../utils/pocketbase";
 
 const NewUnit = NiceModal.create(
@@ -57,11 +52,6 @@ const NewUnit = NiceModal.create(
               ? t("unit.addPropertyTitle", { name: addressData.name })
               : t("unit.addUnitTitle", { mapId: mapId })}
           </Modal.Title>
-          {addressData.type === TERRITORY_TYPES.SINGLE_STORY ? (
-            <HelpButton link={WIKI_CATEGORIES.ADD_DELETE_PRIVATE_PROPERTY} />
-          ) : (
-            <HelpButton link={WIKI_CATEGORIES.ADD_PUBLIC_UNIT} />
-          )}
         </Modal.Header>
         <Form onSubmit={handleCreateNewUnit}>
           <Modal.Body>

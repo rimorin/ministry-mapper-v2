@@ -3,11 +3,10 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
+import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
-import HelpButton from "../navigation/help";
 import IsValidTerritoryCode from "../../utils/helpers/checkterritorycd";
 import { NewTerritoryCodeModalProps } from "../../utils/interface";
 import { createData, getFirstItemOfList } from "../../utils/pocketbase";
@@ -70,7 +69,6 @@ const NewTerritoryCode = NiceModal.create(
           <Modal.Title>
             {t("territory.createNew", "Create New Territory")}
           </Modal.Title>
-          <HelpButton link={WIKI_CATEGORIES.CREATE_TERRITORIES} />
         </Modal.Header>
         <Form onSubmit={handleCreateTerritory}>
           <Modal.Body>

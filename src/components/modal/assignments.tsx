@@ -1,7 +1,6 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { Modal, ListGroup } from "react-bootstrap";
 import {
-  WIKI_CATEGORIES,
   LINK_SELECTOR_VIEWPORT_HEIGHT,
   USER_ACCESS_LEVELS
 } from "../../utils/constants";
@@ -9,7 +8,6 @@ import LinkTypeDescription from "../../utils/helpers/linkdesc";
 import LinkDateFormatter from "../../utils/helpers/linkdateformatter";
 import { LinkSession } from "../../utils/policies";
 import ModalFooter from "../form/footer";
-import HelpButton from "../navigation/help";
 import { useEffect, useState } from "react";
 import { AssignmentModalProps } from "../../utils/interface";
 import { deleteDataById } from "../../utils/pocketbase";
@@ -57,7 +55,6 @@ const GetAssignments = NiceModal.create(
                 )
               : t("assignment.assignments", "Assignments")}
           </Modal.Title>
-          <HelpButton link={WIKI_CATEGORIES.GET_ASSIGNMENTS} />
         </Modal.Header>
         <Modal.Body>
           <ListGroup

@@ -3,11 +3,10 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useState, FormEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
+import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
-import HelpButton from "../navigation/help";
 import { ChangeTerritoryNameModalProps } from "../../utils/interface";
 import { updateDataById } from "../../utils/pocketbase";
 
@@ -49,7 +48,6 @@ const ChangeTerritoryName = NiceModal.create(
           <Modal.Title>
             {t("territory.changeName", "Change Territory Name")}
           </Modal.Title>
-          <HelpButton link={WIKI_CATEGORIES.CHANGE_TERRITORY_NAME} />
         </Modal.Header>
         <Form onSubmit={handleUpdateTerritoryName}>
           <Modal.Body>

@@ -3,12 +3,11 @@ import { useTranslation } from "react-i18next";
 
 import { useState, FormEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
-import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
+import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import { UserModalProps } from "../../utils/interface";
 import ModalFooter from "../form/footer";
 import UserRoleField from "../form/role";
-import HelpButton from "../navigation/help";
 import { deleteDataById, updateDataById } from "../../utils/pocketbase";
 
 const UpdateUser = NiceModal.create(
@@ -54,7 +53,6 @@ const UpdateUser = NiceModal.create(
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
           <Modal.Title>{t("user.updateRole", { name })}</Modal.Title>
-          <HelpButton link={WIKI_CATEGORIES.MANAGE_USERS} />
         </Modal.Header>
         <Form onSubmit={handleUserDetails}>
           <Modal.Body>

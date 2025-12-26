@@ -1,10 +1,6 @@
 import React, { lazy, useEffect } from "react";
 import { ButtonGroup, Badge } from "react-bootstrap";
-import {
-  MESSAGE_TYPES,
-  USER_ACCESS_LEVELS,
-  WIKI_CATEGORIES
-} from "../../utils/constants";
+import { MESSAGE_TYPES, USER_ACCESS_LEVELS } from "../../utils/constants";
 import { addressDetails } from "../../utils/interface";
 import { Policy } from "../../utils/policies";
 import { useTranslation } from "react-i18next";
@@ -77,7 +73,6 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
     showModal(UpdateMapMessages, {
       name: addressElement.name,
       mapId: mapId,
-      helpLink: WIKI_CATEGORIES.PUBLISHER_ADDRESS_FEEDBACK,
       footerSaveAcl: userRole,
       policy: policy,
       messageType: msgType

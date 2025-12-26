@@ -15,9 +15,8 @@ import {
   Stack
 } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { PB_FIELDS, WIKI_CATEGORIES } from "../../utils/constants";
+import { PB_FIELDS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
-import HelpButton from "../navigation/help";
 import {
   HHOptionProps,
   OptionTooltipProps,
@@ -424,7 +423,6 @@ const UpdateCongregationOptions = NiceModal.create(
             <Modal.Title>
               {t("congregation.householdOptions", "Household Options")}
             </Modal.Title>
-            <HelpButton link={WIKI_CATEGORIES.MANAGE_CONG_OPTIONS} />
           </Modal.Header>
           <Modal.Body className="sortable-modal-body">
             <Container fluid>

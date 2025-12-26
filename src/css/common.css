@@ -95,11 +95,6 @@
   font-weight: bold;
 }
 
-.help-button {
-  cursor: pointer;
-  margin: 0 0.25rem;
-}
-
 /* ===== OVERLAYS ===== */
 .suspense-loader,
 .note-overlay {

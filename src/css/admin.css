@@ -76,12 +76,6 @@
   color: var(--mm-primary-hover);
 }
 
-.warning-help-button {
-  position: absolute;
-  right: 0.25rem;
-  top: 0.55rem;
-}
-
 /* ===== MAP CONTAINERS ===== */
 .map-body-admin {
   height: 490px;
