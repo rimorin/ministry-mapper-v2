@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 import { Polyline as LeafletPolyline, LatLngBounds } from "leaflet";
-import polyline from "@mapbox/polyline";
 import { latlongInterface, TravelMode } from "../../utils/interface";
 
 interface RoutingServiceProps {
@@ -37,34 +36,30 @@ const RoutingService: React.FC<RoutingServiceProps> = ({
       onLoadingChange?.(true);
       try {
         const response = await fetch(
-          `https://api.openrouteservice.org/v2/directions/${profile}`,
+          `https://api.openrouteservice.org/v2/directions/${profile}/geojson`,
           {
             method: "POST",
             headers: {
               Authorization: import.meta.env.VITE_OPENROUTE_API_KEY,
               "Content-Type": "application/json",
-              Accept: "application/json, application/geo+json"
+              Accept: "application/geo+json"
             },
             body: JSON.stringify({
               coordinates: [
                 [start.lng, start.lat],
                 [end.lng, end.lat]
-              ],
-              format: "geojson"
+              ]
             })
           }
         );
 
         const data = await response.json();
 
-        if (isMounted && data.routes?.[0]?.geometry) {
-          const geometry = data.routes[0].geometry;
+        if (isMounted && data.features?.[0]?.geometry?.coordinates) {
           const latLngs: [number, number][] =
-            typeof geometry === "string"
-              ? polyline.decode(geometry)
-              : geometry.coordinates.map(
-                  (coord: number[]) => [coord[1], coord[0]] as [number, number]
-                );
+            data.features[0].geometry.coordinates.map(
+              (coord: number[]) => [coord[1], coord[0]] as [number, number]
+            );
 
           routeLineRef.current = new LeafletPolyline(latLngs, {
             color,
