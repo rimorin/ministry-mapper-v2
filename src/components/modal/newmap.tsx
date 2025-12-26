@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import {
   USER_ACCESS_LEVELS,
   TERRITORY_TYPES,
-  WIKI_CATEGORIES,
   DEFAULT_COORDINATES,
   MIN_START_FLOOR
 } from "../../utils/constants";
@@ -22,7 +21,6 @@ import FloorField from "../form/floors";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import GenericTextAreaField from "../form/textarea";
-import HelpButton from "../navigation/help";
 import ChangeMapGeolocation from "./changegeolocation";
 import { callFunction } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
@@ -100,13 +98,6 @@ const NewMap = NiceModal.create(
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
           <Modal.Title>{t("map.createMap")}</Modal.Title>
-          <HelpButton
-            link={
-              isMultiStory
-                ? WIKI_CATEGORIES.CREATE_PUBLIC_ADDRESS
-                : WIKI_CATEGORIES.CREATE_PRIVATE_ADDRESS
-            }
-          />
         </Modal.Header>
         <Form onSubmit={handleCreateTerritoryAddress}>
           <Modal.Body

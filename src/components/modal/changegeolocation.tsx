@@ -10,13 +10,11 @@ import {
   useMapEvents
 } from "react-leaflet";
 import { GeoSearchControl, LocationIQProvider } from "leaflet-geosearch";
-import { WIKI_CATEGORIES } from "../../utils/constants";
 import {
   currentLocationIcon,
   addressMarkerIcon
 } from "../../utils/helpers/mapicons";
 import useNotification from "../../hooks/useNotification";
-import HelpButton from "../navigation/help";
 import {
   ConfigureAddressCoordinatesModalProps,
   latlongInterface
@@ -172,7 +170,6 @@ const ChangeMapGeolocation = NiceModal.create(
               : t("common.change", "Change")}{" "}
             {t("address.location", "Location")}
           </Modal.Title>
-          <HelpButton link={WIKI_CATEGORIES.CHANGE_ADDRESS_NAME} />
         </Modal.Header>
         <Form onSubmit={handleUpdateGeoLocation}>
           <Modal.Body

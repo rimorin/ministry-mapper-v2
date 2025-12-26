@@ -4,15 +4,11 @@ import { Image, Modal } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import CustomControl from "../map/customcontrol";
-import {
-  WIKI_CATEGORIES,
-  DESTINATION_PROXIMITY_THRESHOLD_METERS
-} from "../../utils/constants";
+import { DESTINATION_PROXIMITY_THRESHOLD_METERS } from "../../utils/constants";
 import {
   currentLocationIcon,
   destinationIcon
 } from "../../utils/helpers/mapicons";
-import HelpButton from "../navigation/help";
 import {
   GetMapGeolocationModalProps,
   latlongInterface,
@@ -101,7 +97,6 @@ const GetMapGeolocation = NiceModal.create(
           <Modal.Title>
             {t("address.locationWithName", "{{name}} Location", { name })}
           </Modal.Title>
-          <HelpButton link={WIKI_CATEGORIES.CHANGE_ADDRESS_NAME} />
         </Modal.Header>
         <Modal.Body className="geolocation-modal-body">
           <MapContainer

@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next";
 import useNotification from "../../hooks/useNotification";
 import ModalFooter from "../form/footer";
 import GenericTextAreaField from "../form/textarea";
-import HelpButton from "../navigation/help";
 import {
   Message,
   UpdateAddressFeedbackModalProps
@@ -102,7 +101,6 @@ const UpdateMapMessages = NiceModal.create(
   ({
     name,
     mapId,
-    helpLink,
     policy,
     messageType,
     assignmentId
@@ -149,7 +147,6 @@ const UpdateMapMessages = NiceModal.create(
           <Modal.Title>
             {t("messages.messagesOn", "Messages on {{name}}", { name })}
           </Modal.Title>
-          <HelpButton link={helpLink} />
         </Modal.Header>
         <Form onSubmit={handleSubmitFeedback}>
           <Modal.Body>

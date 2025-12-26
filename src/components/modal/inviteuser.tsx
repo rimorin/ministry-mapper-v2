@@ -5,12 +5,11 @@ import { useTranslation } from "react-i18next";
 import AsyncSelect from "react-select/async";
 import { OptionsOrGroups, GroupBase } from "react-select";
 import { RecordModel } from "pocketbase";
-import { USER_ACCESS_LEVELS, WIKI_CATEGORIES } from "../../utils/constants";
+import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import { UserModalProps, SelectProps } from "../../utils/interface";
 import ModalFooter from "../form/footer";
 import UserRoleField from "../form/role";
-import HelpButton from "../navigation/help";
 import {
   createData,
   getFirstItemOfList,
@@ -133,7 +132,6 @@ const InviteUser = NiceModal.create(
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
           <Modal.Title>{t("user.inviteUser", "Invite User")}</Modal.Title>
-          <HelpButton link={WIKI_CATEGORIES.INVITE_USER} />
         </Modal.Header>
         <Form onSubmit={handleUserDetails}>
           <Modal.Body>

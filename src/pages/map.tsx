@@ -15,7 +15,6 @@ import TopNavbar from "../components/navigation/topnavbar";
 import useNotification from "../hooks/useNotification";
 import {
   TERRITORY_TYPES,
-  WIKI_CATEGORIES,
   DEFAULT_COORDINATES,
   MESSAGE_TYPES,
   USER_ACCESS_LEVELS,
@@ -80,7 +79,6 @@ const Map = () => {
     showModal(UpdateMapMessages, {
       name: mapDetails?.name,
       mapId: mapDetails?.id,
-      helpLink: WIKI_CATEGORIES.PUBLISHER_ADDRESS_FEEDBACK,
       policy: policy,
       messageType: MESSAGE_TYPES.PUBLISHER,
       assignmentId: id

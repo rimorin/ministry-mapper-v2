@@ -3,10 +3,9 @@ import { useTranslation } from "react-i18next";
 import { useState, FormEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import Calendar from "react-calendar";
-import { WIKI_CATEGORIES, USER_ACCESS_LEVELS } from "../../utils/constants";
+import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
-import HelpButton from "../navigation/help";
 import { ConfirmSlipDetailsModalProps } from "../../utils/interface";
 import type { Value } from "react-calendar/dist/shared/types";
 import useNotification from "../../hooks/useNotification";
@@ -41,7 +40,6 @@ const ConfirmSlipDetails = NiceModal.create(
               ? t("slip.confirmPersonalTitle", { addressName })
               : t("slip.confirmRegularTitle", { addressName })}
           </Modal.Title>
-          <HelpButton link={WIKI_CATEGORIES.CREATE_PERSONAL_SLIPS} />
         </Modal.Header>
         <Form onSubmit={handleSubmitPersonalSlip}>
           <Modal.Body>

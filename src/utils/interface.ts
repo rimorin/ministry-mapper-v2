@@ -248,11 +248,6 @@ export interface SignInDifferentProps {
   handleClick?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
-export interface HelpButtonProps {
-  link: string;
-  isWarningButton?: boolean;
-}
-
 export interface userDetails extends nameInterface {
   email: string;
   verified: boolean;
@@ -425,12 +420,9 @@ export interface ConfirmSlipDetailsModalProps {
 }
 
 export interface UpdateAddressFeedbackModalProps
-  extends nameInterface, mapInterface, footerInterface {
-  helpLink: string;
-  currentName: string;
+  extends nameInterface, mapInterface {
   policy: Policy;
-  messageType: string;
-  messages: Array<Message>;
+  messageType: number;
   assignmentId?: string;
 }
 
