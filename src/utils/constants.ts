@@ -1,4 +1,3 @@
-import { RuleNames } from "react-password-checklist";
 import { getAssetUrl } from "./helpers/assetpath";
 
 const DESTINATION_PROXIMITY_THRESHOLD_METERS = 50;
@@ -110,12 +109,6 @@ const NUMERIC_CHARACTERS = /^-?\d+$/;
 const MINIMUM_POSTAL_LENGTH = 6;
 
 const MINIMUM_PASSWORD_LENGTH = 6;
-const PASSWORD_POLICY = [
-  "minLength",
-  "number",
-  "capital",
-  "match"
-] as RuleNames[];
 
 const DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION = "sg";
 // create a map of coordinates for each congregation
@@ -245,7 +238,6 @@ export {
   SPECIAL_CHARACTERS,
   MINIMUM_POSTAL_LENGTH,
   MINIMUM_PASSWORD_LENGTH,
-  PASSWORD_POLICY,
   DEFAULT_CONGREGATION_MAX_TRIES,
   NUMERIC_CHARACTERS,
   LINK_SELECTOR_VIEWPORT_HEIGHT,

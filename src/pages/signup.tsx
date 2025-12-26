@@ -1,14 +1,14 @@
 import { use, useState } from "react";
 import { Form, Spinner, FloatingLabel } from "react-bootstrap";
-import PasswordChecklist from "react-password-checklist";
 import { useTranslation } from "react-i18next";
 
 import useNotification from "../hooks/useNotification";
-import { PASSWORD_POLICY, MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
+import { MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
 import { StateContext } from "../components/utils/context";
 import { createData, verifyEmail } from "../utils/pocketbase";
 import GenericButton from "../components/navigation/button";
 import { getDisabledStyle } from "../utils/helpers/disabledstyle";
+import PasswordChecklist from "../components/form/passwordchecklist";
 
 const { VITE_PRIVACY_URL, VITE_TERMS_URL } = import.meta.env;
 
@@ -175,16 +175,11 @@ const SignupComponent = () => {
         </FloatingLabel>
       </Form.Group>
       <Form.Group className="mb-2">
-        <div
-          id="password-requirements"
-          className="password-checklist-compact"
-          style={{ fontSize: "0.8rem" }}
-        >
+        <div id="password-requirements" style={{ fontSize: "0.8rem" }}>
           <PasswordChecklist
-            rules={PASSWORD_POLICY}
+            password={formData.password}
+            passwordConfirm={formData.confirmPassword}
             minLength={MINIMUM_PASSWORD_LENGTH}
-            value={formData.password}
-            valueAgain={formData.confirmPassword}
             onChange={setIsPasswordValid}
             messages={{
               minLength: t(
