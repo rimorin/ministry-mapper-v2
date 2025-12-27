@@ -10,11 +10,13 @@ const UnauthorizedPage = ({ handleClick }: SignInDifferentProps) => {
   return (
     <Container className="container-main">
       <Card className="card-main">
-        <Card.Img
-          alt={t("branding.logo", "Ministry Mapper logo")}
-          className="mm-logo"
-          src={getAssetUrl("android-chrome-192x192.png")}
-        />
+        <Card.Body className="text-center">
+          <Card.Img
+            alt={t("branding.logo", "Ministry Mapper logo")}
+            className="mm-logo mx-auto d-block"
+            src={getAssetUrl("android-chrome-192x192.png")}
+          />
+        </Card.Body>
         <Card.Body>
           <Card.Title className="text-center">
             {t("auth.unauthorizedAccessTitle", "Access Denied 🔐")}
