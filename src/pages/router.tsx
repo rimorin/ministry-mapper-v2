@@ -1,4 +1,4 @@
-import { ComponentType, lazy, LazyExoticComponent, Suspense } from "react";
+import { ComponentType, FC, lazy, LazyExoticComponent, Suspense } from "react";
 import Loader from "../components/statics/loader";
 import { Route, Switch } from "wouter";
 
@@ -13,7 +13,7 @@ const FrontPage = lazy(() => import("./frontpage"));
 const UserManagement = lazy(() => import("./usrmgmt"));
 const NotFoundPage = lazy(() => import("../components/statics/notfound"));
 
-const router = () => (
+const Router: FC = () => (
   <Switch>
     <Route path="/">{LazyLoad(FrontPage)}</Route>
     <Route path="/map/:id">{LazyLoad(Map)}</Route>
@@ -22,4 +22,4 @@ const router = () => (
   </Switch>
 );
 
-export default router;
+export default Router;

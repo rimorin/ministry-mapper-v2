@@ -37,7 +37,11 @@ const CombinedMiddleware: FC<CombinedMiddlewareProps> = ({ children }) => (
 );
 
 const Main: FC = () => {
-  return <CombinedMiddleware>{Router()}</CombinedMiddleware>;
+  return (
+    <CombinedMiddleware>
+      <Router />
+    </CombinedMiddleware>
+  );
 };
 
 export default Main;
