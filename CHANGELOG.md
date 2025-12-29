@@ -1,3 +1,16 @@
+# [1.19.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.18.0...v1.19.0) (2025-12-29)
+
+
+### Bug Fixes
+
+* streamline link expiration handling in Map component ([ae41933](https://github.com/rimorin/ministry-mapper-v2/commit/ae419338549953b3226285444de04ca0becd36d6))
+
+
+### Features
+
+* add StaticPageCard component for displaying static content with optional logo ([3b60d9d](https://github.com/rimorin/ministry-mapper-v2/commit/3b60d9df0c8d872b916e7cfb0ab7fa6f0fc47ddf))
+* implement lazy loading for translations ([0d623ce](https://github.com/rimorin/ministry-mapper-v2/commit/0d623cea0418f2b5171e998a09c7252a1146b29a))
+
 # [1.18.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.17.0...v1.18.0) (2025-12-19)
 
 
