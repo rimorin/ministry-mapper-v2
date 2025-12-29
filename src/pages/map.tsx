@@ -252,6 +252,10 @@ const Map = () => {
   );
   useVisibilityChange(() => getMapData(id));
 
+  if (isLinkExpired) {
+    document.title = "Ministry Mapper";
+    return <InvalidPage />;
+  }
   if (isLoading) {
     return (
       <>
@@ -262,10 +266,6 @@ const Map = () => {
         <MapPlaceholder policy={policy} />
       </>
     );
-  }
-  if (isLinkExpired) {
-    document.title = "Ministry Mapper";
-    return <InvalidPage />;
   }
 
   return (
