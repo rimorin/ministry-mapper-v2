@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function useLocalStorage<T = string | boolean>(
   key: string,
@@ -39,6 +39,24 @@ export function useLocalStorage<T = string | boolean>(
       console.error(`Error removing localStorage key "${key}":`, error);
     }
   };
+
+  // Sync state across browser tabs
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === key && e.newValue !== null) {
+        try {
+          setStoredValue(JSON.parse(e.newValue));
+        } catch {
+          setStoredValue(initialValue);
+        }
+      } else if (e.key === key && e.newValue === null) {
+        setStoredValue(initialValue);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, [key, initialValue]);
 
   return [storedValue, setValue, removeValue] as const;
 }
