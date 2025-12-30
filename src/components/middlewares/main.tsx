@@ -2,6 +2,7 @@ import { FC, lazy, ReactNode, Suspense } from "react";
 import { Container } from "react-bootstrap";
 import VersionDisplay from "../navigation/versiondisplay";
 import EnvironmentIndicator from "../navigation/environment";
+import { NetworkStatusBanner } from "../statics/networkstatus";
 import Loader from "../statics/loader";
 const MissingSetupPage = lazy(() => import("../statics/missingsetup"));
 const { VITE_SYSTEM_ENVIRONMENT } = import.meta.env;
@@ -26,6 +27,7 @@ const MainMiddleware: FC<MainMiddlewareProps> = ({ children }) => {
         minHeight: "95vh"
       }}
     >
+      <NetworkStatusBanner />
       <EnvironmentIndicator environment={VITE_SYSTEM_ENVIRONMENT} />
       {children}
       <VersionDisplay />
