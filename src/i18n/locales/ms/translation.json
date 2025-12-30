@@ -26,7 +26,9 @@
     "success": "Berjaya!",
     "error": "Ralat",
     "Language": "Bahasa",
-    "Loading": "Memuatkan..."
+    "Loading": "Memuatkan...",
+    "noConnection": "Tiada sambungan internet",
+    "weakConnection": "Sambungan lemah"
   },
   "auth": {
     "signIn": "Log Masuk",

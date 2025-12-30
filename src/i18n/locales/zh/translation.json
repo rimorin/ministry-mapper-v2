@@ -26,7 +26,9 @@
     "success": "成功！",
     "error": "错误",
     "Language": "语言",
-    "Loading": "加载中..."
+    "Loading": "加载中...",
+    "noConnection": "无网络连接",
+    "weakConnection": "网络信号弱"
   },
   "auth": {
     "signIn": "登录",
@@ -320,7 +322,6 @@
     "deleteFloor": "🗑️",
     "deleteUnit": "🗑️"
   },
-  "location": {},
   "unit": {
     "alphanumericDashHyphenValidation": "单元/房产编号只能包含字母数字字符、破折号或连字符。",
     "addPropertyTitle": "将房产添加到 {{name}}",

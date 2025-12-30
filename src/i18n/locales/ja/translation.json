@@ -26,7 +26,9 @@
     "success": "成功！",
     "error": "エラー",
     "Language": "言語",
-    "Loading": "読み込み中..."
+    "Loading": "読み込み中...",
+    "noConnection": "インターネット接続なし",
+    "weakConnection": "接続が弱い"
   },
   "auth": {
     "signIn": "ログイン",

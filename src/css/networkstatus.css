@@ -1,0 +1,79 @@
+.network-status-banner {
+  position: sticky;
+  top: 0;
+  z-index: 1050;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.75rem;
+  font-weight: 400;
+  text-align: center;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transform: translateY(-100%);
+  opacity: 0;
+  transition:
+    transform 300ms ease-out,
+    opacity 300ms ease-out,
+    background-color 300ms ease;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.network-status-text {
+  flex: 1;
+  text-align: center;
+}
+
+.network-status-banner.visible {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+.network-status-banner.offline {
+  background-color: #dc3545;
+  color: #fff;
+  opacity: 0.95;
+}
+
+.network-status-banner.slow {
+  background-color: #ffc107;
+  color: #000;
+  opacity: 0.9;
+}
+
+.network-status-banner.offline .network-status-text {
+  animation: pulse 2s infinite;
+}
+
+.network-status-dismiss {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  opacity: 0.6;
+  transition: opacity 150ms ease;
+  flex-shrink: 0;
+}
+
+.network-status-dismiss:hover {
+  opacity: 1;
+}
+
+.network-status-dismiss:focus {
+  outline: 2px solid currentColor;
+  outline-offset: 2px;
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}

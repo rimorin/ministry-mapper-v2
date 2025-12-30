@@ -26,7 +26,9 @@
     "success": "Success!",
     "error": "Error",
     "Language": "Language",
-    "Loading": "Loading..."
+    "Loading": "Loading...",
+    "noConnection": "No internet connection",
+    "weakConnection": "Weak connection"
   },
   "auth": {
     "signIn": "Sign In",
