@@ -1,3 +1,10 @@
+# [1.20.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.19.0...v1.20.0) (2025-12-31)
+
+
+### Features
+
+* add network status banner and related hooks for online/offline detection ([a66a4ab](https://github.com/rimorin/ministry-mapper-v2/commit/a66a4aba9d94e68ff7bdab4cb18572f403eff652))
+
 # [1.19.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.18.0...v1.19.0) (2025-12-29)
 
 
