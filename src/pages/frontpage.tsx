@@ -22,7 +22,7 @@ const AboutURL = (VITE_ABOUT_URL ||
 const SignupComponent = lazy(() => import("./signup"));
 const LoginComponent = lazy(() => import("./signin"));
 const ForgotComponent = lazy(() => import("./forgot"));
-const Admin = lazy(() => import("./admin"));
+const Admin = lazy(() => import("./admin/index"));
 
 const FrontPage = () => {
   const { t } = useTranslation();
