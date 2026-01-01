@@ -378,5 +378,14 @@
   },
   "location": {
     "arrivedAtDestination": "您已到达目的地"
+  },
+  "error": {
+    "boundary": {
+      "title": "出错了",
+      "description": "加载此部分时遇到错误。请重试。",
+      "details": "错误详情",
+      "retry": "重试",
+      "home": "返回首页"
+    }
   }
 }

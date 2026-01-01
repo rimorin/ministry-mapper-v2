@@ -378,5 +378,14 @@
   },
   "location": {
     "arrivedAtDestination": "Anda telah sampai di tujuan"
+  },
+  "error": {
+    "boundary": {
+      "title": "Terjadi kesalahan",
+      "description": "Kami mengalami kesalahan saat memuat bagian ini. Silakan coba lagi.",
+      "details": "Detail Kesalahan",
+      "retry": "Coba Lagi",
+      "home": "Kembali ke Beranda"
+    }
   }
 }
