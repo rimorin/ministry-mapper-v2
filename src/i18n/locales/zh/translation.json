@@ -28,7 +28,12 @@
     "Language": "语言",
     "Loading": "加载中...",
     "noConnection": "无网络连接",
-    "weakConnection": "网络信号弱"
+    "weakConnection": "网络信号弱",
+    "confirm": "确认",
+    "confirmDelete": "确认删除",
+    "confirmReset": "确认重置",
+    "update": "更新",
+    "reset": "重置"
   },
   "auth": {
     "signIn": "登录",
@@ -111,8 +116,8 @@
     "createNew": "创建新区域",
     "deleteCurrent": "删除当前区域",
     "resetStatus": "重置状态",
-    "deleteWarning": "⚠️ 警告：删除区域 \"{{code}}\" 将移除所有关联的地图和分配。此操作无法撤消。是否继续？",
-    "resetWarning": "⚠️ 警告：重置区域 \"{{code}}\" 将重置所有地址的状态。此操作无法撤消。是否继续？",
+    "deleteWarning": "区域\"{{code}}\"及其所有地图和分配将被永久删除。\n您无法撤销此操作。",
+    "resetWarning": "区域\"{{code}}\"中的所有地址状态将重置为默认状态。\n您无法撤销此操作。",
     "existingTerritoryCode": "现有区域代码",
     "newTerritoryCode": "新区域代码",
     "codeExample": "区域代码。例如，M01，W12等。",
@@ -183,12 +188,12 @@
     "clickToSelectOnMap": "点击在地图上选择",
     "coordinatesDescription": "地址的纬度和经度。",
     "updatedByOn": "由{{user}}于{{date}}更新",
-    "deletePropertyWarning": "⚠️ 警告：删除\"{{name}}\"的物业编号\"{{number}}\"。此操作无法撤消。是否继续？",
-    "deleteFloorWarning": "⚠️ 警告：删除\"{{name}}\"的楼层{{floor}}。此操作无法撤消。是否继续？",
+    "deletePropertyWarning": "属性\"{{number}}\"将从\"{{name}}\"中永久删除。\n您无法撤销此操作。",
+    "deleteFloorWarning": "楼层{{floor}}及其所有单元将从\"{{name}}\"中永久删除。\n您无法撤销此操作。",
     "clearNote": "清除备注",
     "notesInformation": "仅限物业备注。请勿包含个人信息。",
-    "resetWarning": "⚠️ 警告：重置 \"{{name}}\" 的所有物业状态将重置所有状态。此操作无法撤消。是否继续？",
-    "deleteWarning": "⚠️ 警告：删除地图 \"{{name}}\" 将完全移除它。此操作无法撤消。是否继续？",
+    "resetWarning": "\"{{name}}\"中的所有物业状态将重置为默认状态。\n您无法撤销此操作。",
+    "deleteWarning": "地图\"{{name}}\"将被永久删除。\n您无法撤销此操作。",
     "locationWithName": "{{name}} 位置"
   },
   "household": {
@@ -235,7 +240,7 @@
     "numberOfTries": "尝试次数",
     "duplicateSequences": "发现重复的选项序列。请检查您的输入。",
     "selectOneDefault": "请选择一个默认选项。",
-    "deleteOptionsWarning": "⚠️ 警告：您已从家庭下拉列表中移除 [{{options}}]。具有这些选项的现有记录将被替换为默认选项。是否继续？",
+    "deleteOptionsWarning": "选项[{{options}}]将从下拉列表中删除。\n现有记录将使用默认选项。\n您无法撤销此操作。",
     "minimumOneOption": "下拉列表中必须至少有一个选项。",
     "optionCodeTooltip": "此代码将出现在传道区域房屋框中。它将用于指示家庭类型。",
     "optionDescTooltip": "描述将出现在家庭下拉列表中。",
@@ -253,7 +258,8 @@
     "duplicateOptionCodes": "发现重复的选项代码。请检查您的输入。",
     "notFound": "未找到会众。",
     "dragToReorder": "拖动以重新排序",
-    "dragEditHint": "拖动行或使用箭头按钮重新排序。点击字段进行编辑。"
+    "dragEditHint": "拖动行或使用箭头按钮重新排序。点击字段进行编辑。",
+    "confirmUpdate": "确认更新"
   },
   "assignment": {
     "assignment": "分配",
@@ -329,7 +335,7 @@
     "propertyNumberLabel": "房产编号",
     "unitNumberLabel": "单元编号",
     "requireOneUnitValidation": "区域至少需要 1 个单元编号。",
-    "confirmDelete": "⚠️ 警告：正在删除 \"{{mapName}}\" 的单元编号 \"{{unitNo}}\"。此操作无法撤销。继续？"
+    "confirmDelete": "单元{{unitNo}}将被永久删除。\n您无法撤销此操作。"
   },
   "profile": {
     "updateSuccess": "个人资料已更新。",

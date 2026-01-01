@@ -17,6 +17,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { PB_FIELDS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
+import useConfirm from "../../hooks/useConfirm";
 import {
   HHOptionProps,
   OptionTooltipProps,
@@ -255,6 +256,7 @@ const UpdateCongregationOptions = NiceModal.create(
     const { t } = useTranslation();
     const { notifyError, notifyWarning } = useNotification();
     const modal = useModal();
+    const { confirm } = useConfirm();
 
     const [isSaving, setIsSaving] = useState<boolean>(false);
     const [deletedOptions, setDeletedOptions] = useState<Array<string>>([]);
@@ -323,13 +325,16 @@ const UpdateCongregationOptions = NiceModal.create(
         return;
       }
 
-      const confirmUpdate = window.confirm(
-        t(
+      const confirmUpdate = await confirm({
+        title: t("congregation.confirmUpdate", "Confirm Update"),
+        message: t(
           "congregation.deleteOptionsWarning",
-          `⚠️ WARNING: You have removed [{{options}}] from the household dropdown list. Existing records with these options will be replaced with the default option. Proceed?`,
+          "Options [{{options}}] will be removed from the dropdown.\nExisting records will use the default option instead.\nYou cannot undo this.",
           { options: deletedOptions.join(", ") }
-        )
-      );
+        ),
+        confirmText: t("common.update", "Update"),
+        variant: "warning"
+      });
 
       if (confirmUpdate) {
         await updateOptions();

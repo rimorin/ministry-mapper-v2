@@ -28,7 +28,12 @@
     "Language": "Bahasa",
     "Loading": "Memuat...",
     "noConnection": "Tidak ada koneksi internet",
-    "weakConnection": "Koneksi lemah"
+    "weakConnection": "Koneksi lemah",
+    "confirm": "Konfirmasi",
+    "confirmDelete": "Konfirmasi Penghapusan",
+    "confirmReset": "Konfirmasi Reset",
+    "update": "Perbarui",
+    "reset": "Reset"
   },
   "auth": {
     "signIn": "Masuk",
@@ -111,8 +116,8 @@
     "createNew": "Buat Baru",
     "deleteCurrent": "Hapus yang Sekarang",
     "resetStatus": "Setel Ulang Status",
-    "deleteWarning": "⚠️ PERINGATAN: Menghapus wilayah \"{{code}}\" akan menghapus semua peta dan penugasan terkait. Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
-    "resetWarning": "⚠️ PERINGATAN: Mengatur ulang wilayah \"{{code}}\" akan mengatur ulang status semua alamat. Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
+    "deleteWarning": "Wilayah \"{{code}}\" dan semua peta serta penugasannya akan dihapus secara permanen.\nAnda tidak dapat membatalkan ini.",
+    "resetWarning": "Semua status alamat di wilayah \"{{code}}\" akan direset ke keadaan default.\nAnda tidak dapat membatalkan ini.",
     "existingTerritoryCode": "Kode Wilayah yang Ada",
     "newTerritoryCode": "Kode Wilayah Baru",
     "codeExample": "Kode wilayah. Misalnya, M01, W12, dll.",
@@ -160,13 +165,13 @@
     "clickToSelectOnMap": "Klik untuk memilih di peta",
     "coordinatesDescription": "Lintang dan Bujur alamat.",
     "updatedByOn": "Diperbarui oleh {{user}} pada {{date}}",
-    "deletePropertyWarning": "⚠️ PERINGATAN: Menghapus nomor properti \"{{number}}\" dari \"{{name}}\". Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
+    "deletePropertyWarning": "Properti \"{{number}}\" akan dihapus secara permanen dari \"{{name}}\".\nAnda tidak dapat membatalkan ini.",
     "clearNote": "Hapus Catatan",
     "notesInformation": "Catatan properti saja. Jangan sertakan informasi pribadi.",
-    "resetWarning": "⚠️ PERINGATAN: Mengatur ulang status semua properti \"{{name}}\" akan mengatur ulang semua status. Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
-    "deleteWarning": "⚠️ PERINGATAN: Menghapus peta \"{{name}}\" akan menghapusnya sepenuhnya. Tindakan ini tidak dapat dibatalkan. Lanjutkan?",
+    "resetWarning": "Semua status properti di \"{{name}}\" akan direset ke keadaan default.\nAnda tidak dapat membatalkan ini.",
+    "deleteWarning": "Peta \"{{name}}\" akan dihapus secara permanen.\nAnda tidak dapat membatalkan ini.",
     "locationWithName": "Lokasi {{name}}",
-    "deleteFloorWarning": "⚠️ PERINGATAN: Menghapus lantai {{floor}} dari \"{{name}}\". Tindakan ini tidak dapat dibatalkan. Lanjutkan?"
+    "deleteFloorWarning": "Lantai {{floor}} dan semua unitnya akan dihapus secara permanen dari \"{{name}}\".\nAnda tidak dapat membatalkan ini."
   },
   "household": {
     "household": "Rumah Tangga",
@@ -212,7 +217,7 @@
     "numberOfTries": "Jumlah Percobaan",
     "duplicateSequences": "Ditemukan urutan opsi duplikat. Silakan periksa input Anda.",
     "selectOneDefault": "Silakan pilih satu opsi default.",
-    "deleteOptionsWarning": "⚠️ PERINGATAN: Anda telah menghapus [{{options}}] dari daftar dropdown rumah tangga. Catatan yang ada dengan opsi ini akan diganti dengan opsi default. Lanjutkan?",
+    "deleteOptionsWarning": "Opsi [{{options}}] akan dihapus dari dropdown.\nCatatan yang ada akan menggunakan opsi default.\nAnda tidak dapat membatalkan ini.",
     "minimumOneOption": "Harus ada minimal satu opsi dalam daftar dropdown.",
     "optionCodeTooltip": "Kode ini akan muncul di kotak rumah wilayah. Ini akan digunakan untuk menunjukkan jenis rumah tangga.",
     "optionDescTooltip": "Deskripsi akan muncul dalam daftar dropdown rumah tangga.",
@@ -230,7 +235,8 @@
     "duplicateOptionCodes": "Kode opsi duplikat ditemukan. Silakan periksa masukan Anda.",
     "notFound": "Jemaat tidak ditemukan.",
     "dragToReorder": "Seret untuk menyusun ulang",
-    "dragEditHint": "Seret baris atau gunakan tombol panah untuk menyusun ulang. Klik kolom untuk mengedit."
+    "dragEditHint": "Seret baris atau gunakan tombol panah untuk menyusun ulang. Klik kolom untuk mengedit.",
+    "confirmUpdate": "Konfirmasi Pembaruan"
   },
   "assignment": {
     "assignment": "Penugasan",
@@ -329,7 +335,7 @@
     "propertyNumberLabel": "Nomor properti",
     "unitNumberLabel": "Nomor unit",
     "requireOneUnitValidation": "Wilayah membutuhkan setidaknya 1 nomor unit.",
-    "confirmDelete": "⚠️ PERINGATAN: Menghapus nomor unit \"{{unitNo}}\" dari \"{{mapName}}\". Tindakan ini tidak dapat dibatalkan. Lanjutkan?"
+    "confirmDelete": "Unit {{unitNo}} akan dihapus secara permanen.\nAnda tidak dapat membatalkan ini."
   },
   "profile": {
     "updateSuccess": "Profil diperbarui.",

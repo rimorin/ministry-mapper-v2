@@ -28,7 +28,12 @@
     "Language": "Bahasa",
     "Loading": "Memuatkan...",
     "noConnection": "Tiada sambungan internet",
-    "weakConnection": "Sambungan lemah"
+    "weakConnection": "Sambungan lemah",
+    "confirm": "Sahkan",
+    "confirmDelete": "Sahkan Padam",
+    "confirmReset": "Sahkan Reset",
+    "update": "Kemas Kini",
+    "reset": "Reset"
   },
   "auth": {
     "signIn": "Log Masuk",
@@ -111,8 +116,8 @@
     "createNew": "Cipta Baru",
     "deleteCurrent": "Padam Semasa",
     "resetStatus": "Set Semula Status",
-    "deleteWarning": "⚠️ AMARAN: Memadam wilayah \"{{code}}\" akan membuang semua peta dan tugasan berkaitan. Tindakan ini tidak boleh dibatalkan. Teruskan?",
-    "resetWarning": "⚠️ AMARAN: Reset wilayah \"{{code}}\" akan reset status semua alamat. Tindakan ini tidak boleh dibatalkan. Teruskan?",
+    "deleteWarning": "Wilayah \"{{code}}\" dan semua peta serta tugasannya akan dipadam secara kekal.\nAnda tidak boleh membatalkan ini.",
+    "resetWarning": "Semua status alamat di wilayah \"{{code}}\" akan ditetapkan semula ke keadaan asal.\nAnda tidak boleh membatalkan ini.",
     "existingTerritoryCode": "Kod Wilayah Sedia Ada",
     "newTerritoryCode": "Kod Wilayah Baru",
     "codeExample": "Kod wilayah. Contohnya, M01, W12, dll.",
@@ -183,13 +188,13 @@
     "clickToSelectOnMap": "Klik untuk pilih di peta",
     "coordinatesDescription": "Latitud dan Longitud alamat.",
     "updatedByOn": "Dikemas kini oleh {{user}} pada {{date}}",
-    "deletePropertyWarning": "⚠️ AMARAN: Memadam nombor hartanah \"{{number}}\" bagi \"{{name}}\". Tindakan ini tidak boleh dibatalkan. Teruskan?",
+    "deletePropertyWarning": "Harta \"{{number}}\" akan dipadam secara kekal dari \"{{name}}\".\nAnda tidak boleh membatalkan ini.",
     "clearNote": "Kosongkan Nota",
     "notesInformation": "Nota hartanah sahaja. Jangan sertakan maklumat peribadi.",
-    "resetWarning": "⚠️ AMARAN: Reset semua status hartanah bagi \"{{name}}\" akan reset semua status. Tindakan ini tidak boleh dibatalkan. Teruskan?",
-    "deleteWarning": "⚠️ AMARAN: Memadam peta \"{{name}}\" akan membuangnya sepenuhnya. Tindakan ini tidak boleh dibatalkan. Teruskan?",
+    "resetWarning": "Semua status hartanah dalam \"{{name}}\" akan ditetapkan semula ke keadaan asal.\nAnda tidak boleh membatalkan ini.",
+    "deleteWarning": "Peta \"{{name}}\" akan dipadam secara kekal.\nAnda tidak boleh membatalkan ini.",
     "locationWithName": "Lokasi {{name}}",
-    "deleteFloorWarning": "⚠️ AMARAN: Memadam tingkat {{floor}} daripada \"{{name}}\". Tindakan ini tidak boleh dibatalkan. Teruskan?"
+    "deleteFloorWarning": "Tingkat {{floor}} dan semua unitnya akan dipadam secara kekal dari \"{{name}}\".\nAnda tidak boleh membatalkan ini."
   },
   "household": {
     "household": "Isi Rumah",
@@ -235,7 +240,7 @@
     "numberOfTries": "Bil. Cubaan",
     "duplicateSequences": "Urutan pilihan duplikat ditemui. Sila semak input anda.",
     "selectOneDefault": "Sila pilih satu pilihan lalai.",
-    "deleteOptionsWarning": "⚠️ AMARAN: Anda telah membuang [{{options}}] dari senarai dropdown isi rumah. Rekod sedia ada dengan pilihan ini akan digantikan dengan pilihan lalai. Teruskan?",
+    "deleteOptionsWarning": "Pilihan [{{options}}] akan dikeluarkan dari dropdown.\nRekod sedia ada akan menggunakan pilihan lalai.\nAnda tidak boleh membatalkan ini.",
     "minimumOneOption": "Mesti ada sekurang-kurangnya satu pilihan dalam senarai dropdown.",
     "optionCodeTooltip": "Kod ini akan muncul dalam kotak rumah wilayah. Ia akan digunakan untuk menunjukkan jenis isi rumah.",
     "optionDescTooltip": "Keterangan akan muncul dalam senarai dropdown isi rumah.",
@@ -253,7 +258,8 @@
     "duplicateOptionCodes": "Kod pilihan pendua ditemui. Sila semak input anda.",
     "notFound": "Jemaat tidak dijumpai.",
     "dragToReorder": "Seret untuk menyusun semula",
-    "dragEditHint": "Seret baris atau gunakan butang anak panah untuk menyusun semula. Klik medan untuk mengedit."
+    "dragEditHint": "Seret baris atau gunakan butang anak panah untuk menyusun semula. Klik medan untuk mengedit.",
+    "confirmUpdate": "Sahkan Kemas Kini"
   },
   "assignment": {
     "assignment": "Tugasan",
@@ -329,7 +335,7 @@
     "propertyNumberLabel": "Nombor hartanah",
     "unitNumberLabel": "Nombor unit",
     "requireOneUnitValidation": "Wilayah memerlukan sekurang-kurangnya 1 nombor unit.",
-    "confirmDelete": "⚠️ AMARAN: Memadam nombor unit \"{{unitNo}}\" bagi \"{{mapName}}\". Tindakan ini tidak boleh dibatalkan. Teruskan?"
+    "confirmDelete": "Unit {{unitNo}} akan dipadam secara kekal.\nAnda tidak boleh membatalkan ini."
   },
   "profile": {
     "updateSuccess": "Profil dikemas kini.",

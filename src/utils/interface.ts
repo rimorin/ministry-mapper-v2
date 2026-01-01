@@ -705,3 +705,12 @@ export interface OptionTooltipProps {
   children: React.ReactNode;
   title: string;
 }
+
+export interface ConfirmDialogProps {
+  title: string;
+  message: string;
+  confirmText?: string;
+  cancelText?: string;
+  variant?: "danger" | "warning" | "primary" | "secondary";
+  focusConfirm?: boolean;
+}

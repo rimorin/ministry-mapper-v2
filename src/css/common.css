@@ -763,3 +763,27 @@
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   margin-bottom: 0;
 }
+
+/* ============================================
+   Stacked Modal Support
+   ============================================ */
+
+/* Ensure proper z-index stacking for nested modals */
+.modal.show ~ .modal.show {
+  z-index: calc(var(--bs-modal-zindex, 1055) + 10);
+}
+
+.modal-backdrop.show ~ .modal-backdrop.show {
+  z-index: calc(var(--bs-backdrop-zindex, 1050) + 10);
+}
+
+/* Dim parent modal when confirm dialog opens on top */
+.modal.show:has(~ .modal.show) {
+  filter: brightness(0.7);
+  transition: filter 0.15s ease-in-out;
+}
+
+/* Keep topmost modal fully visible */
+.modal.show ~ .modal.show {
+  filter: none;
+}
