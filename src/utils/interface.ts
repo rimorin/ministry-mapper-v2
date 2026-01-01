@@ -2,6 +2,7 @@ import { AuthModel } from "pocketbase";
 import { LinkSession, Policy } from "./policies";
 import { Value } from "react-calendar/dist/shared/types";
 import { MultiValue } from "react-select";
+import { FallbackProps } from "react-error-boundary";
 export interface userInterface {
   user: AuthModel;
 }
@@ -713,4 +714,15 @@ export interface ConfirmDialogProps {
   cancelText?: string;
   variant?: "danger" | "warning" | "primary" | "secondary";
   focusConfirm?: boolean;
+}
+
+// Error Boundary Interfaces
+
+export interface ErrorBoundaryFallbackProps extends FallbackProps {
+  componentName?: string;
+}
+
+export interface ErrorHandlerOptions {
+  context?: string;
+  silent?: boolean;
 }

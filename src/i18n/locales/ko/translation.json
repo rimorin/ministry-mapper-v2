@@ -378,5 +378,14 @@
   },
   "location": {
     "arrivedAtDestination": "목적지에 도착했습니다"
+  },
+  "error": {
+    "boundary": {
+      "title": "문제가 발생했습니다",
+      "description": "이 섹션을 로드하는 중에 오류가 발생했습니다. 다시 시도해 주세요.",
+      "details": "오류 세부정보",
+      "retry": "다시 시도",
+      "home": "홈으로 이동"
+    }
   }
 }

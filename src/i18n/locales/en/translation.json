@@ -378,5 +378,14 @@
   },
   "location": {
     "arrivedAtDestination": "You've reached your destination"
+  },
+  "error": {
+    "boundary": {
+      "title": "Something went wrong",
+      "description": "We encountered an error while loading this section. Please try again.",
+      "details": "Error Details",
+      "retry": "Try Again",
+      "home": "Go to Home"
+    }
   }
 }

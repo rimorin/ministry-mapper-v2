@@ -378,5 +378,14 @@
   },
   "location": {
     "arrivedAtDestination": "Anda telah sampai ke destinasi"
+  },
+  "error": {
+    "boundary": {
+      "title": "Sesuatu tidak kena",
+      "description": "Kami mengalami ralat semasa memuatkan bahagian ini. Sila cuba lagi.",
+      "details": "Butiran Ralat",
+      "retry": "Cuba Lagi",
+      "home": "Kembali ke Laman Utama"
+    }
   }
 }
