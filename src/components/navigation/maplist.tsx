@@ -21,6 +21,7 @@ import {
 
 import { useTranslation } from "react-i18next";
 import { useModalManagement } from "../../hooks/useModalManagement";
+import useConfirm from "../../hooks/useConfirm";
 import GenericButton from "./button";
 import { GenericDropdownButton, GenericDropdownItem } from "./dropdownbutton";
 import { List, type RowComponentProps } from "react-window";
@@ -265,6 +266,7 @@ const MapListing: React.FC<MapListingProps> = ({
 }) => {
   const { t } = useTranslation();
   const { showModal } = useModalManagement();
+  const { confirm } = useConfirm();
   const [dropDirections, setDropDirections] = useState<DropDirections>({});
   const [screenSize, setScreenSize] = useState<"sm" | "md" | "lg">("lg");
 
@@ -427,28 +429,34 @@ const MapListing: React.FC<MapListingProps> = ({
     addFloorToMap(mapId);
   };
 
-  const handleResetMap = (mapId: string, mapName: string) => {
-    const confirmReset = window.confirm(
-      t(
+  const handleResetMap = async (mapId: string, mapName: string) => {
+    const confirmReset = await confirm({
+      title: t("common.confirmReset", "Confirm Reset"),
+      message: t(
         "address.resetWarning",
-        '⚠️ WARNING: Resetting all property statuses of "{{name}}" will reset all statuses. This action cannot be undone. Proceed?',
+        'All property statuses in "{{name}}" will be reset to their default state.\nYou cannot undo this.',
         { name: mapName }
-      )
-    );
+      ),
+      confirmText: t("common.reset", "Reset"),
+      variant: "warning"
+    });
 
     if (confirmReset) {
       resetMap(mapId);
     }
   };
 
-  const handleDeleteMap = (mapId: string, mapName: string) => {
-    const confirmDelete = window.confirm(
-      t(
+  const handleDeleteMap = async (mapId: string, mapName: string) => {
+    const confirmDelete = await confirm({
+      title: t("common.confirmDelete", "Confirm Delete"),
+      message: t(
         "address.deleteWarning",
-        '⚠️ WARNING: Deleting map "{{name}}" will remove it completely. This action cannot be undone. Proceed?',
+        'Map "{{name}}" will be permanently deleted.\nYou cannot undo this.',
         { name: mapName }
-      )
-    );
+      ),
+      confirmText: t("common.delete", "Delete"),
+      variant: "danger"
+    });
 
     if (confirmDelete) {
       deleteMap(mapId, mapName, true);

@@ -28,7 +28,12 @@
     "Language": "言語",
     "Loading": "読み込み中...",
     "noConnection": "インターネット接続なし",
-    "weakConnection": "接続が弱い"
+    "weakConnection": "接続が弱い",
+    "confirm": "確認",
+    "confirmDelete": "削除の確認",
+    "confirmReset": "リセットの確認",
+    "update": "更新",
+    "reset": "リセット"
   },
   "auth": {
     "signIn": "ログイン",
@@ -111,8 +116,8 @@
     "createNew": "新規作成",
     "deleteCurrent": "現在を削除",
     "resetStatus": "状態リセット",
-    "deleteWarning": "⚠️ 警告：区域「{{code}}」を削除すると、関連するマップと割り当てもすべて削除されます。この操作は元に戻せません。続行しますか？",
-    "resetWarning": "⚠️ 警告：区域「{{code}}」をリセットすると、すべての住所の状態がリセットされます。この操作は元に戻せません。続行しますか？",
+    "deleteWarning": "テリトリー「{{code}}」とそのすべてのマップおよび割り当てが完全に削除されます。\nこの操作は取り消せません。",
+    "resetWarning": "テリトリー「{{code}}」のすべての住所ステータスがデフォルト状態にリセットされます。\nこの操作は取り消せません。",
     "existingTerritoryCode": "既存区域コード",
     "newTerritoryCode": "新区域コード",
     "codeExample": "区域コード。例：M01、W12など。",
@@ -183,13 +188,13 @@
     "clickToSelectOnMap": "マップで選択",
     "coordinatesDescription": "住所の緯度と経度。",
     "updatedByOn": "{{date}}に{{user}}が更新",
-    "deletePropertyWarning": "⚠️ 警告：「{{name}}」の物件番号「{{number}}」を削除します。この操作は元に戻せません。続行しますか？",
+    "deletePropertyWarning": "プロパティ「{{number}}」が「{{name}}」から完全に削除されます。\nこの操作は取り消せません。",
     "clearNote": "メモを消去",
     "notesInformation": "物件メモのみ。個人情報は入力しないでください。",
-    "resetWarning": "⚠️ 警告：「{{name}}」のすべての物件状態をリセットします。この操作は元に戻せません。続行しますか？",
-    "deleteWarning": "⚠️ 警告：マップ「{{name}}」を完全に削除します。この操作は元に戻せません。続行しますか？",
+    "resetWarning": "「{{name}}」のすべての物件状態がデフォルト状態にリセットされます。\nこの操作は取り消せません。",
+    "deleteWarning": "マップ「{{name}}」が完全に削除されます。\nこの操作は取り消せません。",
     "locationWithName": "{{name}}の位置",
-    "deleteFloorWarning": "⚠️ 警告: \"{{name}}\" の {{floor}} 階を削除します。この操作は元に戻せません。続行しますか？"
+    "deleteFloorWarning": "フロア{{floor}}とそのすべてのユニットが「{{name}}」から完全に削除されます。\nこの操作は取り消せません。"
   },
   "household": {
     "household": "世帯",
@@ -235,7 +240,7 @@
     "numberOfTries": "試行回数",
     "duplicateSequences": "重複オプションがあります。入力を確認してください。",
     "selectOneDefault": "デフォルトを選択してください。",
-    "deleteOptionsWarning": "⚠️ 警告：[{{options}}]を世帯ドロップダウンから削除しました。これらのオプションの既存記録はデフォルトに置き換えられます。続行しますか？",
+    "deleteOptionsWarning": "オプション[{{options}}]がドロップダウンから削除されます。\n既存のレコードはデフォルトオプションを使用します。\nこの操作は取り消せません。",
     "minimumOneOption": "ドロップダウンリストには最低一つのオプションが必要です。",
     "optionCodeTooltip": "このコードは区域の家ボックスに表示され、世帯タイプを示します。",
     "optionDescTooltip": "説明は世帯ドロップダウンリストに表示されます。",
@@ -253,7 +258,8 @@
     "duplicateOptionCodes": "重複するオプションコードが見つかりました。入力内容を確認してください。",
     "notFound": "会衆が見つかりません。",
     "dragToReorder": "ドラッグして並び替え",
-    "dragEditHint": "行をドラッグするか、矢印ボタンで順序を変更します。フィールドをクリックして編集します。"
+    "dragEditHint": "行をドラッグするか、矢印ボタンで順序を変更します。フィールドをクリックして編集します。",
+    "confirmUpdate": "更新の確認"
   },
   "assignment": {
     "assignment": "割当",
@@ -329,7 +335,7 @@
     "propertyNumberLabel": "物件番号",
     "unitNumberLabel": "ユニット番号",
     "requireOneUnitValidation": "区域には最低1つのユニット番号が必要です。",
-    "confirmDelete": "⚠️ 警告：「{{mapName}}」のユニット番号「{{unitNo}}」を削除します。この操作は元に戻せません。続行しますか？"
+    "confirmDelete": "ユニット{{unitNo}}が完全に削除されます。\nこの操作は取り消せません。"
   },
   "profile": {
     "updateSuccess": "プロフィール更新。",

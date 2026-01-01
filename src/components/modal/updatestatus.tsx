@@ -11,6 +11,7 @@ import {
   MIN_START_FLOOR
 } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
+import useConfirm from "../../hooks/useConfirm";
 import {
   latlongInterface,
   SelectProps,
@@ -38,6 +39,7 @@ const UpdateUnitStatus = NiceModal.create(
     const { t } = useTranslation();
     const { notifyError } = useNotification();
     const { showModal } = useModalManagement();
+    const { confirm } = useConfirm();
 
     const unitNumber = unitDetails?.number || "";
     const unitFloor = unitDetails?.floor || MIN_START_FLOOR;
@@ -134,17 +136,20 @@ const UpdateUnitStatus = NiceModal.create(
       }
     };
 
-    const handleConfirmDelete = () => {
-      const confirmDelete = window.confirm(
-        t(
+    const handleConfirmDelete = async () => {
+      const confirmDelete = await confirm({
+        title: t("common.confirmDelete", "Confirm Delete"),
+        message: t(
           "address.deletePropertyWarning",
-          '⚠️ WARNING: Deleting property number "{{number}}" of "{{name}}". This action cannot be undone. Proceed?',
+          'Property "{{number}}" will be permanently deleted from "{{name}}".\nYou cannot undo this.',
           {
             number: unitNumber,
             name: addressName
           }
-        )
-      );
+        ),
+        confirmText: t("common.delete", "Delete"),
+        variant: "danger"
+      });
       if (confirmDelete) {
         handleDeleteProperty();
       }

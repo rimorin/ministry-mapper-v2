@@ -16,6 +16,7 @@ import PrivateTerritoryTable from "./privatetable";
 import PublicTerritoryTable from "./publictable";
 import TerritoryMapView from "./mapmode";
 import useNotification from "../../hooks/useNotification";
+import useConfirm from "../../hooks/useConfirm";
 import MapPlaceholder from "../statics/placeholder";
 
 import useVisibilityChange from "../../hooks/useVisibilityManagement";
@@ -124,6 +125,7 @@ const MainTable = ({
   const { t } = useTranslation();
   const { notifyError, notifyWarning } = useNotification();
   const { showModal } = useModalManagement();
+  const { confirm } = useConfirm();
   const addresses = useAddresses(mapId, policy.getOptionMap(), assignmentId);
 
   const deleteAddressFloor = async (floor: number) => {
@@ -162,16 +164,19 @@ const MainTable = ({
   };
 
   const handleFloorDelete = async (floor: number) => {
-    const confirmDelete = window.confirm(
-      t(
+    const confirmDelete = await confirm({
+      title: t("common.confirmDelete", "Confirm Delete"),
+      message: t(
         "address.deleteFloorWarning",
-        '⚠️ WARNING: Deleting floor {{floor}} of "{{name}}". This action cannot be undone. Proceed?',
+        'Floor {{floor}} and all its units will be permanently deleted from "{{name}}".\nYou cannot undo this.',
         {
           floor: floor,
           name: mapName
         }
-      )
-    );
+      ),
+      confirmText: t("common.delete", "Delete"),
+      variant: "danger"
+    });
 
     if (confirmDelete) {
       deleteAddressFloor(floor);
@@ -193,12 +198,19 @@ const MainTable = ({
   };
 
   const handleUnitDelete = async (unitNumber: string) => {
-    const confirmDelete = window.confirm(
-      t("unit.confirmDelete", 'Delete unit {{unitNo}} from "{{mapName}}"?', {
-        unitNo: unitNumber,
-        mapName: mapName
-      })
-    );
+    const confirmDelete = await confirm({
+      title: t("common.confirmDelete", "Confirm Delete"),
+      message: t(
+        "unit.confirmDelete",
+        "Unit {{unitNo}} will be permanently deleted.\nYou cannot undo this.",
+        {
+          unitNo: unitNumber,
+          mapName: mapName
+        }
+      ),
+      confirmText: t("common.delete", "Delete"),
+      variant: "danger"
+    });
 
     if (confirmDelete) {
       deleteAddressUnit(unitNumber);

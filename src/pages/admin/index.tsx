@@ -16,6 +16,7 @@ import {
   PB_FIELDS
 } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
+import useConfirm from "../../hooks/useConfirm";
 import useTerritoryManagement from "../../hooks/useTerritoryManagement";
 import useMapManagement from "../../hooks/useMapManagement";
 import useCongregationManagement from "../../hooks/useCongManagement";
@@ -77,6 +78,7 @@ const ChangeTerritoryMapSequence = lazy(
 function Admin({ user }: adminProps) {
   const { t } = useTranslation();
   const { notifyError, notifyWarning } = useNotification();
+  const { confirm } = useConfirm();
   const userId = user?.id as string;
   const userName = user?.name as string;
   const userEmail = user?.email as string;
@@ -419,28 +421,34 @@ function Admin({ user }: adminProps) {
     });
   };
 
-  const handleDeleteTerritory = () => {
-    const confirmDelete = window.confirm(
-      t(
+  const handleDeleteTerritory = async () => {
+    const confirmDelete = await confirm({
+      title: t("common.confirmDelete", "Confirm Delete"),
+      message: t(
         "territory.deleteWarning",
-        '⚠️ WARNING: Deleting territory "{{code}}" will remove all associated maps and assignments. This action cannot be undone. Proceed?',
+        'Territory "{{code}}" and all its maps and assignments will be permanently deleted.\nYou cannot undo this.',
         { code: selectedTerritory.code }
-      )
-    );
+      ),
+      confirmText: t("common.delete", "Delete"),
+      variant: "danger"
+    });
 
     if (confirmDelete) {
       deleteTerritory();
     }
   };
 
-  const handleResetTerritory = () => {
-    const confirmReset = window.confirm(
-      t(
+  const handleResetTerritory = async () => {
+    const confirmReset = await confirm({
+      title: t("common.confirmReset", "Confirm Reset"),
+      message: t(
         "territory.resetWarning",
-        '⚠️ WARNING: Resetting territory "{{code}}" will reset the status of all addresses. This action cannot be undone. Proceed?',
+        'All address statuses in territory "{{code}}" will be reset to their default state.\nYou cannot undo this.',
         { code: selectedTerritory.code }
-      )
-    );
+      ),
+      confirmText: t("common.reset", "Reset"),
+      variant: "warning"
+    });
 
     if (confirmReset) {
       resetTerritory();

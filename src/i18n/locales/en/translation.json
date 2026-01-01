@@ -28,7 +28,12 @@
     "Language": "Language",
     "Loading": "Loading...",
     "noConnection": "No internet connection",
-    "weakConnection": "Weak connection"
+    "weakConnection": "Weak connection",
+    "confirm": "Confirm",
+    "confirmDelete": "Confirm Delete",
+    "confirmReset": "Confirm Reset",
+    "update": "Update",
+    "reset": "Reset"
   },
   "auth": {
     "signIn": "Sign In",
@@ -111,8 +116,8 @@
     "createNew": "Create New",
     "deleteCurrent": "Delete Current",
     "resetStatus": "Reset Status",
-    "deleteWarning": "⚠️ WARNING: Deleting territory \"{{code}}\" will remove all associated maps and assignments. This action cannot be undone. Proceed?",
-    "resetWarning": "⚠️ WARNING: Resetting territory \"{{code}}\" will reset the status of all addresses. This action cannot be undone. Proceed?",
+    "deleteWarning": "Territory \"{{code}}\" and all its maps and assignments will be permanently deleted.\nYou cannot undo this.",
+    "resetWarning": "All address statuses in territory \"{{code}}\" will be reset to their default state.\nYou cannot undo this.",
     "existingTerritoryCode": "Existing Territory Code",
     "newTerritoryCode": "New Territory Code",
     "codeExample": "Territory code. For eg, M01, W12, etc.",
@@ -183,12 +188,12 @@
     "clickToSelectOnMap": "Click to select on map",
     "coordinatesDescription": "Latitude and Longitude of the address.",
     "updatedByOn": "Updated by {{user}} on {{date}}",
-    "deletePropertyWarning": "⚠️ WARNING: Deleting property number \"{{number}}\" of \"{{name}}\". This action cannot be undone. Proceed?",
-    "deleteFloorWarning": "⚠️ WARNING: Deleting floor {{floor}} of \"{{name}}\". This action cannot be undone. Proceed?",
+    "deletePropertyWarning": "Property \"{{number}}\" will be permanently deleted from \"{{name}}\".\nYou cannot undo this.",
+    "deleteFloorWarning": "Floor {{floor}} and all its units will be permanently deleted from \"{{name}}\".\nYou cannot undo this.",
     "clearNote": "Clear Note",
     "notesInformation": "Property notes only. No personal information.",
-    "resetWarning": "⚠️ WARNING: Resetting all property statuses of \"{{name}}\" will reset all statuses. This action cannot be undone. Proceed?",
-    "deleteWarning": "⚠️ WARNING: Deleting map \"{{name}}\" will remove it completely. This action cannot be undone. Proceed?",
+    "resetWarning": "All property statuses in \"{{name}}\" will be reset to their default state.\nYou cannot undo this.",
+    "deleteWarning": "Map \"{{name}}\" will be permanently deleted.\nYou cannot undo this.",
     "locationWithName": "{{name}} Location"
   },
   "household": {
@@ -235,7 +240,7 @@
     "numberOfTries": "No. of Tries",
     "duplicateSequences": "Duplicate option sequences found. Please check your input.",
     "selectOneDefault": "Please select one default option.",
-    "deleteOptionsWarning": "⚠️ WARNING: You have removed [{{options}}] from the household dropdown list. Existing records with these options will be replaced with the default option. Proceed?",
+    "deleteOptionsWarning": "Options [{{options}}] will be removed from the dropdown.\nExisting records will use the default option instead.\nYou cannot undo this.",
     "minimumOneOption": "There must be at least one option in the dropdown list.",
     "optionCodeTooltip": "This code will appear in the territory house boxes. It will be used to indicate the type of household.",
     "optionDescTooltip": "Description will appear in the household dropdown list.",
@@ -253,7 +258,8 @@
     "duplicateOptionCodes": "Duplicate option codes found. Please check your input.",
     "notFound": "Congregation not found.",
     "dragToReorder": "Drag to reorder",
-    "dragEditHint": "Drag rows or use arrow buttons to reorder. Click fields to edit."
+    "dragEditHint": "Drag rows or use arrow buttons to reorder. Click fields to edit.",
+    "confirmUpdate": "Confirm Update"
   },
   "assignment": {
     "assignment": "Assignment",
@@ -329,7 +335,7 @@
     "propertyNumberLabel": "Property number",
     "unitNumberLabel": "Unit number",
     "requireOneUnitValidation": "Territory requires at least 1 unit number.",
-    "confirmDelete": "⚠️ WARNING: Deleting unit number \"{{unitNo}}\" of \"{{mapName}}\". This action cannot be undone. Proceed?"
+    "confirmDelete": "Unit {{unitNo}} will be permanently deleted.\nYou cannot undo this."
   },
   "profile": {
     "updateSuccess": "Profile updated.",
