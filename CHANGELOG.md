@@ -1,3 +1,11 @@
+# [1.21.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.20.0...v1.21.0) (2026-01-01)
+
+
+### Features
+
+* add error boundary component and related hooks for improved error handling ([ca6fba3](https://github.com/rimorin/ministry-mapper-v2/commit/ca6fba363e67ccfae9978ab0540bf110c0058c55))
+* implement confirmation dialogs for delete and reset actions ([bc60b68](https://github.com/rimorin/ministry-mapper-v2/commit/bc60b682c8ef9467fa09659dcf518cfcce08e289))
+
 # [1.20.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.19.0...v1.20.0) (2025-12-31)
 
 
