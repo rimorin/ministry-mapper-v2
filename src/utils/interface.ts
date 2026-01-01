@@ -149,7 +149,7 @@ export interface TitleProps extends nameInterface, floorInterface {
 }
 
 export interface BrandingProps {
-  naming: string;
+  naming?: string;
 }
 
 export interface FooterProps {
