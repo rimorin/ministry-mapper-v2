@@ -392,6 +392,8 @@
     "welcome": "¡Bienvenido a Ministry Mapper! 👋",
     "subtitle": "Configuremos tu congregación en 5 sencillos pasos",
     "stepOf": "Paso {{step}} de 5",
+    "completed": "Completado",
+    "locked": "Completa los pasos anteriores primero",
     "where": "Dónde:",
     "what": "Qué:",
     "why": "Por qué:",

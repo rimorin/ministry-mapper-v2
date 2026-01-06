@@ -7,8 +7,7 @@ import {
   territoryDetails,
   userDetails,
   valuesDetails,
-  addressDetails,
-  HHOptionProps
+  addressDetails
 } from "../../utils/interface";
 import { LinkSession } from "../../utils/policies";
 import {
@@ -161,10 +160,6 @@ function Admin({ user }: adminProps) {
     toggleAddressTerritoryListing,
     toggleLanguageSelector
   } = useUIState();
-
-  const [congregationOptions, setCongregationOptions] = useState<
-    HHOptionProps[]
-  >([]);
 
   const [hasAnyMaps, setHasAnyMaps] = useState<boolean>(false);
 
@@ -482,38 +477,37 @@ function Admin({ user }: adminProps) {
 
   useEffect(() => {
     if (!congregationCode) return;
-    setUserAccessLevel(congregationAccess.current[congregationCode]);
-    fetchCongregationData(congregationCode);
-    fetchCongregationOptions();
+
+    const loadAllCongregationData = async () => {
+      setIsLoading(true);
+      setUserAccessLevel(congregationAccess.current[congregationCode]);
+
+      // Load congregation data and get territories
+      const loadedTerritories = await fetchCongregationData(congregationCode);
+
+      // Check for maps with the loaded territories
+      if (loadedTerritories) {
+        await checkForMaps(loadedTerritories);
+      }
+
+      // All data loaded
+      setIsLoading(false);
+    };
+
+    loadAllCongregationData();
   }, [congregationCode]);
 
-  useEffect(() => {
-    checkForMaps();
-  }, [territories]);
+  const checkForMaps = async (territoryMap?: Map<string, territoryDetails>) => {
+    // Use provided map or fall back to state (for realtime updates)
+    const mapToCheck = territoryMap || territories;
 
-  const fetchCongregationOptions = async () => {
-    if (!congregationCode) return;
-    try {
-      const options = await getList("options", {
-        filter: `congregation="${congregationCode}"`,
-        requestKey: `get-options-${congregationCode}`,
-        sort: "sequence",
-        fields: PB_FIELDS.CONGREGATION_OPTIONS
-      });
-      setCongregationOptions(options as unknown as HHOptionProps[]);
-    } catch {
-      setCongregationOptions([]);
-    }
-  };
-
-  const checkForMaps = async () => {
-    if (territories.size === 0) {
+    if (mapToCheck.size === 0) {
       setHasAnyMaps(false);
       return;
     }
 
     try {
-      const territoryIds = Array.from(territories.keys());
+      const territoryIds = Array.from(mapToCheck.keys());
       const filterConditions = territoryIds
         .map((id) => `territory="${id}"`)
         .join(" || ");
@@ -611,7 +605,6 @@ function Admin({ user }: adminProps) {
   if (isUnauthorised) {
     return <UnauthorizedPage handleClick={logoutUser} name={userName} />;
   }
-
   const isReadonly = userAccessLevel === USER_ACCESS_LEVELS.READ_ONLY.CODE;
 
   return (
@@ -706,7 +699,7 @@ function Admin({ user }: adminProps) {
         resetMap={resetMap}
         processingMap={processingMap}
         toggleAddressTerritoryListing={toggleAddressTerritoryListing}
-        congregationOptions={congregationOptions}
+        congregationOptions={policy.options}
         territories={territories}
         onCreateOptions={handleShowCongregationOptions}
         onCreateTerritory={handleCreateTerritory}

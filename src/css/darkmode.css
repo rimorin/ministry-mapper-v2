@@ -673,6 +673,11 @@
   border-color: var(--mm-gray-700);
 }
 
+[data-bs-theme="dark"] .guide-step-card.completed {
+  background: rgba(25, 135, 84, 0.1);
+  border-color: var(--mm-success);
+}
+
 [data-bs-theme="dark"] .guide-step-card.locked {
   background: var(--mm-gray-800);
 }

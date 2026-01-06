@@ -656,9 +656,15 @@
   box-shadow: var(--mm-shadow-preset-sm);
 }
 
+.guide-step-card.completed {
+  border-color: var(--mm-success);
+  background: rgba(25, 135, 84, 0.05);
+}
+
 .guide-step-card.locked {
   opacity: 0.6;
   background: var(--mm-gray-50);
+  pointer-events: none;
 }
 
 .guide-step-number {
@@ -673,6 +679,14 @@
   font-weight: 700;
   font-size: 1.25rem;
   flex-shrink: 0;
+}
+
+.guide-step-card.completed .guide-step-number {
+  background: var(--mm-success);
+}
+
+.guide-step-card.locked .guide-step-number {
+  background: var(--mm-gray-400);
 }
 
 .guide-alert-pulse {

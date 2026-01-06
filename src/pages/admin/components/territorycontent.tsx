@@ -11,6 +11,21 @@ import {
 import { Policy } from "../../../utils/policies";
 import { USER_ACCESS_LEVELS } from "../../../utils/constants";
 
+/**
+ * TerritoryContent Component
+ *
+ * Renders different views based on congregation setup state:
+ *
+ * PREREQUISITE: Parent (Admin) ensures all data is loaded before rendering this component
+ * - congregation details, territories, options, policy are all loaded
+ * - isLoading=false in parent before this component renders
+ *
+ * RENDERING FLOW:
+ * 1. Setup incomplete (missing options/territories/maps) → GettingStarted guide
+ * 2. Setup complete + no territory selected → Welcome message
+ * 3. Setup complete + territory selected → Territory content (maps)
+ */
+
 interface TerritoryContentProps {
   selectedTerritory: {
     id: string;
@@ -70,29 +85,39 @@ export default function TerritoryContent({
   onCreateTerritory,
   hasAnyMaps
 }: TerritoryContentProps) {
-  // Show guide until all 3 conditions are met:
-  // 1. Options are created
-  // 2. At least 1 territory created
-  // 3. At least 1 map created (across all territories)
-
+  // === DERIVE STATE FROM LOADED DATA ===
+  // At this point, all data has been loaded (checked by parent's isLoading)
   const hasOptions = congregationOptions.length > 0;
   const hasTerritories = territories.size > 0;
+  const hasSelectedTerritory = !!selectedTerritory.code;
+  const isSetupComplete = hasOptions && hasTerritories && hasAnyMaps;
 
-  const showGuide = !hasOptions || !hasTerritories || !hasAnyMaps;
+  // === RENDERING LOGIC ===
+  // Render appropriate component based on congregation setup state
 
-  if (showGuide) {
+  // Case 1: Setup incomplete → Show Getting Started Guide
+  // For new congregations or those missing options/territories/maps
+  if (!isSetupComplete) {
     return (
       <GettingStarted
         onCreateOptions={onCreateOptions}
         onCreateTerritory={onCreateTerritory}
+        hasOptions={hasOptions}
+        hasTerritories={hasTerritories}
+        hasAnyMaps={hasAnyMaps}
+        selectedTerritory={selectedTerritory}
       />
     );
   }
 
-  if (!selectedTerritory.code) {
+  // Case 2: Setup complete, no territory selected → Show Welcome
+  // For existing congregations where user hasn't selected a territory yet
+  if (!hasSelectedTerritory) {
     return <Welcome name={userName} />;
   }
 
+  // Case 3: Setup complete, territory selected → Show Territory Content
+  // Normal operation - user working with a specific territory
   return (
     <div className="territory-content">
       <TerritoryHeader name={selectedTerritory.name} />

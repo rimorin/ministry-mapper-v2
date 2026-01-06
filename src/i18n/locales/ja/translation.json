@@ -392,6 +392,8 @@
     "welcome": "Ministry Mapperへようこそ！👋",
     "subtitle": "5つの簡単なステップで会衆を設定しましょう",
     "stepOf": "ステップ{{step}} / 5",
+    "completed": "完了",
+    "locked": "前のステップを先に完了してください",
     "where": "場所：",
     "what": "内容：",
     "why": "理由：",

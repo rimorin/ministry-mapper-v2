@@ -392,6 +392,8 @@
     "welcome": "Ministry Mapper에 오신 것을 환영합니다! 👋",
     "subtitle": "5가지 간단한 단계로 회중을 설정해보세요",
     "stepOf": "5단계 중 {{step}}단계",
+    "completed": "완료됨",
+    "locked": "이전 단계를 먼저 완료하세요",
     "where": "위치：",
     "what": "내용：",
     "why": "이유：",

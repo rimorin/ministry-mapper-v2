@@ -392,6 +392,8 @@
     "welcome": "Selamat datang ke Ministry Mapper! 👋",
     "subtitle": "Mari kita sediakan jemaah anda dalam 5 langkah mudah",
     "stepOf": "Langkah {{step}} daripada 5",
+    "completed": "Selesai",
+    "locked": "Lengkapkan langkah sebelumnya dahulu",
     "where": "Di mana:",
     "what": "Apa:",
     "why": "Mengapa:",
