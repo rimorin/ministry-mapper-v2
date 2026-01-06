@@ -1,3 +1,12 @@
+# [1.22.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.21.0...v1.22.0) (2026-01-06)
+
+
+### Features
+
+* add Getting Started guide with step-by-step instructions and related translations ([ad67856](https://github.com/rimorin/ministry-mapper-v2/commit/ad67856d0066f87795cb5b6eb4f5631b6be8666a))
+* add Spanish language support with translation file and language option ([66d2911](https://github.com/rimorin/ministry-mapper-v2/commit/66d291101828336263952dd42079bc05b04652b9))
+* enhance Getting Started component with step completion and locking logic ([3c978fb](https://github.com/rimorin/ministry-mapper-v2/commit/3c978fb6be4d122c37459dcf07a845040e9f6fe4))
+
 # [1.21.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.20.0...v1.21.0) (2026-01-01)
 
 
