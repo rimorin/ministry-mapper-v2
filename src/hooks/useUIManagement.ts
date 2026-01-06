@@ -12,7 +12,7 @@ export default function useUIState() {
   const [isAssignmentLoading, setIsAssignmentLoading] =
     useState<boolean>(false);
 
-  const handleScroll = () => {
+  const handleScroll = (): void => {
     setShowBkTopButton(window.scrollY > PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY);
   };
 

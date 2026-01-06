@@ -387,5 +387,53 @@
       "retry": "Try Again",
       "home": "Go to Home"
     }
+  },
+  "guide": {
+    "welcome": "Welcome to Ministry Mapper! 👋",
+    "subtitle": "Let's get your congregation set up in 5 easy steps",
+    "stepOf": "Step {{step}} of 5",
+    "where": "Where:",
+    "what": "What:",
+    "why": "Why:",
+    "step1": {
+      "title": "Create Options",
+      "where": "Congregation button → Household Options button",
+      "what": "Define labels to identify different household types",
+      "why": "Publishers use these labels to tag households they encounter.",
+      "example": "Examples: CH (Chinese), EN (English), ML (Malay), HI (Hindi)",
+      "button": "Create Options"
+    },
+    "step2": {
+      "title": "Create Territory",
+      "where": "Create Territory button",
+      "what": "Set up geographic regions to organize your ministry area",
+      "why": "Territories help divide large areas into smaller, manageable sections. Each territory will contain multiple maps.",
+      "example": "Examples: Downtown, North District, Block A1-A5, Zone 3",
+      "button": "Create Territory",
+      "locked": "Complete Step 1 first"
+    },
+    "step3": {
+      "title": "Select Territory",
+      "where": "Select Territory dropdown menu at the top",
+      "what": "Pick which territory you want to add maps to",
+      "why": "Maps must belong to a territory. Selecting a territory first tells the system where to place your new maps."
+    },
+    "step4": {
+      "title": "Create Maps",
+      "where": "Create Map button (after selecting a territory)",
+      "what": "Add specific buildings or addresses to your selected territory",
+      "why": "Maps are the actual locations publishers will visit. Each map contains individual households that can be tracked and updated.",
+      "example": "Examples: 123 Main St, Apartment Complex B, Shopping Mall, 456 Oak Avenue",
+      "button": "Create Map",
+      "locked": "Complete Steps 1 & 2 first",
+      "selectTerritory": "Select a territory from the dropdown above to continue"
+    },
+    "step5": {
+      "title": "Assign Maps",
+      "where": "[Assign] or [Personal] buttons on each map card",
+      "what": "Generate shareable links to give publishers access to maps",
+      "why": "Publishers use these links to view maps on their devices, mark household statuses, and update household types in real-time.",
+      "info": "After creating maps, use the [Personal] and [Assign] buttons on each map to share with publishers."
+    }
   }
 }
