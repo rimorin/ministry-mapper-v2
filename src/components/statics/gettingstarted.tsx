@@ -1,9 +1,31 @@
-import { Alert, Badge, Stack } from "react-bootstrap";
+import { Alert, Badge, Button, Stack } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import "../../css/admin.css";
 
-const GettingStarted = () => {
+interface GettingStartedProps {
+  onCreateOptions: () => void;
+  onCreateTerritory: () => void;
+  hasOptions: boolean;
+  hasTerritories: boolean;
+  hasAnyMaps: boolean;
+  selectedTerritory: {
+    id: string;
+    code: string | undefined;
+    name: string | undefined;
+  };
+}
+
+const GettingStarted = ({
+  onCreateOptions,
+  onCreateTerritory,
+  hasOptions,
+  hasTerritories,
+  hasAnyMaps,
+  selectedTerritory
+}: GettingStartedProps) => {
   const { t } = useTranslation();
+
+  const isTerritorySelected = !!selectedTerritory.code;
 
   const renderStepCard = (
     stepNumber: number,
@@ -12,19 +34,34 @@ const GettingStarted = () => {
     whereKey: string,
     whatKey: string,
     whyKey: string,
-    exampleKey?: string
+    isComplete: boolean,
+    isLocked: boolean,
+    exampleKey?: string,
+    buttonText?: string,
+    onButtonClick?: () => void
   ) => {
+    const cardClasses = `guide-step-card ${isComplete ? "completed" : ""} ${isLocked ? "locked" : ""}`;
+    const badgeVariant = isComplete
+      ? "success"
+      : isLocked
+        ? "secondary"
+        : "primary";
+
     return (
-      <div className="guide-step-card" key={`step-${stepNumber}`}>
+      <div className={cardClasses} key={`step-${stepNumber}`}>
         <Stack direction="horizontal" gap={3} className="mb-3">
-          <div className="guide-step-number">{stepNumber}</div>
+          <div className="guide-step-number">
+            {isComplete ? "✓" : stepNumber}
+          </div>
           <div>
             <h5 className="mb-1">
               <span className="me-2">{icon}</span>
               {t(titleKey)}
             </h5>
-            <Badge bg="secondary" className="text-uppercase">
-              {t("guide.stepOf", "Step {{step}} of 5", { step: stepNumber })}
+            <Badge bg={badgeVariant} className="text-uppercase">
+              {isComplete
+                ? t("guide.completed", "Completed")
+                : t("guide.stepOf", "Step {{step}} of 5", { step: stepNumber })}
             </Badge>
           </div>
         </Stack>
@@ -45,6 +82,22 @@ const GettingStarted = () => {
           {exampleKey && (
             <Alert variant="light" className="mb-2">
               {t(exampleKey)}
+            </Alert>
+          )}
+          {buttonText && onButtonClick && !isComplete && !isLocked && (
+            <div className="mt-3">
+              <Button
+                variant="primary"
+                onClick={onButtonClick}
+                className="w-100"
+              >
+                {buttonText}
+              </Button>
+            </div>
+          )}
+          {isLocked && (
+            <Alert variant="warning" className="mb-0 mt-3">
+              {t("guide.locked", "Complete previous steps first")}
             </Alert>
           )}
         </div>
@@ -76,7 +129,11 @@ const GettingStarted = () => {
               "guide.step1.where",
               "guide.step1.what",
               "guide.step1.why",
-              "guide.step1.example"
+              hasOptions,
+              false,
+              "guide.step1.example",
+              t("guide.step1.button", "Create Options"),
+              onCreateOptions
             )}
 
             {renderStepCard(
@@ -86,7 +143,11 @@ const GettingStarted = () => {
               "guide.step2.where",
               "guide.step2.what",
               "guide.step2.why",
-              "guide.step2.example"
+              hasTerritories,
+              !hasOptions,
+              "guide.step2.example",
+              t("guide.step2.button", "Create Territory"),
+              onCreateTerritory
             )}
 
             {renderStepCard(
@@ -95,7 +156,9 @@ const GettingStarted = () => {
               "guide.step3.title",
               "guide.step3.where",
               "guide.step3.what",
-              "guide.step3.why"
+              "guide.step3.why",
+              isTerritorySelected,
+              !hasTerritories || !hasOptions
             )}
 
             {renderStepCard(
@@ -105,6 +168,8 @@ const GettingStarted = () => {
               "guide.step4.where",
               "guide.step4.what",
               "guide.step4.why",
+              hasAnyMaps,
+              !isTerritorySelected,
               "guide.step4.example"
             )}
 
@@ -114,7 +179,9 @@ const GettingStarted = () => {
               "guide.step5.title",
               "guide.step5.where",
               "guide.step5.what",
-              "guide.step5.why"
+              "guide.step5.why",
+              false,
+              false
             )}
           </Stack>
         </div>

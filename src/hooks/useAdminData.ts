@@ -170,7 +170,7 @@ export default function useAdminData({
       setTerritoryCodeCache("");
     }
 
-    setIsLoading(false);
+    return territoryMap;
   };
 
   return {
