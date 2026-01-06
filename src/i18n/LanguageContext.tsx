@@ -15,6 +15,7 @@ export const LanguageProvider: FC<LanguageProviderProps> = ({ children }) => {
 
   const languageOptions = [
     { value: "en", label: "English" },
+    { value: "es", label: "Español" },
     { value: "zh", label: "中文" },
     { value: "ta", label: "தமிழ்" },
     { value: "id", label: "Bahasa Indonesia" },
