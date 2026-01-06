@@ -387,5 +387,53 @@
       "retry": "Coba Lagi",
       "home": "Kembali ke Beranda"
     }
+  },
+  "guide": {
+    "welcome": "Selamat datang di Ministry Mapper! 👋",
+    "subtitle": "Mari siapkan jemaat Anda dalam 5 langkah mudah",
+    "stepOf": "Langkah {{step}} dari 5",
+    "where": "Di mana:",
+    "what": "Apa:",
+    "why": "Mengapa:",
+    "step1": {
+      "title": "Buat Opsi",
+      "where": "Tombol Jemaat → Tombol Opsi Rumah Tangga",
+      "what": "Tentukan label untuk mengidentifikasi berbagai jenis rumah tangga",
+      "why": "Pemberita menggunakan label ini untuk menandai rumah tangga yang mereka temui.",
+      "example": "Contoh: CH (Tionghoa), EN (Inggris), ML (Melayu), HI (Hindi)",
+      "button": "Buat Opsi"
+    },
+    "step2": {
+      "title": "Buat Wilayah",
+      "where": "Tombol Buat Wilayah",
+      "what": "Siapkan area geografis untuk mengatur area pelayanan Anda",
+      "why": "Wilayah membantu membagi area besar menjadi bagian-bagian yang lebih kecil dan mudah dikelola. Setiap wilayah akan berisi beberapa peta.",
+      "example": "Contoh: Pusat Kota, Distrik Utara, Blok A1-A5, Zona 3",
+      "button": "Buat Wilayah",
+      "locked": "Selesaikan Langkah 1 terlebih dahulu"
+    },
+    "step3": {
+      "title": "Pilih Wilayah",
+      "where": "Menu dropdown Pilih Wilayah di bagian atas",
+      "what": "Pilih wilayah mana yang ingin Anda tambahkan peta",
+      "why": "Peta harus termasuk dalam wilayah. Memilih wilayah terlebih dahulu memberi tahu sistem di mana menempatkan peta baru Anda."
+    },
+    "step4": {
+      "title": "Buat Peta",
+      "where": "Tombol Buat Peta (setelah memilih wilayah)",
+      "what": "Tambahkan bangunan atau alamat tertentu ke wilayah yang dipilih",
+      "why": "Peta adalah lokasi sebenarnya yang akan dikunjungi pemberita. Setiap peta berisi rumah tangga individu yang dapat dilacak dan diperbarui.",
+      "example": "Contoh: Jalan Utama 123, Kompleks Apartemen B, Pusat Perbelanjaan, Jalan Oak 456",
+      "button": "Buat Peta",
+      "locked": "Selesaikan Langkah 1 & 2 terlebih dahulu",
+      "selectTerritory": "Pilih wilayah dari dropdown di atas untuk melanjutkan"
+    },
+    "step5": {
+      "title": "Tugaskan Peta",
+      "where": "Tombol [Tugaskan] atau [Pribadi] pada setiap kartu peta",
+      "what": "Hasilkan tautan yang dapat dibagikan untuk memberi pemberita akses ke peta",
+      "why": "Pemberita menggunakan tautan ini untuk melihat peta di perangkat mereka, menandai status rumah tangga, dan memperbarui jenis rumah tangga secara real-time.",
+      "info": "Setelah membuat peta, gunakan tombol [Pribadi] dan [Tugaskan] pada setiap peta untuk berbagi dengan pemberita."
+    }
   }
 }

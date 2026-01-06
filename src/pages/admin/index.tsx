@@ -1,13 +1,14 @@
 import "../../css/admin.css";
 
-import { useEffect, use, lazy } from "react";
+import { useEffect, use, lazy, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   adminProps,
   territoryDetails,
   userDetails,
   valuesDetails,
-  addressDetails
+  addressDetails,
+  HHOptionProps
 } from "../../utils/interface";
 import { LinkSession } from "../../utils/policies";
 import {
@@ -160,6 +161,12 @@ function Admin({ user }: adminProps) {
     toggleAddressTerritoryListing,
     toggleLanguageSelector
   } = useUIState();
+
+  const [congregationOptions, setCongregationOptions] = useState<
+    HHOptionProps[]
+  >([]);
+
+  const [hasAnyMaps, setHasAnyMaps] = useState<boolean>(false);
 
   const { showModal } = useModalManagement();
   const { currentLanguage, changeLanguage, languageOptions } =
@@ -477,7 +484,50 @@ function Admin({ user }: adminProps) {
     if (!congregationCode) return;
     setUserAccessLevel(congregationAccess.current[congregationCode]);
     fetchCongregationData(congregationCode);
+    fetchCongregationOptions();
   }, [congregationCode]);
+
+  useEffect(() => {
+    checkForMaps();
+  }, [territories]);
+
+  const fetchCongregationOptions = async () => {
+    if (!congregationCode) return;
+    try {
+      const options = await getList("options", {
+        filter: `congregation="${congregationCode}"`,
+        requestKey: `get-options-${congregationCode}`,
+        sort: "sequence",
+        fields: PB_FIELDS.CONGREGATION_OPTIONS
+      });
+      setCongregationOptions(options as unknown as HHOptionProps[]);
+    } catch {
+      setCongregationOptions([]);
+    }
+  };
+
+  const checkForMaps = async () => {
+    if (territories.size === 0) {
+      setHasAnyMaps(false);
+      return;
+    }
+
+    try {
+      const territoryIds = Array.from(territories.keys());
+      const filterConditions = territoryIds
+        .map((id) => `territory="${id}"`)
+        .join(" || ");
+
+      const maps = await getList("maps", {
+        filter: filterConditions,
+        requestKey: null,
+        fields: "id"
+      });
+      setHasAnyMaps(maps.length > 0);
+    } catch {
+      setHasAnyMaps(false);
+    }
+  };
 
   useRealtimeSubscription(
     "territories",
@@ -541,6 +591,10 @@ function Admin({ user }: adminProps) {
       });
       if (dataAction === "create") {
         setAccordionKeys((prev) => [...prev, mapId]);
+      }
+      // Recheck for maps when maps are created/deleted
+      if (dataAction === "create" || dataAction === "delete") {
+        checkForMaps();
       }
     },
     {
@@ -652,6 +706,11 @@ function Admin({ user }: adminProps) {
         resetMap={resetMap}
         processingMap={processingMap}
         toggleAddressTerritoryListing={toggleAddressTerritoryListing}
+        congregationOptions={congregationOptions}
+        territories={territories}
+        onCreateOptions={handleShowCongregationOptions}
+        onCreateTerritory={handleCreateTerritory}
+        hasAnyMaps={hasAnyMaps}
       />
       {selectedTerritory.code && (
         <FloatingActions

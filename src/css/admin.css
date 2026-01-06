@@ -589,6 +589,126 @@
   }
 }
 
+/* ===== GETTING STARTED GUIDE ===== */
+.guide-container {
+  padding: 2rem 1rem;
+  max-width: 900px;
+  margin: 0 auto;
+  height: calc(100vh - 120px);
+  display: flex;
+  flex-direction: column;
+}
+
+.guide-welcome-card {
+  background: var(--mm-bg-body);
+  border: none;
+  border-radius: var(--mm-radius-lg);
+  box-shadow: var(--mm-shadow-preset-lg);
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+}
+
+.guide-header {
+  flex-shrink: 0;
+  margin-bottom: 1.5rem;
+}
+
+.guide-steps-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 0.5rem;
+  margin-right: -0.5rem;
+}
+
+.guide-steps-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.guide-steps-container::-webkit-scrollbar-track {
+  background: var(--mm-gray-100);
+  border-radius: 4px;
+}
+
+.guide-steps-container::-webkit-scrollbar-thumb {
+  background: var(--mm-gray-400);
+  border-radius: 4px;
+}
+
+.guide-steps-container::-webkit-scrollbar-thumb:hover {
+  background: var(--mm-gray-500);
+}
+
+.guide-step-card {
+  background: var(--mm-bg-body);
+  border: 2px solid var(--mm-gray-300);
+  border-radius: var(--mm-radius-md);
+  padding: 1.5rem;
+  margin-bottom: 1rem;
+  transition: var(--mm-transition-base);
+}
+
+.guide-step-card.available {
+  border-color: var(--mm-primary);
+  box-shadow: var(--mm-shadow-preset-sm);
+}
+
+.guide-step-card.locked {
+  opacity: 0.6;
+  background: var(--mm-gray-50);
+}
+
+.guide-step-number {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--mm-gradient-primary);
+  color: var(--mm-white);
+  font-weight: 700;
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.guide-alert-pulse {
+  animation: guide-pulse 2s infinite;
+}
+
+@keyframes guide-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@media (max-width: 768px) {
+  .guide-container {
+    padding: 1rem 0.5rem;
+    height: calc(100vh - 100px);
+  }
+
+  .guide-welcome-card {
+    padding: 1.5rem;
+  }
+
+  .guide-step-card {
+    padding: 1rem;
+  }
+
+  .guide-steps-container {
+    padding-right: 0.25rem;
+    margin-right: -0.25rem;
+  }
+}
+
 @media (max-width: 480px) {
   .map-body-admin {
     height: 400px;

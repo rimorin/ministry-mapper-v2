@@ -387,5 +387,53 @@
       "retry": "Cuba Lagi",
       "home": "Kembali ke Laman Utama"
     }
+  },
+  "guide": {
+    "welcome": "Selamat datang ke Ministry Mapper! 👋",
+    "subtitle": "Mari kita sediakan jemaah anda dalam 5 langkah mudah",
+    "stepOf": "Langkah {{step}} daripada 5",
+    "where": "Di mana:",
+    "what": "Apa:",
+    "why": "Mengapa:",
+    "step1": {
+      "title": "Cipta Pilihan",
+      "where": "Butang Jemaah → Butang Pilihan Isi Rumah",
+      "what": "Tentukan label untuk mengenal pasti jenis isi rumah yang berbeza",
+      "why": "Pemberita menggunakan label ini untuk menandakan isi rumah yang mereka temui.",
+      "example": "Contoh: CH (Cina), EN (Inggeris), ML (Melayu), HI (Hindi)",
+      "button": "Cipta Pilihan"
+    },
+    "step2": {
+      "title": "Cipta Wilayah",
+      "where": "Butang Cipta Wilayah",
+      "what": "Sediakan kawasan geografi untuk mengatur kawasan pelayanan anda",
+      "why": "Wilayah membantu membahagikan kawasan besar kepada bahagian yang lebih kecil dan mudah diurus. Setiap wilayah akan mengandungi berbilang peta.",
+      "example": "Contoh: Pusat Bandar, Daerah Utara, Blok A1-A5, Zon 3",
+      "button": "Cipta Wilayah",
+      "locked": "Lengkapkan Langkah 1 dahulu"
+    },
+    "step3": {
+      "title": "Pilih Wilayah",
+      "where": "Menu lungsur Pilih Wilayah di bahagian atas",
+      "what": "Pilih wilayah yang anda ingin tambah peta",
+      "why": "Peta mesti tergolong dalam wilayah. Memilih wilayah terlebih dahulu memberitahu sistem di mana hendak meletakkan peta baharu anda."
+    },
+    "step4": {
+      "title": "Cipta Peta",
+      "where": "Butang Cipta Peta (selepas memilih wilayah)",
+      "what": "Tambah bangunan atau alamat tertentu ke wilayah yang dipilih",
+      "why": "Peta adalah lokasi sebenar yang akan dilawati oleh pemberita. Setiap peta mengandungi isi rumah individu yang boleh dijejaki dan dikemas kini.",
+      "example": "Contoh: 123 Jalan Utama, Kompleks Pangsapuri B, Pusat Membeli-belah, 456 Jalan Oak",
+      "button": "Cipta Peta",
+      "locked": "Lengkapkan Langkah 1 & 2 dahulu",
+      "selectTerritory": "Pilih wilayah dari lungsur di atas untuk meneruskan"
+    },
+    "step5": {
+      "title": "Agihkan Peta",
+      "where": "Butang [Agih] atau [Peribadi] pada setiap kad peta",
+      "what": "Hasilkan pautan boleh kongsi untuk memberi pemberita akses kepada peta",
+      "why": "Pemberita menggunakan pautan ini untuk melihat peta pada peranti mereka, menandakan status isi rumah, dan mengemas kini jenis isi rumah secara masa nyata.",
+      "info": "Selepas mencipta peta, gunakan butang [Peribadi] dan [Agih] pada setiap peta untuk berkongsi dengan pemberita."
+    }
   }
 }

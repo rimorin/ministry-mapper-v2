@@ -662,3 +662,29 @@
   background-color: var(--mm-border-color);
   color: #fff;
 }
+
+/* ===== GETTING STARTED GUIDE ===== */
+[data-bs-theme="dark"] .guide-welcome-card {
+  background: var(--mm-bg-dark);
+}
+
+[data-bs-theme="dark"] .guide-step-card {
+  background: var(--mm-bg-dark);
+  border-color: var(--mm-gray-700);
+}
+
+[data-bs-theme="dark"] .guide-step-card.locked {
+  background: var(--mm-gray-800);
+}
+
+[data-bs-theme="dark"] .guide-steps-container::-webkit-scrollbar-track {
+  background: var(--mm-gray-800);
+}
+
+[data-bs-theme="dark"] .guide-steps-container::-webkit-scrollbar-thumb {
+  background: var(--mm-gray-600);
+}
+
+[data-bs-theme="dark"] .guide-steps-container::-webkit-scrollbar-thumb:hover {
+  background: var(--mm-gray-500);
+}

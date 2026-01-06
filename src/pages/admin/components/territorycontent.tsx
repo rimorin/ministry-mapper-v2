@@ -2,7 +2,12 @@ import TerritoryHeader from "../../../components/navigation/territoryheader";
 import MapView from "../../../components/navigation/mapview";
 import MapListing from "../../../components/navigation/maplist";
 import Welcome from "../../../components/statics/welcome";
-import { addressDetails } from "../../../utils/interface";
+import GettingStarted from "../../../components/statics/gettingstarted";
+import {
+  addressDetails,
+  territoryDetails,
+  HHOptionProps
+} from "../../../utils/interface";
 import { Policy } from "../../../utils/policies";
 import { USER_ACCESS_LEVELS } from "../../../utils/constants";
 
@@ -33,6 +38,11 @@ interface TerritoryContentProps {
   resetMap: (mapId: string) => Promise<void>;
   processingMap: { isProcessing: boolean; mapId: string | null };
   toggleAddressTerritoryListing: () => void;
+  congregationOptions: HHOptionProps[];
+  territories: Map<string, territoryDetails>;
+  onCreateOptions: () => void;
+  onCreateTerritory: () => void;
+  hasAnyMaps: boolean;
 }
 
 export default function TerritoryContent({
@@ -53,8 +63,32 @@ export default function TerritoryContent({
   addFloorToMap,
   resetMap,
   processingMap,
-  toggleAddressTerritoryListing
+  toggleAddressTerritoryListing,
+  congregationOptions,
+  territories,
+  onCreateOptions,
+  onCreateTerritory,
+  hasAnyMaps
 }: TerritoryContentProps) {
+  // Show guide until all 3 conditions are met:
+  // 1. Options are created
+  // 2. At least 1 territory created
+  // 3. At least 1 map created (across all territories)
+
+  const hasOptions = congregationOptions.length > 0;
+  const hasTerritories = territories.size > 0;
+
+  const showGuide = !hasOptions || !hasTerritories || !hasAnyMaps;
+
+  if (showGuide) {
+    return (
+      <GettingStarted
+        onCreateOptions={onCreateOptions}
+        onCreateTerritory={onCreateTerritory}
+      />
+    );
+  }
+
   if (!selectedTerritory.code) {
     return <Welcome name={userName} />;
   }
