@@ -105,6 +105,40 @@ export default function useTerritoryManagement({
     setTerritoryCodeCache("");
   };
 
+  const updateTerritoryCode = (territoryId: string, updatedCode: string) => {
+    setSelectedTerritory((prev) => ({
+      ...prev,
+      code: updatedCode
+    }));
+    setTerritories(
+      new Map<string, territoryDetails>(
+        Array.from(territories).map(([key, value]) => {
+          if (key === territoryId) {
+            value.code = updatedCode;
+          }
+          return [key, value];
+        })
+      )
+    );
+  };
+
+  const updateTerritoryName = (territoryId: string, updatedName: string) => {
+    setSelectedTerritory((prev) => ({
+      ...prev,
+      name: updatedName
+    }));
+    setTerritories(
+      new Map<string, territoryDetails>(
+        Array.from(territories).map(([key, value]) => {
+          if (key === territoryId) {
+            value.name = updatedName;
+          }
+          return [key, value];
+        })
+      )
+    );
+  };
+
   return {
     selectedTerritory,
     setSelectedTerritory,
@@ -120,6 +154,8 @@ export default function useTerritoryManagement({
     isProcessingTerritory,
     territoryCodeCache,
     setTerritoryCodeCache,
-    clearTerritorySelection
+    clearTerritorySelection,
+    updateTerritoryCode,
+    updateTerritoryName
   };
 }

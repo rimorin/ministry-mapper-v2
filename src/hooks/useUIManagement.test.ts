@@ -13,24 +13,11 @@ describe("useUIManagement", () => {
       const { result } = renderHook(() => useUIState());
 
       expect(result.current.showBkTopButton).toBe(false);
-      expect(result.current.isLoading).toBe(true);
       expect(result.current.isUnauthorised).toBe(false);
       expect(result.current.showChangeAddressTerritory).toBe(false);
       expect(result.current.showLanguageSelector).toBe(false);
       expect(result.current.values).toEqual({});
       expect(result.current.isAssignmentLoading).toBe(false);
-    });
-  });
-
-  describe("loading state", () => {
-    it("should update loading state", () => {
-      const { result } = renderHook(() => useUIState());
-
-      act(() => {
-        result.current.setIsLoading(false);
-      });
-
-      expect(result.current.isLoading).toBe(false);
     });
   });
 

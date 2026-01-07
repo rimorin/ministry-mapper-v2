@@ -1,15 +1,23 @@
 import { useState } from "react";
-import { addressDetails } from "../utils/interface";
-import { deleteDataById, callFunction } from "../utils/pocketbase";
+import {
+  addressDetails,
+  territoryDetails,
+  valuesDetails
+} from "../utils/interface";
+import { deleteDataById, callFunction, getList } from "../utils/pocketbase";
 import { RecordModel } from "pocketbase";
-import { TERRITORY_TYPES, DEFAULT_COORDINATES } from "../utils/constants";
+import {
+  TERRITORY_TYPES,
+  DEFAULT_COORDINATES,
+  PB_FIELDS
+} from "../utils/constants";
 import { useTranslation } from "react-i18next";
 import useNotification from "./useNotification";
 import useLocalStorage from "./useLocalStorage";
 
 export default function useMapManagement() {
   const { t } = useTranslation();
-  const { notifyError, notifySuccess } = useNotification();
+  const { notifyError, notifySuccess, notifyWarning } = useNotification();
   const [processingMap, setProcessingMap] = useState<{
     isProcessing: boolean;
     mapId: string | null;
@@ -93,6 +101,62 @@ export default function useMapManagement() {
     } as addressDetails;
   };
 
+  const setupMaps = async (territoryId: string) => {
+    if (!territoryId) return;
+    const maps = await getList("maps", {
+      filter: `territory="${territoryId}"`,
+      requestKey: null,
+      sort: "sequence",
+      fields: PB_FIELDS.MAPS
+    });
+    const newMapViews = new Map<string, boolean>();
+    const newAccordionKeys = [] as Array<string>;
+    const sortedMaps = maps.map((map) => {
+      const mapId = map.id;
+      newMapViews.set(mapId, isMapView);
+      newAccordionKeys.push(mapId);
+      return processMapRecord(map);
+    });
+    setSortedAddressList(sortedMaps);
+    setAccordionKeys(newAccordionKeys);
+    setMapViews(newMapViews);
+  };
+
+  const handleAddressTerritorySelect = async (
+    newTerritoryId: string | null,
+    values: valuesDetails,
+    selectedTerritoryId: string,
+    territories: Map<string, territoryDetails>,
+    toggleAddressTerritoryListing: () => void
+  ) => {
+    const mapId = values.map as string;
+    const newTerritoryCode = territories.get(newTerritoryId as string)?.code;
+
+    try {
+      toggleAddressTerritoryListing();
+      await callFunction("/map/territory/update", {
+        method: "POST",
+        body: {
+          map: mapId,
+          new_territory: newTerritoryId,
+          old_territory: selectedTerritoryId
+        }
+      });
+      setSortedAddressList(
+        sortedAddressList.filter((address) => address.id !== mapId)
+      );
+      notifyWarning(
+        t(
+          "territory.changeSuccess",
+          "Territory {{code}} updated successfully.",
+          { code: newTerritoryCode }
+        )
+      );
+    } catch (error) {
+      notifyError(error);
+    }
+  };
+
   return {
     processingMap,
     sortedAddressList,
@@ -106,6 +170,8 @@ export default function useMapManagement() {
     deleteMap,
     addFloorToMap,
     resetMap,
-    processMapRecord
+    processMapRecord,
+    setupMaps,
+    handleAddressTerritorySelect
   };
 }

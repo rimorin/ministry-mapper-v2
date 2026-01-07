@@ -3,7 +3,6 @@ import { PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY } from "../utils/constants";
 
 export default function useUIState() {
   const [showBkTopButton, setShowBkTopButton] = useState(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isUnauthorised, setIsUnauthorised] = useState<boolean>(false);
   const [showChangeAddressTerritory, setShowChangeAddressTerritory] =
     useState<boolean>(false);
@@ -26,8 +25,6 @@ export default function useUIState() {
 
   return {
     showBkTopButton,
-    isLoading,
-    setIsLoading,
     isUnauthorised,
     setIsUnauthorised,
     showChangeAddressTerritory,

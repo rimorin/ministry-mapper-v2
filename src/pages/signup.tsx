@@ -1,85 +1,40 @@
-import { use, useState } from "react";
+import { use } from "react";
 import { Form, Spinner, FloatingLabel } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
-import useNotification from "../hooks/useNotification";
 import { MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
 import { StateContext } from "../components/utils/context";
-import { createData, verifyEmail } from "../utils/pocketbase";
 import GenericButton from "../components/navigation/button";
 import { getDisabledStyle } from "../utils/helpers/disabledstyle";
 import PasswordChecklist from "../components/form/passwordchecklist";
+import useSignup from "../hooks/useSignup";
 
 const { VITE_PRIVACY_URL, VITE_TERMS_URL } = import.meta.env;
 
 const SignupComponent = () => {
   const { t } = useTranslation();
-  const { notifyError, notifyWarning } = useNotification();
   const { setFrontPageMode } = use(StateContext);
 
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-    confirmPassword: "",
-    name: ""
-  });
-  const [validated, setValidated] = useState(false);
-  const [isPasswordValid, setIsPasswordValid] = useState(false);
-  const [isCreating, setIsCreating] = useState(false);
+  const {
+    formData,
+    validated,
+    setValidated,
+    isPasswordValid,
+    setIsPasswordValid,
+    isCreating,
+    handleInputChange,
+    handleCreateSubmit,
+    resetCreationForm
+  } = useSignup();
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { id, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [id]: value }));
-  };
-
-  const handleCreateSubmit = async (
-    event: React.FormEvent<HTMLFormElement>
-  ) => {
+  const handleFormSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     setValidated(true);
     if (form.checkValidity() === false) {
       return;
     }
-    setIsCreating(true);
-    try {
-      await createData(
-        "users",
-        {
-          email: formData.email,
-          name: formData.name,
-          password: formData.password,
-          passwordConfirm: formData.confirmPassword,
-          emailVisibility: true
-        },
-        {
-          requestKey: `user-signup-${formData.email}`
-        }
-      );
-      await verifyEmail(formData.email);
-      notifyWarning(
-        t(
-          "auth.accountCreated",
-          "Account created! Please check your email for verification procedures."
-        )
-      );
-      setFrontPageMode("login");
-    } catch (err) {
-      setValidated(false);
-      notifyError(err);
-    } finally {
-      setIsCreating(false);
-    }
-  };
-
-  const resetCreationForm = () => {
-    setFormData({
-      email: "",
-      password: "",
-      confirmPassword: "",
-      name: ""
-    });
-    setValidated(false);
+    await handleCreateSubmit(() => setFrontPageMode("login"));
   };
 
   const handleNavigateToLogin = () => {
@@ -90,7 +45,7 @@ const SignupComponent = () => {
     <Form
       noValidate
       validated={validated}
-      onSubmit={handleCreateSubmit}
+      onSubmit={handleFormSubmit}
       className="responsive-width py-2"
       style={{ maxHeight: "100%", overflow: "auto" }}
     >

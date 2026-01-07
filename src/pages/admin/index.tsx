@@ -1,10 +1,9 @@
 import "../../css/admin.css";
 
-import { useEffect, use, lazy, useState } from "react";
+import { useEffect, use, lazy } from "react";
 import { useTranslation } from "react-i18next";
 import {
   adminProps,
-  territoryDetails,
   userDetails,
   valuesDetails,
   addressDetails
@@ -35,7 +34,6 @@ import LanguageSelector from "../../i18n/LanguageSelector";
 import { LanguageContext } from "../../i18n/LanguageContext";
 import {
   cleanupSession,
-  callFunction,
   getList,
   getUser,
   requestPasswordReset
@@ -96,7 +94,9 @@ function Admin({ user }: adminProps) {
     deleteMap,
     addFloorToMap,
     resetMap,
-    processMapRecord
+    processMapRecord,
+    setupMaps,
+    handleAddressTerritorySelect: mapHandleAddressTerritorySelect
   } = useMapManagement();
 
   const {
@@ -141,13 +141,13 @@ function Admin({ user }: adminProps) {
     isProcessingTerritory,
     territoryCodeCache,
     setTerritoryCodeCache,
-    clearTerritorySelection
+    clearTerritorySelection,
+    updateTerritoryCode,
+    updateTerritoryName
   } = useTerritoryManagement({ congregationCode });
 
   const {
     showBkTopButton,
-    isLoading,
-    setIsLoading,
     isUnauthorised,
     setIsUnauthorised,
     showChangeAddressTerritory,
@@ -161,13 +161,17 @@ function Admin({ user }: adminProps) {
     toggleLanguageSelector
   } = useUIState();
 
-  const [hasAnyMaps, setHasAnyMaps] = useState<boolean>(false);
-
   const { showModal } = useModalManagement();
   const { currentLanguage, changeLanguage, languageOptions } =
     use(LanguageContext);
 
-  const { fetchData, fetchCongregationData } = useAdminData({
+  const {
+    fetchData,
+    loadAllCongregationData,
+    checkForMaps,
+    isLoading,
+    hasAnyMaps
+  } = useAdminData({
     userId,
     congregationCodeCache,
     congregationAccess,
@@ -180,7 +184,7 @@ function Admin({ user }: adminProps) {
     setTerritories,
     setSelectedTerritory,
     setTerritoryCodeCache,
-    setIsLoading,
+    setUserAccessLevel,
     setIsUnauthorised,
     notifyError,
     notifyWarning,
@@ -264,54 +268,13 @@ function Admin({ user }: adminProps) {
   const handleAddressTerritorySelect = async (
     newTerritoryId: string | null
   ) => {
-    const details = values as valuesDetails;
-    const mapId = details.map as string;
-    const newTerritoryCode = territories.get(newTerritoryId as string)?.code;
-
-    try {
-      toggleAddressTerritoryListing();
-      await callFunction("/map/territory/update", {
-        method: "POST",
-        body: {
-          map: mapId,
-          new_territory: newTerritoryId,
-          old_territory: selectedTerritory.id
-        }
-      });
-      setSortedAddressList(
-        sortedAddressList.filter((address) => address.id !== mapId)
-      );
-      notifyWarning(
-        t(
-          "territory.changeSuccess",
-          "Territory {{code}} updated successfully.",
-          { code: newTerritoryCode }
-        )
-      );
-    } catch (error) {
-      notifyError(error);
-    }
-  };
-
-  const setupMaps = async (territoryId: string) => {
-    if (!territoryId) return;
-    const maps = await getList("maps", {
-      filter: `territory="${territoryId}"`,
-      requestKey: null,
-      sort: "sequence",
-      fields: PB_FIELDS.MAPS
-    });
-    const newMapViews = new Map<string, boolean>();
-    const newAccordionKeys = [] as Array<string>;
-    const sortedMaps = maps.map((map) => {
-      const mapId = map.id;
-      newMapViews.set(mapId, isMapView);
-      newAccordionKeys.push(mapId);
-      return processMapRecord(map);
-    });
-    setSortedAddressList(sortedMaps);
-    setAccordionKeys(newAccordionKeys);
-    setMapViews(newMapViews);
+    await mapHandleAddressTerritorySelect(
+      newTerritoryId,
+      values as valuesDetails,
+      selectedTerritory.id,
+      territories,
+      toggleAddressTerritoryListing
+    );
   };
 
   const toggleCongregation = (selectedCode: string | null) => {
@@ -377,20 +340,7 @@ function Admin({ user }: adminProps) {
       territoryCode: selectedTerritory.code,
       territoryId: selectedTerritory.id
     });
-    setSelectedTerritory((prev) => ({
-      ...prev,
-      code: updatedCode as string
-    }));
-    setTerritories(
-      new Map<string, territoryDetails>(
-        Array.from(territories).map(([key, value]) => {
-          if (key === selectedTerritory.id) {
-            value.code = updatedCode as string;
-          }
-          return [key, value];
-        })
-      )
-    );
+    updateTerritoryCode(selectedTerritory.id, updatedCode as string);
   };
 
   const handleChangeName = async () => {
@@ -400,20 +350,7 @@ function Admin({ user }: adminProps) {
       territoryCode: selectedTerritory.id,
       name: selectedTerritory.name
     });
-    setSelectedTerritory((prev) => ({
-      ...prev,
-      name: updatedName as string
-    }));
-    setTerritories(
-      new Map<string, territoryDetails>(
-        Array.from(territories).map(([key, value]) => {
-          if (key === selectedTerritory.id) {
-            value.name = updatedName as string;
-          }
-          return [key, value];
-        })
-      )
-    );
+    updateTerritoryName(selectedTerritory.id, updatedName as string);
   };
 
   const handleChangeSequence = () => {
@@ -477,50 +414,11 @@ function Admin({ user }: adminProps) {
 
   useEffect(() => {
     if (!congregationCode) return;
-
-    const loadAllCongregationData = async () => {
-      setIsLoading(true);
-      setUserAccessLevel(congregationAccess.current[congregationCode]);
-
-      // Load congregation data and get territories
-      const loadedTerritories = await fetchCongregationData(congregationCode);
-
-      // Check for maps with the loaded territories
-      if (loadedTerritories) {
-        await checkForMaps(loadedTerritories);
-      }
-
-      // All data loaded
-      setIsLoading(false);
-    };
-
-    loadAllCongregationData();
+    loadAllCongregationData(congregationCode);
   }, [congregationCode]);
 
-  const checkForMaps = async (territoryMap?: Map<string, territoryDetails>) => {
-    // Use provided map or fall back to state (for realtime updates)
-    const mapToCheck = territoryMap || territories;
-
-    if (mapToCheck.size === 0) {
-      setHasAnyMaps(false);
-      return;
-    }
-
-    try {
-      const territoryIds = Array.from(mapToCheck.keys());
-      const filterConditions = territoryIds
-        .map((id) => `territory="${id}"`)
-        .join(" || ");
-
-      const maps = await getList("maps", {
-        filter: filterConditions,
-        requestKey: null,
-        fields: "id"
-      });
-      setHasAnyMaps(maps.length > 0);
-    } catch {
-      setHasAnyMaps(false);
-    }
+  const checkMapsOnRealtimeUpdate = () => {
+    checkForMaps(territories);
   };
 
   useRealtimeSubscription(
@@ -588,7 +486,7 @@ function Admin({ user }: adminProps) {
       }
       // Recheck for maps when maps are created/deleted
       if (dataAction === "create" || dataAction === "delete") {
-        checkForMaps();
+        checkMapsOnRealtimeUpdate();
       }
     },
     {
