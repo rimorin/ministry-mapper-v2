@@ -293,7 +293,8 @@
     "walkMode": "步行",
     "driveMode": "驾驶",
     "openMaps": "打开地图",
-    "generateLink": "快速链接"
+    "generateLink": "快速链接",
+    "updatingLocation": "正在更新位置"
   },
   "maintenance": {
     "maintenanceMode": "传道地图正在进行维护。",

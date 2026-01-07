@@ -293,7 +293,8 @@
     "walkMode": "Jalan kaki",
     "driveMode": "Memandu",
     "openMaps": "Buka Peta",
-    "generateLink": "Pautan Pantas"
+    "generateLink": "Pautan Pantas",
+    "updatingLocation": "Mengemas kini lokasi"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper kini dalam penyelenggaraan.",

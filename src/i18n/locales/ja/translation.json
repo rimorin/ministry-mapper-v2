@@ -293,7 +293,8 @@
     "walkMode": "徒歩",
     "driveMode": "車",
     "openMaps": "マップ表示",
-    "generateLink": "クイックリンク"
+    "generateLink": "クイックリンク",
+    "updatingLocation": "位置情報を更新中"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapperはメンテナンス中です。",

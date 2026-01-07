@@ -270,7 +270,8 @@
     "walkMode": "Jalan",
     "driveMode": "Mengemudi",
     "openMaps": "Buka Peta",
-    "generateLink": "Tautan Cepat"
+    "generateLink": "Tautan Cepat",
+    "updatingLocation": "Memperbarui lokasi"
   },
   "map": {
     "createMap": "Buat Peta",
