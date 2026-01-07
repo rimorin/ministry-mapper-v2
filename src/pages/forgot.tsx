@@ -2,21 +2,20 @@ import { use, useState } from "react";
 import { Form, Spinner, FloatingLabel } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
-import useNotification from "../hooks/useNotification";
 import { StateContext } from "../components/utils/context";
-import { requestPasswordReset } from "../utils/pocketbase";
 import GenericButton from "../components/navigation/button";
 import AuthContainer from "../components/form/authcontainer";
 import Divider from "../components/form/divider";
 import { getDisabledStyle } from "../utils/helpers/disabledstyle";
+import usePasswordReset from "../hooks/usePasswordReset";
 
 const ForgotComponent = () => {
   const { t } = useTranslation();
-  const { notifyError, notifyWarning } = useNotification();
   const [loginEmail, setLoginEmail] = useState("");
   const [validated, setValidated] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
   const { setFrontPageMode } = use(StateContext);
+
+  const { isProcessing, handleForgotPassword } = usePasswordReset();
 
   const handleClearForm = () => {
     setLoginEmail("");
@@ -28,7 +27,7 @@ const ForgotComponent = () => {
     setFrontPageMode("login");
   };
 
-  const handleForgotPassword = async (
+  const handleSubmitForgotPassword = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     const form = event.currentTarget;
@@ -37,19 +36,7 @@ const ForgotComponent = () => {
     if (form.checkValidity() === false) {
       return;
     }
-    try {
-      setIsProcessing(true);
-      await requestPasswordReset(loginEmail);
-      notifyWarning(
-        t("auth.passwordResetSent", "Password reset email sent to {{email}}.", {
-          email: loginEmail
-        })
-      );
-    } catch (error) {
-      notifyError(error);
-    } finally {
-      setIsProcessing(false);
-    }
+    await handleForgotPassword(loginEmail);
   };
 
   return (
@@ -62,7 +49,7 @@ const ForgotComponent = () => {
       icon="🔑"
       iconColor="secondary"
       validated={validated}
-      onSubmit={handleForgotPassword}
+      onSubmit={handleSubmitForgotPassword}
     >
       <Form.Group className="mb-3" controlId="formBasicEmail">
         <FloatingLabel

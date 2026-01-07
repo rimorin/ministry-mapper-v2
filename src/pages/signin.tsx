@@ -7,37 +7,40 @@ import {
   InputGroup
 } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import {
-  authenticateEmailAndPassword,
-  authenticateOTP,
-  authenticateOAuth2,
-  requestOTP
-} from "../utils/pocketbase";
 
-import useNotification from "../hooks/useNotification";
 import { StateContext } from "../components/utils/context";
 import GenericButton from "../components/navigation/button";
 import { getAssetUrl } from "../utils/helpers/assetpath";
 import AuthContainer from "../components/form/authcontainer";
 import Divider from "../components/form/divider";
 import { getDisabledStyle } from "../utils/helpers/disabledstyle";
+import useAuthentication from "../hooks/useAuthentication";
+import useNotification from "../hooks/useNotification";
 
 const LoginComponent = () => {
   const { t } = useTranslation();
-  const { notifyError, notifyWarning, notifyInfo } = useNotification();
+  const { notifyWarning } = useNotification();
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [validated, setValidated] = useState(false);
-  const [isLogin, setIsLogin] = useState(false);
-  const [isOAuthLoading, setIsOAuthLoading] = useState(false);
-  const [otpSessionId, setOtpSessionId] = useState("");
-  const [otpCode, setOtpCode] = useState("");
-  const [mfaId, setMfaId] = useState("");
 
   const otpInputRef = useRef<HTMLInputElement>(null);
 
   const { setFrontPageMode } = use(StateContext);
+
+  const {
+    isLogin,
+    isOAuthLoading,
+    otpSessionId,
+    otpCode,
+    setOtpCode,
+    loginInWithEmailAndPassword,
+    handleOtpSubmit: submitOtp,
+    handleResendOtp,
+    handleOAuthSignIn,
+    clearOtpState
+  } = useAuthentication();
 
   // Auto-focus OTP input when OTP form is shown
   useEffect(() => {
@@ -46,49 +49,11 @@ const LoginComponent = () => {
     }
   }, [otpSessionId]);
 
-  const processEmail = (email: string) => email.trim().toLowerCase();
-
-  const handleOtpRequest = async (email: string) => {
-    try {
-      setOtpSessionId(await requestOTP(email));
-    } catch (err) {
-      notifyError(err);
-    }
-  };
-
-  const loginInWithEmailAndPassword = async (
-    email: string,
-    password: string
+  const handleOtpFormSubmit = async (
+    event: React.FormEvent<HTMLFormElement>
   ) => {
-    const processedEmail = processEmail(email);
-    try {
-      setIsLogin(true);
-      await authenticateEmailAndPassword(processedEmail, password);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      const mfaId = err.response?.mfaId;
-      setValidated(false);
-      if (!mfaId) {
-        notifyError(err);
-        return;
-      }
-      await handleOtpRequest(processedEmail);
-      setMfaId(mfaId);
-    } finally {
-      setIsLogin(false);
-    }
-  };
-
-  const handleOtpSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    try {
-      setIsLogin(true);
-      await authenticateOTP(otpSessionId, otpCode, mfaId);
-    } catch (err) {
-      notifyError(err);
-    } finally {
-      setIsLogin(false);
-    }
+    await submitOtp(otpSessionId, otpCode);
   };
 
   const handleLoginSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
@@ -115,7 +80,7 @@ const LoginComponent = () => {
         );
         return;
       }
-      notifyError(err);
+      notifyWarning(String(err));
     }
   };
 
@@ -129,9 +94,8 @@ const LoginComponent = () => {
     setFrontPageMode("forgot");
   };
 
-  const handleResendOtp = async () => {
-    await handleOtpRequest(processEmail(loginEmail));
-    notifyInfo(t("auth.otpSentAlert", "OTP sent to your email"));
+  const handleResendOtpClick = async () => {
+    await handleResendOtp(loginEmail);
   };
 
   const handleClearOtpCode = () => {
@@ -139,21 +103,8 @@ const LoginComponent = () => {
   };
 
   const handleBackToSignIn = () => {
-    setOtpSessionId("");
-    setOtpCode("");
-    setMfaId("");
+    clearOtpState();
     setValidated(false);
-  };
-
-  const handleOAuthSignIn = (provider: string) => {
-    setIsOAuthLoading(true);
-    authenticateOAuth2(provider)
-      .catch((err) => {
-        notifyError(err);
-      })
-      .finally(() => {
-        setIsOAuthLoading(false);
-      });
   };
 
   const isDisabled = isLogin || isOAuthLoading;
@@ -316,7 +267,7 @@ const LoginComponent = () => {
             "An OTP has been sent to your email address."
           )}
           icon="🔒"
-          onSubmit={handleOtpSubmit}
+          onSubmit={handleOtpFormSubmit}
         >
           <p className="text-center text-muted mb-3 small">
             <strong>{loginEmail}</strong>
@@ -351,7 +302,7 @@ const LoginComponent = () => {
                 href="#"
                 onClick={(e) => {
                   e.preventDefault();
-                  if (!isLogin) handleResendOtp();
+                  if (!isLogin) handleResendOtpClick();
                 }}
                 className="link-primary text-decoration-none small"
                 style={getDisabledStyle(isLogin)}

@@ -9,22 +9,18 @@ import { useEffect, useState } from "react";
 import Loader from "../components/statics/loader";
 import NavBarBranding from "../components/navigation/branding";
 import { MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
-import { confirmPasswordReset, confirmVerification } from "../utils/pocketbase";
 import { useSearch } from "wouter";
 import { useTranslation } from "react-i18next";
 import GenericButton from "../components/navigation/button";
 import PasswordChecklist from "../components/form/passwordchecklist";
+import usePasswordReset from "../hooks/usePasswordReset";
 
 const MODE_RESET_PASSWORD = "resetPassword";
 const MODE_VERIFY_EMAIL = "verifyEmail";
 
 const UserManagementComponent = () => {
   const { t } = useTranslation();
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isResetting, setIsResetting] = useState(false);
   const [validated, setValidated] = useState(false);
-  const [message, setMessage] = useState("");
-  const [isSuccess, setIsSuccess] = useState(false);
   const [loginPassword, setLoginPassword] = useState("");
   const [cloginPassword, setCloginPassword] = useState("");
   const [isLoginPasswordOk, setIsLoginPasswordOk] = useState(false);
@@ -34,45 +30,14 @@ const UserManagementComponent = () => {
   const mode = searchParams.get("mode") || "";
   const oobCode = searchParams.get("oobCode") || "";
 
-  const handleResetPassword = async (actionCode: string): Promise<void> => {
-    try {
-      setIsResetting(true);
-      await confirmPasswordReset(actionCode, loginPassword, cloginPassword);
-      setMessage(
-        t(
-          "auth.passwordResetSuccess",
-          "Your password has been successfully reset."
-        )
-      );
-      setIsSuccess(true);
-    } catch (error) {
-      setMessage(JSON.stringify(error));
-      setIsSuccess(false);
-    } finally {
-      setIsResetting(false);
-    }
-  };
-
-  const handleVerifyEmail = async (actionCode: string): Promise<void> => {
-    try {
-      setIsProcessing(true);
-      await confirmVerification(actionCode);
-      setMessage(
-        t(
-          "auth.emailVerificationSuccess",
-          "Your email address has been verified."
-        )
-      );
-      setIsSuccess(true);
-    } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : JSON.stringify(error)
-      );
-      setIsSuccess(false);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+  const {
+    isProcessing,
+    isResetting,
+    message,
+    isSuccess,
+    handleResetPassword: resetPassword,
+    handleVerifyEmail: verifyEmail
+  } = usePasswordReset();
 
   const resetCreationForm = () => {
     setLoginPassword("");
@@ -80,9 +45,13 @@ const UserManagementComponent = () => {
     setValidated(false);
   };
 
+  const handleResetPasswordSubmit = async () => {
+    await resetPassword(oobCode, loginPassword, cloginPassword);
+  };
+
   useEffect(() => {
     if (mode === MODE_VERIFY_EMAIL) {
-      handleVerifyEmail(oobCode);
+      verifyEmail(oobCode);
     }
   }, []);
 
@@ -96,7 +65,7 @@ const UserManagementComponent = () => {
             validated={validated}
             onSubmit={(event) => {
               event.preventDefault();
-              handleResetPassword(oobCode);
+              handleResetPasswordSubmit();
             }}
             className="responsive-width py-3"
           >

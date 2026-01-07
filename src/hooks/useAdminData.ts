@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { TFunction } from "i18next";
 import { RecordModel } from "pocketbase";
 import { getList, getDataById, getUser } from "../utils/pocketbase";
@@ -31,7 +32,7 @@ interface UseAdminDataProps {
     }>
   >;
   setTerritoryCodeCache: (code: string) => void;
-  setIsLoading: (loading: boolean) => void;
+  setUserAccessLevel: (level: string) => void;
   setIsUnauthorised: (unauthorised: boolean) => void;
   notifyError: (message: string, silent?: boolean) => void;
   notifyWarning: (message: string) => void;
@@ -56,7 +57,7 @@ export default function useAdminData({
   setTerritories,
   setSelectedTerritory,
   setTerritoryCodeCache,
-  setIsLoading,
+  setUserAccessLevel,
   setIsUnauthorised,
   notifyError,
   notifyWarning,
@@ -65,6 +66,8 @@ export default function useAdminData({
   userEmail,
   t
 }: UseAdminDataProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [hasAnyMaps, setHasAnyMaps] = useState<boolean>(false);
   const fetchData = async () => {
     const userRoles = await getList("roles", {
       filter: `user="${userId}"`,
@@ -173,8 +176,51 @@ export default function useAdminData({
     return territoryMap;
   };
 
+  const checkForMaps = async (territoryMap?: Map<string, territoryDetails>) => {
+    const mapToCheck = territoryMap || new Map();
+
+    if (mapToCheck.size === 0) {
+      setHasAnyMaps(false);
+      return;
+    }
+
+    try {
+      const territoryIds = Array.from(mapToCheck.keys());
+      const filterConditions = territoryIds
+        .map((id) => `territory="${id}"`)
+        .join(" || ");
+
+      const maps = await getList("maps", {
+        filter: filterConditions,
+        requestKey: null,
+        fields: "id"
+      });
+      setHasAnyMaps(maps.length > 0);
+    } catch {
+      setHasAnyMaps(false);
+    }
+  };
+
+  const loadAllCongregationData = async (congregationCode: string) => {
+    setIsLoading(true);
+    setUserAccessLevel(congregationAccess.current[congregationCode]);
+
+    const loadedTerritories = await fetchCongregationData(congregationCode);
+
+    if (loadedTerritories) {
+      await checkForMaps(loadedTerritories);
+    }
+
+    setIsLoading(false);
+  };
+
   return {
     fetchData,
-    fetchCongregationData
+    fetchCongregationData,
+    loadAllCongregationData,
+    checkForMaps,
+    isLoading,
+    setIsLoading,
+    hasAnyMaps
   };
 }
