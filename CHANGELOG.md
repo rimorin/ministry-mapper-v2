@@ -1,3 +1,10 @@
+# [1.23.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.22.0...v1.23.0) (2026-01-07)
+
+
+### Features
+
+* implement live location tracking ([ecfba90](https://github.com/rimorin/ministry-mapper-v2/commit/ecfba90289a2ec8159f6dd685545e337ae6c10b8))
+
 # [1.22.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.21.0...v1.22.0) (2026-01-06)
 
 
