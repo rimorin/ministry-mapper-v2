@@ -293,7 +293,8 @@
     "walkMode": "Walk",
     "driveMode": "Drive",
     "openMaps": "Open Maps",
-    "generateLink": "Quick Link"
+    "generateLink": "Quick Link",
+    "updatingLocation": "Updating location"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper is currently down for maintenance.",

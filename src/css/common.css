@@ -137,6 +137,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  cursor: pointer;
+}
+
+.map-control-button img {
+  cursor: pointer;
 }
 
 .travel-mode-button-group {
@@ -758,10 +763,43 @@
   filter: invert(1) brightness(1.2);
 }
 
-.arrival-notification {
+/* ===== MAP NOTIFICATIONS ===== */
+.map-notification {
   font-weight: bold;
   box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
   margin-bottom: 0;
+}
+
+.map-notification-arrival {
+  /* Uses Bootstrap .alert-success */
+}
+
+.map-notification-tracking {
+  /* Uses Bootstrap .alert-info */
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.map-notification-tracking-spinner {
+  flex-shrink: 0;
+}
+
+.map-notification-tracking-content {
+  flex: 1;
+}
+
+.map-notification-distance {
+  display: block;
+  font-size: 1rem;
+  font-weight: bold;
+}
+
+.map-notification-status {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--bs-secondary-color, #6c757d);
+  margin-top: 0.125rem;
 }
 
 /* ============================================

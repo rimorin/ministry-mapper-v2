@@ -293,7 +293,8 @@
     "walkMode": "도보",
     "driveMode": "운전",
     "openMaps": "맵 열기",
-    "generateLink": "퀵 링크"
+    "generateLink": "퀵 링크",
+    "updatingLocation": "위치 업데이트 중"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper는 현재 유지보수 중입니다.",

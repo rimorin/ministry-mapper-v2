@@ -1,5 +1,5 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Image, Modal } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
@@ -39,10 +39,18 @@ const GetMapGeolocation = NiceModal.create(
       number | null
     >(null);
     const modal = useModal();
+    const watchIdRef = useRef<number | null>(null);
 
     const isWithinProximity =
       distanceToDestination !== null &&
       distanceToDestination <= DESTINATION_PROXIMITY_THRESHOLD_METERS;
+
+    const formatDistance = (meters: number): string => {
+      if (meters >= 1000) {
+        return `${(meters / 1000).toFixed(1)} km`;
+      }
+      return `${Math.round(meters)} m`;
+    };
 
     useEffect(() => {
       if (!navigator.geolocation) {
@@ -55,7 +63,8 @@ const GetMapGeolocation = NiceModal.create(
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(
+      // Start watching user position for live tracking
+      watchIdRef.current = navigator.geolocation.watchPosition(
         (position) => {
           const userLocation = {
             lat: position.coords.latitude,
@@ -82,8 +91,21 @@ const GetMapGeolocation = NiceModal.create(
               "Unable to get your current location. Please check your browser settings."
             )
           );
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 1000,
+          timeout: 15000
         }
       );
+
+      // Cleanup: Stop watching position when modal closes
+      return () => {
+        if (watchIdRef.current !== null) {
+          navigator.geolocation.clearWatch(watchIdRef.current);
+          watchIdRef.current = null;
+        }
+      };
     }, []);
 
     const handleTravelModeChange = (mode: TravelMode) => {
@@ -143,7 +165,6 @@ const GetMapGeolocation = NiceModal.create(
                   alt={t("navigation.openMaps")}
                   width={24}
                   height={24}
-                  style={{ cursor: "pointer" }}
                   onClick={() => {
                     window.open(getDirection(coordinates), "_blank");
                   }}
@@ -152,12 +173,36 @@ const GetMapGeolocation = NiceModal.create(
             </CustomControl>
             {isWithinProximity && (
               <CustomControl position="bottomleft">
-                <div className="alert alert-success arrival-notification">
+                <div className="alert alert-success map-notification map-notification-arrival">
                   <i className="bi bi-check-circle-fill me-2"></i>
                   {t(
                     "location.arrivedAtDestination",
                     "You've reached your destination"
                   )}
+                </div>
+              </CustomControl>
+            )}
+            {!isWithinProximity && distanceToDestination !== null && (
+              <CustomControl position="bottomright">
+                <div className="alert alert-info map-notification map-notification-tracking">
+                  <div className="map-notification-tracking-spinner">
+                    <div
+                      className="spinner-grow spinner-grow-sm text-primary"
+                      role="status"
+                    >
+                      <span className="visually-hidden">
+                        {t("navigation.updatingLocation", "Updating location")}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="map-notification-tracking-content">
+                    <span className="map-notification-distance">
+                      {formatDistance(distanceToDestination)}
+                    </span>
+                    <span className="map-notification-status">
+                      {t("navigation.updatingLocation", "Updating location")}
+                    </span>
+                  </div>
                 </div>
               </CustomControl>
             )}
