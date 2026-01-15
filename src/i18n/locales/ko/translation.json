@@ -151,13 +151,16 @@
     "multiStoryDescription": "이 맵에는 여러 층이 포함되며, 각 층에는 여러 단위가 있습니다.",
     "singleStoryDescription": "단층 속성 목록이 있는 맵입니다",
     "sequence": "순서",
-    "sequenceExplanation": "쉼표로 구분된 주택 또는 단위 번호를 입력하세요. 예: 1A, 1B, 2A 또는 301, 303, 305. 시스템은 입력한 순서대로 주소를 생성합니다.",
     "invalidSequence": "잘못된 순서",
     "clickToSelectLocation": "위치 선택하려면 클릭",
     "deleteSuccess": "주소가 삭제되었습니다, {{name}}.",
     "updateMapSequence": "맵 순서 업데이트",
     "dragToReorder": "카드를 드래그 앤 드롭하여 순서를 변경하세요",
-    "searchPlace": "장소 검색"
+    "searchPlace": "장소 검색",
+    "sequencePlaceholder": "입력 후 Enter를 눌러 추가 (예: 1A, 1B, 301, 302)",
+    "sequenceNoOptions": "입력 후 Enter를 눌러 추가",
+    "sequenceAdd": "\"{{value}}\" 추가",
+    "sequenceHelpText": "이 지도 내에서 속성을 방문할 순서를 정의하세요"
   },
   "address": {
     "address": "주소",
@@ -178,8 +181,8 @@
     "changeTerritory": "구역 변경",
     "changeSequence": "순서 변경",
     "changeName": "이름 변경",
-    "addProperty": "속성 번호 추가",
-    "addUnit": "단위 번호 추가",
+    "addProperty": "속성 번호들 추가",
+    "addUnit": "단위 번호들 추가",
     "addHigherFloor": "위층 추가",
     "addLowerFloor": "아래층 추가",
     "resetStatus": "상태 초기화",
@@ -329,14 +332,21 @@
     "deleteFloor": "🗑️",
     "deleteUnit": "🗑️"
   },
+  "tagfield": {
+    "invalidCharacters": "영숫자와 하이픈만 허용됩니다",
+    "charactersSanitized": "잘못된 문자가 제거되었습니다. 추가됨: \"{{value}}\"",
+    "duplicatesRemoved": "중복 항목이 제거되었습니다"
+  },
   "unit": {
-    "alphanumericDashHyphenValidation": "단위/속성 번호는 영숫자, 대시 또는 하이픈만 포함해야 합니다.",
     "addPropertyTitle": "{{name}}에 속성 추가",
-    "addUnitTitle": "{{mapId}}에 단위 추가",
-    "propertyNumberLabel": "속성 번호",
-    "unitNumberLabel": "단위 번호",
+    "addUnitTitle": "{{name}}에 단위 추가",
+    "propertyNumberLabel": "속성 번호들",
+    "unitNumberLabel": "단위 번호들",
     "requireOneUnitValidation": "구역에는 최소 1개의 단위 번호가 필요합니다.",
-    "confirmDelete": "유닛 {{unitNo}}이(가) 영구적으로 삭제됩니다.\n이 작업은 취소할 수 없습니다."
+    "confirmDelete": "유닛 {{unitNo}}이(가) 영구적으로 삭제됩니다.\n이 작업은 취소할 수 없습니다.",
+    "placeholder": "입력 후 Enter를 눌러 추가 (예: 1A, 1B, 301, 302)",
+    "noOptions": "입력 후 Enter를 눌러 추가",
+    "add": "\"{{value}}\" 추가"
   },
   "profile": {
     "updateSuccess": "프로필 업데이트됨.",

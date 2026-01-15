@@ -1,14 +1,18 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useTranslation } from "react-i18next";
-
-import { useState, FormEvent, ChangeEvent } from "react";
+import { useState, FormEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { USER_ACCESS_LEVELS, TERRITORY_TYPES } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import { NewUnitModalProps } from "../../utils/interface";
 import ModalFooter from "../form/footer";
-import GenericInputField from "../form/input";
+import TagField from "../form/tagfield";
 import { callFunction } from "../../utils/pocketbase";
+
+interface UnitOption {
+  value: string;
+  label: string;
+}
 
 const NewUnit = NiceModal.create(
   ({
@@ -18,23 +22,38 @@ const NewUnit = NiceModal.create(
   }: NewUnitModalProps) => {
     const { t } = useTranslation();
     const { notifyError, notifyWarning } = useNotification();
-    const [unit, setUnit] = useState("");
+    const [unitTags, setUnitTags] = useState<UnitOption[]>([]);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
 
+    const isSingleStory = addressData.type === TERRITORY_TYPES.SINGLE_STORY;
+    const unitType = isSingleStory ? "property" : "unit";
+
+    const handleUnitChange = (newValue: readonly UnitOption[] | null) => {
+      if (!newValue) {
+        setUnitTags([]);
+        return;
+      }
+
+      setUnitTags(newValue as UnitOption[]);
+    };
+
     const handleCreateNewUnit = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
+
+      if (unitTags.length === 0) {
+        notifyWarning(t("unit.requireOneUnitValidation"));
+        return;
+      }
+
       setIsSaving(true);
       try {
-        if (!/^[a-zA-Z0-9\-*]+$/.test(unit)) {
-          notifyWarning(t("unit.alphanumericDashHyphenValidation"));
-          return;
-        }
+        const codes = unitTags.map((tag) => tag.value);
         await callFunction("/map/code/add", {
           method: "POST",
           body: {
             map: mapId,
-            code: unit
+            codes
           }
         });
         modal.hide();
@@ -48,26 +67,25 @@ const NewUnit = NiceModal.create(
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
         <Modal.Header>
           <Modal.Title>
-            {addressData.type === TERRITORY_TYPES.SINGLE_STORY
-              ? t("unit.addPropertyTitle", { name: addressData.name })
-              : t("unit.addUnitTitle", { mapId: mapId })}
+            {t(
+              `unit.add${unitType.charAt(0).toUpperCase() + unitType.slice(1)}Title`,
+              {
+                name: addressData.name
+              }
+            )}
           </Modal.Title>
         </Modal.Header>
         <Form onSubmit={handleCreateNewUnit}>
           <Modal.Body>
-            <GenericInputField
-              label={
-                addressData.type === TERRITORY_TYPES.SINGLE_STORY
-                  ? t("unit.propertyNumberLabel")
-                  : t("unit.unitNumberLabel")
+            <TagField
+              label={t(`unit.${unitType}NumberLabel`)}
+              value={unitTags}
+              onChange={handleUnitChange}
+              placeholder={t("unit.placeholder")}
+              noOptionsMessage={t("unit.noOptions")}
+              formatCreateLabel={(inputValue) =>
+                t("unit.add", { value: inputValue })
               }
-              name="unit"
-              handleChange={(e: ChangeEvent<HTMLElement>) => {
-                const { value } = e.target as HTMLInputElement;
-                setUnit(value);
-              }}
-              changeValue={unit}
-              required={true}
             />
           </Modal.Body>
           <ModalFooter

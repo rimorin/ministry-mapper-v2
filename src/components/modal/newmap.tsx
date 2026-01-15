@@ -1,5 +1,4 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-
 import { useState, FormEvent, ChangeEvent } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
@@ -9,10 +8,8 @@ import {
   DEFAULT_COORDINATES,
   MIN_START_FLOOR
 } from "../../utils/constants";
-
 import isValidMapSequence from "../../utils/helpers/checkvalidseq";
 import useNotification from "../../hooks/useNotification";
-import processSequence from "../../utils/helpers/processsequence";
 import {
   NewPrivateAddressModalProps,
   latlongInterface
@@ -20,10 +17,15 @@ import {
 import FloorField from "../form/floors";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
-import GenericTextAreaField from "../form/textarea";
+import TagField from "../form/tagfield";
 import ChangeMapGeolocation from "./changegeolocation";
 import { callFunction } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
+
+interface SequenceOption {
+  value: string;
+  label: string;
+}
 
 const NewMap = NiceModal.create(
   ({
@@ -42,6 +44,7 @@ const NewMap = NiceModal.create(
       DEFAULT_COORDINATES.Singapore
     );
     const [sequence, setSequence] = useState("");
+    const [sequenceTags, setSequenceTags] = useState<SequenceOption[]>([]);
     const [mapType, setMapType] = useState(TERRITORY_TYPES.MULTIPLE_STORIES);
     const [floors, setFloors] = useState(MIN_START_FLOOR);
     const [isSaving, setIsSaving] = useState(false);
@@ -53,7 +56,7 @@ const NewMap = NiceModal.create(
     ) => {
       event.preventDefault();
 
-      if (!isValidMapSequence(sequence, mapType)) {
+      if (!isValidMapSequence(sequence)) {
         notifyWarning(t("map.invalidSequence"));
         return;
       }
@@ -83,8 +86,8 @@ const NewMap = NiceModal.create(
 
     const handleLocationSelect = async () => {
       const result = await showModal(ChangeMapGeolocation, {
-        coordinates: coordinates,
-        origin: origin,
+        coordinates,
+        origin,
         isSelectOnly: true
       });
       const newCoordinates = result as latlongInterface;
@@ -92,6 +95,20 @@ const NewMap = NiceModal.create(
         setLocation(`${newCoordinates.lat}, ${newCoordinates.lng}`);
         setCoordinates(newCoordinates);
       }
+    };
+
+    const handleSequenceChange = (
+      newValue: readonly SequenceOption[] | null
+    ) => {
+      if (!newValue) {
+        setSequenceTags([]);
+        setSequence("");
+        return;
+      }
+
+      const tags = newValue as SequenceOption[];
+      setSequenceTags(tags);
+      setSequence(tags.map((tag) => tag.value).join(","));
     };
 
     return (
@@ -159,20 +176,16 @@ const NewMap = NiceModal.create(
                 changeValue={floors}
               />
             )}
-            <GenericTextAreaField
+            <TagField
               label={t("map.sequence")}
-              name="units"
-              handleChange={(e: ChangeEvent<HTMLElement>) =>
-                setSequence(
-                  processSequence(
-                    (e.target as HTMLInputElement).value,
-                    isMultiStory
-                  )
-                )
+              value={sequenceTags}
+              onChange={handleSequenceChange}
+              placeholder={t("map.sequencePlaceholder")}
+              noOptionsMessage={t("map.sequenceNoOptions")}
+              formatCreateLabel={(inputValue) =>
+                t("map.sequenceAdd", { value: inputValue })
               }
-              changeValue={sequence}
-              required={true}
-              information={t("map.sequenceExplanation")}
+              helpText={t("map.sequenceHelpText")}
             />
           </Modal.Body>
           <ModalFooter

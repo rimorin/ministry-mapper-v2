@@ -151,13 +151,16 @@
     "multiStoryDescription": "このマップには複数の階があり、各階に複数のユニットが含まれます。",
     "singleStoryDescription": "一戸建て物件のリストのマップです",
     "sequence": "順序",
-    "sequenceExplanation": "カンマで区切られた家またはユニット番号を入力してください。例：1A, 1B, 2A または 301, 303, 305。システムは入力した順序で住所を作成します。",
     "invalidSequence": "無効な順序",
     "clickToSelectLocation": "クリックして位置選択",
     "deleteSuccess": "住所が削除されました, {{name}}.",
     "updateMapSequence": "マップ順序の更新",
     "dragToReorder": "カードをドラッグ&ドロップして順序を変更してください",
-    "searchPlace": "場所を検索"
+    "searchPlace": "場所を検索",
+    "sequencePlaceholder": "入力してEnterキーを押して追加 (例: 1A, 1B, 301, 302)",
+    "sequenceNoOptions": "入力してEnterキーを押して追加",
+    "sequenceAdd": "\"{{value}}\" を追加",
+    "sequenceHelpText": "このマップ内でプロパティを訪問する順序を定義します"
   },
   "address": {
     "address": "住所",
@@ -178,8 +181,8 @@
     "changeTerritory": "区域変更",
     "changeSequence": "順序変更",
     "changeName": "名前変更",
-    "addProperty": "物件番号追加",
-    "addUnit": "ユニット番号追加",
+    "addProperty": "物件番号（複数）追加",
+    "addUnit": "ユニット番号（複数）追加",
     "addHigherFloor": "上階追加",
     "addLowerFloor": "下階追加",
     "resetStatus": "状態リセット",
@@ -329,14 +332,21 @@
     "deleteFloor": "🗑️",
     "deleteUnit": "🗑️"
   },
+  "tagfield": {
+    "invalidCharacters": "英数字とハイフンのみ使用できます",
+    "charactersSanitized": "無効な文字が削除されました。追加: \"{{value}}\"",
+    "duplicatesRemoved": "重複エントリが削除されました"
+  },
   "unit": {
-    "alphanumericDashHyphenValidation": "ユニット/物件番号には英数字、ダッシュ、またはハイフンのみ含める必要があります。",
     "addPropertyTitle": "{{name}}に物件追加",
-    "addUnitTitle": "{{mapId}}にユニット追加",
-    "propertyNumberLabel": "物件番号",
-    "unitNumberLabel": "ユニット番号",
+    "addUnitTitle": "{{name}}にユニット追加",
+    "propertyNumberLabel": "物件番号（複数）",
+    "unitNumberLabel": "ユニット番号（複数）",
     "requireOneUnitValidation": "区域には最低1つのユニット番号が必要です。",
-    "confirmDelete": "ユニット{{unitNo}}が完全に削除されます。\nこの操作は取り消せません。"
+    "confirmDelete": "ユニット{{unitNo}}が完全に削除されます。\nこの操作は取り消せません。",
+    "placeholder": "入力してEnterキーを押して追加 (例: 1A, 1B, 301, 302)",
+    "noOptions": "入力してEnterキーを押して追加",
+    "add": "\"{{value}}\" を追加"
   },
   "profile": {
     "updateSuccess": "プロフィール更新。",

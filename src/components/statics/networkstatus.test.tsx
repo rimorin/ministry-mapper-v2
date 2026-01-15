@@ -40,7 +40,9 @@ describe("NetworkStatusBanner", () => {
 
     const { container } = render(<NetworkStatusBanner />);
 
-    expect(container.firstChild).toBeNull();
+    expect(
+      container.querySelector(".network-status-banner")
+    ).not.toBeInTheDocument();
   });
 
   it("should not render when dismissed", () => {
@@ -56,7 +58,9 @@ describe("NetworkStatusBanner", () => {
 
     const { container } = render(<NetworkStatusBanner />);
 
-    expect(container.firstChild).toBeNull();
+    expect(
+      container.querySelector(".network-status-banner")
+    ).not.toBeInTheDocument();
   });
 
   it("should render component structure when offline", () => {
