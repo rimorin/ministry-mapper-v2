@@ -151,13 +151,16 @@
     "multiStoryDescription": "Peta ini akan menyertakan beberapa tingkat, setiap satu mengandungi beberapa unit.",
     "singleStoryDescription": "Ini adalah peta dengan senarai hartanah satu tingkat",
     "sequence": "Urutan",
-    "sequenceExplanation": "Masukkan nombor rumah atau unit yang dipisahkan dengan koma. Contohnya: 1A, 1B, 2A atau 301, 303, 305. Sistem akan mencipta alamat mengikut urutan yang anda masukkan.",
     "invalidSequence": "Urutan tidak sah",
     "clickToSelectLocation": "Klik untuk pilih lokasi",
     "deleteSuccess": "Alamat dipadam, {{name}}.",
     "updateMapSequence": "Kemas Kini Urutan Peta",
     "dragToReorder": "Seret dan lepaskan kad untuk menyusun semula urutan",
-    "searchPlace": "Cari tempat"
+    "searchPlace": "Cari tempat",
+    "sequencePlaceholder": "Taip dan tekan Enter untuk menambah (cth., 1A, 1B, 301, 302)",
+    "sequenceNoOptions": "Taip dan tekan Enter untuk menambah",
+    "sequenceAdd": "Tambah \"{{value}}\"",
+    "sequenceHelpText": "Tentukan urutan hartanah yang perlu dilawati dalam peta ini"
   },
   "address": {
     "address": "Alamat",
@@ -178,8 +181,8 @@
     "changeTerritory": "Tukar Wilayah",
     "changeSequence": "Tukar Urutan",
     "changeName": "Tukar Nama",
-    "addProperty": "Tambah No. Hartanah",
-    "addUnit": "Tambah No. Unit",
+    "addProperty": "Tambah Nombor-nombor Hartanah",
+    "addUnit": "Tambah Nombor-nombor Unit",
     "addHigherFloor": "Tambah Tingkat Atas",
     "addLowerFloor": "Tambah Tingkat Bawah",
     "resetStatus": "Set Semula Status",
@@ -329,14 +332,21 @@
     "deleteFloor": "🗑️",
     "deleteUnit": "🗑️"
   },
+  "tagfield": {
+    "invalidCharacters": "Hanya aksara alfanumerik dan tanda sempang dibenarkan",
+    "charactersSanitized": "Aksara tidak sah dialih keluar. Ditambah: \"{{value}}\"",
+    "duplicatesRemoved": "Entri pendua dialih keluar"
+  },
   "unit": {
-    "alphanumericDashHyphenValidation": "Nombor Unit/Hartanah hanya boleh mengandungi aksara abjad angka, sengkang atau tanda sempang.",
     "addPropertyTitle": "Tambah hartanah ke {{name}}",
-    "addUnitTitle": "Tambah unit ke {{mapId}}",
-    "propertyNumberLabel": "Nombor hartanah",
-    "unitNumberLabel": "Nombor unit",
+    "addUnitTitle": "Tambah unit ke {{name}}",
+    "propertyNumberLabel": "Nombor-nombor hartanah",
+    "unitNumberLabel": "Nombor-nombor unit",
     "requireOneUnitValidation": "Wilayah memerlukan sekurang-kurangnya 1 nombor unit.",
-    "confirmDelete": "Unit {{unitNo}} akan dipadam secara kekal.\nAnda tidak boleh membatalkan ini."
+    "confirmDelete": "Unit {{unitNo}} akan dipadam secara kekal.\nAnda tidak boleh membatalkan ini.",
+    "placeholder": "Taip dan tekan Enter untuk menambah (cth., 1A, 1B, 301, 302)",
+    "noOptions": "Taip dan tekan Enter untuk menambah",
+    "add": "Tambah \"{{value}}\""
   },
   "profile": {
     "updateSuccess": "Profil dikemas kini.",

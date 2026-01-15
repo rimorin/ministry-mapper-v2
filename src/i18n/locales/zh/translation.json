@@ -151,13 +151,16 @@
     "multiStoryDescription": "此地图将包括多个楼层，每个楼层包含几个单元。该地图旨在有效地组织和显示不同楼层的单元。",
     "singleStoryDescription": "这是一张单层物业列表的地图",
     "sequence": "序列",
-    "sequenceExplanation": "输入用逗号分隔的房屋或单元号码。例如：1A, 1B, 2A 或 301, 303, 305。系统将按您输入的顺序创建地址。",
     "invalidSequence": "无效的序列",
     "clickToSelectLocation": "点击选择位置",
     "deleteSuccess": "地址已删除, {{name}}.",
     "updateMapSequence": "更新地图顺序",
     "dragToReorder": "拖放卡片以重新排序",
-    "searchPlace": "搜索地点"
+    "searchPlace": "搜索地点",
+    "sequencePlaceholder": "输入并按Enter添加 (例如：1A, 1B, 301, 302)",
+    "sequenceNoOptions": "输入并按Enter添加",
+    "sequenceAdd": "添加 \"{{value}}\"",
+    "sequenceHelpText": "定义此地图中访问属性的顺序"
   },
   "address": {
     "address": "地址",
@@ -178,8 +181,8 @@
     "changeTerritory": "更改区域",
     "changeSequence": "更改序列",
     "changeName": "重命名",
-    "addProperty": "添加物业编号",
-    "addUnit": "添加单元编号",
+    "addProperty": "添加物业编号（多个）",
+    "addUnit": "添加单元编号（多个）",
     "addHigherFloor": "添加较高楼层",
     "addLowerFloor": "添加较低楼层",
     "resetStatus": "重置状态",
@@ -329,14 +332,21 @@
     "deleteFloor": "🗑️",
     "deleteUnit": "🗑️"
   },
+  "tagfield": {
+    "invalidCharacters": "仅允许字母数字字符和连字符",
+    "charactersSanitized": "无效字符已删除。已添加：\"{{value}}\"",
+    "duplicatesRemoved": "重复条目已删除"
+  },
   "unit": {
-    "alphanumericDashHyphenValidation": "单元/房产编号只能包含字母数字字符、破折号或连字符。",
     "addPropertyTitle": "将房产添加到 {{name}}",
-    "addUnitTitle": "将单元添加到 {{mapId}}",
-    "propertyNumberLabel": "房产编号",
-    "unitNumberLabel": "单元编号",
+    "addUnitTitle": "将单元添加到 {{name}}",
+    "propertyNumberLabel": "房产编号（多个）",
+    "unitNumberLabel": "单元编号（多个）",
     "requireOneUnitValidation": "区域至少需要 1 个单元编号。",
-    "confirmDelete": "单元{{unitNo}}将被永久删除。\n您无法撤销此操作。"
+    "confirmDelete": "单元{{unitNo}}将被永久删除。\n您无法撤销此操作。",
+    "placeholder": "输入并按Enter添加 (例如：1A, 1B, 301, 302)",
+    "noOptions": "输入并按Enter添加",
+    "add": "添加 \"{{value}}\""
   },
   "profile": {
     "updateSuccess": "个人资料已更新。",

@@ -151,13 +151,16 @@
     "multiStoryDescription": "Este mapa incluirá varios pisos, cada uno con varias unidades. El mapa está diseñado para organizar y mostrar unidades en diferentes pisos de manera eficiente.",
     "singleStoryDescription": "Este es un mapa con una lista de propiedades de un solo piso",
     "sequence": "Secuencia",
-    "sequenceExplanation": "Ingresa números de casa o unidad separados por comas. Por ejemplo: 1A, 1B, 2A o 301, 303, 305. El sistema creará direcciones en el orden que las ingreses.",
     "invalidSequence": "Secuencia inválida",
     "clickToSelectLocation": "Haz clic para seleccionar la ubicación",
     "deleteSuccess": "Dirección eliminada, {{name}}.",
     "updateMapSequence": "Actualizar secuencia del mapa",
     "dragToReorder": "Arrastra y suelta las tarjetas para reordenar la secuencia",
-    "searchPlace": "Buscar un lugar"
+    "searchPlace": "Buscar un lugar",
+    "sequencePlaceholder": "Escribe y presiona Enter para agregar (ej., 1A, 1B, 301, 302)",
+    "sequenceNoOptions": "Escribe y presiona Enter para agregar",
+    "sequenceAdd": "Agregar \"{{value}}\"",
+    "sequenceHelpText": "Define el orden en que se deben visitar las propiedades dentro de este mapa"
   },
   "address": {
     "address": "Dirección",
@@ -178,8 +181,8 @@
     "changeTerritory": "Cambiar territorio",
     "changeSequence": "Cambiar secuencia",
     "changeName": "Renombrar",
-    "addProperty": "Agregar número de propiedad",
-    "addUnit": "Agregar número de unidad",
+    "addProperty": "Agregar números de propiedad",
+    "addUnit": "Agregar números de unidad",
     "addHigherFloor": "Agregar piso superior",
     "addLowerFloor": "Agregar piso inferior",
     "resetStatus": "Reiniciar estado",
@@ -329,14 +332,21 @@
     "deleteFloor": "🗑️",
     "deleteUnit": "🗑️"
   },
+  "tagfield": {
+    "invalidCharacters": "Solo se permiten caracteres alfanuméricos y guiones",
+    "charactersSanitized": "Caracteres no válidos eliminados. Agregado: \"{{value}}\"",
+    "duplicatesRemoved": "Entradas duplicadas eliminadas"
+  },
   "unit": {
-    "alphanumericDashHyphenValidation": "El número de unidad/propiedad solo debe incluir caracteres alfanuméricos, guión o guión medio.",
     "addPropertyTitle": "Agregar propiedad a {{name}}",
-    "addUnitTitle": "Agregar unidad a {{mapId}}",
-    "propertyNumberLabel": "Número de propiedad",
-    "unitNumberLabel": "Número de unidad",
+    "addUnitTitle": "Agregar unidad a {{name}}",
+    "propertyNumberLabel": "Números de propiedad",
+    "unitNumberLabel": "Números de unidad",
     "requireOneUnitValidation": "El territorio requiere al menos 1 número de unidad.",
-    "confirmDelete": "La unidad {{unitNo}} se eliminará permanentemente.\nNo puedes deshacer esto."
+    "confirmDelete": "La unidad {{unitNo}} se eliminará permanentemente.\nNo puedes deshacer esto.",
+    "placeholder": "Escribe y presiona Enter para agregar (ej., 1A, 1B, 301, 302)",
+    "noOptions": "Escribe y presiona Enter para agregar",
+    "add": "Agregar \"{{value}}\""
   },
   "profile": {
     "updateSuccess": "Perfil actualizado.",

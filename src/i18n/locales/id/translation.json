@@ -155,8 +155,8 @@
     "changeTerritory": "Ubah Wilayah",
     "changeSequence": "Ubah Urutan",
     "changeName": "Ubah Nama",
-    "addProperty": "Tambah No. Properti",
-    "addUnit": "Tambah No. Unit",
+    "addProperty": "Tambah Nomor-nomor Properti",
+    "addUnit": "Tambah Nomor-nomor Unit",
     "addHigherFloor": "Tambah Lantai Lebih Tinggi",
     "addLowerFloor": "Tambah Lantai Lebih Rendah",
     "resetStatus": "Setel Ulang Status",
@@ -288,13 +288,16 @@
     "multiStoryDescription": "Peta ini akan mencakup beberapa lantai, masing-masing berisi beberapa unit. Peta ini dirancang untuk mengatur dan menampilkan unit di berbagai lantai secara efisien.",
     "singleStoryDescription": "Ini adalah peta dengan daftar properti satu lantai",
     "sequence": "Urutan",
-    "sequenceExplanation": "Masukkan nomor rumah atau unit yang dipisahkan dengan koma. Misalnya: 1A, 1B, 2A atau 301, 303, 305. Sistem akan membuat alamat sesuai urutan yang Anda masukkan.",
     "invalidSequence": "Urutan tidak valid",
     "clickToSelectLocation": "Klik untuk memilih lokasi",
     "deleteSuccess": "Alamat dihapus, {{name}}.",
     "updateMapSequence": "Perbarui Urutan Peta",
     "dragToReorder": "Seret dan lepaskan kartu untuk mengurutkan kembali urutan",
-    "searchPlace": "Cari tempat"
+    "searchPlace": "Cari tempat",
+    "sequencePlaceholder": "Ketik dan tekan Enter untuk menambahkan (mis., 1A, 1B, 301, 302)",
+    "sequenceNoOptions": "Ketik dan tekan Enter untuk menambahkan",
+    "sequenceAdd": "Tambahkan \"{{value}}\"",
+    "sequenceHelpText": "Tentukan urutan properti yang harus dikunjungi dalam peta ini"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper sedang dalam pemeliharaan.",
@@ -329,14 +332,21 @@
     "deleteFloor": "🗑️",
     "deleteUnit": "🗑️"
   },
+  "tagfield": {
+    "invalidCharacters": "Hanya karakter alfanumerik dan tanda hubung yang diperbolehkan",
+    "charactersSanitized": "Karakter tidak valid dihapus. Ditambahkan: \"{{value}}\"",
+    "duplicatesRemoved": "Entri duplikat dihapus"
+  },
   "unit": {
-    "alphanumericDashHyphenValidation": "Nomor Unit/Properti hanya boleh berisi karakter alfanumerik, tanda hubung atau tanda hubung.",
     "addPropertyTitle": "Tambahkan properti ke {{name}}",
-    "addUnitTitle": "Tambahkan unit ke {{mapId}}",
-    "propertyNumberLabel": "Nomor properti",
-    "unitNumberLabel": "Nomor unit",
+    "addUnitTitle": "Tambahkan unit ke {{name}}",
+    "propertyNumberLabel": "Nomor-nomor properti",
+    "unitNumberLabel": "Nomor-nomor unit",
     "requireOneUnitValidation": "Wilayah membutuhkan setidaknya 1 nomor unit.",
-    "confirmDelete": "Unit {{unitNo}} akan dihapus secara permanen.\nAnda tidak dapat membatalkan ini."
+    "confirmDelete": "Unit {{unitNo}} akan dihapus secara permanen.\nAnda tidak dapat membatalkan ini.",
+    "placeholder": "Ketik dan tekan Enter untuk menambahkan (mis., 1A, 1B, 301, 302)",
+    "noOptions": "Ketik dan tekan Enter untuk menambahkan",
+    "add": "Tambahkan \"{{value}}\""
   },
   "profile": {
     "updateSuccess": "Profil diperbarui.",

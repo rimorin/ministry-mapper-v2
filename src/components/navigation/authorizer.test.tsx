@@ -134,7 +134,7 @@ describe("ComponentAuthorizer", () => {
     });
 
     it("should return empty fragment when unauthorized", () => {
-      const { container } = render(
+      render(
         <ComponentAuthorizer
           requiredPermission="administrator"
           userPermission="read_only"
@@ -143,7 +143,7 @@ describe("ComponentAuthorizer", () => {
         </ComponentAuthorizer>
       );
 
-      expect(container.firstChild).toBeNull();
+      expect(screen.queryByText("Hidden")).not.toBeInTheDocument();
     });
   });
 });

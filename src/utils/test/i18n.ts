@@ -41,6 +41,13 @@ const resources = {
       "map.unit": "Unit",
       "map.floor": "Floor",
       "map.sequence": "Sequence",
+      "map.sequencePlaceholder":
+        "Type and press Enter to add (e.g., 1A, 1B, 301, 302)",
+      "map.sequenceNoOptions": "Type and press Enter to add",
+      "map.sequenceAdd": 'Add "{{value}}"',
+      "map.sequenceHelpText":
+        "Define the order in which properties should be visited within this map",
+      "map.invalidSequence": "Invalid sequence",
 
       // User
       "user.email": "Email",
@@ -56,7 +63,21 @@ const resources = {
       "validation.required": "This field is required",
       "validation.email": "Invalid email address",
       "validation.minLength": "Minimum length is {{min}}",
-      "validation.maxLength": "Maximum length is {{max}}"
+      "validation.maxLength": "Maximum length is {{max}}",
+
+      // TagField
+      "tagfield.invalidCharacters":
+        "Only alphanumeric characters and hyphens are allowed",
+      "tagfield.charactersSanitized": "Invalid characters removed",
+      "tagfield.duplicatesRemoved": "Duplicate tags removed",
+
+      // Unit
+      "unit.placeholder":
+        "Type and press Enter to add (e.g., 1A, 2B, 301, 302)",
+      "unit.noOptions": "Type and press Enter to add",
+      "unit.add": 'Add "{{value}}"',
+      "unit.requireOneUnitValidation":
+        "Territory requires at least 1 unit number."
     }
   }
 };
