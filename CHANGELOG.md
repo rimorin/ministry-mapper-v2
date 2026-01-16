@@ -1,3 +1,10 @@
+# [1.24.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.23.0...v1.24.0) (2026-01-16)
+
+
+### Features
+
+* improve sequence implementation ([11ba897](https://github.com/rimorin/ministry-mapper-v2/commit/11ba897d943dca66d5aa916361a9efd6f30002ab))
+
 # [1.23.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.22.0...v1.23.0) (2026-01-07)
 
 
