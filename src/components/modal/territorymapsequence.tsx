@@ -1,5 +1,5 @@
 import NiceModal, { bootstrapDialog, useModal } from "@ebay/nice-modal-react";
-import { USER_ACCESS_LEVELS } from "../../utils/constants";
+import { USER_ACCESS_LEVELS, PB_FIELDS } from "../../utils/constants";
 import { TerritoryMapSequenceModalProps } from "../../utils/interface";
 import { Form, Modal } from "react-bootstrap";
 import ModalFooter from "../form/footer";
@@ -92,7 +92,7 @@ const ChangeTerritoryMapSequence = NiceModal.create(
       getList("maps", {
         filter: `territory = "${territoryId}"`,
         sort: "sequence",
-        fields: "id,sequence,description",
+        fields: PB_FIELDS.MAPS_SEQUENCE,
         requestKey: null
       }).then((response) => setMapList(response as unknown as MapItem[]));
     }, [territoryId]);

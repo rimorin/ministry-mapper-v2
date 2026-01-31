@@ -146,7 +146,9 @@ const PB_FIELDS = {
   CONGREGATION_ROLES:
     "id, role, expand.user.name, expand.user.email, expand.user.verified",
   TERRITORIES: "id, code, description, progress",
-  MAPS: "id, sequence, description, type, location, progress, coordinates, aggregates"
+  MAPS: "id, sequence, description, type, location, progress, coordinates, aggregates",
+  MAPS_SEQUENCE: "id, sequence, description",
+  USERS: "id, name, email"
 };
 
 const SPEED_DIAL = {

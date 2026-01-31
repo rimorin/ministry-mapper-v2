@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import AsyncSelect from "react-select/async";
 import { OptionsOrGroups, GroupBase } from "react-select";
 import { RecordModel } from "pocketbase";
-import { USER_ACCESS_LEVELS } from "../../utils/constants";
+import { USER_ACCESS_LEVELS, PB_FIELDS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import { UserModalProps, SelectProps } from "../../utils/interface";
 import ModalFooter from "../form/footer";
@@ -40,6 +40,7 @@ const InviteUser = NiceModal.create(
     const getUsersByNames = async (inputValue: string) => {
       return getPaginatedList("users", 1, 10, {
         filter: `(email ~ "${inputValue}%" || name ~ "${inputValue}") && verified = true`,
+        fields: PB_FIELDS.USERS,
         requestKey: `get-users-${inputValue}`
       });
     };
