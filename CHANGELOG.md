@@ -1,3 +1,10 @@
+## [1.24.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.24.0...v1.24.1) (2026-01-31)
+
+
+### Bug Fixes
+
+* add fields for users and maps sequence ([b91418f](https://github.com/rimorin/ministry-mapper-v2/commit/b91418f5d63dec0148e4ea91123e6b91f760b662))
+
 # [1.24.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.23.0...v1.24.0) (2026-01-16)
 
 
