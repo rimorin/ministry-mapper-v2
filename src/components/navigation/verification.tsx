@@ -36,39 +36,45 @@ const VerificationPage = ({ user }: userInterface) => {
   return (
     <Container className="container-main">
       <Card className="card-main">
-        <Card.Img
-          alt={t("branding.logo", "Ministry Mapper logo")}
-          className="mm-logo"
-          src={getAssetUrl("android-chrome-192x192.png")}
-        />
+        <Card.Body className="text-center">
+          <Card.Img
+            alt={t("branding.logo", "Ministry Mapper logo")}
+            className="mm-logo mx-auto d-block"
+            src={getAssetUrl("android-chrome-192x192.png")}
+          />
+        </Card.Body>
         <Card.Body>
           <Card.Title className="text-center">
             {t(
               "auth.verifyEmailMessage",
-              "We are sorry {{name}}! Please verify your email account before proceeding 🪪",
-              { name: user?.name }
+              "Please verify your email address to continue."
             )}
           </Card.Title>
-        </Card.Body>
-        <>
-          <span
-            className="resend-text fluid-bolding fluid-text"
-            onClick={handleResendMail}
-          >
+          <Card.Text className="text-center mb-4">
             {t("auth.didNotReceiveEmail", "Didn't receive verification email?")}
-            {isSending && (
-              <Spinner
-                size="sm"
-                style={{
-                  marginLeft: "5px"
+          </Card.Text>
+          <div className="text-center">
+            {isSending ? (
+              <Spinner size="sm" />
+            ) : (
+              <span
+                className="resend-text"
+                onClick={handleResendMail}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    e.preventDefault();
+                    handleResendMail();
+                  }
                 }}
-              />
+              >
+                {t("auth.resendVerificationEmail", "Resend verification email")}
+              </span>
             )}
-          </span>
-        </>
-        <>
-          <UseAnotherButton handleClick={handleClick} />
-        </>
+          </div>
+        </Card.Body>
+        <UseAnotherButton handleClick={handleClick} />
       </Card>
     </Container>
   );
