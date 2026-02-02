@@ -39,7 +39,7 @@ const InviteUser = NiceModal.create(
 
     const getUsersByNames = async (inputValue: string) => {
       return getPaginatedList("users", 1, 10, {
-        filter: `(email ~ "${inputValue}%" || name ~ "${inputValue}")`,
+        filter: `(email~"${inputValue}%" || name~"${inputValue}%")`,
         fields: PB_FIELDS.USERS,
         requestKey: `get-users-${inputValue}`
       });

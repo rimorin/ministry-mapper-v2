@@ -7,7 +7,7 @@ const getCongregationUsers = async (
   currentUserId: string
 ): Promise<Map<string, userDetails>> => {
   const records = await getList("roles", {
-    filter: `congregation="${code}" && user != "${currentUserId}"`,
+    filter: `congregation="${code}" && user!="${currentUserId}"`,
     sort: "-role",
     expand: "user",
     fields: PB_FIELDS.CONGREGATION_ROLES,

@@ -90,7 +90,7 @@ const ChangeTerritoryMapSequence = NiceModal.create(
 
     useEffect(() => {
       getList("maps", {
-        filter: `territory = "${territoryId}"`,
+        filter: `territory="${territoryId}"`,
         sort: "sequence",
         fields: PB_FIELDS.MAPS_SEQUENCE,
         requestKey: null

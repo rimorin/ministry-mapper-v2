@@ -22,7 +22,7 @@ const useUnreadMessages = (mapId: string) => {
 
   const fetchUnreadMsgs = async () => {
     const unreadMessages = await getList("messages", {
-      filter: `map = "${mapId}" && type!= "${MESSAGE_TYPES.ADMIN}" && read = false`,
+      filter: `map="${mapId}" && type!="${MESSAGE_TYPES.ADMIN}" && read=false`,
       fields: "id",
       requestKey: null
     });
@@ -45,7 +45,7 @@ const useUnreadMessages = (mapId: string) => {
       }
     },
     {
-      filter: `map = "${mapId}" && type!= "${MESSAGE_TYPES.ADMIN}"`,
+      filter: `map="${mapId}" && type!="${MESSAGE_TYPES.ADMIN}"`,
       fields: "id"
     },
     [mapId],
