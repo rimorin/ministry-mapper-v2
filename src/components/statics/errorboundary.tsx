@@ -35,8 +35,9 @@ const ErrorBoundaryFallback: FC<ErrorBoundaryFallbackProps> = ({
             <div className="error-boundary-debug">
               <strong>Component:</strong> {componentName}
               <br />
-              <strong>Error:</strong> {error.message}
-              {error.stack && (
+              <strong>Error:</strong>{" "}
+              {error instanceof Error ? error.message : String(error)}
+              {error instanceof Error && error.stack && (
                 <>
                   <br />
                   <strong>Stack Trace:</strong>

@@ -1,12 +1,13 @@
-import { latlongInterface, territorySingleProps } from "../../utils/interface";
+import { territorySingleProps } from "../../utils/interface";
 import { DEFAULT_AGGREGATES, DEFAULT_COORDINATES } from "../../utils/constants";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { divIcon } from "leaflet";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { currentLocationIcon } from "../../utils/helpers/mapicons";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import { MapController } from "../map/mapcontroller";
 import CustomControl from "../map/customcontrol";
+import useGeolocation from "../../hooks/useGeolocation";
 
 const TerritoryMapView = ({
   houses,
@@ -16,19 +17,10 @@ const TerritoryMapView = ({
 }: territorySingleProps) => {
   const mapCoordinates = addressDetails?.coordinates;
   const aggregates = addressDetails?.aggregates;
-  const [currentLocation, setCurrentLocation] = useState<latlongInterface>();
+  const { currentLocation } = useGeolocation();
   const [center, setCenter] = useState(
     mapCoordinates || DEFAULT_COORDINATES.Singapore
   );
-
-  useEffect(() => {
-    navigator.geolocation?.getCurrentPosition((position) => {
-      setCurrentLocation({
-        lat: position.coords.latitude,
-        lng: position.coords.longitude
-      });
-    });
-  }, []);
 
   const houseMarkers = () =>
     houses?.units.map((element, index) => {
@@ -77,14 +69,18 @@ const TerritoryMapView = ({
     <div className={policy.isFromAdmin() ? "map-body-admin" : "gmap-body"}>
       <MapContainer
         center={[mapCoordinates.lat, mapCoordinates.lng]}
-        zoom={16}
+        zoom={17}
         style={{ height: "100%", width: "100%" }}
         zoomControl={true}
         scrollWheelZoom={true}
         attributionControl={false}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <MapController center={center} onCenterChange={setCenter} />
+        <MapController
+          center={center}
+          onCenterChange={setCenter}
+          zoomLevel={17}
+        />
         {currentLocation && (
           <>
             <CustomControl position="topright">

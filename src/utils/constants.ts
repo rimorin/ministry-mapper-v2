@@ -145,7 +145,7 @@ const PB_FIELDS = {
   ROLES: "id, role, expand.congregation.id, expand.congregation.name",
   CONGREGATION_ROLES:
     "id, role, expand.user.name, expand.user.email, expand.user.verified",
-  TERRITORIES: "id, code, description, progress",
+  TERRITORIES: "id, code, description, progress, coordinates",
   MAPS: "id, sequence, description, type, location, progress, coordinates, aggregates",
   MAPS_SEQUENCE: "id, sequence, description",
   USERS: "id, name, email"
