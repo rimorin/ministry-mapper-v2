@@ -39,6 +39,7 @@ interface AdminNavbarProps {
     onCreateNew: () => void;
     onChangeCode: () => Promise<void>;
     onChangeName: () => Promise<void>;
+    onChangeLocation: () => void;
     onChangeSequence: () => void;
     onDelete: () => void;
     onReset: () => void;

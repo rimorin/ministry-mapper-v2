@@ -85,11 +85,13 @@ export default function useTerritoryManagement({
         const id = congregationTerritories[territory]["id"];
         const code = congregationTerritories[territory]["code"];
         const progress = congregationTerritories[territory]["progress"];
+        const coordinates = congregationTerritories[territory]["coordinates"];
         territoryList.set(id, {
           id: id,
           code: code,
           name: name,
-          aggregates: progress
+          aggregates: progress,
+          coordinates: coordinates
         });
       }
     } catch (error) {

@@ -5,7 +5,6 @@ import { useTranslation } from "react-i18next";
 import {
   USER_ACCESS_LEVELS,
   TERRITORY_TYPES,
-  DEFAULT_COORDINATES,
   MIN_START_FLOOR
 } from "../../utils/constants";
 import isValidMapSequence from "../../utils/helpers/checkvalidseq";
@@ -40,9 +39,9 @@ const NewMap = NiceModal.create(
     const { showModal } = useModalManagement();
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");
-    const [coordinates, setCoordinates] = useState<latlongInterface>(
-      DEFAULT_COORDINATES.Singapore
-    );
+    const [coordinates, setCoordinates] = useState<
+      latlongInterface | undefined
+    >();
     const [sequence, setSequence] = useState("");
     const [sequenceTags, setSequenceTags] = useState<SequenceOption[]>([]);
     const [mapType, setMapType] = useState(TERRITORY_TYPES.MULTIPLE_STORIES);
@@ -58,6 +57,11 @@ const NewMap = NiceModal.create(
 
       if (!isValidMapSequence(sequence)) {
         notifyWarning(t("map.invalidSequence"));
+        return;
+      }
+
+      if (!coordinates) {
+        notifyWarning(t("map.selectLocation", "Please select a location"));
         return;
       }
 
