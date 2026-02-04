@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { DEFAULT_COORDINATES, USER_ACCESS_LEVELS } from "../../utils/constants";
 import { currentLocationIcon } from "../../utils/helpers/mapicons";
@@ -15,24 +15,15 @@ import ComponentAuthorizer from "./authorizer";
 import MapPlaceholder from "../statics/placeholder";
 import { MapController } from "../map/mapcontroller";
 import CustomControl from "../map/customcontrol";
+import useGeolocation from "../../hooks/useGeolocation";
 
 const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentLocation, setCurrentLocation] = useState<latlongInterface>();
+  const [isLoading] = useState(false);
+  const { currentLocation } = useGeolocation();
   const [center, setCenter] = useState<latlongInterface>();
   const [selectedAddress, setSelectedAddress] = useState<addressDetails | null>(
     null
   );
-
-  useEffect(() => {
-    navigator.geolocation?.getCurrentPosition((pos) =>
-      setCurrentLocation({
-        lat: pos.coords.latitude,
-        lng: pos.coords.longitude
-      })
-    );
-    setIsLoading(false);
-  }, []);
 
   if (isLoading) return <MapPlaceholder policy={policy} rows={6} columns={3} />;
   if (!sortedAddressList.length) return <div>No addresses found</div>;
@@ -52,7 +43,9 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
         <MapController
           center={center}
+          onCenterChange={setCenter}
           onMapClick={() => setSelectedAddress(null)}
+          zoomLevel={18}
         />
         {currentLocation && (
           <Marker

@@ -98,10 +98,13 @@ export type DropDirections = { [key: string]: DropDirection };
 
 export type adminProps = userInterface;
 
+export type TerritoryPolygonCoordinate = latlongInterface[];
+
 export interface territoryDetails extends nameInterface {
   id: string;
   code: string;
   aggregates: number;
+  coordinates?: TerritoryPolygonCoordinate;
 }
 
 export interface addressDetails extends nameInterface, coordinatesInterface {
@@ -178,12 +181,14 @@ export interface TerritoryListingProps {
   showListing: boolean;
   hideFunction: () => void;
   selectedTerritory?: string;
+  selectedTerritoryId?: string;
   handleSelect?: (
     eventKey: string | null,
     e: React.SyntheticEvent<unknown>
   ) => void;
   territories?: territoryDetails[];
   hideSelectedTerritory?: boolean;
+  congregationCode?: string;
 }
 
 export interface AuthorizerProp {
@@ -404,7 +409,15 @@ export interface NewPrivateAddressModalProps
 export type NewPublicAddressModalProps = NewPrivateAddressModalProps;
 
 export interface NewTerritoryCodeModalProps
-  extends congregationInterface, footerInterface {}
+  extends congregationInterface, footerInterface, originInterface {}
+
+export interface ConfigureTerritoryCoordinatesModalProps
+  extends footerInterface, originInterface {
+  territoryId?: string;
+  territoryName?: string;
+  coordinates?: TerritoryPolygonCoordinate;
+  isSelectOnly?: boolean;
+}
 
 export interface NewUnitModalProps
   extends mapInterface, footerInterface, congregationInterface {

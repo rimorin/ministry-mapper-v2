@@ -20,16 +20,17 @@ const RoutingService: React.FC<RoutingServiceProps> = ({
 }) => {
   const map = useMap();
   const routeLineRef = useRef<LeafletPolyline | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     if (!start) return;
 
-    if (routeLineRef.current) {
-      map.removeLayer(routeLineRef.current);
-      routeLineRef.current = null;
+    // Cancel any in-flight request to prevent race conditions
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
     }
 
-    let isMounted = true;
+    abortControllerRef.current = new AbortController();
     const profile = travelMode === "DRIVING" ? "driving-car" : "foot-walking";
 
     const fetchRoute = async () => {
@@ -49,17 +50,23 @@ const RoutingService: React.FC<RoutingServiceProps> = ({
                 [start.lng, start.lat],
                 [end.lng, end.lat]
               ]
-            })
+            }),
+            signal: abortControllerRef.current?.signal
           }
         );
 
         const data = await response.json();
 
-        if (isMounted && data.features?.[0]?.geometry?.coordinates) {
+        if (data.features?.[0]?.geometry?.coordinates) {
           const latLngs: [number, number][] =
             data.features[0].geometry.coordinates.map(
               (coord: number[]) => [coord[1], coord[0]] as [number, number]
             );
+
+          // Swap old route with new route atomically (prevents flicker during live updates)
+          if (routeLineRef.current) {
+            map.removeLayer(routeLineRef.current);
+          }
 
           routeLineRef.current = new LeafletPolyline(latLngs, {
             color,
@@ -71,22 +78,32 @@ const RoutingService: React.FC<RoutingServiceProps> = ({
           map.fitBounds(new LatLngBounds(latLngs), { padding: [50, 50] });
         }
       } catch (error) {
+        if (error instanceof Error && error.name === "AbortError") {
+          return; // Expected when new route request starts
+        }
         console.error("Error fetching route:", error);
       } finally {
-        if (isMounted) onLoadingChange?.(false);
+        onLoadingChange?.(false);
       }
     };
 
     fetchRoute();
 
     return () => {
-      isMounted = false;
+      // Abort ongoing requests but keep route visible during updates
+      abortControllerRef.current?.abort();
+    };
+  }, [map, start, end, travelMode, color, onLoadingChange]);
+
+  // Remove route only on component unmount
+  useEffect(() => {
+    return () => {
       if (routeLineRef.current) {
         map.removeLayer(routeLineRef.current);
         routeLineRef.current = null;
       }
     };
-  }, [map, start, end, travelMode, color, onLoadingChange]);
+  }, [map]);
 
   return null;
 };

@@ -22,6 +22,10 @@ import { MapController } from "../map/mapcontroller";
 import { calculateDistance } from "../../utils/helpers/calculatedistance";
 import getDirection from "../../utils/helpers/directiongenerator";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
+import useGeolocation from "../../hooks/useGeolocation";
+
+// Minimum distance (in meters) user must move before route updates
+const ROUTE_UPDATE_THRESHOLD_METERS = 20;
 
 const GetMapGeolocation = NiceModal.create(
   ({ coordinates, name }: GetMapGeolocationModalProps) => {
@@ -29,7 +33,6 @@ const GetMapGeolocation = NiceModal.create(
     const { notifyWarning } = useNotification();
     const [centerOverride, setCenterOverride] =
       useState<latlongInterface | null>(null);
-    const [currentLocation, setCurrentLocation] = useState<latlongInterface>();
     const [travelMode, setTravelMode] = useState<TravelMode>(() => {
       const saved = localStorage.getItem("preferredTravelMode");
       return (saved as TravelMode) || "WALKING";
@@ -39,7 +42,20 @@ const GetMapGeolocation = NiceModal.create(
       number | null
     >(null);
     const modal = useModal();
-    const watchIdRef = useRef<number | null>(null);
+
+    const [routeStartLocation, setRouteStartLocation] =
+      useState<latlongInterface | null>(null);
+    const lastRouteUpdateLocation = useRef<latlongInterface | null>(null);
+    const isInitialMount = useRef(true);
+
+    const { currentLocation, locationError, isSupported } = useGeolocation({
+      enableWatch: true,
+      watchOptions: {
+        enableHighAccuracy: true,
+        maximumAge: 1000,
+        timeout: 15000
+      }
+    });
 
     const isWithinProximity =
       distanceToDestination !== null &&
@@ -53,65 +69,71 @@ const GetMapGeolocation = NiceModal.create(
     };
 
     useEffect(() => {
-      if (!navigator.geolocation) {
+      if (!isSupported) {
         notifyWarning(
           t(
             "errors.geolocationNotSupported",
             "Geolocation is not supported by your browser"
           )
         );
-        return;
       }
+    }, [isSupported, notifyWarning, t]);
 
-      // Start watching user position for live tracking
-      watchIdRef.current = navigator.geolocation.watchPosition(
-        (position) => {
-          const userLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-          setCurrentLocation(userLocation);
+    useEffect(() => {
+      if (locationError) {
+        notifyWarning(
+          t(
+            "errors.unableToGetLocation",
+            "Unable to get your current location. Please check your browser settings."
+          )
+        );
+      }
+    }, [locationError, notifyWarning, t]);
 
-          const distance = calculateDistance(
-            userLocation.lat,
-            userLocation.lng,
-            coordinates.lat,
-            coordinates.lng
+    useEffect(() => {
+      if (currentLocation) {
+        const distance = calculateDistance(
+          currentLocation.lat,
+          currentLocation.lng,
+          coordinates.lat,
+          coordinates.lng
+        );
+        setDistanceToDestination(distance);
+
+        if (!lastRouteUpdateLocation.current) {
+          setRouteStartLocation(currentLocation);
+          lastRouteUpdateLocation.current = currentLocation;
+        } else {
+          const distanceMoved = calculateDistance(
+            lastRouteUpdateLocation.current.lat,
+            lastRouteUpdateLocation.current.lng,
+            currentLocation.lat,
+            currentLocation.lng
           );
-          setDistanceToDestination(distance);
 
-          if (distance > DESTINATION_PROXIMITY_THRESHOLD_METERS) {
-            setIsRouteLoading(true);
+          if (distanceMoved >= ROUTE_UPDATE_THRESHOLD_METERS) {
+            setRouteStartLocation(currentLocation);
+            lastRouteUpdateLocation.current = currentLocation;
           }
-        },
-        () => {
-          notifyWarning(
-            t(
-              "errors.unableToGetLocation",
-              "Unable to get your current location. Please check your browser settings."
-            )
-          );
-        },
-        {
-          enableHighAccuracy: true,
-          maximumAge: 1000,
-          timeout: 15000
         }
-      );
-
-      // Cleanup: Stop watching position when modal closes
-      return () => {
-        if (watchIdRef.current !== null) {
-          navigator.geolocation.clearWatch(watchIdRef.current);
-          watchIdRef.current = null;
-        }
-      };
-    }, []);
+      }
+    }, [currentLocation, coordinates]);
 
     const handleTravelModeChange = (mode: TravelMode) => {
       setTravelMode(mode);
       localStorage.setItem("preferredTravelMode", mode);
     };
+
+    useEffect(() => {
+      if (isInitialMount.current) {
+        isInitialMount.current = false;
+        return;
+      }
+
+      if (lastRouteUpdateLocation.current) {
+        setRouteStartLocation(lastRouteUpdateLocation.current);
+      }
+    }, [travelMode]);
 
     return (
       <Modal {...bootstrapDialog(modal)} fullscreen>
@@ -130,16 +152,16 @@ const GetMapGeolocation = NiceModal.create(
             attributionControl={false}
           >
             <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <MapController center={centerOverride} />
+            <MapController center={centerOverride} zoomLevel={16} />
             {currentLocation && (
               <>
                 <Marker
                   position={[currentLocation.lat, currentLocation.lng]}
                   icon={currentLocationIcon}
                 />
-                {!isWithinProximity && (
+                {!isWithinProximity && routeStartLocation && (
                   <RoutingService
-                    start={currentLocation}
+                    start={routeStartLocation}
                     end={coordinates}
                     travelMode={travelMode}
                     onLoadingChange={setIsRouteLoading}

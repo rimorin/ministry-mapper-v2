@@ -5,23 +5,31 @@ import { latlongInterface } from "../../utils/interface";
 /**
  * MapController manages map position and handles user interactions
  * Uses flag to prevent infinite loops from programmatic vs user-initiated moves
+ * Only applies initial zoom once, preserving user's manual zoom adjustments
  */
 export const MapController: React.FC<{
   center?: latlongInterface | null;
   onCenterChange?: (center: latlongInterface) => void;
   onMapClick?: () => void;
   trigger?: number;
-}> = ({ center, onCenterChange, onMapClick, trigger }) => {
+  zoomLevel?: number;
+}> = ({ center, onCenterChange, onMapClick, trigger, zoomLevel = 18 }) => {
   const map = useMap();
   const isProgrammaticMove = useRef(false);
+  const hasInitialZoom = useRef(false);
 
   useEffect(() => {
     if (center) {
       isProgrammaticMove.current = true;
-      map.setView([center.lat, center.lng], map.getZoom());
+      if (!hasInitialZoom.current) {
+        map.setView([center.lat, center.lng], zoomLevel);
+        hasInitialZoom.current = true;
+      } else {
+        map.panTo([center.lat, center.lng]);
+      }
       setTimeout(() => (isProgrammaticMove.current = false), 100);
     }
-  }, [center, map, trigger]);
+  }, [center, map, trigger, zoomLevel]);
 
   useMapEvents({
     moveend: () => {

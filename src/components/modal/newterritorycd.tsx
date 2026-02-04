@@ -1,6 +1,6 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 
-import { useState, FormEvent, ChangeEvent } from "react";
+import { useState, FormEvent, ChangeEvent, lazy } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
@@ -8,20 +8,45 @@ import useNotification from "../../hooks/useNotification";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import IsValidTerritoryCode from "../../utils/helpers/checkterritorycd";
-import { NewTerritoryCodeModalProps } from "../../utils/interface";
+import {
+  NewTerritoryCodeModalProps,
+  TerritoryPolygonCoordinate
+} from "../../utils/interface";
 import { createData, getFirstItemOfList } from "../../utils/pocketbase";
+import { useModalManagement } from "../../hooks/useModalManagement";
+
+const ConfigureTerritoryCoordinates = lazy(
+  () => import("./changeterritorycoordinates")
+);
 
 const NewTerritoryCode = NiceModal.create(
   ({
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE,
-    congregation
+    congregation,
+    origin
   }: NewTerritoryCodeModalProps) => {
     const { t } = useTranslation();
     const { notifyError, notifyWarning } = useNotification();
+    const { showModal } = useModalManagement();
     const [code, setCode] = useState("");
     const [name, setName] = useState("");
+    const [coordinates, setCoordinates] = useState<TerritoryPolygonCoordinate>(
+      []
+    );
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
+
+    const handleLocationSelect = async () => {
+      const result = await showModal(ConfigureTerritoryCoordinates, {
+        coordinates,
+        origin,
+        isSelectOnly: true
+      });
+      const newCoordinates = result as TerritoryPolygonCoordinate;
+      if (newCoordinates && newCoordinates.length >= 3) {
+        setCoordinates(newCoordinates);
+      }
+    };
 
     const handleCreateTerritory = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
@@ -44,7 +69,8 @@ const NewTerritoryCode = NiceModal.create(
           {
             code,
             description: name,
-            congregation
+            congregation,
+            coordinates: coordinates.length >= 3 ? coordinates : undefined
           },
           {
             requestKey: `create-territory-${congregation}-${code}`
@@ -105,6 +131,63 @@ const NewTerritoryCode = NiceModal.create(
               )}
               autoComplete="off"
             />
+            <Form.Group className="mb-3">
+              <Form.Label>
+                {t("territory.location", "Territory Boundary (Optional)")}
+              </Form.Label>
+              <div className="d-flex gap-2 align-items-center">
+                <Form.Control
+                  type="text"
+                  name="boundary"
+                  placeholder={
+                    coordinates.length >= 3
+                      ? t(
+                          "territory.locationSet",
+                          "Boundary Set ({{count}} points)",
+                          {
+                            count: coordinates.length
+                          }
+                        )
+                      : t(
+                          "territory.clickToSetBoundary",
+                          "Click to set boundary"
+                        )
+                  }
+                  onClick={handleLocationSelect}
+                  value={
+                    coordinates.length >= 3
+                      ? t(
+                          "territory.locationSet",
+                          "Boundary Set ({{count}} points)",
+                          {
+                            count: coordinates.length
+                          }
+                        )
+                      : ""
+                  }
+                  onChange={() => {}}
+                  readOnly
+                  autoComplete="off"
+                />
+                {coordinates.length >= 3 && (
+                  <button
+                    type="button"
+                    onClick={() => setCoordinates([])}
+                    className="btn btn-link text-decoration-none p-0"
+                    style={{ fontSize: "1.5rem" }}
+                    aria-label="Clear boundary"
+                  >
+                    🗑️
+                  </button>
+                )}
+              </div>
+              <Form.Text muted>
+                {t(
+                  "territory.locationHelp",
+                  "Draw a polygon to define the geographic boundary of this territory"
+                )}
+              </Form.Text>
+            </Form.Group>
           </Modal.Body>
           <ModalFooter
             handleClick={modal.hide}
