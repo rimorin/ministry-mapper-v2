@@ -1,15 +1,8 @@
 import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { useState, FormEvent, useEffect } from "react";
-import { Modal, Form, Spinner, Card } from "react-bootstrap";
+import { useState, SubmitEvent, useRef, useEffect } from "react";
+import { Modal, Form, Card, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import {
-  MapContainer,
-  TileLayer,
-  Marker,
-  useMap,
-  useMapEvents
-} from "react-leaflet";
-import { GeoSearchControl, LocationIQProvider } from "leaflet-geosearch";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import {
   currentLocationIcon,
   addressMarkerIcon
@@ -24,6 +17,8 @@ import { updateDataById } from "../../utils/pocketbase";
 import GenericButton from "../navigation/button";
 import { MapController } from "../map/mapcontroller";
 import CustomControl from "../map/customcontrol";
+import { SearchControl } from "../map/searchcontrol";
+import useGeolocation from "../../hooks/useGeolocation";
 import "leaflet-geosearch/dist/geosearch.css";
 import "../../css/geosearch.css";
 
@@ -38,57 +33,6 @@ const MapClickHandler = ({
   return null;
 };
 
-const SearchControl = ({
-  onLocationSelect,
-  origin
-}: {
-  onLocationSelect: (location: latlongInterface) => void;
-  origin: string;
-}) => {
-  const map = useMap();
-
-  useEffect(() => {
-    const providerParams: Record<string, string | number> = {
-      key: import.meta.env.VITE_LOCATIONIQ_API_KEY,
-      limit: 5,
-      addressdetails: 1
-    };
-
-    if (origin) {
-      providerParams.countrycodes = origin.toLowerCase();
-    }
-
-    const provider = new LocationIQProvider({ params: providerParams });
-
-    const searchControl = GeoSearchControl({
-      provider,
-      style: "bar",
-      showMarker: false,
-      maxSuggestions: 5,
-      autoComplete: true,
-      autoCompleteDelay: 300,
-      autoClose: true,
-      retainZoomLevel: true
-    });
-
-    map.addControl(searchControl);
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleLocationSelect = (event: any) => {
-      onLocationSelect({ lat: event.location.y, lng: event.location.x });
-    };
-
-    map.on("geosearch/showlocation", handleLocationSelect);
-
-    return () => {
-      map.off("geosearch/showlocation", handleLocationSelect);
-      map.removeControl(searchControl);
-    };
-  }, [map, onLocationSelect, origin]);
-
-  return null;
-};
-
 const ChangeMapGeolocation = NiceModal.create(
   ({
     mapId = "",
@@ -98,15 +42,35 @@ const ChangeMapGeolocation = NiceModal.create(
     isSelectOnly = false
   }: ConfigureAddressCoordinatesModalProps) => {
     const { t } = useTranslation();
-    const { notifyError, notifyWarning } = useNotification();
+    const { notifyError } = useNotification();
     const [addressLocation, setAddressLocation] =
       useState<latlongInterface>(coordinates);
-    const [center, setCenter] = useState<latlongInterface>(coordinates);
-    const [currentLocation, setCurrentLocation] = useState<latlongInterface>();
     const [isSaving, setIsSaving] = useState(false);
+    const [searchCenter, setSearchCenter] = useState<latlongInterface | null>(
+      null
+    );
+    const [recenterTrigger, setRecenterTrigger] = useState(0);
+    const hasInitiallyRecentered = useRef(false);
     const modal = useModal();
 
-    const handleUpdateGeoLocation = async (event: FormEvent<HTMLElement>) => {
+    // Use universal map centering hook to get device location
+    const { currentLocation: deviceLocation, center: initialCenter } =
+      useGeolocation({
+        coordinates,
+        skipGeolocation: false
+      });
+
+    useEffect(() => {
+      if (!coordinates && deviceLocation && !hasInitiallyRecentered.current) {
+        setSearchCenter(deviceLocation);
+        setRecenterTrigger((prev) => prev + 1);
+        hasInitiallyRecentered.current = true;
+      }
+    }, [deviceLocation, coordinates]);
+
+    const mapCenter = searchCenter;
+
+    const handleUpdateGeoLocation = async (event: SubmitEvent<HTMLElement>) => {
       event.preventDefault();
       setIsSaving(true);
       try {
@@ -126,36 +90,6 @@ const ChangeMapGeolocation = NiceModal.create(
         setIsSaving(false);
       }
     };
-
-    useEffect(() => {
-      if (!navigator.geolocation) {
-        notifyWarning(
-          t(
-            "errors.geolocationNotSupported",
-            "Geolocation is not supported by your browser"
-          )
-        );
-        modal.hide();
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        (pos) =>
-          setCurrentLocation({
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude
-          }),
-        () => {
-          notifyWarning(
-            t(
-              "errors.unableToGetLocation",
-              "Unable to get your current location. Please check your browser settings."
-            )
-          );
-          modal.hide();
-        }
-      );
-    }, [modal, notifyWarning, t]);
 
     return (
       <Modal
@@ -178,7 +112,7 @@ const ChangeMapGeolocation = NiceModal.create(
             }}
           >
             <MapContainer
-              center={[coordinates.lat, coordinates.lng]}
+              center={[initialCenter.lat, initialCenter.lng]}
               zoom={16}
               style={{ height: "100%", width: "100%" }}
               zoomControl
@@ -189,22 +123,28 @@ const ChangeMapGeolocation = NiceModal.create(
               <SearchControl
                 onLocationSelect={(location) => {
                   setAddressLocation(location);
-                  setCenter(location);
+                  setSearchCenter(location);
+                  setRecenterTrigger((prev) => prev + 1);
                 }}
                 origin={origin}
               />
-              <MapController center={center} />
+              <MapController
+                center={mapCenter}
+                trigger={recenterTrigger}
+                zoomLevel={16}
+              />
               <MapClickHandler onMapClick={setAddressLocation} />
-              {currentLocation && (
+              {deviceLocation && (
                 <>
                   <Marker
-                    position={[currentLocation.lat, currentLocation.lng]}
+                    position={[deviceLocation.lat, deviceLocation.lng]}
                     icon={currentLocationIcon}
                   />
                   <CustomControl position="topright">
                     <MapCurrentTarget
                       onClick={() => {
-                        setCenter({ ...currentLocation });
+                        setSearchCenter(deviceLocation);
+                        setRecenterTrigger((prev) => prev + 1);
                       }}
                     />
                   </CustomControl>

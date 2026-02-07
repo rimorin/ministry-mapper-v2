@@ -193,3 +193,10 @@ textarea:focus-visible {
     overflow-y: auto;
   }
 }
+
+/* Territory Map Label Styles */
+.territory-label-icon {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+}

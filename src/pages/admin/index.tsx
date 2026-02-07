@@ -72,6 +72,9 @@ const QuickLinkModal = lazy(
 const ChangeTerritoryMapSequence = lazy(
   () => import("../../components/modal/territorymapsequence")
 );
+const ConfigureTerritoryCoordinates = lazy(
+  () => import("../../components/modal/changeterritorycoordinates")
+);
 
 function Admin({ user }: adminProps) {
   const { t } = useTranslation();
@@ -329,7 +332,8 @@ function Admin({ user }: adminProps) {
   const handleCreateTerritory = () => {
     showModal(NewTerritoryCode, {
       footerSaveAcl: userAccessLevel,
-      congregation: congregationCode
+      congregation: congregationCode,
+      origin: policy.origin
     });
   };
 
@@ -358,6 +362,23 @@ function Admin({ user }: adminProps) {
       footerSaveAcl: userAccessLevel,
       territoryId: selectedTerritory.id
     });
+  };
+
+  const handleChangeLocation = async () => {
+    const selectedTerritoryData = territories.get(selectedTerritory.id);
+    const result = await showModal(ConfigureTerritoryCoordinates, {
+      territoryId: selectedTerritory.id,
+      territoryName: selectedTerritory.name,
+      coordinates: selectedTerritoryData?.coordinates || [],
+      origin: policy.origin,
+      footerSaveAcl: userAccessLevel
+    });
+
+    // Only refresh if coordinates were actually saved (not cancelled)
+    if (result !== undefined) {
+      // Refresh territory data after location change
+      await processCongregationTerritories(congregationCode);
+    }
   };
 
   const handleDeleteTerritory = async () => {
@@ -434,7 +455,8 @@ function Admin({ user }: adminProps) {
             id: territoryData.id,
             code: territoryData.code,
             name: territoryData.description,
-            aggregates: territoryData.progress
+            aggregates: territoryData.progress,
+            coordinates: territoryData.coordinates
           });
         }
         return updatedTerritories;
@@ -511,16 +533,20 @@ function Admin({ user }: adminProps) {
         showListing={showTerritoryListing}
         territories={congregationTerritoryList}
         selectedTerritory={selectedTerritory.code}
+        selectedTerritoryId={selectedTerritory.id}
         hideFunction={toggleTerritoryListing}
         handleSelect={handleTerritorySelect}
+        congregationCode={congregationCode}
       />
       <TerritoryListing
         showListing={showChangeAddressTerritory}
         territories={congregationTerritoryList}
         selectedTerritory={selectedTerritory.code}
+        selectedTerritoryId={selectedTerritory.id}
         hideFunction={toggleAddressTerritoryListing}
         handleSelect={handleAddressTerritorySelect}
         hideSelectedTerritory={true}
+        congregationCode={congregationCode}
       />
       <UserListing
         showListing={showUserListing}
@@ -560,6 +586,7 @@ function Admin({ user }: adminProps) {
           onCreateNew: handleCreateTerritory,
           onChangeCode: handleChangeCode,
           onChangeName: handleChangeName,
+          onChangeLocation: handleChangeLocation,
           onChangeSequence: handleChangeSequence,
           onDelete: handleDeleteTerritory,
           onReset: handleResetTerritory

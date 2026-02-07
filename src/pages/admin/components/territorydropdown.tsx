@@ -10,6 +10,7 @@ interface TerritoryDropdownProps {
   onCreateNew: () => void;
   onChangeCode: () => Promise<void>;
   onChangeName: () => Promise<void>;
+  onChangeLocation: () => void;
   onChangeSequence: () => void;
   onDelete: () => void;
   onReset: () => void;
@@ -20,6 +21,7 @@ export default function TerritoryDropdown({
   onCreateNew,
   onChangeCode,
   onChangeName,
+  onChangeLocation,
   onChangeSequence,
   onDelete,
   onReset
@@ -50,6 +52,9 @@ export default function TerritoryDropdown({
       </GenericDropdownItem>
       <GenericDropdownItem onClick={onChangeName}>
         {t("territory.changeName", "Change Name")}
+      </GenericDropdownItem>
+      <GenericDropdownItem onClick={onChangeLocation}>
+        {t("territory.changeLocation", "Change Location")}
       </GenericDropdownItem>
       <GenericDropdownItem onClick={onChangeSequence}>
         {t("territory.changeSequence", "Change Sequence")}

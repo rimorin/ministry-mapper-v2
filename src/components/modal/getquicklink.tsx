@@ -23,6 +23,7 @@ import CustomControl from "../map/customcontrol";
 import RoutingService from "../map/routingservice";
 import { callFunction } from "../../utils/pocketbase";
 import { MapController } from "../map/mapcontroller";
+import useGeolocation from "../../hooks/useGeolocation";
 
 interface QuickLinkModalProps {
   territoryId: string;
@@ -44,6 +45,9 @@ const QuickLinkModal = NiceModal.create(
     const { t } = useTranslation();
     const { notifyError, notifyWarning } = useNotification();
     const modal = useModal();
+    const { requestLocation } = useGeolocation({
+      skipGeolocation: true
+    });
 
     const [isInputMode, setIsInputMode] = useState(true);
     const [publisher, setPublisher] = useState("");
@@ -60,11 +64,6 @@ const QuickLinkModal = NiceModal.create(
     });
     const [isRouteLoading, setIsRouteLoading] = useState(false);
 
-    const getCurrentPosition = () =>
-      new Promise<GeolocationPosition>((resolve, reject) =>
-        navigator.geolocation.getCurrentPosition(resolve, reject)
-      );
-
     const handleTravelModeChange = (mode: TravelMode) => {
       setTravelMode(mode);
       localStorage.setItem("preferredTravelMode", mode);
@@ -76,9 +75,11 @@ const QuickLinkModal = NiceModal.create(
 
       setIsLoading(true);
       try {
-        const position = await getCurrentPosition();
-        const { latitude, longitude } = position.coords;
-        const origin = { lat: latitude, lng: longitude };
+        const origin = await requestLocation();
+        if (!origin) {
+          notifyWarning(t("errors.unableToGetLocation"));
+          return;
+        }
 
         const linkData = await callFunction("/territory/link", {
           method: "POST",
@@ -93,11 +94,7 @@ const QuickLinkModal = NiceModal.create(
         setCurrentCenter(linkData.coordinates);
         setIsInputMode(false);
       } catch (error) {
-        if (error instanceof GeolocationPositionError) {
-          notifyWarning(t("errors.unableToGetLocation"));
-        } else {
-          notifyError(error);
-        }
+        notifyError(error);
       } finally {
         setIsLoading(false);
       }
@@ -202,6 +199,7 @@ const QuickLinkModal = NiceModal.create(
                       <MapController
                         center={currentCenter}
                         onCenterChange={setCurrentCenter}
+                        zoomLevel={16}
                       />
                       {mapData.origin && (
                         <>
