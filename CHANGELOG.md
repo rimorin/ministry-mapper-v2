@@ -1,3 +1,15 @@
+# [1.25.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.24.1...v1.25.0) (2026-02-08)
+
+
+### Bug Fixes
+
+* verification module styling ([c55e8dc](https://github.com/rimorin/ministry-mapper-v2/commit/c55e8dc44600d705bf1a40a2e854e738d8b10260))
+
+
+### Features
+
+* add territory polygon implementation and overall leaflet map improvements ([016afb0](https://github.com/rimorin/ministry-mapper-v2/commit/016afb020c9cfb544701d04d1b271cd34c2d78c6))
+
 ## [1.24.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.24.0...v1.24.1) (2026-01-31)
 
 
