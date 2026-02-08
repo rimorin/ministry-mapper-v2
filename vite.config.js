@@ -3,11 +3,15 @@ import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
 import TurboConsole from "unplugin-turbo-console/vite";
 import { VitePWA } from "vite-plugin-pwa";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+
 export default defineConfig(() => {
+  const isProduction = process.env.NODE_ENV === "production";
+
   return {
     build: {
       outDir: "build",
-      sourcemap: true,
+      sourcemap: "hidden",
       rollupOptions: {
         output: {
           manualChunks(id) {
@@ -84,7 +88,27 @@ export default defineConfig(() => {
             }
           ]
         }
-      })
+      }),
+      ...(isProduction
+        ? [
+            sentryVitePlugin({
+              org: process.env.SENTRY_ORG,
+              project: process.env.SENTRY_PROJECT,
+              authToken: process.env.SENTRY_AUTH_TOKEN,
+              release: {
+                name: process.env.npm_package_version
+              },
+              bundleSizeOptimizations: {
+                excludeDebugStatements: true,
+                excludeReplayIframe: true,
+                excludeReplayShadowDom: true
+              },
+              sourcemaps: {
+                filesToDeleteAfterUpload: ["./build/**/*.map"]
+              }
+            })
+          ]
+        : [])
     ],
     css: {
       preprocessorOptions: {
