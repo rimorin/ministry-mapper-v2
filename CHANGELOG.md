@@ -1,3 +1,10 @@
+## [1.25.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.25.0...v1.25.1) (2026-02-11)
+
+
+### Performance Improvements
+
+* sentry bundle optimizations ([d4cfa0c](https://github.com/rimorin/ministry-mapper-v2/commit/d4cfa0ce432367cf3d8d70b14ca932fe31686b53))
+
 # [1.25.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.24.1...v1.25.0) (2026-02-08)
 
 
