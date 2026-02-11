@@ -8,21 +8,16 @@
  */
 import * as Sentry from "@sentry/react";
 
-const isProduction = import.meta.env.VITE_SYSTEM_ENVIRONMENT === "production";
-
 Sentry.init({
-  dsn: import.meta.env.VITE_SENTRY_DSN || undefined,
+  dsn: import.meta.env.VITE_SENTRY_DSN,
   environment: import.meta.env.VITE_SYSTEM_ENVIRONMENT || "local",
-  release: import.meta.env.VITE_VERSION || undefined,
+  release: import.meta.env.VITE_VERSION,
 
-  tracesSampleRate: isProduction ? 0.1 : 1.0,
-  replaysSessionSampleRate: isProduction ? 0.1 : 1.0,
-  replaysOnErrorSampleRate: 1.0,
+  // Disable performance monitoring (tree-shaken via vite plugin)
+  tracesSampleRate: 0,
 
-  integrations: [
-    Sentry.browserTracingIntegration(),
-    Sentry.replayIntegration()
-  ],
+  // Using default integrations for automatic error capture
+  // (breadcrumbs, uncaught exceptions, unhandled rejections, etc.)
 
   ignoreErrors: [
     /ResizeObserver loop/i,
