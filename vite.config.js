@@ -95,13 +95,17 @@ export default defineConfig(() => {
               org: process.env.SENTRY_ORG,
               project: process.env.SENTRY_PROJECT,
               authToken: process.env.SENTRY_AUTH_TOKEN,
+              telemetry: false,
               release: {
                 name: process.env.npm_package_version
               },
               bundleSizeOptimizations: {
                 excludeDebugStatements: true,
+                excludeTracing: true,
                 excludeReplayIframe: true,
-                excludeReplayShadowDom: true
+                excludeReplayShadowDom: true,
+                excludeReplayCanvas: true,
+                excludeReplayWorker: true
               },
               sourcemaps: {
                 filesToDeleteAfterUpload: ["./build/**/*.map"]
