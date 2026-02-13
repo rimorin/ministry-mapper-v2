@@ -467,5 +467,10 @@
       "why": "Pemberita menggunakan pautan ini untuk melihat peta pada peranti mereka, menandakan status isi rumah, dan mengemas kini jenis isi rumah secara masa nyata.",
       "info": "Selepas mencipta peta, gunakan butang [Peribadi] dan [Agih] pada setiap peta untuk berkongsi dengan pemberita."
     }
+  },
+  "update": {
+    "title": "Kemas kini tersedia",
+    "message": "Versi baharu tersedia. Muat semula untuk mendapatkan kemas kini terkini.",
+    "reload": "Muat semula"
   }
 }

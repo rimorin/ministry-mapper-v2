@@ -467,5 +467,10 @@
       "why": "Los publicadores usan estos enlaces para ver mapas en sus dispositivos, marcar estados de hogares y actualizar tipos de hogares en tiempo real.",
       "info": "Después de crear mapas, usa los botones [Personal] y [Asignar] en cada mapa para compartir con los publicadores."
     }
+  },
+  "update": {
+    "title": "Actualización disponible",
+    "message": "Hay una nueva versión disponible. Recargue para obtener las actualizaciones más recientes.",
+    "reload": "Recargar"
   }
 }
