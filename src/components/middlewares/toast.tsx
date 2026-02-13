@@ -14,7 +14,7 @@ export type ToastVariant =
 export interface ToastMessage {
   id: string;
   title?: string;
-  message: string;
+  message: string | ReactNode;
   variant: ToastVariant;
   autohide?: boolean;
   delay?: number;
@@ -23,7 +23,7 @@ export interface ToastMessage {
 
 interface ToastContextType {
   showToast: (
-    message: string,
+    message: string | ReactNode,
     variant?: ToastVariant,
     title?: string,
     options?: Partial<ToastMessage>
@@ -62,7 +62,7 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const showToast = (
-    message: string,
+    message: string | ReactNode,
     variant: ToastVariant = "info",
     title?: string,
     options?: Partial<ToastMessage>

@@ -2,13 +2,16 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { visualizer } from "rollup-plugin-visualizer";
 import TurboConsole from "unplugin-turbo-console/vite";
-import { VitePWA } from "vite-plugin-pwa";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
+import packageJson from "./package.json";
 
 export default defineConfig(() => {
   const isProduction = process.env.NODE_ENV === "production";
 
   return {
+    define: {
+      "import.meta.env.VITE_APP_VERSION": JSON.stringify(packageJson.version)
+    },
     build: {
       outDir: "build",
       sourcemap: "hidden",
@@ -54,41 +57,6 @@ export default defineConfig(() => {
       }),
       visualizer(),
       TurboConsole(),
-      VitePWA({
-        registerType: "autoUpdate",
-        manifest: false,
-        workbox: {
-          globPatterns: ["**/*.{js,css,html,ico,png,svg,woff2}"],
-          cleanupOutdatedCaches: true,
-          navigateFallback: "/index.html",
-          navigateFallbackDenylist: [/^\/_/, /\/[^/?]+\.[^/]+$/, /^\/assets\//],
-          runtimeCaching: [
-            {
-              urlPattern: ({ url }) =>
-                url.origin === "https://assets.ministry-mapper.com",
-              handler: "StaleWhileRevalidate",
-              options: {
-                cacheName: "external-assets",
-                expiration: {
-                  maxEntries: 50,
-                  maxAgeSeconds: 60 * 60 * 24 * 7
-                }
-              }
-            },
-            {
-              urlPattern: ({ request }) => request.destination === "font",
-              handler: "CacheFirst",
-              options: {
-                cacheName: "fonts",
-                expiration: {
-                  maxEntries: 30,
-                  maxAgeSeconds: 60 * 60 * 24 * 30
-                }
-              }
-            }
-          ]
-        }
-      }),
       ...(isProduction
         ? [
             sentryVitePlugin({

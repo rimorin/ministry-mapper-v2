@@ -3,6 +3,12 @@ import { createRoot } from "react-dom/client";
 import "../instrument";
 import Main from "./pages/index";
 
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    registrations.forEach((registration) => registration.unregister());
+  });
+}
+
 // This automatically reloads when chunks fail to load after a fresh deployment
 window.addEventListener("vite:preloadError", () => {
   window.location.reload();

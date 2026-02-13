@@ -467,5 +467,10 @@
       "why": "Pemberita menggunakan tautan ini untuk melihat peta di perangkat mereka, menandai status rumah tangga, dan memperbarui jenis rumah tangga secara real-time.",
       "info": "Setelah membuat peta, gunakan tombol [Pribadi] dan [Tugaskan] pada setiap peta untuk berbagi dengan pemberita."
     }
+  },
+  "update": {
+    "title": "Pembaruan tersedia",
+    "message": "Versi baru tersedia. Muat ulang untuk mendapatkan pembaruan terbaru.",
+    "reload": "Muat ulang"
   }
 }

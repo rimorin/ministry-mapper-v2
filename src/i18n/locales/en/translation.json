@@ -467,5 +467,10 @@
       "why": "Publishers use these links to view maps on their devices, mark household statuses, and update household types in real-time.",
       "info": "After creating maps, use the [Personal] and [Assign] buttons on each map to share with publishers."
     }
+  },
+  "update": {
+    "title": "Update Available",
+    "message": "A new version is available. Reload to get the latest updates.",
+    "reload": "Reload"
   }
 }
