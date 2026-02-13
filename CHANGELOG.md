@@ -1,3 +1,10 @@
+# [1.26.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.25.1...v1.26.0) (2026-02-13)
+
+
+### Features
+
+* improved version notification ([718cb99](https://github.com/rimorin/ministry-mapper-v2/commit/718cb996498fd37ae4156ef629888988bae92d25))
+
 ## [1.25.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.25.0...v1.25.1) (2026-02-11)
 
 
