@@ -1,3 +1,15 @@
+# [1.27.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.26.0...v1.27.0) (2026-02-19)
+
+
+### Bug Fixes
+
+* add territory code existence check and warning notification ([deb3652](https://github.com/rimorin/ministry-mapper-v2/commit/deb36525ac60efe8f8a6039b475136dbfd14ead2))
+
+
+### Features
+
+* add fields parameter to role and territory checks ([7652886](https://github.com/rimorin/ministry-mapper-v2/commit/7652886ab3ce2a8808120d788004b484fb6ec7fb))
+
 # [1.26.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.25.1...v1.26.0) (2026-02-13)
 
 
