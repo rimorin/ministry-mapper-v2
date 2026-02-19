@@ -9,16 +9,17 @@ import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import IsValidTerritoryCode from "../../utils/helpers/checkterritorycd";
 import { ChangeTerritoryCodeModalProps } from "../../utils/interface";
-import { updateDataById } from "../../utils/pocketbase";
+import { getFirstItemOfList, updateDataById } from "../../utils/pocketbase";
 
 const ChangeTerritoryCode = NiceModal.create(
   ({
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE,
+    congregation,
     territoryCode,
     territoryId
   }: ChangeTerritoryCodeModalProps) => {
     const { t } = useTranslation();
-    const { notifyError } = useNotification();
+    const { notifyError, notifyWarning } = useNotification();
     const [newTerritoryCode, setNewTerritoryCode] = useState(territoryCode);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -27,6 +28,21 @@ const ChangeTerritoryCode = NiceModal.create(
       event.preventDefault();
       setIsSaving(true);
       try {
+        if (
+          await getFirstItemOfList(
+            "territories",
+            `code="${newTerritoryCode}" && congregation="${congregation}" && id!="${territoryId}"`,
+            {
+              requestKey: `check-territory-${newTerritoryCode}-${congregation}`,
+              fields: "id"
+            }
+          )
+        ) {
+          notifyWarning(
+            t("territory.codeAlreadyExists", "Territory code already exists.")
+          );
+          return;
+        }
         await updateDataById(
           "territories",
           territoryId,
