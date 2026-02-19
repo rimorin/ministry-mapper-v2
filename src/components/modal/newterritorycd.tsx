@@ -56,7 +56,11 @@ const NewTerritoryCode = NiceModal.create(
         if (
           await getFirstItemOfList(
             "territories",
-            `code="${code}" && congregation="${congregation}"`
+            `code="${code}" && congregation="${congregation}"`,
+            {
+              requestKey: `check-territory-${code}-${congregation}`,
+              fields: "id"
+            }
           )
         ) {
           notifyWarning(

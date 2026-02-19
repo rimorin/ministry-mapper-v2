@@ -73,7 +73,8 @@ const InviteUser = NiceModal.create(
             "roles",
             `user="${userId}" && congregation="${congregation}"`,
             {
-              requestKey: `check-role-${userId}-${congregation}`
+              requestKey: `check-role-${userId}-${congregation}`,
+              fields: "id"
             }
           )
         ) {
