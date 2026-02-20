@@ -32,6 +32,7 @@ const useUnreadMessages = (mapId: string) => {
   useEffect(() => {
     if (!mapId) return;
     fetchUnreadMsgs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- React Compiler memoizes fetchUnreadMsgs
   }, [mapId]);
 
   useRealtimeSubscription(

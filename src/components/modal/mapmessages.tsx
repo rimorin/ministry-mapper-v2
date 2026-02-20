@@ -56,6 +56,7 @@ const useMessages = (mapId: string, assignmentId?: string) => {
   useEffect(() => {
     if (!mapId) return;
     fetchFeedbacks();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- React Compiler memoizes fetchFeedbacks
   }, [mapId]);
 
   const msgSubheader = {

@@ -14,7 +14,7 @@ import { territoryDetails } from "../utils/interface";
 interface UseAdminDataProps {
   userId: string;
   congregationCodeCache: string;
-  congregationAccess: React.MutableRefObject<Record<string, string>>;
+  congregationAccessRef: React.RefObject<Record<string, string>>;
   setUserCongregationAccesses: (
     accesses: Array<{ code: string; access: string; name: string }>
   ) => void;
@@ -47,7 +47,7 @@ interface UseAdminDataProps {
 export default function useAdminData({
   userId,
   congregationCodeCache,
-  congregationAccess,
+  congregationAccessRef,
   setUserCongregationAccesses,
   setCongregationCode,
   setCongregationCodeCache,
@@ -89,7 +89,7 @@ export default function useAdminData({
       };
     });
 
-    congregationAccess.current = congregationAccesses.reduce(
+    congregationAccessRef.current = congregationAccesses.reduce(
       (acc, { code, access }) => {
         acc[code] = access;
         return acc;
@@ -149,7 +149,7 @@ export default function useAdminData({
         }),
         congDetails.max_tries || DEFAULT_CONGREGATION_MAX_TRIES,
         congDetails.origin || DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
-        congregationAccess.current[id],
+        congregationAccessRef.current[id],
         congDetails.expiry_hours || DEFAULT_SELF_DESTRUCT_HOURS,
         congDetails.id
       )
@@ -203,7 +203,7 @@ export default function useAdminData({
 
   const loadAllCongregationData = async (congregationCode: string) => {
     setIsLoading(true);
-    setUserAccessLevel(congregationAccess.current[congregationCode]);
+    setUserAccessLevel(congregationAccessRef.current[congregationCode]);
 
     const loadedTerritories = await fetchCongregationData(congregationCode);
 

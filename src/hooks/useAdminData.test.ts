@@ -40,7 +40,7 @@ describe("useAdminData", () => {
   const defaultProps = {
     userId: "user-123",
     congregationCodeCache: "",
-    congregationAccess: { current: {} } as React.MutableRefObject<
+    congregationAccessRef: { current: {} } as React.RefObject<
       Record<string, string>
     >,
     setUserCongregationAccesses: mockSetUserCongregationAccesses,
@@ -362,9 +362,9 @@ describe("useAdminData", () => {
 
       const propsWithAccess = {
         ...defaultProps,
-        congregationAccess: {
+        congregationAccessRef: {
           current: { "cong-1": "ADMIN" }
-        } as React.MutableRefObject<Record<string, string>>
+        } as React.RefObject<Record<string, string>>
       };
 
       const { result } = renderHook(() => useAdminData(propsWithAccess));

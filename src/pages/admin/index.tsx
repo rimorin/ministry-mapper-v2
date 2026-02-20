@@ -177,7 +177,7 @@ function Admin({ user }: adminProps) {
   } = useAdminData({
     userId,
     congregationCodeCache,
-    congregationAccess,
+    congregationAccessRef: congregationAccess,
     setUserCongregationAccesses,
     setCongregationCode,
     setCongregationCodeCache,
@@ -431,11 +431,13 @@ function Admin({ user }: adminProps) {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally run on mount only
   }, []);
 
   useEffect(() => {
     if (!congregationCode) return;
     loadAllCongregationData(congregationCode);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- React Compiler memoizes loadAllCongregationData
   }, [congregationCode]);
 
   const checkMapsOnRealtimeUpdate = () => {
@@ -482,6 +484,7 @@ function Admin({ user }: adminProps) {
     return () => {
       setSortedAddressList([]);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- React Compiler memoizes dependencies; territories read via closure
   }, [selectedTerritory.id]);
 
   useRealtimeSubscription(

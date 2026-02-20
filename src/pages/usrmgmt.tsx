@@ -53,6 +53,7 @@ const UserManagementComponent = () => {
     if (mode === MODE_VERIFY_EMAIL) {
       verifyEmail(oobCode);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally run on mount only
   }, []);
 
   let managementComponent;

@@ -36,6 +36,7 @@ const GetAssignments = NiceModal.create(
       if (currentAssignments.length === 0) {
         modal.hide();
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- modal is a stable reference from useModal
     }, [currentAssignments]);
 
     const isAssignOrPersonalAssignments = assignmentType && assignmentTerritory;

@@ -30,10 +30,14 @@ jobs:
       - name: Check formatting
         run: npm run prettier
 
-      # Step 5: Run tests
+      # Step 5: Lint
+      - name: Lint
+        run: npm run lint
+
+      # Step 6: Run tests
       - name: Run tests
         run: npm test
 
-      # Step 6: Build the project
+      # Step 7: Build the project
       - name: Build the project
         run: npm run build
