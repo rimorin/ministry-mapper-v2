@@ -120,6 +120,7 @@ const Map = () => {
       setMapId(resolvedMapId);
     };
     init(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- React Compiler memoizes getMapData and readPinnedMessages
   }, [id]);
 
   useRealtimeSubscription(
@@ -156,8 +157,11 @@ const Map = () => {
     if (id) getMapData(id, readPinnedMessages);
   });
 
+  useEffect(() => {
+    if (isLinkExpired) document.title = "Ministry Mapper";
+  }, [isLinkExpired]);
+
   if (isLinkExpired) {
-    document.title = "Ministry Mapper";
     return <InvalidPage />;
   }
   if (isLoading) {

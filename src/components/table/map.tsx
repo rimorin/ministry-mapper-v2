@@ -92,6 +92,7 @@ const useAddresses = (
 
   useEffect(() => {
     fetchAddressData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- React Compiler memoizes fetchAddressData
   }, [mapId]);
 
   useRealtimeSubscription(

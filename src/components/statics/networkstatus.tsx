@@ -41,6 +41,7 @@ export function NetworkStatusBanner() {
 
   useEffect(() => {
     if (showBanner) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- intentional two-step animation (render then fade in)
       setShouldRender(true);
       const timer = setTimeout(() => setIsVisible(true), 10);
       return () => clearTimeout(timer);

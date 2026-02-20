@@ -48,6 +48,7 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- React Compiler memoizes fetchData
   }, [mapId]);
 
   useRealtimeSubscription(

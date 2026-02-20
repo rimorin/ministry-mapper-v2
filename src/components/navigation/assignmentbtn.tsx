@@ -78,6 +78,7 @@ const useAssignments = (mapId: string) => {
   useEffect(() => {
     if (!mapId) return;
     retrieveAssignments();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- React Compiler memoizes retrieveAssignments
   }, [mapId]);
 
   useRealtimeSubscription(
