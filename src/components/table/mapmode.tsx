@@ -1,5 +1,6 @@
 import { territorySingleProps } from "../../utils/interface";
 import { DEFAULT_AGGREGATES, DEFAULT_COORDINATES } from "../../utils/constants";
+import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { divIcon } from "leaflet";
 import { useState } from "react";

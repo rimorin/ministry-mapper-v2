@@ -2,6 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useState, useEffect, useRef } from "react";
 import { Image, Modal } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import CustomControl from "../map/customcontrol";
 import { DESTINATION_PROXIMITY_THRESHOLD_METERS } from "../../utils/constants";

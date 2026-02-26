@@ -1,6 +1,11 @@
+import { lazy } from "react";
 import TerritoryHeader from "../../../components/navigation/territoryheader";
-import MapView from "../../../components/navigation/mapview";
 import MapListing from "../../../components/navigation/maplist";
+import SuspenseComponent from "../../../components/utils/suspense";
+
+const MapView = SuspenseComponent(
+  lazy(() => import("../../../components/navigation/mapview"))
+);
 import Welcome from "../../../components/statics/welcome";
 import GettingStarted from "../../../components/statics/gettingstarted";
 import {

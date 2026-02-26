@@ -1,3 +1,4 @@
+import "react-calendar/dist/Calendar.css";
 import Calendar from "react-calendar";
 import { FormProps } from "../../utils/interface";
 import { useTranslation } from "react-i18next";

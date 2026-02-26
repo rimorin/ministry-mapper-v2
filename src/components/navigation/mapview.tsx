@@ -1,3 +1,4 @@
+import "leaflet/dist/leaflet.css";
 import React, { useState } from "react";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { DEFAULT_COORDINATES, USER_ACCESS_LEVELS } from "../../utils/constants";

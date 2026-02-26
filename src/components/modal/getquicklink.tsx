@@ -2,6 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useState } from "react";
 import { Modal, Badge, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import {
   USER_ACCESS_LEVELS,

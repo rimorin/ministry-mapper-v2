@@ -3,8 +3,6 @@ import "../css/main.css";
 import "../css/common.css";
 import "../css/toast.css";
 import "../css/darkmode.css";
-import "react-calendar/dist/Calendar.css";
-import "leaflet/dist/leaflet.css";
 import { FC, ReactNode } from "react";
 import MaintenanceMiddleware from "../components/middlewares/maintenance";
 import MainMiddleware from "../components/middlewares/main";

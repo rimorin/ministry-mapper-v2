@@ -22,15 +22,28 @@ export default defineConfig(() => {
             if (id.includes("sentry")) return "vendor-sentry";
             if (id.includes("react-bootstrap") || id.includes("bootstrap"))
               return "vendor-bootstrap";
+
+            // React core — ultra-stable, isolated for long-term caching
+            if (
+              id.includes("/node_modules/react/") ||
+              id.includes("/node_modules/react-dom/") ||
+              id.includes("/node_modules/scheduler/")
+            )
+              return "vendor-react";
+
+            // i18n stack — separate change cadence from react
+            if (id.includes("i18next") || id.includes("react-i18next"))
+              return "vendor-i18n";
+
+            // nice-modal is imported at app entry (Provider) — keep it tiny and isolated
+            // so vendor-ui is NOT pulled into the initial modulepreload chain
+            if (id.includes("nice-modal-react")) return "vendor-nice-modal";
+
             if (
               id.includes("react-select") ||
               id.includes("@dnd-kit") ||
               id.includes("react-calendar") ||
-              id.includes("date-utils") ||
-              id.includes("react-countdown") ||
-              id.includes("react-password-checklist") ||
-              id.includes("react-countdown") ||
-              id.includes("nice-modal-react")
+              id.includes("react-window")
             )
               return "vendor-ui";
 
