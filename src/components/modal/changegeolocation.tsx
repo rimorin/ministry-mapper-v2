@@ -2,6 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { useState, SubmitEvent, useRef, useEffect } from "react";
 import { Modal, Form, Card, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import {
   currentLocationIcon,
