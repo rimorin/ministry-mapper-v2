@@ -12,6 +12,22 @@
 @import "../node_modules/bootstrap/scss/root";
 
 @import "../node_modules/bootstrap/scss/utilities";
+
+// Disable responsive variants for all utilities — app uses no breakpoint-prefixed classes (e.g. mb-md-3, d-lg-flex)
+// Saves ~53KB raw / ~4KB gzip from the utilities/api output
+@function disable-responsive($key, $value) {
+  @if type-of($value) == "map" and map-has-key($value, "responsive") {
+    @return map-merge(
+      $value,
+      (
+        "responsive": false
+      )
+    );
+  }
+  @return $value;
+}
+$utilities: map-loop($utilities, "disable-responsive", "$key", "$value");
+
 @import "../node_modules/bootstrap/scss/reboot";
 @import "../node_modules/bootstrap/scss/containers";
 @import "../node_modules/bootstrap/scss/grid";
