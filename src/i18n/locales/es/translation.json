@@ -472,5 +472,13 @@
     "title": "Actualización disponible",
     "message": "Hay una nueva versión disponible. Recargue para obtener las actualizaciones más recientes.",
     "reload": "Recargar"
+  },
+  "releaseNotes": {
+    "title": "Novedades",
+    "latest": "Último",
+    "dismiss": "Cerrar",
+    "new": "Nuevo",
+    "fix": "Corrección",
+    "improved": "Mejorado"
   }
 }

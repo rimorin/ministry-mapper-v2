@@ -472,5 +472,13 @@
     "title": "Pembaruan tersedia",
     "message": "Versi baru tersedia. Muat ulang untuk mendapatkan pembaruan terbaru.",
     "reload": "Muat ulang"
+  },
+  "releaseNotes": {
+    "title": "Yang Baru",
+    "latest": "Terbaru",
+    "dismiss": "Tutup",
+    "new": "Baru",
+    "fix": "Perbaikan",
+    "improved": "Peningkatan"
   }
 }

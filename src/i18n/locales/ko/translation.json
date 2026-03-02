@@ -472,5 +472,13 @@
     "title": "업데이트 가능",
     "message": "새 버전이 있습니다. 최신 업데이트를 받으려면 새로고침하세요.",
     "reload": "새로고침"
+  },
+  "releaseNotes": {
+    "title": "새로운 기능",
+    "latest": "최신",
+    "dismiss": "닫기",
+    "new": "신규",
+    "fix": "수정",
+    "improved": "개선"
   }
 }

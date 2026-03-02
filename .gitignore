@@ -13,6 +13,7 @@
 
 # generated at build time
 /public/version.json
+/public/changelog.json
 
 # misc
 .DS_Store
