@@ -108,7 +108,6 @@ Progressive Web App (PWA) technology provides native app-like experience on any 
    ```env
    VITE_POCKETBASE_URL=http://localhost:8090
    VITE_SYSTEM_ENVIRONMENT=local
-   VITE_VERSION=$npm_package_version
    VITE_OPENROUTE_API_KEY=your_key_here
    VITE_LOCATIONIQ_API_KEY=your_key_here
    VITE_SENTRY_DSN=your_sentry_dsn
@@ -143,7 +142,7 @@ For error tracking and performance monitoring:
 4. Add to environment variables:
    - `VITE_SENTRY_DSN` - Your project DSN
    - `VITE_SYSTEM_ENVIRONMENT` - Set to "production" for production
-   - `VITE_VERSION` - Defaults to package version
+   - `VITE_APP_VERSION` - Automatically set from `package.json` version
 
 ## 📜 Available Scripts
 

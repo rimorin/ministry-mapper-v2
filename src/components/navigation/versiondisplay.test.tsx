@@ -5,7 +5,7 @@ import VersionDisplay from "./versiondisplay";
 describe("VersionDisplay", () => {
   it("should render version in production environment", () => {
     import.meta.env.VITE_SYSTEM_ENVIRONMENT = "production";
-    import.meta.env.VITE_VERSION = "1.2.3";
+    import.meta.env.VITE_APP_VERSION = "1.2.3";
 
     const { container } = render(<VersionDisplay />);
     const versionDiv = container.querySelector(".fixed-bottom");
@@ -14,7 +14,7 @@ describe("VersionDisplay", () => {
 
   it("should not render in development environment", () => {
     import.meta.env.VITE_SYSTEM_ENVIRONMENT = "development";
-    import.meta.env.VITE_VERSION = "1.2.3";
+    import.meta.env.VITE_APP_VERSION = "1.2.3";
 
     const { container } = render(<VersionDisplay />);
     expect(container.firstChild).toBeNull();
@@ -22,7 +22,7 @@ describe("VersionDisplay", () => {
 
   it("should not render in staging environment", () => {
     import.meta.env.VITE_SYSTEM_ENVIRONMENT = "staging";
-    import.meta.env.VITE_VERSION = "1.2.3";
+    import.meta.env.VITE_APP_VERSION = "1.2.3";
 
     const { container } = render(<VersionDisplay />);
     expect(container.firstChild).toBeNull();
@@ -30,7 +30,7 @@ describe("VersionDisplay", () => {
 
   it("should have correct styling classes in production", () => {
     import.meta.env.VITE_SYSTEM_ENVIRONMENT = "production";
-    import.meta.env.VITE_VERSION = "1.0.0";
+    import.meta.env.VITE_APP_VERSION = "1.0.0";
 
     const { container } = render(<VersionDisplay />);
     const versionDiv = container.querySelector(".fixed-bottom");

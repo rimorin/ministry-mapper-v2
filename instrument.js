@@ -4,14 +4,14 @@
  * Environment variables:
  * - VITE_SENTRY_DSN: Data Source Name for Sentry project
  * - VITE_SYSTEM_ENVIRONMENT: Current environment (local, staging, production)
- * - VITE_VERSION: Application version for release tracking
+ * - VITE_APP_VERSION: Application version for release tracking
  */
 import * as Sentry from "@sentry/react";
 
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
   environment: import.meta.env.VITE_SYSTEM_ENVIRONMENT || "local",
-  release: import.meta.env.VITE_VERSION,
+  release: import.meta.env.VITE_APP_VERSION,
 
   // Disable performance monitoring (tree-shaken via vite plugin)
   tracesSampleRate: 0,
