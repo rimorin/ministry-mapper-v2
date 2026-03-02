@@ -13,6 +13,7 @@ import Router from "./router";
 import "../i18n";
 import { LanguageProvider } from "../i18n/LanguageContext";
 import { ToastProvider } from "../components/middlewares/toast";
+import { ReleaseNotesProvider } from "../components/middlewares/releasenotescontext";
 
 interface CombinedMiddlewareProps {
   children: ReactNode;
@@ -25,7 +26,9 @@ const CombinedMiddleware: FC<CombinedMiddlewareProps> = ({ children }) => (
         <ToastProvider>
           <MaintenanceMiddleware>
             <NiceModelMiddleware>
-              <StateMiddleware>{children}</StateMiddleware>
+              <ReleaseNotesProvider>
+                <StateMiddleware>{children}</StateMiddleware>
+              </ReleaseNotesProvider>
             </NiceModelMiddleware>
           </MaintenanceMiddleware>
         </ToastProvider>

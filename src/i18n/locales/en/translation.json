@@ -472,5 +472,13 @@
     "title": "Update Available",
     "message": "A new version is available. Reload to get the latest updates.",
     "reload": "Reload"
+  },
+  "releaseNotes": {
+    "title": "What's New",
+    "latest": "Latest",
+    "dismiss": "Dismiss",
+    "new": "New",
+    "fix": "Fix",
+    "improved": "Improved"
   }
 }

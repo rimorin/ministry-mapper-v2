@@ -472,5 +472,13 @@
     "title": "有可用更新",
     "message": "有新版本可用。重新加载以获取最新更新。",
     "reload": "重新加载"
+  },
+  "releaseNotes": {
+    "title": "最新动态",
+    "latest": "最新",
+    "dismiss": "关闭",
+    "new": "新增",
+    "fix": "修复",
+    "improved": "改进"
   }
 }
