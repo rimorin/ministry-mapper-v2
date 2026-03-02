@@ -1,3 +1,15 @@
+# [1.28.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.27.0...v1.28.0) (2026-03-02)
+
+
+### Bug Fixes
+
+* show version display in staging environment ([9e62ea5](https://github.com/rimorin/ministry-mapper-v2/commit/9e62ea544a33124c4eceec4731bfdcbfb54554bf))
+
+
+### Features
+
+* implement release notes feature with context and modal display ([c646884](https://github.com/rimorin/ministry-mapper-v2/commit/c64688458e60ef03bea49ebbcd2bed4599d4fdfb))
+
 # [1.27.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.26.0...v1.27.0) (2026-02-19)
 
 
