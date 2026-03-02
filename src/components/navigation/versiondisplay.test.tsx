@@ -20,8 +20,17 @@ describe("VersionDisplay", () => {
     expect(container.firstChild).toBeNull();
   });
 
-  it("should not render in staging environment", () => {
+  it("should render version in staging environment", () => {
     import.meta.env.VITE_SYSTEM_ENVIRONMENT = "staging";
+    import.meta.env.VITE_APP_VERSION = "1.2.3";
+
+    const { container } = render(<VersionDisplay />);
+    const versionDiv = container.querySelector(".fixed-bottom");
+    expect(versionDiv).toBeInTheDocument();
+  });
+
+  it("should not render in local environment", () => {
+    import.meta.env.VITE_SYSTEM_ENVIRONMENT = "local";
     import.meta.env.VITE_APP_VERSION = "1.2.3";
 
     const { container } = render(<VersionDisplay />);

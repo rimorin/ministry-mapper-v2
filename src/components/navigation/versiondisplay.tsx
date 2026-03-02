@@ -5,7 +5,7 @@ const VersionDisplay: FC = () => {
   const { t } = useTranslation();
   const { VITE_SYSTEM_ENVIRONMENT, VITE_APP_VERSION } = import.meta.env;
 
-  if (!VITE_SYSTEM_ENVIRONMENT?.startsWith("production")) {
+  if (!["staging", "production"].includes(VITE_SYSTEM_ENVIRONMENT)) {
     return null;
   }
 
