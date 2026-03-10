@@ -1,3 +1,10 @@
+# [1.29.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.28.0...v1.29.0) (2026-03-10)
+
+
+### Features
+
+* add marker guide legend to map view and update translations ([1ae0652](https://github.com/rimorin/ministry-mapper-v2/commit/1ae0652a5d65d7e7e83ad63027df586db698a9c2))
+
 # [1.28.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.27.0...v1.28.0) (2026-03-02)
 
 
