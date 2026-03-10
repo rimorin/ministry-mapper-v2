@@ -316,7 +316,11 @@
     "driveMode": "Memandu",
     "openMaps": "Buka Peta",
     "generateLink": "Pautan Pantas",
-    "updatingLocation": "Mengemas kini lokasi"
+    "updatingLocation": "Mengemas kini lokasi",
+    "markerGuide": "Panduan Penanda",
+    "normalRing": "Tugasan",
+    "personalRing": "Peribadi",
+    "progressRing": "Kemajuan"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper kini dalam penyelenggaraan.",

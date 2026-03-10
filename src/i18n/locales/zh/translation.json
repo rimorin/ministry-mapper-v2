@@ -316,7 +316,11 @@
     "driveMode": "驾驶",
     "openMaps": "打开地图",
     "generateLink": "快速链接",
-    "updatingLocation": "正在更新位置"
+    "updatingLocation": "正在更新位置",
+    "markerGuide": "标记指南",
+    "normalRing": "分配",
+    "personalRing": "个人",
+    "progressRing": "进度"
   },
   "maintenance": {
     "maintenanceMode": "传道地图正在进行维护。",

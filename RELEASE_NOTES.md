@@ -12,6 +12,18 @@ User-facing release notes for Ministry Mapper. Add a new `## YYYY-MM-DD` block a
 
 ---
 
+## 2026-03-11
+
+[NEW] Marker Guide on the map — a small legend in the top-right corner now explains what each coloured ring on an address marker represents.
+
+![Marker Guide](https://assets.ministry-mapper.com/release-notes/2026-03-11/marker-guide.png)
+
+- 🟢 Green — Assignment link
+- 🟠 Orange — Personal link
+- 🔵 Blue — Map completion progress
+
+---
+
 ## 2026-03-03
 
 > App updates are now announced in-app so everyone stays informed, not just those in the WhatsApp channel. WhatsApp will still be used for urgent announcements and support.

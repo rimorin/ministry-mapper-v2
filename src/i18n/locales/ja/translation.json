@@ -316,7 +316,11 @@
     "driveMode": "車",
     "openMaps": "マップ表示",
     "generateLink": "クイックリンク",
-    "updatingLocation": "位置情報を更新中"
+    "updatingLocation": "位置情報を更新中",
+    "markerGuide": "マーカーガイド",
+    "normalRing": "担当",
+    "personalRing": "個人",
+    "progressRing": "進捗"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapperはメンテナンス中です。",
