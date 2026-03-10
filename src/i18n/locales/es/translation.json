@@ -316,7 +316,11 @@
     "driveMode": "Conducir",
     "openMaps": "Abrir mapas",
     "generateLink": "Enlace rápido",
-    "updatingLocation": "Actualizando ubicación"
+    "updatingLocation": "Actualizando ubicación",
+    "markerGuide": "Guía de Marcadores",
+    "normalRing": "Asignación",
+    "personalRing": "Personal",
+    "progressRing": "Progreso"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper está actualmente en mantenimiento.",

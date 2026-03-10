@@ -290,7 +290,11 @@
     "driveMode": "ஓட்டுதல்",
     "openMaps": "வரைபடங்களைத் திறக்கவும்",
     "generateLink": "விரைவு இணைப்பு",
-    "updatingLocation": "இருப்பிடத்தைப் புதுப்பிக்கிறது"
+    "updatingLocation": "இருப்பிடத்தைப் புதுப்பிக்கிறது",
+    "markerGuide": "குறியீட்டு வழிகாட்டி",
+    "normalRing": "நியமனம்",
+    "personalRing": "தனிப்பட்ட",
+    "progressRing": "முன்னேற்றம்"
   },
   "map": {
     "createMap": "வரைபடத்தை உருவாக்கு",

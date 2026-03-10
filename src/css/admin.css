@@ -302,6 +302,10 @@
   border: 1px solid var(--mm-border-color);
 }
 
+.marker-legend-card {
+  width: fit-content;
+}
+
 [data-bs-theme="dark"] .marker-info-card {
   background-color: var(--mm-gray-950);
   color: var(--mm-text-body);
