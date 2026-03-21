@@ -35,8 +35,7 @@ export default function useSignup() {
           email: formData.email,
           name: formData.name,
           password: formData.password,
-          passwordConfirm: formData.confirmPassword,
-          emailVisibility: true
+          passwordConfirm: formData.confirmPassword
         },
         {
           requestKey: `user-signup-${formData.email}`
