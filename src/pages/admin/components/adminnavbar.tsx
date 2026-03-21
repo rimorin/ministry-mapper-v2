@@ -50,6 +50,7 @@ interface AdminNavbarProps {
     onShowOptions: () => void;
     onManageUsers: () => void;
     onInviteUser: () => void;
+    onGenerateReport: () => void;
   };
   onAccountActions: {
     onShowProfile: () => void;

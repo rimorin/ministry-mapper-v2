@@ -11,6 +11,7 @@ interface CongregationDropdownProps {
   onShowOptions: () => void;
   onManageUsers: () => void;
   onInviteUser: () => void;
+  onGenerateReport: () => void;
 }
 
 export default function CongregationDropdown({
@@ -18,7 +19,8 @@ export default function CongregationDropdown({
   onShowSettings,
   onShowOptions,
   onManageUsers,
-  onInviteUser
+  onInviteUser,
+  onGenerateReport
 }: CongregationDropdownProps) {
   const { t } = useTranslation();
 
@@ -55,6 +57,9 @@ export default function CongregationDropdown({
       </GenericDropdownItem>
       <GenericDropdownItem onClick={onInviteUser}>
         {t("user.inviteUser", "Invite User")}
+      </GenericDropdownItem>
+      <GenericDropdownItem onClick={onGenerateReport}>
+        {t("congregation.generateReport", "Generate Report")}
       </GenericDropdownItem>
     </GenericDropdownButton>
   );

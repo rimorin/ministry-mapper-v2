@@ -36,7 +36,8 @@
     "confirmDelete": "Konfirmasi Penghapusan",
     "confirmReset": "Konfirmasi Reset",
     "update": "Perbarui",
-    "reset": "Reset"
+    "reset": "Reset",
+    "proceed": "Lanjutkan"
   },
   "auth": {
     "signIn": "Masuk",
@@ -255,7 +256,10 @@
     "notFound": "Jemaat tidak ditemukan.",
     "dragToReorder": "Seret untuk menyusun ulang",
     "dragEditHint": "Seret baris atau gunakan tombol panah untuk menyusun ulang. Klik kolom untuk mengedit.",
-    "confirmUpdate": "Konfirmasi Pembaruan"
+    "confirmUpdate": "Konfirmasi Pembaruan",
+    "generateReport": "Buat Laporan",
+    "generateReportConfirm": "Laporan sidang akan dibuat dan dikirimkan kepada Anda melalui email.",
+    "reportGenerationStarted": "Pembuatan laporan dimulai. Anda akan menerima email segera."
   },
   "assignment": {
     "assignment": "Penugasan",

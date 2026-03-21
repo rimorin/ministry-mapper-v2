@@ -36,7 +36,8 @@
     "confirmDelete": "Sahkan Padam",
     "confirmReset": "Sahkan Reset",
     "update": "Kemas Kini",
-    "reset": "Reset"
+    "reset": "Reset",
+    "proceed": "Teruskan"
   },
   "auth": {
     "signIn": "Log Masuk",
@@ -281,7 +282,10 @@
     "notFound": "Jemaat tidak dijumpai.",
     "dragToReorder": "Seret untuk menyusun semula",
     "dragEditHint": "Seret baris atau gunakan butang anak panah untuk menyusun semula. Klik medan untuk mengedit.",
-    "confirmUpdate": "Sahkan Kemas Kini"
+    "confirmUpdate": "Sahkan Kemas Kini",
+    "generateReport": "Jana Laporan",
+    "generateReportConfirm": "Laporan sidang akan dijana dan dihantar kepada anda melalui e-mel.",
+    "reportGenerationStarted": "Penjanaan laporan dimulakan. Anda akan menerima e-mel tidak lama lagi."
   },
   "assignment": {
     "assignment": "Tugasan",

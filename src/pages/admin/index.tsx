@@ -126,7 +126,8 @@ function Admin({ user }: adminProps) {
     congregationCodeCache,
     setCongregationCodeCache,
     congregationAccess,
-    handleCongregationSelect
+    handleCongregationSelect,
+    generateReport
   } = useCongregationManagement({ userId });
 
   const {
@@ -310,6 +311,20 @@ function Admin({ user }: adminProps) {
       congregation: congregationCode,
       footerSaveAcl: userAccessLevel
     });
+  };
+
+  const handleGenerateReport = async () => {
+    const confirmed = await confirm({
+      title: t("congregation.generateReport", "Generate Report"),
+      message: t(
+        "congregation.generateReportConfirm",
+        "A congregation report will be generated and sent to you via email."
+      ),
+      confirmText: t("common.proceed", "Proceed"),
+      variant: "primary",
+      focusConfirm: true
+    });
+    if (confirmed) await generateReport();
   };
 
   const handleShowProfile = () => {
@@ -599,7 +614,8 @@ function Admin({ user }: adminProps) {
           onShowSettings: handleShowCongregationSettings,
           onShowOptions: handleShowCongregationOptions,
           onManageUsers: handleManageUsers,
-          onInviteUser: handleInviteUser
+          onInviteUser: handleInviteUser,
+          onGenerateReport: handleGenerateReport
         }}
         onAccountActions={{
           onShowProfile: handleShowProfile,
