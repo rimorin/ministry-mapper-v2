@@ -12,6 +12,12 @@ User-facing release notes for Ministry Mapper. Add a new `## YYYY-MM-DD` block a
 
 ---
 
+## 2026-03-20
+
+[NEW] Generate Congregation Report — Administrators can now generate a congregation report directly from the Congregation menu. Upon confirmation, the report is processed and delivered to your email shortly after.
+
+---
+
 ## 2026-03-11
 
 [NEW] Marker Guide on the map — a small legend in the top-right corner now explains what each coloured ring on an address marker represents.

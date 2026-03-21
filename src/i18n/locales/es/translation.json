@@ -36,7 +36,8 @@
     "confirmDelete": "Confirmar eliminación",
     "confirmReset": "Confirmar reinicio",
     "update": "Actualizar",
-    "reset": "Reiniciar"
+    "reset": "Reiniciar",
+    "proceed": "Proceder"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -281,7 +282,10 @@
     "notFound": "Congregación no encontrada.",
     "dragToReorder": "Arrastra para reordenar",
     "dragEditHint": "Arrastra filas o usa los botones de flecha para reordenar. Haz clic en los campos para editar.",
-    "confirmUpdate": "Confirmar actualización"
+    "confirmUpdate": "Confirmar actualización",
+    "generateReport": "Generar informe",
+    "generateReportConfirm": "Se generará un informe de la congregación y se le enviará por correo electrónico.",
+    "reportGenerationStarted": "Generación de informe iniciada. Recibirás un correo electrónico en breve."
   },
   "assignment": {
     "assignment": "Asignación",

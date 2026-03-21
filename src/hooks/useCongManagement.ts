@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
   userDetails,
   CongregationAccessObject,
@@ -7,13 +8,15 @@ import {
 import { Policy } from "../utils/policies";
 import { DEFAULT_SELF_DESTRUCT_HOURS } from "../utils/constants";
 import useNotification from "./useNotification";
+import { callFunction } from "../utils/pocketbase";
 import getCongregationUsers from "../utils/helpers/getcongregationusers";
 import useLocalStorage from "./useLocalStorage";
 
 export default function useCongregationManagement({
   userId
 }: CongregationManagementOptions) {
-  const { notifyError } = useNotification();
+  const { t } = useTranslation();
+  const { notifyError, notifyInfo } = useNotification();
   const [congregationName, setCongregationName] = useState<string>("");
   const [congregationUsers, setCongregationUsers] = useState(
     new Map<string, userDetails>()
@@ -68,6 +71,23 @@ export default function useCongregationManagement({
     toggleCongregationListing();
   };
 
+  const generateReport = async () => {
+    try {
+      await callFunction("/report/generate", {
+        method: "POST",
+        body: { congregation: congregationCode }
+      });
+      notifyInfo(
+        t(
+          "congregation.reportGenerationStarted",
+          "Report generation started. You will receive an email shortly."
+        )
+      );
+    } catch (error) {
+      notifyError(error);
+    }
+  };
+
   return {
     congregationName,
     setCongregationName,
@@ -92,6 +112,7 @@ export default function useCongregationManagement({
     congregationCodeCache,
     setCongregationCodeCache,
     congregationAccess,
-    handleCongregationSelect
+    handleCongregationSelect,
+    generateReport
   };
 }
