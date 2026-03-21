@@ -108,8 +108,7 @@ describe("useSignup", () => {
           email: "john@example.com",
           name: "John Doe",
           password: "SecurePass123",
-          passwordConfirm: "SecurePass123",
-          emailVisibility: true
+          passwordConfirm: "SecurePass123"
         },
         {
           requestKey: "user-signup-john@example.com"

@@ -36,7 +36,8 @@
     "confirmDelete": "Confirm Delete",
     "confirmReset": "Confirm Reset",
     "update": "Update",
-    "reset": "Reset"
+    "reset": "Reset",
+    "proceed": "Proceed"
   },
   "auth": {
     "signIn": "Sign In",
@@ -281,7 +282,10 @@
     "notFound": "Congregation not found.",
     "dragToReorder": "Drag to reorder",
     "dragEditHint": "Drag rows or use arrow buttons to reorder. Click fields to edit.",
-    "confirmUpdate": "Confirm Update"
+    "confirmUpdate": "Confirm Update",
+    "generateReport": "Generate Report",
+    "generateReportConfirm": "A congregation report will be generated and sent to you via email.",
+    "reportGenerationStarted": "Report generation started. You will receive an email shortly."
   },
   "assignment": {
     "assignment": "Assignment",
