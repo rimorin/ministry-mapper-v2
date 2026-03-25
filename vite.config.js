@@ -1,5 +1,6 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import babel from "@rolldown/plugin-babel";
 import { visualizer } from "rollup-plugin-visualizer";
 import TurboConsole from "unplugin-turbo-console/vite";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
@@ -63,10 +64,9 @@ export default defineConfig(() => {
       port: 3000
     },
     plugins: [
-      react({
-        babel: {
-          plugins: ["babel-plugin-react-compiler"]
-        }
+      react(),
+      babel({
+        plugins: ["babel-plugin-react-compiler"]
       }),
       visualizer(),
       TurboConsole(),
