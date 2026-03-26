@@ -258,7 +258,7 @@
     "dragEditHint": "Seret baris atau gunakan tombol panah untuk menyusun ulang. Klik kolom untuk mengedit.",
     "confirmUpdate": "Konfirmasi Pembaruan",
     "generateReport": "Buat Laporan",
-    "generateReportConfirm": "Laporan sidang akan dibuat dan dikirimkan kepada Anda melalui email.",
+    "generateReportConfirm": "Laporan aktivitas untuk {{days}} hari terakhir akan dibuat dan dikirimkan kepada Anda melalui email.",
     "reportGenerationStarted": "Pembuatan laporan dimulai. Anda akan menerima email segera."
   },
   "assignment": {

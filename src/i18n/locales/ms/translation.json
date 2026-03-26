@@ -284,7 +284,7 @@
     "dragEditHint": "Seret baris atau gunakan butang anak panah untuk menyusun semula. Klik medan untuk mengedit.",
     "confirmUpdate": "Sahkan Kemas Kini",
     "generateReport": "Jana Laporan",
-    "generateReportConfirm": "Laporan sidang akan dijana dan dihantar kepada anda melalui e-mel.",
+    "generateReportConfirm": "Laporan aktiviti untuk {{days}} hari yang lalu akan dijana dan dihantar kepada anda melalui e-mel.",
     "reportGenerationStarted": "Penjanaan laporan dimulakan. Anda akan menerima e-mel tidak lama lagi."
   },
   "assignment": {

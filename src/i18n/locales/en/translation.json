@@ -284,7 +284,7 @@
     "dragEditHint": "Drag rows or use arrow buttons to reorder. Click fields to edit.",
     "confirmUpdate": "Confirm Update",
     "generateReport": "Generate Report",
-    "generateReportConfirm": "A congregation report will be generated and sent to you via email.",
+    "generateReportConfirm": "An activity report for the past {{days}} days will be generated and sent to you via email.",
     "reportGenerationStarted": "Report generation started. You will receive an email shortly."
   },
   "assignment": {

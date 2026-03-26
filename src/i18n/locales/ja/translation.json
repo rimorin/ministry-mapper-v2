@@ -284,7 +284,7 @@
     "dragEditHint": "行をドラッグするか、矢印ボタンで順序を変更します。フィールドをクリックして編集します。",
     "confirmUpdate": "更新の確認",
     "generateReport": "レポート生成",
-    "generateReportConfirm": "会衆レポートが生成され、メールで送信されます。",
+    "generateReportConfirm": "過去{{days}}日間の活動レポートが生成され、メールで送信されます。",
     "reportGenerationStarted": "レポートの生成を開始しました。まもなくメールが届きます。"
   },
   "assignment": {
