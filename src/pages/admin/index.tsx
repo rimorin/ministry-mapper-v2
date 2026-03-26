@@ -12,7 +12,8 @@ import { LinkSession } from "../../utils/policies";
 import {
   USER_ACCESS_LEVELS,
   DEFAULT_CONGREGATION_MAX_TRIES,
-  PB_FIELDS
+  PB_FIELDS,
+  DEFAULT_REPORT_ROLLING_DAYS
 } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import useConfirm from "../../hooks/useConfirm";
@@ -318,7 +319,8 @@ function Admin({ user }: adminProps) {
       title: t("congregation.generateReport", "Generate Report"),
       message: t(
         "congregation.generateReportConfirm",
-        "A congregation report will be generated and sent to you via email."
+        "An activity report for the past {{days}} days will be generated and sent to you via email.",
+        { days: DEFAULT_REPORT_ROLLING_DAYS }
       ),
       confirmText: t("common.proceed", "Proceed"),
       variant: "primary",

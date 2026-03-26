@@ -20,7 +20,7 @@ User-facing release notes for Ministry Mapper. Add a new `## YYYY-MM-DD` block a
 
 > AI summaries may not always be accurate — please verify before acting on them.
 
-[NEW] On-demand Congregation Report — administrators can now generate the congregation report at any time. Go to Congregation → Generate Report and it will be delivered to your inbox shortly after.
+[NEW] On-demand Congregation Report — administrators can now generate the congregation report at any time. Go to Congregation → Generate Report and it will be delivered to your inbox shortly after. The report covers activity from the past 30 days.
 
 [IMPROVED] Faster map updates — territory progress now refreshes more quickly.
 

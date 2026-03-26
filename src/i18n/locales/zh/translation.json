@@ -284,7 +284,7 @@
     "dragEditHint": "拖动行或使用箭头按钮重新排序。点击字段进行编辑。",
     "confirmUpdate": "确认更新",
     "generateReport": "生成报告",
-    "generateReportConfirm": "将生成会众报告并通过电子邮件发送给您。",
+    "generateReportConfirm": "将生成过去{{days}}天的活动报告并通过电子邮件发送给您。",
     "reportGenerationStarted": "报告生成已开始。您将很快收到一封电子邮件。"
   },
   "assignment": {
