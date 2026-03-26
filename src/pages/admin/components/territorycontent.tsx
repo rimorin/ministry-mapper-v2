@@ -150,6 +150,7 @@ export default function TerritoryContent({
           resetMap={resetMap}
           processingMap={processingMap}
           toggleAddressTerritoryListing={toggleAddressTerritoryListing}
+          territoryId={selectedTerritory.id}
         />
       )}
     </div>

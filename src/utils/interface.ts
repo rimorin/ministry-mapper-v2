@@ -517,6 +517,7 @@ export interface MapListingProps {
   accordingKeys: string[];
   setAccordionKeys: React.Dispatch<React.SetStateAction<string[]>>;
   isReadonly: boolean;
+  territoryId: string;
 }
 
 export interface MapRowProps {

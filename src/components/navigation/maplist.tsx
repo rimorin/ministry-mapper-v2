@@ -25,6 +25,7 @@ import useConfirm from "../../hooks/useConfirm";
 import GenericButton from "./button";
 import { GenericDropdownButton, GenericDropdownItem } from "./dropdownbutton";
 import { List, type RowComponentProps } from "react-window";
+import useScrollPersistence from "../../hooks/useScrollPersistence";
 import "../../css/virtualmaps.css";
 
 const GetMapGeolocation = lazy(() => import("../modal/getlocation"));
@@ -262,13 +263,15 @@ const MapListing: React.FC<MapListingProps> = ({
   values,
   accordingKeys,
   setAccordionKeys,
-  isReadonly
+  isReadonly,
+  territoryId
 }) => {
   const { t } = useTranslation();
   const { showModal } = useModalManagement();
   const { confirm } = useConfirm();
   const [dropDirections, setDropDirections] = useState<DropDirections>({});
   const [screenSize, setScreenSize] = useState<"sm" | "md" | "lg">("lg");
+  const { listRef, onScroll: handleScroll } = useScrollPersistence(territoryId);
 
   // Track screen size for responsive height calculations
   useEffect(() => {
@@ -511,6 +514,8 @@ const MapListing: React.FC<MapListingProps> = ({
     <List
       className="virtual-map-container map-container-flush"
       style={{ height: "80dvh" }}
+      listRef={listRef}
+      onScroll={handleScroll}
       rowCount={sortedAddressList.length}
       rowHeight={getRowHeight}
       rowComponent={MapRow}
