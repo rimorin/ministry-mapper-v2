@@ -1,3 +1,18 @@
+# [1.30.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.29.0...v1.30.0) (2026-03-26)
+
+
+### Bug Fixes
+
+* remove unnecessary emailVisibility field from signup form data ([1a156b5](https://github.com/rimorin/ministry-mapper-v2/commit/1a156b5c7eef6602401a5d8ab0bbfe9792359fe3))
+
+
+### Features
+
+* add congregation report generation feature with translations and UI integration ([0fb3d28](https://github.com/rimorin/ministry-mapper-v2/commit/0fb3d2883a7ecf619bf924c5f7e37299caf6bcc3))
+* implement scroll persistence for map listing ([7c15844](https://github.com/rimorin/ministry-mapper-v2/commit/7c15844171d229c5083b4cdae508ebea5412df65))
+* update release notes for 2026-03-27 with new features and improvements ([d7b4a40](https://github.com/rimorin/ministry-mapper-v2/commit/d7b4a40bcd22b699e5b11cd79768b6e37292852d))
+* update report generation messages to include activity duration ([1ddc674](https://github.com/rimorin/ministry-mapper-v2/commit/1ddc674e414f03d3f5af7618f99545553478cbea))
+
 # [1.29.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.28.0...v1.29.0) (2026-03-10)
 
 
