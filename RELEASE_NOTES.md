@@ -24,6 +24,8 @@ User-facing release notes for Ministry Mapper. Add a new `## YYYY-MM-DD` block a
 
 [IMPROVED] Faster map updates — territory progress now refreshes more quickly.
 
+[IMPROVED] Scroll position is now remembered on the map listing — the page returns to where you left off when switching apps or navigating back.
+
 ---
 
 ## 2026-03-11
