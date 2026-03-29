@@ -271,11 +271,12 @@
   "assignments": {
     "assignments": "நியமனங்கள்",
     "noAssignmentsFound": "நியமனங்கள் எதுவும் கிடைக்கவில்லை.",
-    "assignmentMessage": "{{greeting}} வணக்கம்!! நீங்கள் {{address}} க்கு நியமிக்கப்பட்டுள்ளீர்கள். தொடர கீழே உள்ள இணைப்பைக் கிளிக் செய்யவும்.",
     "createdDate": "உருவாக்க தேதி",
     "expiryDate": "காலாவதி தேதி",
     "publisher": "வெளியீட்டாளர்",
-    "linkExpirationTimer": "இணைப்பு காலாவதி டைமர்"
+    "linkExpirationTimer": "இணைப்பு காலாவதி டைமர்",
+    "normalAssignment": "{{greeting}} வணக்கம், {{publisherName}}!!\n\nநீங்கள் {{address}} க்கு நியமிக்கப்பட்டுள்ளீர்கள்.\n\nதொடர கீழே உள்ள இணைப்பைக் கிளிக் செய்யவும்.",
+    "personalSlip": "{{greeting}} வணக்கம், {{publisherName}}!!\n\n{{address}} க்கான தனிப்பட்ட துண்டு உள்ளது.\n\nஇந்த இணைப்பு {{expiryHrs}} பிறகு காலாவதியாகும்.\n\nதொடர கீழே உள்ள இணைப்பைக் கிளிக் செய்யவும்."
   },
   "messages": {
     "messages": "செய்திகள்",
@@ -488,5 +489,15 @@
     "new": "புதியது",
     "fix": "திருத்தம்",
     "improved": "மேம்பட்டது"
+  },
+  "expiry": {
+    "hour_one": "{{count}} மணி நேரம்",
+    "hour_other": "{{count}} மணி நேரங்கள்",
+    "day_one": "{{count}} நாள்",
+    "day_other": "{{count}} நாட்கள்",
+    "week_one": "{{count}} வாரம்",
+    "week_other": "{{count}} வாரங்கள்",
+    "month_one": "{{count}} மாதம்",
+    "month_other": "{{count}} மாதங்கள்"
   }
 }

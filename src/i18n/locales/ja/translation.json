@@ -297,11 +297,12 @@
   "assignments": {
     "assignments": "割当",
     "noAssignmentsFound": "割当なし。",
-    "assignmentMessage": "{{greeting}}！{{address}}に割り当てられました。下のリンクをクリックしてください。",
     "createdDate": "作成日",
     "expiryDate": "期限日",
     "publisher": "伝道者",
-    "linkExpirationTimer": "リンク期限タイマー"
+    "linkExpirationTimer": "リンク期限タイマー",
+    "normalAssignment": "{{greeting}}！{{publisherName}}さん、\n\n{{address}}に割り当てられました。\n\n下のリンクをクリックしてください。",
+    "personalSlip": "{{greeting}}！{{publisherName}}さん、\n\n{{address}}の個人伝道区があります。\n\nこのリンクは{{expiryHrs}}後に期限切れになります。\n\n下のリンクをクリックしてください。"
   },
   "messages": {
     "messages": "メッセージ",
@@ -488,5 +489,11 @@
     "new": "新規",
     "fix": "修正",
     "improved": "改善"
+  },
+  "expiry": {
+    "hour_other": "{{count}} 時間",
+    "day_other": "{{count}} 日",
+    "week_other": "{{count}} 週間",
+    "month_other": "{{count}} ヶ月"
   }
 }

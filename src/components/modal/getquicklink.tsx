@@ -101,19 +101,13 @@ const QuickLinkModal = NiceModal.create(
       }
     };
 
-    const shareTimedLink = async (
-      linkId: string,
-      title: string,
-      body: string
-    ) => {
+    const shareTimedLink = async (linkId: string, body: string) => {
       if (!navigator.share) {
         notifyWarning(UNSUPPORTED_BROWSER_MSG);
         return;
       }
       await navigator.share({
-        title,
-        text: body,
-        url: new URL(`map/${linkId}`, window.location.href).toString()
+        text: `${body}\n${new URL(`map/${linkId}`, window.location.href).toString()}`
       });
     };
 
@@ -125,8 +119,7 @@ const QuickLinkModal = NiceModal.create(
       try {
         await shareTimedLink(
           mapData.linkId,
-          mapData.mapName,
-          assignmentMessage(mapData.mapName)
+          assignmentMessage(mapData.mapName, publisher)
         );
         modal.remove();
       } catch (error) {

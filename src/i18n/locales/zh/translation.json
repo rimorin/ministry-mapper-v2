@@ -297,11 +297,12 @@
   "assignments": {
     "assignments": "分配",
     "noAssignmentsFound": "未找到分配。",
-    "assignmentMessage": "{{greeting}}好！你被分配到{{address}}。请点击下方链接继续。",
     "createdDate": "创建日期",
     "expiryDate": "到期日期",
     "publisher": "发布者",
-    "linkExpirationTimer": "链接过期计时器"
+    "linkExpirationTimer": "链接过期计时器",
+    "normalAssignment": "{{greeting}}好，{{publisherName}}！\n\n你被分配到{{address}}。\n\n请点击下方链接继续。",
+    "personalSlip": "{{greeting}}好，{{publisherName}}！\n\n你有一张{{address}}的个人传道区单。\n\n此链接将在{{expiryHrs}}后过期。\n\n请点击下方链接继续。"
   },
   "messages": {
     "messages": "消息",
@@ -488,5 +489,11 @@
     "new": "新增",
     "fix": "修复",
     "improved": "改进"
+  },
+  "expiry": {
+    "hour_other": "{{count}} 小时",
+    "day_other": "{{count}} 天",
+    "week_other": "{{count}} 周",
+    "month_other": "{{count}} 个月"
   }
 }

@@ -135,6 +135,7 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
       });
 
       const linkObject = linkReturn as Record<string, unknown>;
+      if (!linkObject) return;
       const expiryHrs = (
         linkType === LINK_TYPES.PERSONAL
           ? linkObject.linkExpiryHrs
@@ -142,8 +143,12 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
       ) as number;
       await shareTimedLink(
         linkType,
-        addressElement.name,
-        assignmentMessage(addressElement.name),
+        assignmentMessage(
+          addressElement.name,
+          linkObject.publisherName as string,
+          expiryHrs,
+          linkType
+        ),
         expiryHrs,
         linkObject.publisherName as string
       );
@@ -155,15 +160,10 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
 
   const shareTimedLink = async (
     linktype: string,
-    title: string,
     body: string,
     hours: number,
     publisherName = ""
   ) => {
-    if (!navigator.share) {
-      notifyWarning(UNSUPPORTED_BROWSER_MSG);
-      return;
-    }
     try {
       if (linktype === LINK_TYPES.ASSIGNMENT) setIsSettingNormalLink(true);
       if (linktype === LINK_TYPES.PERSONAL) setIsSettingPersonalLink(true);
@@ -182,12 +182,9 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
         }
       );
       const linkId = linkRecord.id;
-      const url = `map/${linkId}`;
-      const absoluteUrl = new URL(url, window.location.href);
+      const absoluteUrl = new URL(`map/${linkId}`, window.location.href);
       await navigator.share({
-        title: title,
-        text: body,
-        url: absoluteUrl.toString()
+        text: `${body}\n${absoluteUrl.toString()}`
       });
     } catch (error) {
       if (error instanceof Error) {
