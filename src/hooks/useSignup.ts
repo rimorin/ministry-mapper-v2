@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createData, verifyEmail } from "../utils/pocketbase";
 import useNotification from "./useNotification";
+import useAnalytics, { ANALYTICS_EVENTS } from "./useAnalytics";
 
 interface SignupFormData {
   email: string;
@@ -11,6 +12,7 @@ interface SignupFormData {
 
 export default function useSignup() {
   const { notifyError, notifyWarning } = useNotification();
+  const { trackEvent } = useAnalytics();
   const [formData, setFormData] = useState<SignupFormData>({
     email: "",
     password: "",
@@ -42,6 +44,7 @@ export default function useSignup() {
         }
       );
       await verifyEmail(formData.email);
+      trackEvent(ANALYTICS_EVENTS.SIGNUP);
       notifyWarning(
         "Account created! Please check your email for verification procedures."
       );

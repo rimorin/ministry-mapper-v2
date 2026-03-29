@@ -22,6 +22,7 @@ import ModalFooter from "../form/footer";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import CustomControl from "../map/customcontrol";
 import useNotification from "../../hooks/useNotification";
+import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
 import { updateDataById } from "../../utils/pocketbase";
 import { SearchControl } from "../map/searchcontrol";
 import { MapController } from "../map/mapcontroller";
@@ -312,6 +313,7 @@ const ConfigureTerritoryCoordinates = NiceModal.create(
   }: ConfigureTerritoryCoordinatesModalProps) => {
     const { t } = useTranslation();
     const { notifyError } = useNotification();
+    const { trackEvent } = useAnalytics();
     const modal = useModal();
 
     const [vertices, setVertices] = useState<latlongInterface[]>(coordinates);
@@ -345,10 +347,12 @@ const ConfigureTerritoryCoordinates = NiceModal.create(
     const handleStartDrawing = () => {
       setVertices([]);
       setIsDrawing(true);
+      trackEvent(ANALYTICS_EVENTS.TERRITORY_BOUNDARY_DRAW_STARTED);
     };
 
     const handleCompleteDrawing = () => {
       setIsDrawing(false);
+      trackEvent(ANALYTICS_EVENTS.TERRITORY_BOUNDARY_DRAW_COMPLETED);
     };
 
     const handleCancelDrawing = () => {
@@ -379,6 +383,9 @@ const ConfigureTerritoryCoordinates = NiceModal.create(
       try {
         await updateDataById("territories", territoryId, {
           coordinates: vertices.length >= 3 ? vertices : null
+        });
+        trackEvent(ANALYTICS_EVENTS.TERRITORY_BOUNDARY_SAVED, {
+          point_count: vertices.length
         });
         modal.resolve(vertices);
         modal.hide();

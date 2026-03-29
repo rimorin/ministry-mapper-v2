@@ -26,6 +26,7 @@ import GenericButton from "./button";
 import { GenericDropdownButton, GenericDropdownItem } from "./dropdownbutton";
 import { List, type RowComponentProps } from "react-window";
 import useScrollPersistence from "../../hooks/useScrollPersistence";
+import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
 import "../../css/virtualmaps.css";
 
 const GetMapGeolocation = lazy(() => import("../modal/getlocation"));
@@ -269,6 +270,7 @@ const MapListing: React.FC<MapListingProps> = ({
   const { t } = useTranslation();
   const { showModal } = useModalManagement();
   const { confirm } = useConfirm();
+  const { trackEvent } = useAnalytics();
   const [dropDirections, setDropDirections] = useState<DropDirections>({});
   const [screenSize, setScreenSize] = useState<"sm" | "md" | "lg">("lg");
   const { listRef, onScroll: handleScroll } = useScrollPersistence(territoryId);
@@ -370,14 +372,19 @@ const MapListing: React.FC<MapListingProps> = ({
   };
 
   const handleToggleMapView = (mapId: string) => {
+    const isCurrentlyMap = !!mapViews.get(mapId);
+    trackEvent(ANALYTICS_EVENTS.ADDRESS_VIEW_TOGGLED, {
+      view: isCurrentlyMap ? "list" : "map"
+    });
     setMapViews((prev) => {
       const updatedMapViews = new Map(prev);
-      updatedMapViews.set(mapId, !updatedMapViews.get(mapId));
+      updatedMapViews.set(mapId, !isCurrentlyMap);
       return updatedMapViews;
     });
   };
 
   const handleShowGetLocation = (addressElement: addressDetails) => {
+    trackEvent(ANALYTICS_EVENTS.ADDRESS_DIRECTIONS_OPENED);
     showModal(GetMapGeolocation, {
       coordinates: addressElement.coordinates,
       name: addressElement.name,

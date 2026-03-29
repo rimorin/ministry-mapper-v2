@@ -25,6 +25,7 @@ import LanguageSelector from "../i18n/LanguageSelector";
 import { useModalManagement } from "../hooks/useModalManagement";
 import useRealtimeSubscription from "../hooks/useRealtime";
 import useMapLink from "../hooks/useMapLink";
+import useAnalytics, { ANALYTICS_EVENTS } from "../hooks/useAnalytics";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 const UpdateMapMessages = lazy(() => import("../components/modal/mapmessages"));
 const ShowExpiry = lazy(() => import("../components/modal/slipexpiry"));
@@ -46,6 +47,7 @@ const Map = () => {
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
 
   const { showModal } = useModalManagement();
+  const { trackEvent } = useAnalytics();
   const {
     isLinkExpired,
     tokenEndTime,
@@ -74,6 +76,9 @@ const Map = () => {
       setReadPinnedMessages("true");
       setHasPinnedMessages(false);
     }
+    trackEvent(ANALYTICS_EVENTS.MESSAGES_OPENED, {
+      role: MESSAGE_TYPES.PUBLISHER
+    });
     showModal(UpdateMapMessages, {
       name: mapDetails?.name,
       mapId: mapDetails?.id,
@@ -84,10 +89,16 @@ const Map = () => {
   };
 
   const toggleMapView = () => {
-    setMapView((prevMapView) => !prevMapView);
+    setMapView((prevMapView) => {
+      trackEvent(ANALYTICS_EVENTS.MAP_VIEW_TOGGLED, {
+        view: prevMapView ? "list" : "map"
+      });
+      return !prevMapView;
+    });
   };
 
   const showLocationModal = () => {
+    trackEvent(ANALYTICS_EVENTS.ADDRESS_DIRECTIONS_OPENED);
     showModal(GetMapGeolocation, {
       coordinates: coordinates,
       name: mapDetails?.name,
@@ -103,6 +114,7 @@ const Map = () => {
 
   const handleLanguageSelect = (language: string) => {
     changeLanguage(language);
+    trackEvent(ANALYTICS_EVENTS.LANGUAGE_CHANGED, { language });
     toggleLanguageSelector();
   };
 

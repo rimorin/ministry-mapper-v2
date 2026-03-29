@@ -11,12 +11,14 @@ import useNotification from "./useNotification";
 import { callFunction } from "../utils/pocketbase";
 import getCongregationUsers from "../utils/helpers/getcongregationusers";
 import useLocalStorage from "./useLocalStorage";
+import useAnalytics, { ANALYTICS_EVENTS } from "./useAnalytics";
 
 export default function useCongregationManagement({
   userId
 }: CongregationManagementOptions) {
   const { t } = useTranslation();
   const { notifyError, notifyInfo } = useNotification();
+  const { trackEvent } = useAnalytics();
   const [congregationName, setCongregationName] = useState<string>("");
   const [congregationUsers, setCongregationUsers] = useState(
     new Map<string, userDetails>()
@@ -77,6 +79,7 @@ export default function useCongregationManagement({
         method: "POST",
         body: { congregation: congregationCode }
       });
+      trackEvent(ANALYTICS_EVENTS.REPORT_GENERATED);
       notifyInfo(
         t(
           "congregation.reportGenerationStarted",

@@ -9,6 +9,7 @@ import {
   addressMarkerIcon
 } from "../../utils/helpers/mapicons";
 import useNotification from "../../hooks/useNotification";
+import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
 import {
   ConfigureAddressCoordinatesModalProps,
   latlongInterface
@@ -44,6 +45,7 @@ const ChangeMapGeolocation = NiceModal.create(
   }: ConfigureAddressCoordinatesModalProps) => {
     const { t } = useTranslation();
     const { notifyError } = useNotification();
+    const { trackEvent } = useAnalytics();
     const [addressLocation, setAddressLocation] =
       useState<latlongInterface>(coordinates);
     const [isSaving, setIsSaving] = useState(false);
@@ -82,6 +84,7 @@ const ChangeMapGeolocation = NiceModal.create(
             { coordinates: JSON.stringify(addressLocation) },
             { requestKey: `update-map-coordinates-${mapId}` }
           );
+          trackEvent(ANALYTICS_EVENTS.ADDRESS_GEOLOCATION_UPDATED);
         }
         modal.resolve(addressLocation);
         modal.hide();

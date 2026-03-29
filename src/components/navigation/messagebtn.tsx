@@ -6,6 +6,7 @@ import { Policy } from "../../utils/policies";
 import { useTranslation } from "react-i18next";
 
 import useVisibilityChange from "../../hooks/useVisibilityManagement";
+import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
 import { getList } from "../../utils/pocketbase";
 import useRealtimeSubscription from "../../hooks/useRealtime";
 import { useModalManagement } from "../../hooks/useModalManagement";
@@ -67,10 +68,12 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   const isAdmin = userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
   const msgType = isAdmin ? MESSAGE_TYPES.ADMIN : MESSAGE_TYPES.CONDUCTOR;
   const { showModal } = useModalManagement();
+  const { trackEvent } = useAnalytics();
   const unreadMsgCount = useUnreadMessages(mapId);
   const { t } = useTranslation();
 
   const handleMessagesClick = () => {
+    trackEvent(ANALYTICS_EVENTS.MESSAGES_OPENED, { role: msgType });
     showModal(UpdateMapMessages, {
       name: addressElement.name,
       mapId: mapId,

@@ -25,6 +25,7 @@ import useRealtimeSubscription from "../../hooks/useRealtime";
 import useVisibilityChange from "../../hooks/useVisibilityManagement";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useAdminData from "../../hooks/useAdminData";
+import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
 
 import TerritoryListing from "../../components/navigation/territorylist";
 import UserListing from "../../components/navigation/userlist";
@@ -167,6 +168,7 @@ function Admin({ user }: adminProps) {
   } = useUIState();
 
   const { showModal } = useModalManagement();
+  const { trackEvent } = useAnalytics();
   const { currentLanguage, changeLanguage, languageOptions } =
     use(LanguageContext);
 
@@ -225,6 +227,7 @@ function Admin({ user }: adminProps) {
 
   const handleLanguageSelect = (lang: string) => {
     changeLanguage(lang);
+    trackEvent(ANALYTICS_EVENTS.LANGUAGE_CHANGED, { language: lang });
     toggleLanguageSelector();
   };
 

@@ -18,6 +18,7 @@ import {
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import TravelModeButtons from "../map/travelmodebtn";
 import useNotification from "../../hooks/useNotification";
+import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
 import RoutingService from "../map/routingservice";
 import { MapController } from "../map/mapcontroller";
 import { calculateDistance } from "../../utils/helpers/calculatedistance";
@@ -32,6 +33,7 @@ const GetMapGeolocation = NiceModal.create(
   ({ coordinates, name }: GetMapGeolocationModalProps) => {
     const { t } = useTranslation();
     const { notifyWarning } = useNotification();
+    const { trackEvent } = useAnalytics();
     const [centerOverride, setCenterOverride] =
       useState<latlongInterface | null>(null);
     const [travelMode, setTravelMode] = useState<TravelMode>(() => {
@@ -123,6 +125,7 @@ const GetMapGeolocation = NiceModal.create(
     const handleTravelModeChange = (mode: TravelMode) => {
       setTravelMode(mode);
       localStorage.setItem("preferredTravelMode", mode);
+      trackEvent(ANALYTICS_EVENTS.TRAVEL_MODE_CHANGED, { mode });
     };
 
     useEffect(() => {
@@ -189,6 +192,7 @@ const GetMapGeolocation = NiceModal.create(
                   width={24}
                   height={24}
                   onClick={() => {
+                    trackEvent(ANALYTICS_EVENTS.DIRECTIONS_OPENED);
                     window.open(getDirection(coordinates), "_blank");
                   }}
                 />

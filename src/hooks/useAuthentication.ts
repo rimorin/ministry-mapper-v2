@@ -6,9 +6,11 @@ import {
   requestOTP
 } from "../utils/pocketbase";
 import useNotification from "./useNotification";
+import useAnalytics, { ANALYTICS_EVENTS } from "./useAnalytics";
 
 export default function useAuthentication() {
   const { notifyError, notifyInfo } = useNotification();
+  const { trackEvent } = useAnalytics();
   const [isLogin, setIsLogin] = useState(false);
   const [isOAuthLoading, setIsOAuthLoading] = useState(false);
   const [otpSessionId, setOtpSessionId] = useState("");
@@ -33,6 +35,7 @@ export default function useAuthentication() {
     try {
       setIsLogin(true);
       await authenticateEmailAndPassword(processedEmail, password);
+      trackEvent(ANALYTICS_EVENTS.LOGIN);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
       const mfaId = err.response?.mfaId;
@@ -51,6 +54,7 @@ export default function useAuthentication() {
     try {
       setIsLogin(true);
       await authenticateOTP(otpSessionId, otpCode, mfaId);
+      trackEvent(ANALYTICS_EVENTS.OTP_VERIFIED);
     } catch (err) {
       notifyError(err);
     } finally {
@@ -66,6 +70,9 @@ export default function useAuthentication() {
   const handleOAuthSignIn = (provider: string) => {
     setIsOAuthLoading(true);
     authenticateOAuth2(provider)
+      .then(() => {
+        trackEvent(ANALYTICS_EVENTS.LOGIN_OAUTH, { provider });
+      })
       .catch((err) => {
         notifyError(err);
       })
