@@ -18,6 +18,7 @@ import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import useNotification from "../../hooks/useNotification";
+import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
 import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import TravelModeButtons from "../map/travelmodebtn";
 import CustomControl from "../map/customcontrol";
@@ -45,6 +46,7 @@ const QuickLinkModal = NiceModal.create(
   ({ territoryId }: QuickLinkModalProps) => {
     const { t } = useTranslation();
     const { notifyError, notifyWarning } = useNotification();
+    const { trackEvent } = useAnalytics();
     const modal = useModal();
     const { requestLocation } = useGeolocation({
       skipGeolocation: true
@@ -68,6 +70,7 @@ const QuickLinkModal = NiceModal.create(
     const handleTravelModeChange = (mode: TravelMode) => {
       setTravelMode(mode);
       localStorage.setItem("preferredTravelMode", mode);
+      trackEvent(ANALYTICS_EVENTS.TRAVEL_MODE_CHANGED, { mode });
     };
 
     const handleSubmitPublisher = async (e: React.FormEvent) => {
@@ -93,6 +96,7 @@ const QuickLinkModal = NiceModal.create(
 
         setMapData({ ...linkData, origin });
         setCurrentCenter(linkData.coordinates);
+        trackEvent(ANALYTICS_EVENTS.QUICK_LINK_GENERATED);
         setIsInputMode(false);
       } catch (error) {
         notifyError(error);
@@ -121,6 +125,7 @@ const QuickLinkModal = NiceModal.create(
           mapData.linkId,
           assignmentMessage(mapData.mapName, publisher)
         );
+        trackEvent(ANALYTICS_EVENTS.QUICK_LINK_SHARED);
         modal.remove();
       } catch (error) {
         if (error instanceof Error && error.name === "AbortError") {

@@ -1,7 +1,10 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "../instrument";
+import { initAnalytics } from "./utils/analytics";
 import Main from "./pages/index";
+
+initAnalytics();
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.getRegistrations().then((registrations) => {

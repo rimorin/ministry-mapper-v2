@@ -4,6 +4,7 @@ import { useState, FormEvent, useEffect } from "react";
 import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import useNotification from "../../hooks/useNotification";
+import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
 import ModalFooter from "../form/footer";
 import GenericTextAreaField from "../form/textarea";
 import {
@@ -108,6 +109,7 @@ const UpdateMapMessages = NiceModal.create(
   }: UpdateAddressFeedbackModalProps) => {
     const { t } = useTranslation();
     const { notifyError } = useNotification();
+    const { trackEvent } = useAnalytics();
     const [feedback, setFeedback] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -134,6 +136,7 @@ const UpdateMapMessages = NiceModal.create(
             requestKey: `create-msg-${mapId}`
           }
         );
+        trackEvent(ANALYTICS_EVENTS.MESSAGE_SENT, { role: messageType });
         setFeedback("");
       } catch (error) {
         notifyError(error);
@@ -159,6 +162,7 @@ const UpdateMapMessages = NiceModal.create(
                   await deleteDataById("messages", id, {
                     requestKey: `msg-del-${id}`
                   });
+                  trackEvent(ANALYTICS_EVENTS.MESSAGE_DELETED);
                 }}
                 handlePin={async (id: string, pinned: boolean) => {
                   await updateDataById(
@@ -169,6 +173,7 @@ const UpdateMapMessages = NiceModal.create(
                       requestKey: `msg-pin-${id}`
                     }
                   );
+                  trackEvent(ANALYTICS_EVENTS.MESSAGE_PINNED, { pinned });
                 }}
                 handleRead={async (id: string) => {
                   await updateDataById(

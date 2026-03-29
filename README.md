@@ -118,6 +118,7 @@ Digital systems consistently outperform paper in accuracy, accessibility, and du
 - GDPR-aware — no third-party data sharing
 - Configurable privacy, terms & about URLs
 - Error tracking with Sentry (optional)
+- Privacy-friendly analytics with Umami (optional)
 
 </td>
 </tr>
@@ -138,6 +139,7 @@ Digital systems consistently outperform paper in accuracy, accessibility, and du
 │   Leaflet Maps             │   REST API + Real-time Events      │
 │   i18n · 8 languages       │   Scheduled Jobs (Cron)            │
 │   Sentry                   │   MailerSend · OpenAI · LaunchDark │
+│   Umami Analytics          │                                    │
 └────────────────────────────┴────────────────────────────────────┘
              │                              │
              └────────── PocketBase ────────┘
@@ -163,6 +165,7 @@ The frontend communicates with the backend via the [PocketBase JS SDK](https://g
 | **Backend** | PocketBase (self-hosted BaaS on Go + SQLite) |
 | **Testing** | Vitest |
 | **Error Tracking** | Sentry |
+| **Analytics** | Umami (privacy-friendly, self-hostable) |
 | **i18n** | i18next |
 | **CI/CD** | GitHub Actions + Semantic Release |
 
@@ -212,6 +215,9 @@ cp .env.example .env
 | `VITE_ABOUT_URL` | ✅ | Link to your about page |
 | `VITE_SENTRY_DSN` | ⚠️ | Sentry DSN for error tracking (optional) |
 | `SENTRY_AUTH_TOKEN` | ⚠️ | Sentry auth token for source map uploads (optional) |
+| `VITE_UMAMI_SRC_URL` | ⚠️ | Umami analytics script URL (optional) |
+| `VITE_UMAMI_WEBSITE_ID` | ⚠️ | Umami website ID for analytics (optional) |
+| `VITE_UMAMI_DOMAINS` | ⚠️ | Comma-separated domains for Umami tracking (optional) |
 
 Then start the development server:
 

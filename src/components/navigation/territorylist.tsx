@@ -31,6 +31,7 @@ import useLocalStorage from "../../hooks/useLocalStorage";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 import { ThemeContext } from "../utils/context";
 import useGeolocation from "../../hooks/useGeolocation";
+import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
 import "leaflet/dist/leaflet.css";
 
 const DEFAULT_MAP_ZOOM =
@@ -167,6 +168,7 @@ const TerritoryListing = ({
 }: TerritoryListingProps) => {
   const { t } = useTranslation();
   const { actualTheme } = use(ThemeContext);
+  const { trackEvent } = useAnalytics();
   const [viewMode, setViewMode] = useLocalStorage<"list" | "map">(
     "territoryViewMode",
     "list"
@@ -279,7 +281,13 @@ const TerritoryListing = ({
             type="radio"
             name="view-mode"
             value={viewMode}
-            onChange={(value) => setViewMode(value as "list" | "map")}
+            onChange={(value) => {
+              const newView = value as "list" | "map";
+              setViewMode(newView);
+              trackEvent(ANALYTICS_EVENTS.TERRITORY_LIST_VIEW_TOGGLED, {
+                view: newView
+              });
+            }}
             size="sm"
           >
             <ToggleButton

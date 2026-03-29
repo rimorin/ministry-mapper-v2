@@ -4,14 +4,17 @@ import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { ThemeContext } from "../utils/context";
 import { ThemeMode } from "../../utils/interface";
+import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
 
 const ThemeSettingsModal = NiceModal.create(() => {
   const modal = useModal();
   const { t } = useTranslation();
   const { theme, setTheme } = use(ThemeContext);
+  const { trackEvent } = useAnalytics();
 
   const handleThemeChange = (selectedTheme: ThemeMode) => {
     setTheme(selectedTheme);
+    trackEvent(ANALYTICS_EVENTS.THEME_CHANGED, { theme: selectedTheme });
   };
 
   const handleClose = () => {
