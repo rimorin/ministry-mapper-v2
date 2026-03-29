@@ -1,11 +1,15 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import ErrorBoundaryFallback from "./errorboundary";
 
 describe("ErrorBoundaryFallback", () => {
   const mockError = new Error("Test error message");
   const mockReset = vi.fn();
+
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
 
   it("renders error title", () => {
     render(
@@ -36,8 +40,7 @@ describe("ErrorBoundaryFallback", () => {
   });
 
   it("shows component name when provided", () => {
-    const originalMode = import.meta.env.MODE;
-    import.meta.env.MODE = "development";
+    vi.stubEnv("MODE", "development");
 
     render(
       <ErrorBoundaryFallback
@@ -48,8 +51,6 @@ describe("ErrorBoundaryFallback", () => {
     );
 
     expect(screen.getByText(/TestComponent/)).toBeInTheDocument();
-
-    import.meta.env.MODE = originalMode;
   });
 
   it("renders go to home button", () => {
