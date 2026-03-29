@@ -297,11 +297,12 @@
   "assignments": {
     "assignments": "할당",
     "noAssignmentsFound": "할당을 찾을 수 없습니다.",
-    "assignmentMessage": "{{greeting}}!! {{address}}에 할당되었습니다. 아래 링크를 클릭하여 진행해주세요.",
     "createdDate": "생성일",
     "expiryDate": "만료일",
     "publisher": "출판자",
-    "linkExpirationTimer": "링크 만료 타이머"
+    "linkExpirationTimer": "링크 만료 타이머",
+    "normalAssignment": "{{greeting}}, {{publisherName}}!!\n\n{{address}}에 할당되었습니다.\n\n아래 링크를 클릭하여 진행해주세요.",
+    "personalSlip": "{{greeting}}, {{publisherName}}!!\n\n{{address}}의 개인 전도 구역이 있습니다.\n\n이 링크는 {{expiryHrs}} 후 만료됩니다.\n\n아래 링크를 클릭하여 진행해주세요."
   },
   "messages": {
     "messages": "메시지",
@@ -488,5 +489,11 @@
     "new": "신규",
     "fix": "수정",
     "improved": "개선"
+  },
+  "expiry": {
+    "hour_other": "{{count}} 시간",
+    "day_other": "{{count}} 일",
+    "week_other": "{{count}} 주",
+    "month_other": "{{count}} 개월"
   }
 }

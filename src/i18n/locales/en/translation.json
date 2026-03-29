@@ -297,11 +297,12 @@
   "assignments": {
     "assignments": "Assignments",
     "noAssignmentsFound": "No assignments found.",
-    "assignmentMessage": "Good {{greeting}}!! You are assigned to {{address}}. Please click on the link below to proceed.",
     "createdDate": "Created Dt",
     "expiryDate": "Expiry Dt",
     "publisher": "Publisher",
-    "linkExpirationTimer": "Link Expiration Timer"
+    "linkExpirationTimer": "Link Expiration Timer",
+    "normalAssignment": "Good {{greeting}}, {{publisherName}}!!\n\nYou are assigned to {{address}}.\n\nPlease click on the link below to proceed.",
+    "personalSlip": "Good {{greeting}}, {{publisherName}}!!\n\nYou have a personal slip for {{address}}.\n\nThis link expires in {{expiryHrs}}.\n\nPlease click on the link below to proceed."
   },
   "messages": {
     "messages": "Messages",
@@ -488,5 +489,15 @@
     "new": "New",
     "fix": "Fix",
     "improved": "Improved"
+  },
+  "expiry": {
+    "hour_one": "{{count}} hour",
+    "hour_other": "{{count}} hours",
+    "day_one": "{{count}} day",
+    "day_other": "{{count}} days",
+    "week_one": "{{count}} week",
+    "week_other": "{{count}} weeks",
+    "month_one": "{{count}} month",
+    "month_other": "{{count}} months"
   }
 }

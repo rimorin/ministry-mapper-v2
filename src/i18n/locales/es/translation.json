@@ -297,11 +297,12 @@
   "assignments": {
     "assignments": "Asignaciones",
     "noAssignmentsFound": "No se encontraron asignaciones.",
-    "assignmentMessage": "¡Buen {{greeting}}! Se te asignó {{address}}. Por favor, haz clic en el enlace a continuación para continuar.",
     "createdDate": "Fecha de creación",
     "expiryDate": "Fecha de caducidad",
     "publisher": "Publicador",
-    "linkExpirationTimer": "Temporizador de caducidad del enlace"
+    "linkExpirationTimer": "Temporizador de caducidad del enlace",
+    "normalAssignment": "¡Buen {{greeting}}, {{publisherName}}!\n\nSe te asignó {{address}}.\n\nPor favor, haz clic en el enlace a continuación para continuar.",
+    "personalSlip": "¡Buen {{greeting}}, {{publisherName}}!\n\nTienes un slip personal para {{address}}.\n\nEste enlace expira en {{expiryHrs}}.\n\nPor favor, haz clic en el enlace a continuación para continuar."
   },
   "messages": {
     "messages": "Mensajes",
@@ -488,5 +489,15 @@
     "new": "Nuevo",
     "fix": "Corrección",
     "improved": "Mejorado"
+  },
+  "expiry": {
+    "hour_one": "{{count}} hora",
+    "hour_other": "{{count}} horas",
+    "day_one": "{{count}} día",
+    "day_other": "{{count}} días",
+    "week_one": "{{count}} semana",
+    "week_other": "{{count}} semanas",
+    "month_one": "{{count}} mes",
+    "month_other": "{{count}} meses"
   }
 }

@@ -297,11 +297,12 @@
   "assignments": {
     "assignments": "Tugasan",
     "noAssignmentsFound": "Tiada tugasan ditemui.",
-    "assignmentMessage": "Selamat {{greeting}}!! Anda ditugaskan ke {{address}}. Sila klik pada pautan di bawah untuk meneruskan.",
     "createdDate": "Tarikh Dicipta",
     "expiryDate": "Tarikh Tamat",
     "publisher": "Penerbit",
-    "linkExpirationTimer": "Pengatur Masa Tamat Tempoh Pautan"
+    "linkExpirationTimer": "Pengatur Masa Tamat Tempoh Pautan",
+    "normalAssignment": "Selamat {{greeting}}, {{publisherName}}!!\n\nAnda ditugaskan ke {{address}}.\n\nSila klik pada pautan di bawah untuk meneruskan.",
+    "personalSlip": "Selamat {{greeting}}, {{publisherName}}!!\n\nAnda mempunyai slip peribadi untuk {{address}}.\n\nPautan ini tamat dalam {{expiryHrs}}.\n\nSila klik pada pautan di bawah untuk meneruskan."
   },
   "messages": {
     "messages": "Mesej",
@@ -488,5 +489,11 @@
     "new": "Baharu",
     "fix": "Pembetulan",
     "improved": "Dipertingkat"
+  },
+  "expiry": {
+    "hour_other": "{{count}} jam",
+    "day_other": "{{count}} hari",
+    "week_other": "{{count}} minggu",
+    "month_other": "{{count}} bulan"
   }
 }

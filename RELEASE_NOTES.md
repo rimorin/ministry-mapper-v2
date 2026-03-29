@@ -12,6 +12,12 @@ User-facing release notes for Ministry Mapper. Add a new `## YYYY-MM-DD` block a
 
 ---
 
+## 2026-03-30
+
+[IMPROVED] Assignment messages now include the publisher's name, and personal slips show the link expiry duration so publishers know how long they have.
+
+---
+
 ## 2026-03-27
 
 [NEW] Account warnings — you'll receive an email reminder if your account has been inactive or has no role assigned, before it gets disabled. This ensures only authorised and active accounts retain access to the system. Inactive accounts are warned at 3 months, a final warning at 5 months, then disabled at 6 months. Accounts with no role assigned are warned on day 3, a final warning on day 6, then disabled on day 7.
