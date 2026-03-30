@@ -1,8 +1,12 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render } from "@testing-library/react";
 import VersionDisplay from "./versiondisplay";
 
 describe("VersionDisplay", () => {
+  afterEach(() => {
+    vi.unstubAllEnvs();
+  });
+
   it("should render version in production environment", () => {
     vi.stubEnv("VITE_SYSTEM_ENVIRONMENT", "production");
     vi.stubEnv("VITE_APP_VERSION", "1.2.3");
