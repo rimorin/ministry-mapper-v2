@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import assignmentMessage, { formatExpiry } from "./assignmentmsg";
 
 describe("formatExpiry", () => {
@@ -60,6 +60,14 @@ describe("formatExpiry", () => {
 
 describe("assignmentMessage", () => {
   process.env.TZ = "UTC";
+
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
 
   it("should return morning greeting for normal assignment", () => {
     vi.setSystemTime(new Date("2023-01-01T00:00:00Z"));
