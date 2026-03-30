@@ -1,3 +1,11 @@
+# [1.31.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.30.0...v1.31.0) (2026-03-30)
+
+
+### Features
+
+* enhance assignment messaging with personalized greetings and expiry formatting ([b019619](https://github.com/rimorin/ministry-mapper-v2/commit/b019619f0a4b1fc8b3c435d36c91f53ec88f869d))
+* integrate Umami analytics tracking across various components ([295de70](https://github.com/rimorin/ministry-mapper-v2/commit/295de70d01ef51ffad73f70698e9217102afad55))
+
 # [1.30.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.29.0...v1.30.0) (2026-03-26)
 
 
