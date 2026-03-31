@@ -27,7 +27,12 @@ import ModalUnitTitle from "../form/title";
 import HHTypeField from "../form/household";
 import ComponentAuthorizer from "../navigation/authorizer";
 import DateFormat from "../../utils/helpers/dateformat";
-import { updateDataById, callFunction } from "../../utils/pocketbase";
+import {
+  updateDataById,
+  callFunction,
+  deleteDataById,
+  createData
+} from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import GenericButton from "../navigation/button";
 import { MultiValue } from "react-select";
@@ -100,7 +105,6 @@ const UpdateUnitStatus = NiceModal.create(
     const handleSubmitClick = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
       const updateData = {
-        type: hhType?.map((type) => type.id) || [],
         notes: hhNote || "",
         status: unitStatus || STATUS_CODES.DEFAULT,
         not_home_tries: hhNhcount ? parseInt(hhNhcount) : 0,
@@ -111,6 +115,33 @@ const UpdateUnitStatus = NiceModal.create(
 
       try {
         setIsSaving(true);
+
+        const newOptionIds = new Set(hhType?.map((t) => t.id) ?? []);
+        const initialTypes = unitDetails?.type ?? [];
+        const initialOptionIds = new Set(initialTypes.map((t) => t.id));
+
+        const toDelete = initialTypes.filter((t) => !newOptionIds.has(t.id));
+        const toAdd = [...newOptionIds].filter(
+          (id) => !initialOptionIds.has(id)
+        );
+
+        // Delete before create to avoid unique index conflicts on (address, option, map)
+        await Promise.all(
+          toDelete
+            .filter((t) => t.aoId)
+            .map((t) => deleteDataById("address_options", t.aoId!))
+        );
+        await Promise.all(
+          toAdd.map((id) =>
+            createData("address_options", {
+              address: addressId,
+              option: id,
+              congregation: policy.congregation,
+              map: mapId
+            })
+          )
+        );
+
         await updateDataById("addresses", addressId, updateData, {
           requestKey: `update-address-${addressId}`
         });
