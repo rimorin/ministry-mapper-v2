@@ -1,3 +1,10 @@
+# [1.32.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.31.0...v1.32.0) (2026-03-31)
+
+
+### Features
+
+* address options table migration ([8fcc7dd](https://github.com/rimorin/ministry-mapper-v2/commit/8fcc7dd93a5a81d52f8642da6eb94aff2a0dd331))
+
 # [1.31.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.30.0...v1.31.0) (2026-03-30)
 
 
