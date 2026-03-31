@@ -31,6 +31,7 @@ interface floorInterface {
 export interface typeInterface {
   id: string;
   code: string;
+  aoId?: string; // address_options record ID, used for delete in status modal
 }
 
 export interface unitDetails {

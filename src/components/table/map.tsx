@@ -41,12 +41,16 @@ const useAddresses = (
     coordinates: address.coordinates,
     number: address.code,
     note: address.notes,
-    type: Array.isArray(address.type)
-      ? address.type.map((type: string) => ({
-          id: type,
-          code: options.get(type)?.code ?? ""
-        }))
-      : [],
+    type:
+      (
+        address.expand?.["address_options_via_address"] as
+          | RecordModel[]
+          | undefined
+      )?.map((ao) => ({
+        id: ao.option as string,
+        code: options.get(ao.option as string)?.code ?? "",
+        aoId: ao.id
+      })) ?? [],
     status: address.status,
     nhcount: address.not_home_tries ?? NOT_HOME_STATUS_CODES.DEFAULT,
     dnctime: address.dnc_time ?? null,
@@ -61,7 +65,8 @@ const useAddresses = (
     const addresses = await getList("addresses", {
       filter: `map="${mapId}"`,
       requestKey: null,
-      fields: PB_FIELDS.ADDRESSES
+      fields: PB_FIELDS.ADDRESSES_FETCH,
+      expand: "address_options_via_address"
     });
 
     const addressMap = new Map();
@@ -77,15 +82,51 @@ const useAddresses = (
     record: RecordModel;
   }) => {
     const addressId = data.record.id;
-    const addressData = data.record;
     const dataAction = data.action;
     setAddresses((prev) => {
       const newAddresses = new Map(prev);
       if (dataAction === "update" || dataAction === "create") {
-        newAddresses.set(addressId, createUnitDetails(addressData));
+        // Address events don't carry expand data — preserve existing type from state.
+        // Type changes come via the address_options subscription instead.
+        const existingType = prev.get(addressId)?.type ?? [];
+        newAddresses.set(addressId, {
+          ...createUnitDetails(data.record),
+          type: existingType
+        });
       } else if (dataAction === "delete") {
         newAddresses.delete(addressId);
       }
+      return newAddresses;
+    });
+  };
+
+  const handleAddressOptionsSubscription = (data: {
+    action: string;
+    record: RecordModel;
+  }) => {
+    const addressId = data.record.address as string;
+    const optionId = data.record.option as string;
+    const dataAction = data.action;
+    setAddresses((prev) => {
+      if (!prev.has(addressId)) return prev;
+      const newAddresses = new Map(prev);
+      const unit = newAddresses.get(addressId)!;
+      let newType = [...unit.type];
+      if (dataAction === "create") {
+        if (!newType.some((t) => t.id === optionId)) {
+          newType = [
+            ...newType,
+            {
+              id: optionId,
+              code: options.get(optionId)?.code ?? "",
+              aoId: data.record.id
+            }
+          ];
+        }
+      } else if (dataAction === "delete") {
+        newType = newType.filter((t) => t.id !== optionId);
+      }
+      newAddresses.set(addressId, { ...unit, type: newType });
       return newAddresses;
     });
   };
@@ -100,7 +141,23 @@ const useAddresses = (
     handleSubscription,
     {
       filter: `map="${mapId}"`,
-      fields: PB_FIELDS.ADDRESSES,
+      fields: PB_FIELDS.ADDRESSES_SUBSCRIPTION,
+      ...(assignmentId && {
+        headers: {
+          [PB_SECURITY_HEADER_KEY]: assignmentId
+        }
+      })
+    },
+    [mapId, assignmentId]
+  );
+
+  useRealtimeSubscription(
+    "address_options",
+    handleAddressOptionsSubscription,
+    {
+      // filter scopes events server-side to current map only (requires listRule on address_options)
+      filter: `map="${mapId}"`,
+      fields: PB_FIELDS.ADDRESS_OPTIONS,
       ...(assignmentId && {
         headers: {
           [PB_SECURITY_HEADER_KEY]: assignmentId
