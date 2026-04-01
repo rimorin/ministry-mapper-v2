@@ -1,3 +1,13 @@
+## [1.32.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.1...v1.32.2) (2026-04-01)
+
+
+### Bug Fixes
+
+* add announcement type to release notes and update translations ([c4cd2ef](https://github.com/rimorin/ministry-mapper-v2/commit/c4cd2ef61f9b91fa10f83f186e511895fa5df411))
+* add backend health middleware with offline handling and translations ([d309dd1](https://github.com/rimorin/ministry-mapper-v2/commit/d309dd11730f7312e8e04564613cd3a005cf1faf))
+* add PWA middleware and unsupported access handling with translations ([593e439](https://github.com/rimorin/ministry-mapper-v2/commit/593e439694e4ddd91a29f1a6e555142850075d99))
+* optimize parallel processing of address options deletion and creation ([85f3ad4](https://github.com/rimorin/ministry-mapper-v2/commit/85f3ad4c8d4935619a0bf9f441b7fb7938309e9b))
+
 ## [1.32.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.0...v1.32.1) (2026-04-01)
 
 
