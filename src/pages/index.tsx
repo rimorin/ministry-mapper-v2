@@ -5,6 +5,7 @@ import "../css/toast.css";
 import "../css/darkmode.css";
 import { FC, ReactNode } from "react";
 import MaintenanceMiddleware from "../components/middlewares/maintenance";
+import PwaMiddleware from "../components/middlewares/pwa";
 import MainMiddleware from "../components/middlewares/main";
 import StateMiddleware from "../components/middlewares/context";
 import ThemeMiddleware from "../components/middlewares/theme";
@@ -25,11 +26,13 @@ const CombinedMiddleware: FC<CombinedMiddlewareProps> = ({ children }) => (
       <ThemeMiddleware>
         <ToastProvider>
           <MaintenanceMiddleware>
-            <NiceModelMiddleware>
-              <ReleaseNotesProvider>
-                <StateMiddleware>{children}</StateMiddleware>
-              </ReleaseNotesProvider>
-            </NiceModelMiddleware>
+            <PwaMiddleware>
+              <NiceModelMiddleware>
+                <ReleaseNotesProvider>
+                  <StateMiddleware>{children}</StateMiddleware>
+                </ReleaseNotesProvider>
+              </NiceModelMiddleware>
+            </PwaMiddleware>
           </MaintenanceMiddleware>
         </ToastProvider>
       </ThemeMiddleware>

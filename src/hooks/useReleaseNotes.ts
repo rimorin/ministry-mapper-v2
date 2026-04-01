@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useLocalStorage } from "./useLocalStorage";
 
 export interface ReleaseItem {
@@ -62,10 +62,10 @@ export function useReleaseNotes(): UseReleaseNotesReturn {
     };
   }, []);
 
-  const markAsSeen = useCallback(() => {
+  const markAsSeen = () => {
     if (newReleases.length > 0) setLastSeenReleaseId(newReleases[0].id);
     setNewReleases([]);
-  }, [newReleases, setLastSeenReleaseId]);
+  };
 
   return {
     hasNewReleases: newReleases.length > 0,

@@ -495,5 +495,11 @@
     "day_other": "{{count}} 日",
     "week_other": "{{count}} 週間",
     "month_other": "{{count}} ヶ月"
+  },
+  "pwa": {
+    "unsupported": {
+      "title": "非対応のアクセス方法 📱",
+      "message": "このアプリはインストール済みアプリ（PWA）として開くことに対応していません。ウェブブラウザから直接開いてください。"
+    }
   }
 }

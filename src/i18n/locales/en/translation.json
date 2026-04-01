@@ -499,5 +499,11 @@
     "week_other": "{{count}} weeks",
     "month_one": "{{count}} month",
     "month_other": "{{count}} months"
+  },
+  "pwa": {
+    "unsupported": {
+      "title": "Unsupported Access Method 📱",
+      "message": "This app does not support being opened as an installed app (PWA). Please open it directly in your web browser instead."
+    }
   }
 }

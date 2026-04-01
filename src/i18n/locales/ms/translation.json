@@ -495,5 +495,11 @@
     "day_other": "{{count}} hari",
     "week_other": "{{count}} minggu",
     "month_other": "{{count}} bulan"
+  },
+  "pwa": {
+    "unsupported": {
+      "title": "Kaedah Akses Tidak Disokong 📱",
+      "message": "Apl ini tidak menyokong dibuka sebagai apl yang dipasang (PWA). Sila buka terus dalam penyemak imbas web anda."
+    }
   }
 }
