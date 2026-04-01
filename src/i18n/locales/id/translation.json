@@ -502,5 +502,10 @@
       "title": "Metode Akses Tidak Didukung 📱",
       "message": "Aplikasi ini tidak mendukung dibuka sebagai aplikasi yang diinstal (PWA). Silakan buka langsung di browser web Anda."
     }
+  },
+  "backendOffline": {
+    "title": "Layanan Tidak Tersedia",
+    "description": "Ministry Mapper saat ini tidak dapat dijangkau. Layanan mungkin sedang down atau mengalami masalah. Silakan coba lagi nanti.",
+    "retry": "Coba Lagi"
   }
 }
