@@ -13,7 +13,11 @@ interface ReleaseNotesModalProps {
 const ITEM_CONFIG = {
   new: { colorClass: "text-bg-success", labelKey: "releaseNotes.new" },
   fix: { colorClass: "text-bg-warning", labelKey: "releaseNotes.fix" },
-  improved: { colorClass: "text-bg-info", labelKey: "releaseNotes.improved" }
+  improved: { colorClass: "text-bg-info", labelKey: "releaseNotes.improved" },
+  announcement: {
+    colorClass: "text-bg-primary",
+    labelKey: "releaseNotes.announcement"
+  }
 } as const;
 
 const ReleaseNotesModal = NiceModal.create(

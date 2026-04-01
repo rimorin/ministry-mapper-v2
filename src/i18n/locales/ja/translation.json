@@ -488,7 +488,8 @@
     "dismiss": "閉じる",
     "new": "新規",
     "fix": "修正",
-    "improved": "改善"
+    "improved": "改善",
+    "announcement": "お知らせ"
   },
   "expiry": {
     "hour_other": "{{count}} 時間",

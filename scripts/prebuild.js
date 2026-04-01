@@ -27,7 +27,12 @@ function parseReleaseNotes() {
 
   const content = fs.readFileSync(releaseNotesPath, "utf-8");
   const releases = [];
-  const TYPE_MAP = { NEW: "new", FIX: "fix", IMPROVED: "improved" };
+  const TYPE_MAP = {
+    NEW: "new",
+    FIX: "fix",
+    IMPROVED: "improved",
+    ANNOUNCEMENT: "announcement"
+  };
 
   const blocks = content.split(/^(?=## \d{4}-\d{2}-\d{2})/m).filter(Boolean);
 
@@ -53,7 +58,9 @@ function parseReleaseNotes() {
         continue;
       }
 
-      const itemMatch = line.match(/^\[(NEW|FIX|IMPROVED)\]\s+(.+)/);
+      const itemMatch = line.match(
+        /^\[(NEW|FIX|IMPROVED|ANNOUNCEMENT)\]\s+(.+)/
+      );
       if (itemMatch) {
         items.push({ type: TYPE_MAP[itemMatch[1]], text: itemMatch[2].trim() });
       }

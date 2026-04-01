@@ -488,7 +488,8 @@
     "dismiss": "மூடு",
     "new": "புதியது",
     "fix": "திருத்தம்",
-    "improved": "மேம்பட்டது"
+    "improved": "மேம்பட்டது",
+    "announcement": "அறிவிப்பு"
   },
   "expiry": {
     "hour_one": "{{count}} மணி நேரம்",

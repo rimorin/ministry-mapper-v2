@@ -488,7 +488,8 @@
     "dismiss": "Cerrar",
     "new": "Nuevo",
     "fix": "Corrección",
-    "improved": "Mejorado"
+    "improved": "Mejorado",
+    "announcement": "Anuncio"
   },
   "expiry": {
     "hour_one": "{{count}} hora",
