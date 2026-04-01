@@ -488,7 +488,8 @@
     "dismiss": "Tutup",
     "new": "Baharu",
     "fix": "Pembetulan",
-    "improved": "Dipertingkat"
+    "improved": "Dipertingkat",
+    "announcement": "Pengumuman"
   },
   "expiry": {
     "hour_other": "{{count}} jam",

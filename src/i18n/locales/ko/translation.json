@@ -488,7 +488,8 @@
     "dismiss": "닫기",
     "new": "신규",
     "fix": "수정",
-    "improved": "개선"
+    "improved": "개선",
+    "announcement": "공지"
   },
   "expiry": {
     "hour_other": "{{count}} 시간",

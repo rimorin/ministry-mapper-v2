@@ -488,7 +488,8 @@
     "dismiss": "关闭",
     "new": "新增",
     "fix": "修复",
-    "improved": "改进"
+    "improved": "改进",
+    "announcement": "公告"
   },
   "expiry": {
     "hour_other": "{{count}} 小时",

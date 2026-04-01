@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useLocalStorage } from "./useLocalStorage";
 
 export interface ReleaseItem {
-  type: "new" | "fix" | "improved";
+  type: "new" | "fix" | "improved" | "announcement";
   text: string;
 }
 

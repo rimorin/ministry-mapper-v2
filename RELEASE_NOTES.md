@@ -7,14 +7,19 @@ User-facing release notes for Ministry Mapper. Add a new `## YYYY-MM-DD` block a
 - `[NEW]` — new feature
 - `[FIX]` — bug fix
 - `[IMPROVED]` — improvement or performance
+- `[ANNOUNCEMENT]` — important announcement within a release
 - `> Notice text` — action-required notice shown as a warning banner
 - `![alt](release-assets/YYYY-MM-DD/image.png)` — screenshot (place images in public/release-assets/)
 
 ---
 
-## 2026-04-01
+## 2026-04-02
 
-> We upgraded our systems recently. Please make sure your app is on version 1.32 or above. Your browser should update it for you automatically — if not, clearing your browser cache will fix it. Older versions may not work properly.
+> Please look out for fellow publishers who may need help clearing their browser cache.
+
+[ANNOUNCEMENT] We upgraded our systems recently. Please make sure your app is on version 1.32 or above. Your browser should update it for you automatically — if not, clearing your browser cache will fix it. Older versions may not work properly.
+
+[ANNOUNCEMENT] Ministry Mapper must be opened in a web browser (such as Chrome or Safari). Saving it to your home screen or using it as an installed app is not supported — if you have done so, please remove it and open the link in your browser directly instead.
 
 ---
 
