@@ -1,3 +1,10 @@
+## [1.32.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.0...v1.32.1) (2026-04-01)
+
+
+### Bug Fixes
+
+* include notice in release notes parsing condition ([1ae4b49](https://github.com/rimorin/ministry-mapper-v2/commit/1ae4b490d3aaa6b5bf9ade5b400843506e92f36a))
+
 # [1.32.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.31.0...v1.32.0) (2026-03-31)
 
 
