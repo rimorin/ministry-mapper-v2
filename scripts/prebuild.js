@@ -59,7 +59,7 @@ function parseReleaseNotes() {
       }
     }
 
-    if (items.length) {
+    if (items.length || notice) {
       releases.push({ id, notice, screenshot, items });
     }
   }
