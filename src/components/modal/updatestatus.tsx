@@ -125,26 +125,29 @@ const UpdateUnitStatus = NiceModal.create(
           (id) => !initialOptionIds.has(id)
         );
 
-        // Delete before create to avoid unique index conflicts on (address, option, map)
-        await Promise.all(
-          toDelete
+        // toDelete and toAdd are disjoint by construction — safe to run in one parallel batch
+        // alongside the address update. Each create needs a unique requestKey because all POSTs
+        // share the same URL and the SDK would otherwise auto-cancel concurrent requests.
+        await Promise.all([
+          ...toDelete
             .filter((t) => t.aoId)
-            .map((t) => deleteDataById("address_options", t.aoId!))
-        );
-        await Promise.all(
-          toAdd.map((id) =>
-            createData("address_options", {
-              address: addressId,
-              option: id,
-              congregation: policy.congregation,
-              map: mapId
-            })
-          )
-        );
-
-        await updateDataById("addresses", addressId, updateData, {
-          requestKey: `update-address-${addressId}`
-        });
+            .map((t) => deleteDataById("address_options", t.aoId!)),
+          ...toAdd.map((id) =>
+            createData(
+              "address_options",
+              {
+                address: addressId,
+                option: id,
+                congregation: policy.congregation,
+                map: mapId
+              },
+              { requestKey: `create-address-option-${addressId}-${id}` }
+            )
+          ),
+          updateDataById("addresses", addressId, updateData, {
+            requestKey: `update-address-${addressId}`
+          })
+        ]);
         modal.hide();
       } catch (error) {
         notifyError(error);
