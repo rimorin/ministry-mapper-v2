@@ -12,6 +12,12 @@ User-facing release notes for Ministry Mapper. Add a new `## YYYY-MM-DD` block a
 
 ---
 
+## 2026-04-01
+
+> We upgraded our systems recently. Please make sure your app is on version 1.32 or above. Your browser should update it for you automatically — if not, clearing your browser cache will fix it. Older versions may not work properly.
+
+---
+
 ## 2026-03-30
 
 [IMPROVED] Assignment messages now include the publisher's name, and personal slips show the link expiry duration so publishers know how long they have.
