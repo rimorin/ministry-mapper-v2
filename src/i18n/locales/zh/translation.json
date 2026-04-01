@@ -495,5 +495,11 @@
     "day_other": "{{count}} 天",
     "week_other": "{{count}} 周",
     "month_other": "{{count}} 个月"
+  },
+  "pwa": {
+    "unsupported": {
+      "title": "不支持的访问方式 📱",
+      "message": "此应用不支持以已安装应用（PWA）方式打开。请直接在您的网络浏览器中打开它。"
+    }
   }
 }

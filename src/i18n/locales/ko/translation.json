@@ -495,5 +495,11 @@
     "day_other": "{{count}} 일",
     "week_other": "{{count}} 주",
     "month_other": "{{count}} 개월"
+  },
+  "pwa": {
+    "unsupported": {
+      "title": "지원되지 않는 접근 방식 📱",
+      "message": "이 앱은 설치된 앱(PWA)으로 열기를 지원하지 않습니다. 웹 브라우저에서 직접 열어 주세요."
+    }
   }
 }

@@ -499,5 +499,11 @@
     "week_other": "{{count}} semanas",
     "month_one": "{{count}} mes",
     "month_other": "{{count}} meses"
+  },
+  "pwa": {
+    "unsupported": {
+      "title": "Método de Acceso No Compatible 📱",
+      "message": "Esta aplicación no admite abrirse como una aplicación instalada (PWA). Por favor, ábrela directamente en tu navegador web."
+    }
   }
 }

@@ -495,5 +495,11 @@
     "day_other": "{{count}} hari",
     "week_other": "{{count}} minggu",
     "month_other": "{{count}} bulan"
+  },
+  "pwa": {
+    "unsupported": {
+      "title": "Metode Akses Tidak Didukung 📱",
+      "message": "Aplikasi ini tidak mendukung dibuka sebagai aplikasi yang diinstal (PWA). Silakan buka langsung di browser web Anda."
+    }
   }
 }
