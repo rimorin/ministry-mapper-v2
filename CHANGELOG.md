@@ -1,3 +1,10 @@
+## [1.32.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.2...v1.32.3) (2026-04-03)
+
+
+### Bug Fixes
+
+* add service worker to kill SW and handle stale versions ([299bbd5](https://github.com/rimorin/ministry-mapper-v2/commit/299bbd50332ae83f427d28e60ff46d2cc1b49b7d))
+
 ## [1.32.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.1...v1.32.2) (2026-04-01)
 
 
