@@ -27,16 +27,15 @@ import ModalUnitTitle from "../form/title";
 import HHTypeField from "../form/household";
 import ComponentAuthorizer from "../navigation/authorizer";
 import DateFormat from "../../utils/helpers/dateformat";
-import {
-  updateDataById,
-  callFunction,
-  deleteDataById,
-  createData
-} from "../../utils/pocketbase";
+import { callFunction, createBatch, withRetry } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import GenericButton from "../navigation/button";
 import { MultiValue } from "react-select";
 const ChangeMapGeolocation = lazy(() => import("./changegeolocation"));
+
+const hasValidCoordinates = (
+  coords: latlongInterface | undefined
+): coords is latlongInterface => !!coords && !!coords.lat && !!coords.lng;
 
 const UpdateUnitStatus = NiceModal.create(
   ({ addressData, unitDetails, policy }: UpdateAddressStatusModalProps) => {
@@ -55,14 +54,8 @@ const UpdateUnitStatus = NiceModal.create(
     const status = unitDetails?.status;
     const isSingleStory = addressType === TERRITORY_TYPES.SINGLE_STORY;
 
-    // DRY: Extract coordinate validation logic
-    const hasValidCoordinates = (
-      coords: latlongInterface | undefined
-    ): coords is latlongInterface => !!coords && !!coords.lat && !!coords.lng;
-
-    const defaultCoordinates = unitDetails?.coordinates;
-    const validDefaultCoords = hasValidCoordinates(defaultCoordinates)
-      ? defaultCoordinates
+    const validDefaultCoords = hasValidCoordinates(unitDetails?.coordinates)
+      ? unitDetails?.coordinates
       : undefined;
 
     const [isNotHome, setIsNotHome] = useState(
@@ -125,29 +118,25 @@ const UpdateUnitStatus = NiceModal.create(
           (id) => !initialOptionIds.has(id)
         );
 
-        // toDelete and toAdd are disjoint by construction — safe to run in one parallel batch
-        // alongside the address update. Each create needs a unique requestKey because all POSTs
-        // share the same URL and the SDK would otherwise auto-cancel concurrent requests.
-        await Promise.all([
-          ...toDelete
-            .filter((t) => t.aoId)
-            .map((t) => deleteDataById("address_options", t.aoId!)),
-          ...toAdd.map((id) =>
-            createData(
-              "address_options",
-              {
-                address: addressId,
-                option: id,
-                congregation: policy.congregation,
-                map: mapId
-              },
-              { requestKey: `create-address-option-${addressId}-${id}` }
-            )
-          ),
-          updateDataById("addresses", addressId, updateData, {
-            requestKey: `update-address-${addressId}`
+        const batch = createBatch();
+        const addressOptions = batch.collection("address_options");
+
+        toDelete
+          .filter((t) => t.aoId)
+          .forEach((t) => addressOptions.delete(t.aoId!));
+
+        toAdd.forEach((id) =>
+          addressOptions.create({
+            address: addressId,
+            option: id,
+            congregation: policy.congregation,
+            map: mapId
           })
-        ]);
+        );
+
+        batch.collection("addresses").update(addressId, updateData);
+
+        await withRetry(() => batch.send());
         modal.hide();
       } catch (error) {
         notifyError(error);
@@ -224,12 +213,7 @@ const UpdateUnitStatus = NiceModal.create(
 
     const handleHHTypeChange = (option: MultiValue<SelectProps>) => {
       setHhtype(
-        option.map((opt: SelectProps) => {
-          return {
-            id: opt.value,
-            code: opt.label
-          };
-        })
+        option.map((opt: SelectProps) => ({ id: opt.value, code: opt.label }))
       );
     };
 
