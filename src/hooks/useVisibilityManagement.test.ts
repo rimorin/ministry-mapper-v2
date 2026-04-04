@@ -1,9 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
-import {
-  useVisibilityChange,
-  usePageVisibility
-} from "./useVisibilityManagement";
+import useVisibilityChange from "./useVisibilityManagement";
 
 describe("useVisibilityManagement", () => {
   beforeEach(() => {
@@ -65,71 +62,6 @@ describe("useVisibilityManagement", () => {
     it("should cleanup event listener on unmount", () => {
       const removeEventListenerSpy = vi.spyOn(document, "removeEventListener");
       const { unmount } = renderHook(() => useVisibilityChange(() => {}));
-
-      unmount();
-
-      expect(removeEventListenerSpy).toHaveBeenCalledWith(
-        "visibilitychange",
-        expect.any(Function)
-      );
-
-      removeEventListenerSpy.mockRestore();
-    });
-  });
-
-  describe("usePageVisibility", () => {
-    it("should initialize with current visibility state", () => {
-      Object.defineProperty(document, "visibilityState", {
-        writable: true,
-        value: "visible"
-      });
-
-      const { result } = renderHook(() => usePageVisibility());
-
-      expect(result.current).toBe(true);
-    });
-
-    it("should update when visibility changes to hidden", () => {
-      Object.defineProperty(document, "visibilityState", {
-        writable: true,
-        value: "visible"
-      });
-
-      const { result } = renderHook(() => usePageVisibility());
-
-      act(() => {
-        Object.defineProperty(document, "visibilityState", {
-          writable: true,
-          value: "hidden"
-        });
-        document.dispatchEvent(new Event("visibilitychange"));
-      });
-
-      expect(result.current).toBe(false);
-    });
-
-    it("should update when visibility changes to visible", () => {
-      Object.defineProperty(document, "visibilityState", {
-        writable: true,
-        value: "hidden"
-      });
-
-      const { result } = renderHook(() => usePageVisibility());
-
-      act(() => {
-        Object.defineProperty(document, "visibilityState", {
-          writable: true,
-          value: "visible"
-        });
-        document.dispatchEvent(new Event("visibilitychange"));
-      });
-
-      expect(result.current).toBe(true);
-    });
-
-    it("should cleanup event listener on unmount", () => {
-      const removeEventListenerSpy = vi.spyOn(document, "removeEventListener");
-      const { unmount } = renderHook(() => usePageVisibility());
 
       unmount();
 
