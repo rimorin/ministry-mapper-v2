@@ -8,9 +8,6 @@ vi.mock("@sentry/react", () => ({
   captureException: vi.fn()
 }));
 
-// Mock fetch
-global.fetch = vi.fn();
-
 // Use generic test versions (not tied to actual app version)
 const CURRENT_VERSION = "1.0.0";
 const NEW_VERSION = "2.0.0";
@@ -20,10 +17,12 @@ vi.stubEnv("VITE_APP_VERSION", CURRENT_VERSION);
 
 describe("useVersionCheck", () => {
   beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
     vi.clearAllMocks();
   });
 
   afterEach(() => {
+    vi.unstubAllGlobals();
     vi.restoreAllMocks();
   });
 
@@ -40,12 +39,16 @@ describe("useVersionCheck", () => {
     it("should detect new version", async () => {
       const mockResponse = {
         ok: true,
+        headers: {
+          get: (key: string) =>
+            key === "content-type" ? "application/json" : null
+        },
         json: async () => ({
           version: NEW_VERSION,
           buildTime: "2026-02-13T10:00:00Z"
         })
       };
-      vi.mocked(fetch).mockResolvedValue(mockResponse as Response);
+      vi.mocked(fetch).mockResolvedValue(mockResponse as unknown as Response);
 
       const { result } = renderHook(() => useVersionCheck(60000));
 
@@ -57,12 +60,16 @@ describe("useVersionCheck", () => {
     it("should not flag refresh when versions match", async () => {
       const mockResponse = {
         ok: true,
+        headers: {
+          get: (key: string) =>
+            key === "content-type" ? "application/json" : null
+        },
         json: async () => ({
           version: CURRENT_VERSION,
           buildTime: "2026-02-13T10:00:00Z"
         })
       };
-      vi.mocked(fetch).mockResolvedValue(mockResponse as Response);
+      vi.mocked(fetch).mockResolvedValue(mockResponse as unknown as Response);
 
       const { result } = renderHook(() => useVersionCheck(60000));
 
@@ -73,15 +80,38 @@ describe("useVersionCheck", () => {
       expect(result.current.needRefresh).toBe(false);
     });
 
+    it("should not flag refresh when response is not JSON", async () => {
+      const mockResponse = {
+        ok: true,
+        headers: {
+          get: (key: string) => (key === "content-type" ? "text/html" : null)
+        }
+      };
+      vi.mocked(fetch).mockResolvedValue(mockResponse as unknown as Response);
+
+      const { result } = renderHook(() => useVersionCheck(60000));
+
+      await waitFor(() => {
+        expect(fetch).toHaveBeenCalled();
+      });
+
+      expect(result.current.needRefresh).toBe(false);
+      expect(Sentry.captureException).not.toHaveBeenCalled();
+    });
+
     it("should use cache busting query parameter", async () => {
       const mockResponse = {
         ok: true,
+        headers: {
+          get: (key: string) =>
+            key === "content-type" ? "application/json" : null
+        },
         json: async () => ({
           version: CURRENT_VERSION,
           buildTime: "2026-02-13T10:00:00Z"
         })
       };
-      vi.mocked(fetch).mockResolvedValue(mockResponse as Response);
+      vi.mocked(fetch).mockResolvedValue(mockResponse as unknown as Response);
 
       renderHook(() => useVersionCheck(60000));
 
