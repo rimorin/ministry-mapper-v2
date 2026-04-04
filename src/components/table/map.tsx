@@ -1,4 +1,4 @@
-import React, { lazy, useEffect, useState } from "react";
+import React, { lazy, useEffect, useEffectEvent, useState } from "react";
 import {
   TERRITORY_TYPES,
   NOT_HOME_STATUS_CODES,
@@ -19,9 +19,7 @@ import useNotification from "../../hooks/useNotification";
 import useConfirm from "../../hooks/useConfirm";
 import MapPlaceholder from "../statics/placeholder";
 
-import useVisibilityChange from "../../hooks/useVisibilityManagement";
-import { RecordModel } from "pocketbase";
-import { getList, callFunction } from "../../utils/pocketbase";
+import { getList, callFunction, pb } from "../../utils/pocketbase";
 import { useTranslation } from "react-i18next";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
@@ -131,9 +129,36 @@ const useAddresses = (
     });
   };
 
+  const onReconnect = useEffectEvent(() => {
+    fetchAddressData();
+  });
+
   useEffect(() => {
     fetchAddressData();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- React Compiler memoizes fetchAddressData
+  }, [mapId]);
+
+  // Refresh data whenever the SSE connection (re)establishes — covers network drops.
+  // SSE stays alive in background tabs so events are processed continuously;
+  // PB_CONNECT fires only on genuine reconnects (network drop, cold start).
+  useEffect(() => {
+    if (!mapId) return;
+
+    let isCleaned = false;
+    let unsubscribe: (() => void) | undefined;
+
+    pb.realtime.subscribe("PB_CONNECT", onReconnect).then((unsub) => {
+      if (isCleaned) {
+        unsub();
+        return;
+      }
+      unsubscribe = unsub;
+    });
+
+    return () => {
+      isCleaned = true;
+      if (unsubscribe) unsubscribe();
+    };
   }, [mapId]);
 
   useRealtimeSubscription(
@@ -148,7 +173,8 @@ const useAddresses = (
         }
       })
     },
-    [mapId, assignmentId]
+    [mapId, assignmentId],
+    !!mapId
   );
 
   useRealtimeSubscription(
@@ -164,9 +190,9 @@ const useAddresses = (
         }
       })
     },
-    [mapId, assignmentId]
+    [mapId, assignmentId],
+    !!mapId
   );
-  useVisibilityChange(fetchAddressData);
 
   return addresses;
 };

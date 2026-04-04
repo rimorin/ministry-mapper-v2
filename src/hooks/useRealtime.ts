@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useEffectEvent } from "react";
 import {
   RecordModel,
   RecordSubscribeOptions,
@@ -22,32 +22,30 @@ export default function useRealtimeSubscription(
   dependencies: React.DependencyList = [],
   enabled = true
 ) {
-  const callbackRef = useRef(callback);
-
-  useEffect(() => {
-    callbackRef.current = callback;
-  }, [callback]);
+  const onData = useEffectEvent((data: RecordSubscription<RecordModel>) => {
+    callback(data);
+  });
 
   useEffect(() => {
     if (!enabled) return;
 
+    let isCleaned = false;
     let unsubscribe: (() => void) | undefined;
 
-    const subscribe = async () => {
-      try {
-        unsubscribe = await setupRealtimeListener(
-          collectionName,
-          (data) => callbackRef.current(data),
-          options
-        );
-      } catch (error) {
+    setupRealtimeListener(collectionName, onData, options)
+      .then((unsub) => {
+        if (isCleaned) {
+          unsub();
+          return;
+        }
+        unsubscribe = unsub;
+      })
+      .catch((error) => {
         console.error("Failed to setup realtime listener:", error);
-      }
-    };
-
-    subscribe();
+      });
 
     return () => {
+      isCleaned = true;
       if (unsubscribe) {
         unsubscribe();
       }
