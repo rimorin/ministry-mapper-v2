@@ -1,3 +1,14 @@
+## [1.32.4](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.3...v1.32.4) (2026-04-04)
+
+
+### Bug Fixes
+
+* enhance version check to handle non-JSON responses and improve error handling ([9ed931a](https://github.com/rimorin/ministry-mapper-v2/commit/9ed931afa7249cb772acb34e11800201490ab01d))
+* implement withRetry function for async operations with exponential backoff and jitter ([ba2c2f7](https://github.com/rimorin/ministry-mapper-v2/commit/ba2c2f7230379a4855649b72852ac59d911d033e))
+* improve test setup by stubbing global fetch and ensuring cleanup ([c4a7283](https://github.com/rimorin/ministry-mapper-v2/commit/c4a728342fd337500dee51ba2f09804aafa10047))
+* issue on disconnecting SSE logic ([e968b80](https://github.com/rimorin/ministry-mapper-v2/commit/e968b80e3503f8f9632ac8467bd5a7c5c903624f))
+* refactor UpdateUnitStatus to use createBatch for atomic operations ([447eea8](https://github.com/rimorin/ministry-mapper-v2/commit/447eea8edb586666caf5a28ffb1898ea2ab364ae))
+
 ## [1.32.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.2...v1.32.3) (2026-04-03)
 
 
