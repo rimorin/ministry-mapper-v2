@@ -1,18 +1,20 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
 import { useNetworkStatus } from "./useNetworkStatus";
 
-// Mock fetch
-global.fetch = vi.fn();
-
 describe("useNetworkStatus", () => {
   beforeEach(() => {
+    vi.stubGlobal("fetch", vi.fn());
     vi.clearAllMocks();
     Object.defineProperty(navigator, "onLine", {
       writable: true,
       configurable: true,
       value: true
     });
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
   });
 
   describe("initialization", () => {
