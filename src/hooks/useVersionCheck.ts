@@ -17,6 +17,9 @@ export function useVersionCheck(interval = 60000) {
         const response = await fetch(`/version.json?t=${Date.now()}`);
         if (!response.ok) return;
 
+        const contentType = response.headers.get("content-type");
+        if (!contentType?.includes("application/json")) return;
+
         const data: VersionInfo = await response.json();
         if (data.version !== currentVersion) {
           setNeedRefresh(true);
