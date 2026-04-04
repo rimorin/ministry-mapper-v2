@@ -16,6 +16,60 @@ const { VITE_POCKETBASE_URL } = import.meta.env;
  */
 const pb = new PocketBase(VITE_POCKETBASE_URL);
 
+// Statuses that indicate a transient failure safe to retry.
+// Defined at module level to avoid re-allocating the Set on every withRetry call.
+const RETRYABLE_STATUSES = new Set([0, 408, 429]);
+
+/**
+ * Retries an async operation with exponential backoff + full jitter on transient errors.
+ *
+ * Retryable:  network failures (status 0, !isAbort), timeouts (408),
+ *             rate limits (429), and server errors (5xx).
+ * Not retried: client errors (400/401/403/404/422…), intentional aborts (isAbort).
+ *
+ * Full jitter (Math.random() * backoff) is used to decorrelate concurrent retries
+ * and avoid thundering-herd spikes — see AWS "Exponential Backoff and Jitter" guidance.
+ *
+ * @param fn        - The async operation to retry
+ * @param retries   - Maximum number of attempts; must be >= 1 (default: 3)
+ * @param baseDelay - Base delay in ms; doubles each attempt before jitter (default: 300)
+ * @param maxDelay  - Upper bound on delay in ms to prevent unbounded waits (default: 10000)
+ * @returns The result of the successful operation
+ * @throws The last error once retries are exhausted, or any non-retryable error immediately
+ */
+const withRetry = async <T>(
+  fn: () => Promise<T>,
+  retries = 3,
+  baseDelay = 300,
+  maxDelay = 10_000
+): Promise<T> => {
+  const maxAttempts = Math.max(1, retries);
+  let lastError: unknown;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    try {
+      return await fn();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (error: any) {
+      lastError = error;
+      const isTransient =
+        (RETRYABLE_STATUSES.has(error?.status) && !error?.isAbort) ||
+        (error?.status >= 500 && error?.status < 600);
+      if (!isTransient) throw error;
+      if (import.meta.env.DEV) {
+        console.warn(
+          `[withRetry] transient error (status ${error?.status}), attempt ${attempt + 1}/${maxAttempts}`
+        );
+      }
+      // Skip the delay after the last attempt — there is nothing left to wait for.
+      if (attempt < maxAttempts - 1) {
+        const backoff = Math.min(baseDelay * 2 ** attempt, maxDelay);
+        await new Promise((res) => setTimeout(res, Math.random() * backoff));
+      }
+    }
+  }
+  throw lastError;
+};
+
 /**
  * Authenticates a user with email and password
  * @param email User's email address
@@ -273,7 +327,9 @@ const getDataById = async (
   options?: RecordOptions
 ) => {
   try {
-    return await pb.collection(collectionName).getOne(id, options);
+    return await withRetry(() =>
+      pb.collection(collectionName).getOne(id, options)
+    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.status === 404) {
@@ -307,7 +363,9 @@ const getFirstItemOfList = async (
   options?: RecordListOptions
 ) => {
   try {
-    return await pb.collection(collectionName).getFirstListItem(query, options);
+    return await withRetry(() =>
+      pb.collection(collectionName).getFirstListItem(query, options)
+    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.status === 404) {
@@ -326,7 +384,7 @@ const getFirstItemOfList = async (
  * @throws Will throw any errors that occur
  */
 const getList = async (collectionName: string, options?: RecordOptions) => {
-  return pb.collection(collectionName).getFullList(options);
+  return withRetry(() => pb.collection(collectionName).getFullList(options));
 };
 
 /**
@@ -345,7 +403,9 @@ const getPaginatedList = async (
   perPage: number,
   options?: RecordOptions
 ) => {
-  return pb.collection(collectionName).getList(page, perPage, options);
+  return withRetry(() =>
+    pb.collection(collectionName).getList(page, perPage, options)
+  );
 };
 
 /**
@@ -391,7 +451,9 @@ const updateDataById = async (
   options?: RecordOptions
 ) => {
   try {
-    return await pb.collection(collectionName).update(id, body, options);
+    return await withRetry(() =>
+      pb.collection(collectionName).update(id, body, options)
+    );
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     if (error.isAbort) {
@@ -403,6 +465,7 @@ const updateDataById = async (
 
 export {
   pb,
+  withRetry,
   getUser,
   requestPasswordReset,
   cleanupSession,
