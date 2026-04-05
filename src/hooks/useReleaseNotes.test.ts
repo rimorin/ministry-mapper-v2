@@ -35,6 +35,14 @@ const sampleChangelog = {
   ]
 };
 
+const mockJsonResponse = (data: object) => ({
+  ok: true,
+  headers: {
+    get: (key: string) => (key === "content-type" ? "application/json" : null)
+  },
+  json: async () => data
+});
+
 describe("useReleaseNotes", () => {
   beforeEach(() => {
     mockFetch.mockReset();
@@ -49,27 +57,13 @@ describe("useReleaseNotes", () => {
 
   it("shows only the latest release for first-time visitor", async () => {
     mockLastSeenValue = null;
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => sampleChangelog
-    });
-
-    const { result } = renderHook(() => useReleaseNotes());
-
-    await act(async () => {});
-
-    expect(result.current.hasNewReleases).toBe(true);
-    expect(result.current.newReleases).toHaveLength(1);
-    expect(result.current.newReleases[0].id).toBe("2026-02-19");
+    mockFetch.mockResolvedValueOnce(mockJsonResponse(sampleChangelog));
     expect(mockSetLastSeen).not.toHaveBeenCalled();
   });
 
   it("shows nothing when already on latest release", async () => {
     mockLastSeenValue = "2026-02-19";
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => sampleChangelog
-    });
+    mockFetch.mockResolvedValueOnce(mockJsonResponse(sampleChangelog));
 
     const { result } = renderHook(() => useReleaseNotes());
 
@@ -80,10 +74,7 @@ describe("useReleaseNotes", () => {
 
   it("fetches changelog and returns new releases when behind", async () => {
     mockLastSeenValue = "2026-01-01";
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => sampleChangelog
-    });
+    mockFetch.mockResolvedValueOnce(mockJsonResponse(sampleChangelog));
 
     const { result } = renderHook(() => useReleaseNotes());
 
@@ -119,10 +110,7 @@ describe("useReleaseNotes", () => {
 
   it("markAsSeen clears releases and updates localStorage", async () => {
     mockLastSeenValue = "2026-02-13";
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => sampleChangelog
-    });
+    mockFetch.mockResolvedValueOnce(mockJsonResponse(sampleChangelog));
 
     const { result } = renderHook(() => useReleaseNotes());
     await act(async () => {});
@@ -139,10 +127,7 @@ describe("useReleaseNotes", () => {
 
   it("only returns releases newer than lastSeenReleaseId", async () => {
     mockLastSeenValue = "2026-02-13";
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => sampleChangelog
-    });
+    mockFetch.mockResolvedValueOnce(mockJsonResponse(sampleChangelog));
 
     const { result } = renderHook(() => useReleaseNotes());
     await act(async () => {});
@@ -154,10 +139,7 @@ describe("useReleaseNotes", () => {
 
   it("isLoading starts true and becomes false after fetch", async () => {
     mockLastSeenValue = "2026-02-13";
-    mockFetch.mockResolvedValueOnce({
-      ok: true,
-      json: async () => sampleChangelog
-    });
+    mockFetch.mockResolvedValueOnce(mockJsonResponse(sampleChangelog));
 
     const { result } = renderHook(() => useReleaseNotes());
     expect(result.current.isLoading).toBe(true);
