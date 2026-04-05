@@ -15,7 +15,7 @@ interface PwaMiddlewareProps {
 const PwaMiddleware: FC<PwaMiddlewareProps> = ({ children }) => {
   if (isPwaMode())
     return (
-      <Suspense fallback={<Loader suspended />}>
+      <Suspense fallback={<Loader />}>
         <PwaUnsupported />
       </Suspense>
     );

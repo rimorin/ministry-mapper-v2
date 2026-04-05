@@ -31,7 +31,7 @@ const LazyLoad = (
       }
     }}
   >
-    <Suspense fallback={<Loader suspended />}>
+    <Suspense fallback={<Loader />}>
       <Component />
     </Suspense>
   </ErrorBoundary>

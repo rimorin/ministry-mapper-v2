@@ -1,4 +1,12 @@
-import { FC, ReactNode, lazy, Suspense, useState, useEffect } from "react";
+import {
+  FC,
+  ReactNode,
+  lazy,
+  Suspense,
+  useState,
+  useEffect,
+  useTransition
+} from "react";
 import Loader from "../statics/loader";
 const BackendOffline = lazy(() => import("../statics/backendoffline"));
 
@@ -16,6 +24,7 @@ const BackendHealthMiddleware: FC<BackendHealthMiddlewareProps> = ({
 }) => {
   const [healthState, setHealthState] = useState<HealthState>("checking");
   const [retryCount, setRetryCount] = useState(0);
+  const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     const controller = new AbortController();
@@ -29,7 +38,9 @@ const BackendHealthMiddleware: FC<BackendHealthMiddlewareProps> = ({
           signal: controller.signal
         });
         clearTimeout(timeoutId);
-        setHealthState(response.ok ? "online" : "offline");
+        startTransition(() => {
+          setHealthState(response.ok ? "online" : "offline");
+        });
       } catch (error) {
         clearTimeout(timeoutId);
         if ((error as Error).name !== "AbortError") {
@@ -51,11 +62,11 @@ const BackendHealthMiddleware: FC<BackendHealthMiddlewareProps> = ({
     setRetryCount((c) => c + 1);
   };
 
-  if (healthState === "checking") return <Loader />;
+  if (healthState === "checking" || isPending) return <Loader />;
 
   if (healthState === "offline")
     return (
-      <Suspense fallback={<Loader suspended />}>
+      <Suspense fallback={<Loader />}>
         <BackendOffline onRetry={handleRetry} />
       </Suspense>
     );

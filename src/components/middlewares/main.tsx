@@ -14,7 +14,7 @@ const MainMiddleware: FC<MainMiddlewareProps> = ({ children }) => {
   const { VITE_POCKETBASE_URL } = import.meta.env;
   if (!VITE_POCKETBASE_URL) {
     return (
-      <Suspense fallback={<Loader suspended />}>
+      <Suspense fallback={<Loader />}>
         <MissingSetupPage message="Missing PocketBase URL" />
       </Suspense>
     );

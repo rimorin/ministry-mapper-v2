@@ -5,7 +5,7 @@ import Loader from "../statics/loader";
 const SuspenseComponent = (Component: React.LazyExoticComponent<any>) => {
   return (props: any) => {
     return (
-      <Suspense fallback={<Loader suspended />}>
+      <Suspense fallback={<Loader />}>
         <Component {...props} />
       </Suspense>
     );

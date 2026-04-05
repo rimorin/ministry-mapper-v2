@@ -55,7 +55,7 @@ const FrontPage = () => {
 
   if (loginUser) {
     return (
-      <Suspense fallback={<Loader suspended />}>
+      <Suspense fallback={<Loader />}>
         <Admin user={loginUser} />
       </Suspense>
     );
@@ -117,7 +117,7 @@ const FrontPage = () => {
         className="d-flex align-items-center justify-content-center flex-grow-1"
         style={{ overflow: "auto" }}
       >
-        <Suspense fallback={<Loader suspended />}>{componentToRender}</Suspense>
+        {componentToRender}
       </Container>
     </div>
   );

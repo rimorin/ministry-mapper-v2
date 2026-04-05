@@ -14,7 +14,7 @@ const MaintenanceMiddleware: FC<MaintenanceMiddlewareProps> = ({
 
   if (activateMaintenanceMode)
     return (
-      <Suspense fallback={<Loader suspended />}>
+      <Suspense fallback={<Loader />}>
         <MaintenanceMode />
       </Suspense>
     );
