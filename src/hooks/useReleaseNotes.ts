@@ -35,6 +35,8 @@ export function useReleaseNotes(): UseReleaseNotesReturn {
       try {
         const response = await fetch(`/changelog.json?t=${Date.now()}`);
         if (!response.ok) return;
+        const contentType = response.headers.get("content-type");
+        if (!contentType?.includes("application/json")) return;
         const data: { releases: ReleaseEntry[] } = await response.json();
         if (!data.releases.length) return;
 
