@@ -27,7 +27,7 @@ import ModalUnitTitle from "../form/title";
 import HHTypeField from "../form/household";
 import ComponentAuthorizer from "../navigation/authorizer";
 import DateFormat from "../../utils/helpers/dateformat";
-import { callFunction, createBatch, withRetry } from "../../utils/pocketbase";
+import { callFunction, createBatch } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import GenericButton from "../navigation/button";
 import { MultiValue } from "react-select";
@@ -136,7 +136,7 @@ const UpdateUnitStatus = NiceModal.create(
 
         batch.collection("addresses").update(addressId, updateData);
 
-        await withRetry(() => batch.send());
+        await batch.send();
         modal.hide();
       } catch (error) {
         notifyError(error);
