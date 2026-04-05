@@ -2,7 +2,7 @@ import { LINK_TYPES } from "../constants";
 import i18n from "../../i18n";
 
 const LinkTypeDescription = (linkType: string) => {
-  let linkTranslationKey = "";
+  let linkTranslationKey: string;
 
   switch (linkType) {
     case LINK_TYPES.PERSONAL:

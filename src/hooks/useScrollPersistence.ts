@@ -44,7 +44,7 @@ export function useScrollPersistence(id: string) {
       cancelAnimationFrame(rafId);
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line @eslint-react/exhaustive-deps
   }, []);
 
   const onScroll = (event: React.UIEvent<HTMLDivElement>) => {
