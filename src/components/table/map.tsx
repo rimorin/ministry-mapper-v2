@@ -135,7 +135,7 @@ const useAddresses = (
 
   useEffect(() => {
     fetchAddressData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- React Compiler memoizes fetchAddressData
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes fetchAddressData
   }, [mapId]);
 
   // Refresh data whenever the SSE connection (re)establishes — covers network drops.

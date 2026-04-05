@@ -17,7 +17,7 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [username, setUsername] = useState(user?.name || "");
 
-  const UpdateProfile = async (event: FormEvent<HTMLElement>) => {
+  const handleUpdateProfile = async (event: FormEvent<HTMLElement>) => {
     event.preventDefault();
     setIsSaving(true);
     try {
@@ -45,7 +45,7 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
       <Modal.Header>
         <Modal.Title>{t("profile.title")}</Modal.Title>
       </Modal.Header>
-      <Form onSubmit={UpdateProfile}>
+      <Form onSubmit={handleUpdateProfile}>
         <Modal.Body>
           <Form.Group className="mb-3">
             <Form.Label htmlFor="userid">{t("auth.emailAddress")}</Form.Label>

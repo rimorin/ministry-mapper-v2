@@ -451,13 +451,13 @@ function Admin({ user }: adminProps) {
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally run on mount only
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- intentionally run on mount only
   }, []);
 
   useEffect(() => {
     if (!congregationCode) return;
     loadAllCongregationData(congregationCode);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- React Compiler memoizes loadAllCongregationData
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes loadAllCongregationData
   }, [congregationCode]);
 
   const checkMapsOnRealtimeUpdate = () => {
@@ -504,7 +504,7 @@ function Admin({ user }: adminProps) {
     return () => {
       setSortedAddressList([]);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- React Compiler memoizes dependencies; territories read via closure
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes dependencies; territories read via closure
   }, [selectedTerritory.id]);
 
   useRealtimeSubscription(

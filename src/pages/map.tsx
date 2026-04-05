@@ -132,7 +132,7 @@ const Map = () => {
       setMapId(resolvedMapId);
     };
     init(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- React Compiler memoizes getMapData and readPinnedMessages
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes getMapData and readPinnedMessages
   }, [id]);
 
   useRealtimeSubscription(

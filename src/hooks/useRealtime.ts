@@ -50,6 +50,6 @@ export default function useRealtimeSubscription(
         unsubscribe();
       }
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- spread deps are caller-controlled; options captured via closure
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- spread deps are caller-controlled; options captured via closure
   }, [enabled, collectionName, ...dependencies]);
 }
