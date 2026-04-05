@@ -1,3 +1,11 @@
+## [1.32.5](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.4...v1.32.5) (2026-04-05)
+
+
+### Bug Fixes
+
+* eliminate loader flashing and animation reset on initial load ([8047743](https://github.com/rimorin/ministry-mapper-v2/commit/8047743279fdd0e6d232f65dc7c03a62b3a0158c))
+* race condition of batch for slow connection or dropouts ([b9161d3](https://github.com/rimorin/ministry-mapper-v2/commit/b9161d3ab018c2d89907309301607008bb005b03))
+
 ## [1.32.4](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.3...v1.32.4) (2026-04-04)
 
 
