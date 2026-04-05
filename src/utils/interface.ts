@@ -558,10 +558,6 @@ export interface MapRowProps {
 
 // Component-specific interfaces
 
-export interface LoaderProps {
-  suspended?: boolean;
-}
-
 export interface GenericDropdownButtonProps {
   label: React.ReactNode;
   className?: string;

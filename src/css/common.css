@@ -123,22 +123,12 @@
   color: var(--mm-secondary);
 }
 
-.suspense-loader,
 .note-overlay {
-  position: fixed;
+  position: absolute;
   inset: 0;
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-.suspense-loader {
-  z-index: 1050;
-  background-color: var(--mm-overlay-white-50);
-}
-
-.note-overlay {
-  position: absolute;
   background: var(--mm-overlay-white-70);
   z-index: 1;
 }
