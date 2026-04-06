@@ -1,4 +1,4 @@
-import { use, useEffect, useState, lazy, Suspense } from "react";
+import { use, useEffect, useState, lazy } from "react";
 import { Container, Navbar, Image } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { getAssetUrl } from "../utils/helpers/assetpath";
@@ -8,12 +8,12 @@ import { authListener, getUser } from "../utils/pocketbase";
 
 import VerificationPage from "../components/navigation/verification";
 import { AuthModel } from "pocketbase";
-import Loader from "../components/statics/loader";
 import LanguageSelector from "../i18n/LanguageSelector";
 import { LanguageContext } from "../i18n/LanguageContext";
 import useUIState from "../hooks/useUIManagement";
 import GenericButton from "../components/navigation/button";
 import ThemeToggle from "../components/navigation/themetoggle";
+import SuspenseComponent from "../components/utils/suspense";
 const { VITE_ABOUT_URL } = import.meta.env;
 
 const AboutURL = (VITE_ABOUT_URL ||
@@ -22,7 +22,7 @@ const AboutURL = (VITE_ABOUT_URL ||
 const SignupComponent = lazy(() => import("./signup"));
 const LoginComponent = lazy(() => import("./signin"));
 const ForgotComponent = lazy(() => import("./forgot"));
-const Admin = lazy(() => import("./admin/index"));
+const Admin = SuspenseComponent(lazy(() => import("./admin/index")));
 
 const FrontPage = () => {
   const { t } = useTranslation();
@@ -54,11 +54,7 @@ const FrontPage = () => {
   }
 
   if (loginUser) {
-    return (
-      <Suspense fallback={<Loader />}>
-        <Admin user={loginUser} />
-      </Suspense>
-    );
+    return <Admin user={loginUser} />;
   }
 
   let componentToRender;
