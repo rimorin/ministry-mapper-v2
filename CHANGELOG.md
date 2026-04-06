@@ -1,3 +1,20 @@
+## [1.32.6](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.5...v1.32.6) (2026-04-06)
+
+
+### Bug Fixes
+
+* add preconnect and dns-prefetch links for improved performance ([631b0c4](https://github.com/rimorin/ministry-mapper-v2/commit/631b0c4ad45b25b04c2a982f52a49af92f37dd3b))
+* add skipTotal option to getList in getPaginatedList function ([d9e8670](https://github.com/rimorin/ministry-mapper-v2/commit/d9e867012835a6839d126dd8a6ed6f20a2242ec0))
+* conditionally include TurboConsole plugin based on production environment ([e341ad2](https://github.com/rimorin/ministry-mapper-v2/commit/e341ad25edeb82cf8efbf5c5aede07085973b339))
+* handle non-JSON response in useReleaseNotes hook ([f35c995](https://github.com/rimorin/ministry-mapper-v2/commit/f35c99521b0388b13cd287e13cee889e46b21e8e))
+* optimize fetchCongregationData to retrieve options and territories in parallel ([f0e7dac](https://github.com/rimorin/ministry-mapper-v2/commit/f0e7dacb9ececf1c31e4300b6a9e51154c517ddb))
+
+
+### Performance Improvements
+
+* defer vendor-mapping and vendor-ui chunks via lazy loading ([ead3067](https://github.com/rimorin/ministry-mapper-v2/commit/ead3067e2348a7ebcd2260b01f8cd9cd7de617f7))
+* stabilise context values to prevent spurious re-renders ([d85ce1a](https://github.com/rimorin/ministry-mapper-v2/commit/d85ce1a65bed16d78801f0d3781e373ae3679581))
+
 ## [1.32.5](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.4...v1.32.5) (2026-04-05)
 
 
