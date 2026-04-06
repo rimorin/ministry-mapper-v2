@@ -404,7 +404,10 @@ const getPaginatedList = async (
   options?: RecordOptions
 ) => {
   return withRetry(() =>
-    pb.collection(collectionName).getList(page, perPage, options)
+    pb.collection(collectionName).getList(page, perPage, {
+      skipTotal: true,
+      ...options
+    })
   );
 };
 
