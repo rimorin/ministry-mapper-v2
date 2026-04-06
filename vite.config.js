@@ -69,7 +69,7 @@ export default defineConfig(() => {
         plugins: ["babel-plugin-react-compiler"]
       }),
       visualizer(),
-      TurboConsole(),
+      ...(!isProduction ? [TurboConsole()] : []),
       ...(isProduction
         ? [
             sentryVitePlugin({
