@@ -1,11 +1,6 @@
 import { lazy } from "react";
 import TerritoryHeader from "../../../components/navigation/territoryheader";
-import MapListing from "../../../components/navigation/maplist";
 import SuspenseComponent from "../../../components/utils/suspense";
-
-const MapView = SuspenseComponent(
-  lazy(() => import("../../../components/navigation/mapview"))
-);
 import Welcome from "../../../components/statics/welcome";
 import GettingStarted from "../../../components/statics/gettingstarted";
 import {
@@ -15,6 +10,13 @@ import {
 } from "../../../utils/interface";
 import { Policy } from "../../../utils/policies";
 import { USER_ACCESS_LEVELS } from "../../../utils/constants";
+
+const MapView = SuspenseComponent(
+  lazy(() => import("../../../components/navigation/mapview"))
+);
+const MapListing = SuspenseComponent(
+  lazy(() => import("../../../components/navigation/maplist"))
+);
 
 /**
  * TerritoryContent Component

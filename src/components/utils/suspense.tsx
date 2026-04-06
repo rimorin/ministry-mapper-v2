@@ -1,11 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Suspense } from "react";
+import { ReactNode, Suspense } from "react";
 import Loader from "../statics/loader";
 
-const SuspenseComponent = (Component: React.LazyExoticComponent<any>) => {
+const SuspenseComponent = (
+  Component: React.LazyExoticComponent<any>,
+  fallback: ReactNode = <Loader />
+) => {
   return (props: any) => {
     return (
-      <Suspense fallback={<Loader />}>
+      <Suspense fallback={fallback}>
         <Component {...props} />
       </Suspense>
     );
