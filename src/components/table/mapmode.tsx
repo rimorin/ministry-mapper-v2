@@ -3,7 +3,7 @@ import { DEFAULT_AGGREGATES, DEFAULT_COORDINATES } from "../../utils/constants";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
 import { divIcon } from "leaflet";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { currentLocationIcon } from "../../utils/helpers/mapicons";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import { MapController } from "../map/mapcontroller";
@@ -23,48 +23,52 @@ const TerritoryMapView = ({
     mapCoordinates || DEFAULT_COORDINATES.Singapore
   );
 
-  const houseMarkers = () =>
-    houses?.units.map((element, index) => {
-      if (!element.coordinates?.lat || !element.coordinates?.lng) return null;
+  const houseMarkers = useMemo(
+    () =>
+      houses?.units.map((element, index) => {
+        if (!element.coordinates?.lat || !element.coordinates?.lng) return null;
 
-      const houseType = element.type?.map((type) => type.code).join(", ") || "";
-      const className =
-        policy?.getUnitColor(
-          element,
-          aggregates.value || DEFAULT_AGGREGATES.value
-        ) || "";
+        const houseType =
+          element.type?.map((type) => type.code).join(", ") || "";
+        const className =
+          policy?.getUnitColor(
+            element,
+            aggregates.value || DEFAULT_AGGREGATES.value
+          ) || "";
 
-      // Use data attributes to pass status info to CSS
-      // CSS renders status icons (✅, ✖️, 🚫, nhcount) via ::after pseudo-elements
-      // This avoids string concatenation and conditional logic in JS
-      const houseIcon = divIcon({
-        html: `<div data-id="${element.id}" data-floor="${element.floor}" data-status="${element.status}" data-nhcount="${element.nhcount}" class="map-marker ${className}">
+        // Use data attributes to pass status info to CSS
+        // CSS renders status icons (✅, ✖️, 🚫, nhcount) via ::after pseudo-elements
+        // This avoids string concatenation and conditional logic in JS
+        const houseIcon = divIcon({
+          html: `<div data-id="${element.id}" data-floor="${element.floor}" data-status="${element.status}" data-nhcount="${element.nhcount}" class="map-marker ${className}">
           <div class="map-marker-label">${houseType}</div>
         </div>`,
-        className: "",
-        iconSize: [40, 40],
-        iconAnchor: [20, 20]
-      });
+          className: "",
+          iconSize: [40, 40],
+          iconAnchor: [20, 20]
+        });
 
-      return (
-        <Marker
-          key={`housemark-${element.id}-${index}`}
-          position={[element.coordinates.lat, element.coordinates.lng]}
-          icon={houseIcon}
-          eventHandlers={{
-            click: (e) => {
-              const markerElement = e.sourceTarget.getElement();
-              const targetElement =
-                markerElement?.querySelector("[data-id]") || markerElement;
-              handleHouseUpdate({
-                ...e,
-                currentTarget: targetElement
-              } as unknown as React.MouseEvent<HTMLElement>);
-            }
-          }}
-        />
-      );
-    });
+        return (
+          <Marker
+            key={`housemark-${element.id}-${index}`}
+            position={[element.coordinates.lat, element.coordinates.lng]}
+            icon={houseIcon}
+            eventHandlers={{
+              click: (e) => {
+                const markerElement = e.sourceTarget.getElement();
+                const targetElement =
+                  markerElement?.querySelector("[data-id]") || markerElement;
+                handleHouseUpdate({
+                  ...e,
+                  currentTarget: targetElement
+                } as unknown as React.MouseEvent<HTMLElement>);
+              }
+            }}
+          />
+        );
+      }),
+    [houses?.units, aggregates, policy, handleHouseUpdate]
+  );
 
   return (
     <div className={policy.isFromAdmin() ? "map-body-admin" : "gmap-body"}>
@@ -97,7 +101,7 @@ const TerritoryMapView = ({
             />
           </>
         )}
-        {houseMarkers()}
+        {houseMarkers}
       </MapContainer>
     </div>
   );
