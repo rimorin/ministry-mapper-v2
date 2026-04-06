@@ -112,22 +112,29 @@ export default function useAdminData({
   };
 
   const fetchCongregationData = async (id: string) => {
-    const congDetails = await getDataById("congregations", id, {
-      requestKey: `congregation-${id}`,
-      fields: PB_FIELDS.CONGREGATION
-    });
+    const [congDetails, congOptions, territoryRecords] = await Promise.all([
+      getDataById("congregations", id, {
+        requestKey: `congregation-${id}`,
+        fields: PB_FIELDS.CONGREGATION
+      }),
+      getList("options", {
+        filter: `congregation="${id}"`,
+        requestKey: `congregation-options-${id}`,
+        fields: PB_FIELDS.CONGREGATION_OPTIONS,
+        sort: "sequence"
+      }),
+      getList("territories", {
+        filter: `congregation="${id}"`,
+        requestKey: `territories-${id}`,
+        sort: "code",
+        fields: PB_FIELDS.TERRITORIES
+      })
+    ]);
 
     if (!congDetails) {
       notifyWarning(t("congregation.notFound", "Congregation not found."));
       return;
     }
-
-    const congOptions = await getList("options", {
-      filter: `congregation="${id}"`,
-      requestKey: `congregation-options-${id}`,
-      fields: PB_FIELDS.CONGREGATION_OPTIONS,
-      sort: "sequence"
-    });
 
     setCongregationName(congDetails.name);
     document.title = congDetails.name;
@@ -155,13 +162,7 @@ export default function useAdminData({
       )
     );
 
-    const territoryDetails = await getList("territories", {
-      filter: `congregation="${id}"`,
-      requestKey: `territories-${id}`,
-      sort: "code",
-      fields: PB_FIELDS.TERRITORIES
-    });
-    const territoryMap = processCongregationTerritories(territoryDetails);
+    const territoryMap = processCongregationTerritories(territoryRecords);
     setTerritories(territoryMap);
 
     if (territoryCodeCache && territoryMap.has(territoryCodeCache)) {
