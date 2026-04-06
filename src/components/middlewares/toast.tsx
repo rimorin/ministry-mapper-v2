@@ -1,4 +1,4 @@
-import { createContext, use, useState, ReactNode } from "react";
+import { createContext, use, useState, useMemo, ReactNode } from "react";
 import { ToastContainer as BSToastContainer, Toast } from "react-bootstrap";
 
 export type ToastVariant =
@@ -61,54 +61,51 @@ export const ToastProvider = ({ children }: { children: ReactNode }) => {
     }, ANIMATION_DURATION);
   };
 
-  const showToast = (
-    message: string | ReactNode,
-    variant: ToastVariant = "info",
-    title?: string,
-    options?: Partial<ToastMessage>
-  ) => {
-    const id = `toast-${Date.now()}-${Math.random()}`;
-    const newToast: ToastMessage = {
-      id,
-      message,
-      variant,
-      title,
-      autohide: true,
-      delay: DEFAULT_DELAY,
-      show: false,
-      ...options
-    };
+  const contextValue = useMemo(
+    () => {
+      const showToast = (
+        message: string | ReactNode,
+        variant: ToastVariant = "info",
+        title?: string,
+        options?: Partial<ToastMessage>
+      ) => {
+        const id = `toast-${Date.now()}-${Math.random()}`;
+        const newToast: ToastMessage = {
+          id,
+          message,
+          variant,
+          title,
+          autohide: true,
+          delay: DEFAULT_DELAY,
+          show: false,
+          ...options
+        };
 
-    setToasts((prev) => [...prev, newToast]);
+        setToasts((prev) => [...prev, newToast]);
 
-    setTimeout(() => {
-      setToasts((prev) =>
-        prev.map((toast) =>
-          toast.id === id ? { ...toast, show: true } : toast
-        )
-      );
-    }, SHOW_DELAY);
-  };
+        setTimeout(() => {
+          setToasts((prev) =>
+            prev.map((toast) =>
+              toast.id === id ? { ...toast, show: true } : toast
+            )
+          );
+        }, SHOW_DELAY);
+      };
 
-  const success = (message: string, title = "Success") =>
-    showToast(message, "success", title);
-
-  const error = (message: string, title = "Error") =>
-    showToast(message, "danger", title, { autohide: false });
-
-  const warning = (message: string, title = "Warning") =>
-    showToast(message, "warning", title);
-
-  const info = (message: string, title?: string) =>
-    showToast(message, "info", title);
-
-  const contextValue = {
-    showToast,
-    success,
-    error,
-    warning,
-    info
-  };
+      return {
+        showToast,
+        success: (message: string, title = "Success") =>
+          showToast(message, "success", title),
+        error: (message: string, title = "Error") =>
+          showToast(message, "danger", title, { autohide: false }),
+        warning: (message: string, title = "Warning") =>
+          showToast(message, "warning", title),
+        info: (message: string, title?: string) =>
+          showToast(message, "info", title)
+      };
+    },
+    [] // setToasts from useState is stable for the lifetime of the provider
+  );
 
   return (
     <ToastContext.Provider value={contextValue}>
