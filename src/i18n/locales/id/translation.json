@@ -191,7 +191,11 @@
     "resetWarning": "Semua status properti di \"{{name}}\" akan direset ke keadaan default.\nAnda tidak dapat membatalkan ini.",
     "deleteWarning": "Peta \"{{name}}\" akan dihapus secara permanen.\nAnda tidak dapat membatalkan ini.",
     "locationWithName": "Lokasi {{name}}",
-    "deleteFloorWarning": "Lantai {{floor}} dan semua unitnya akan dihapus secara permanen dari \"{{name}}\".\nAnda tidak dapat membatalkan ini."
+    "deleteFloorWarning": "Lantai {{floor}} dan semua unitnya akan dihapus secara permanen dari \"{{name}}\".\nAnda tidak dapat membatalkan ini.",
+    "propertyNumber": "Property Number",
+    "propertyNumberPlaceholder": "e.g. 1, 2A, B3",
+    "createAddress": "Tambahkan properti ke {{name}}",
+    "duplicateCode": "Alamat {{code}} sudah ada di peta wilayah ini."
   },
   "household": {
     "household": "Rumah Tangga",

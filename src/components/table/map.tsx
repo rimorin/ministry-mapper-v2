@@ -23,7 +23,9 @@ import { getList, callFunction, pb } from "../../utils/pocketbase";
 import { useTranslation } from "react-i18next";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
+import { RecordModel } from "pocketbase";
 const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
+const CreateAddress = lazy(() => import("../modal/createaddress"));
 
 const useAddresses = (
   mapId: string,
@@ -339,6 +341,17 @@ const MainTable = ({
     handleUpdateUnitStatus(getUnitDetails(event, addresses));
   };
 
+  const handleAddMoreClick = () => {
+    showModal(CreateAddress, {
+      addressData: addressDetails,
+      policy,
+      sequence: addresses.size,
+      existingCodes: new Set(
+        Array.from(addresses.values()).map((u) => u.number)
+      )
+    });
+  };
+
   const handleFloorDeleteEvent = (event: React.MouseEvent<HTMLElement>) => {
     const { floor } = event.currentTarget.dataset;
     handleFloorDelete(Number(floor));
@@ -377,6 +390,7 @@ const MainTable = ({
         addressDetails={addressDetails}
         houses={floorList[0] || []}
         handleHouseUpdate={handleHouseUpdate}
+        handleAddMoreClick={handleAddMoreClick}
         policy={policy}
       />
     );

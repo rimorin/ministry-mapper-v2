@@ -217,7 +217,11 @@
     "resetWarning": "\"{{name}}\"의 모든 속성 상태가 기본 상태로 재설정됩니다.\n이 작업은 취소할 수 없습니다.",
     "deleteWarning": "지도 \"{{name}}\"이(가) 영구적으로 삭제됩니다.\n이 작업은 취소할 수 없습니다.",
     "locationWithName": "{{name}} 위치",
-    "deleteFloorWarning": "층 {{floor}}과(와) 모든 유닛이 \"{{name}}\"에서 영구적으로 삭제됩니다.\n이 작업은 취소할 수 없습니다."
+    "deleteFloorWarning": "층 {{floor}}과(와) 모든 유닛이 \"{{name}}\"에서 영구적으로 삭제됩니다.\n이 작업은 취소할 수 없습니다.",
+    "propertyNumber": "Property Number",
+    "propertyNumberPlaceholder": "e.g. 1, 2A, B3",
+    "createAddress": "{{name}}에 부동산 추가",
+    "duplicateCode": "주소 {{code}}이(가) 이미 이 구역 지도에 존재합니다."
   },
   "household": {
     "household": "가구",

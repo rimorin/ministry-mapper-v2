@@ -5,6 +5,7 @@ import { useTranslation } from "react-i18next";
 import { ThemeContext } from "../utils/context";
 import { getReactSelectStyles } from "../../utils/helpers/reactSelectStyles";
 import useNotification from "../../hooks/useNotification";
+import { PROPERTY_CODE_PATTERN } from "../../utils/helpers/processpropertyno";
 
 interface TagOption {
   value: string;
@@ -29,7 +30,7 @@ const TagField = ({
   placeholder,
   noOptionsMessage,
   formatCreateLabel,
-  allowedPattern = /[^a-zA-Z0-9-]/g,
+  allowedPattern = PROPERTY_CODE_PATTERN,
   helpText
 }: TagFieldProps) => {
   const { actualTheme } = use(ThemeContext);

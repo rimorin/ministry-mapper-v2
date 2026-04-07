@@ -217,7 +217,11 @@
     "resetWarning": "Semua status hartanah dalam \"{{name}}\" akan ditetapkan semula ke keadaan asal.\nAnda tidak boleh membatalkan ini.",
     "deleteWarning": "Peta \"{{name}}\" akan dipadam secara kekal.\nAnda tidak boleh membatalkan ini.",
     "locationWithName": "Lokasi {{name}}",
-    "deleteFloorWarning": "Tingkat {{floor}} dan semua unitnya akan dipadam secara kekal dari \"{{name}}\".\nAnda tidak boleh membatalkan ini."
+    "deleteFloorWarning": "Tingkat {{floor}} dan semua unitnya akan dipadam secara kekal dari \"{{name}}\".\nAnda tidak boleh membatalkan ini.",
+    "propertyNumber": "Property Number",
+    "propertyNumberPlaceholder": "e.g. 1, 2A, B3",
+    "createAddress": "Tambah harta ke {{name}}",
+    "duplicateCode": "Alamat {{code}} sudah wujud dalam peta wilayah ini."
   },
   "household": {
     "household": "Isi Rumah",
