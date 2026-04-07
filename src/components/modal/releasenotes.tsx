@@ -2,6 +2,7 @@ import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
 import { Modal, Button, Badge, Card, ListGroup } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import type { ReleaseEntry } from "../../hooks/useReleaseNotes";
+import { resolveLocalized } from "../../utils/resolveLocalized";
 
 const MAX_RELEASES = 3;
 
@@ -49,7 +50,7 @@ function renderDescription(text: string) {
       flushBullets();
     } else if (line.startsWith("- ")) {
       bullets.push(line);
-    } else if (line.endsWith(":")) {
+    } else if (line.endsWith(":") || line.endsWith("：")) {
       flushBullets();
       nodes.push(
         <p
@@ -88,6 +89,9 @@ const ReleaseNotesModal = NiceModal.create(
     const modal = useModal();
     const { t, i18n } = useTranslation();
 
+    const resolve = (value: Parameters<typeof resolveLocalized>[0]) =>
+      resolveLocalized(value, i18n.language);
+
     const formatDate = (iso: string) => {
       const [year, month, day] = iso.split("-").map(Number);
       return new Date(year, month - 1, day).toLocaleDateString(i18n.language, {
@@ -120,82 +124,86 @@ const ReleaseNotesModal = NiceModal.create(
         </Modal.Header>
         <Modal.Body className="p-3">
           <div className="d-flex flex-column gap-3">
-            {visibleReleases.map((release, idx) => (
-              <Card key={release.id} className="border overflow-hidden">
-                <Card.Header className="d-flex align-items-center gap-2 py-2">
-                  <strong style={{ fontSize: "0.9rem" }}>
-                    {formatDate(release.id.substring(0, 10))}
-                  </strong>
-                  {idx === 0 && (
-                    <Badge bg="primary" className="fw-normal ms-auto">
-                      {t("releaseNotes.latest", "Latest")}
-                    </Badge>
+            {visibleReleases.map((release, idx) => {
+              const notice = resolve(release.notice);
+              return (
+                <Card key={release.id} className="border overflow-hidden">
+                  <Card.Header className="d-flex align-items-center gap-2 py-2">
+                    <strong style={{ fontSize: "0.9rem" }}>
+                      {formatDate(release.id.substring(0, 10))}
+                    </strong>
+                    {idx === 0 && (
+                      <Badge bg="primary" className="fw-normal ms-auto">
+                        {t("releaseNotes.latest", "Latest")}
+                      </Badge>
+                    )}
+                  </Card.Header>
+                  {notice && (
+                    <div
+                      className="px-3 py-2 border-bottom d-flex align-items-start gap-2"
+                      style={{
+                        borderLeft: "3px solid var(--bs-warning)",
+                        backgroundColor: "var(--bs-warning-bg-subtle)",
+                        color: "var(--bs-warning-text-emphasis)",
+                        fontSize: "0.85rem"
+                      }}
+                    >
+                      <span style={{ flexShrink: 0, marginTop: "0.1rem" }}>
+                        ⚠
+                      </span>
+                      <span>{notice}</span>
+                    </div>
                   )}
-                </Card.Header>
-                {release.notice && (
-                  <div
-                    className="px-3 py-2 border-bottom d-flex align-items-start gap-2"
-                    style={{
-                      borderLeft: "3px solid var(--bs-warning)",
-                      backgroundColor: "var(--bs-warning-bg-subtle)",
-                      color: "var(--bs-warning-text-emphasis)",
-                      fontSize: "0.85rem"
-                    }}
-                  >
-                    <span style={{ flexShrink: 0, marginTop: "0.1rem" }}>
-                      ⚠
-                    </span>
-                    <span>{release.notice}</span>
-                  </div>
-                )}
-                {release.screenshot && (
-                  <img
-                    src={
-                      release.screenshot.startsWith("http")
-                        ? release.screenshot
-                        : `/${release.screenshot}`
-                    }
-                    alt={`release screenshot ${release.id}`}
-                    className="w-100 d-block"
-                    style={{ maxHeight: "300px", objectFit: "contain" }}
-                  />
-                )}
-                <ListGroup variant="flush">
-                  {release.items.map((item, i) => {
-                    const config = ITEM_CONFIG[item.type];
-                    return (
-                      <ListGroup.Item
-                        key={`${item.type}-${i}`}
-                        className="d-flex align-items-start gap-2 py-2 px-3"
-                      >
-                        <span
-                          className={`badge flex-shrink-0 ${config.colorClass}`}
-                          style={{
-                            fontSize: "0.65rem",
-                            minWidth: "4rem",
-                            textAlign: "center",
-                            marginTop: "0.15rem"
-                          }}
+                  {release.screenshot && (
+                    <img
+                      src={
+                        release.screenshot.startsWith("http")
+                          ? release.screenshot
+                          : `/${release.screenshot}`
+                      }
+                      alt={`release screenshot ${release.id}`}
+                      className="w-100 d-block"
+                      style={{ maxHeight: "300px", objectFit: "contain" }}
+                    />
+                  )}
+                  <ListGroup variant="flush">
+                    {release.items.map((item, i) => {
+                      const config = ITEM_CONFIG[item.type];
+                      const text = resolve(item.text);
+                      const description = resolve(item.description);
+                      return (
+                        <ListGroup.Item
+                          key={`${item.type}-${i}`}
+                          className="d-flex align-items-start gap-2 py-2 px-3"
                         >
-                          {t(config.labelKey)}
-                        </span>
-                        <span
-                          style={{
-                            fontSize: "1rem",
-                            lineHeight: "1.4",
-                            fontWeight: 600
-                          }}
-                        >
-                          {item.text}
-                          {item.description &&
-                            renderDescription(item.description)}
-                        </span>
-                      </ListGroup.Item>
-                    );
-                  })}
-                </ListGroup>
-              </Card>
-            ))}
+                          <span
+                            className={`badge flex-shrink-0 ${config.colorClass}`}
+                            style={{
+                              fontSize: "0.65rem",
+                              minWidth: "4rem",
+                              textAlign: "center",
+                              marginTop: "0.15rem"
+                            }}
+                          >
+                            {t(config.labelKey)}
+                          </span>
+                          <span
+                            style={{
+                              fontSize: "1rem",
+                              lineHeight: "1.4",
+                              fontWeight: 600
+                            }}
+                          >
+                            {text}
+                            {description && renderDescription(description)}
+                          </span>
+                        </ListGroup.Item>
+                      );
+                    })}
+                  </ListGroup>
+                </Card>
+              );
+            })}
           </div>
         </Modal.Body>
         <Modal.Footer>

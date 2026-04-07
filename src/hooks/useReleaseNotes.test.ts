@@ -35,6 +35,23 @@ const sampleChangelog = {
   ]
 };
 
+const localizedChangelog = {
+  releases: [
+    {
+      id: "2026-02-19",
+      notice: { en: "Important update", zh: "重要更新" },
+      screenshot: null,
+      items: [
+        {
+          type: "new",
+          text: { en: "Add fields parameter", zh: "添加字段参数" },
+          description: { en: "Details here.", zh: "详情在此。" }
+        }
+      ]
+    }
+  ]
+};
+
 const mockJsonResponse = (data: object) => ({
   ok: true,
   headers: {
@@ -146,5 +163,25 @@ describe("useReleaseNotes", () => {
 
     await act(async () => {});
     expect(result.current.isLoading).toBe(false);
+  });
+
+  it("passes LocalizedString entries through unchanged", async () => {
+    mockLastSeenValue = null;
+    mockFetch.mockResolvedValueOnce(mockJsonResponse(localizedChangelog));
+
+    const { result } = renderHook(() => useReleaseNotes());
+    await act(async () => {});
+
+    expect(result.current.hasNewReleases).toBe(true);
+    const entry = result.current.newReleases[0];
+    expect(entry.notice).toEqual({ en: "Important update", zh: "重要更新" });
+    expect(entry.items[0].text).toEqual({
+      en: "Add fields parameter",
+      zh: "添加字段参数"
+    });
+    expect(entry.items[0].description).toEqual({
+      en: "Details here.",
+      zh: "详情在此。"
+    });
   });
 });

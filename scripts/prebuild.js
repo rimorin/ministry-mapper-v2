@@ -17,18 +17,19 @@ fs.writeFileSync(
   JSON.stringify(versionInfo, null, 2)
 );
 
-// Parse RELEASE_NOTES.md and emit public/changelog.json (last 10 releases).
-// Header format: ## YYYY-MM-DD[-suffix] [— any annotation]
-// The id (YYYY-MM-DD or YYYY-MM-DD-a) is the stable identifier used for
-// tracking which releases a user has seen — fully decoupled from semver.
-function parseReleaseNotes() {
-  const releaseNotesPath = path.join(__dirname, "../RELEASE_NOTES.md");
-  if (!fs.existsSync(releaseNotesPath)) return { releases: [] };
+// Supported locale codes — must match LanguageContext.tsx LANGUAGE_OPTIONS.
+const SUPPORTED_LOCALES = ["en", "es", "zh", "ta", "id", "ms", "ja", "ko"];
 
-  const raw = fs.readFileSync(releaseNotesPath, "utf-8");
+// Parse a single RELEASE_NOTES[.lang].md file into a map of id → entry.
+// Header format: ## YYYY-MM-DD[-suffix]
+// Returns: Map<id, { notice, items: [{ type, text, description? }] }>
+function parseReleaseNotesFile(filePath) {
+  if (!fs.existsSync(filePath)) return new Map();
+
+  const raw = fs.readFileSync(filePath, "utf-8");
   // Strip code-fenced blocks so examples in the instructions aren't parsed as releases.
   const content = raw.replace(/^```[\s\S]*?^```/gm, "");
-  const releases = [];
+
   const TYPE_MAP = {
     NEW: "new",
     FIX: "fix",
@@ -36,6 +37,7 @@ function parseReleaseNotes() {
     ANNOUNCEMENT: "announcement"
   };
 
+  const result = new Map();
   const blocks = content.split(/^(?=## \d{4}-\d{2}-\d{2})/m).filter(Boolean);
 
   for (const block of blocks) {
@@ -91,23 +93,92 @@ function parseReleaseNotes() {
         descLines.push(line.slice(2));
         seenBlank = false;
       } else {
-        seenBlank = !line.trim() ? true : false;
+        seenBlank = !line.trim();
       }
     }
     flushDesc();
 
     if (items.length || notice) {
-      releases.push({ id, notice, screenshot, items });
+      result.set(id, { notice, screenshot, items });
     }
   }
 
-  // Sort newest-first so releases[0] is always the latest, regardless of
-  // the order entries appear in RELEASE_NOTES.md.
+  return result;
+}
+
+// Build the changelog by parsing the English base file then merging all
+// available per-locale translations. Fields that have at least one translation
+// are promoted from plain strings to locale maps { en: "…", zh: "…", … }.
+// Entries with no translations remain plain strings (backward compatible).
+function buildChangelog() {
+  const notesDir = path.join(__dirname, "../release-notes");
+
+  // Parse English base (required).
+  const enEntries = parseReleaseNotesFile(
+    path.join(notesDir, "RELEASE_NOTES.md")
+  );
+  if (enEntries.size === 0) return { releases: [] };
+
+  // Parse all available locale files.
+  const localeEntries = new Map(); // lang → Map<id, entry>
+  for (const lang of SUPPORTED_LOCALES) {
+    if (lang === "en") continue;
+    const filePath = path.join(notesDir, `RELEASE_NOTES.${lang}.md`);
+    const entries = parseReleaseNotesFile(filePath);
+    if (entries.size > 0) localeEntries.set(lang, entries);
+  }
+
+  const releases = [];
+
+  for (const [id, enEntry] of enEntries) {
+    // Collect all locales that have a translation for this release id.
+    const availableLocales = [...localeEntries.entries()].filter(([, map]) =>
+      map.has(id)
+    );
+
+    if (availableLocales.length === 0) {
+      // No translations at all — keep plain strings.
+      releases.push({ id, ...enEntry });
+      continue;
+    }
+
+    // Promote notice to a locale map when any translation exists.
+    let notice = null;
+    if (enEntry.notice !== null) {
+      notice = { en: enEntry.notice };
+      for (const [lang, map] of availableLocales) {
+        const t = map.get(id);
+        if (t?.notice) notice[lang] = t.notice;
+      }
+    }
+
+    // Promote each item's text/description to locale maps.
+    const items = enEntry.items.map((enItem, idx) => {
+      const textMap = { en: enItem.text };
+      const descMap = enItem.description ? { en: enItem.description } : null;
+
+      for (const [lang, map] of availableLocales) {
+        const t = map.get(id);
+        const tItem = t?.items[idx];
+        if (!tItem) continue;
+        textMap[lang] = tItem.text;
+        if (descMap && tItem.description) descMap[lang] = tItem.description;
+      }
+
+      const item = { type: enItem.type, text: textMap };
+      if (descMap) item.description = descMap;
+      return item;
+    });
+
+    releases.push({ id, notice, screenshot: enEntry.screenshot, items });
+  }
+
+  // Sort newest-first so releases[0] is always the latest.
   releases.sort((a, b) => (a.id < b.id ? 1 : a.id > b.id ? -1 : 0));
   return { releases: releases.slice(0, 10) };
 }
 
 fs.writeFileSync(
   path.join(__dirname, "../public/changelog.json"),
-  JSON.stringify(parseReleaseNotes(), null, 2)
+  JSON.stringify(buildChangelog(), null, 2)
 );

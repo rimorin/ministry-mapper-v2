@@ -77,7 +77,16 @@ const resources = {
       "unit.noOptions": "Type and press Enter to add",
       "unit.add": 'Add "{{value}}"',
       "unit.requireOneUnitValidation":
-        "Territory requires at least 1 unit number."
+        "Territory requires at least 1 unit number.",
+
+      // Release Notes
+      "releaseNotes.title": "What's New",
+      "releaseNotes.latest": "Latest",
+      "releaseNotes.dismiss": "Dismiss",
+      "releaseNotes.new": "New",
+      "releaseNotes.fix": "Fix",
+      "releaseNotes.improved": "Improved",
+      "releaseNotes.announcement": "Announcement"
     }
   }
 };

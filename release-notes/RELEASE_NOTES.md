@@ -10,6 +10,31 @@ User-facing release notes for Ministry Mapper. These are shown to users in-app w
 2. Add one or more tagged items describing what changed.
 3. Optionally add a screenshot, a notice banner, and description body text.
 
+### Adding translations
+
+Release content is i18n-supported. At build time, `scripts/prebuild.js` reads this file (English source) and all companion locale files in this folder, then merges them into `public/changelog.json`. The modal resolves the right language at render time based on the user's selected language.
+
+Each locale has its own companion file in this folder:
+
+| File                    | Language         |
+|-------------------------|------------------|
+| `RELEASE_NOTES.md`      | English (source) |
+| `RELEASE_NOTES.zh.md`   | 中文             |
+| `RELEASE_NOTES.ms.md`   | Bahasa Melayu    |
+| `RELEASE_NOTES.ta.md`   | தமிழ்            |
+| `RELEASE_NOTES.ko.md`   | 한국어           |
+| `RELEASE_NOTES.ja.md`   | 日本語           |
+| `RELEASE_NOTES.id.md`   | Bahasa Indonesia |
+| `RELEASE_NOTES.es.md`   | Español          |
+
+**Rules for translators:**
+
+- The `## YYYY-MM-DD` section header and `[TAG]` markers must match this file exactly — only the text content is translated.
+- Items are matched to English by **array index** (position order). Keep the same number of `[TAG]` items per release, in the same order.
+- Translations are **optional per entry**. Any release not in a companion file shows English automatically. You don't need to translate every release.
+- Notice banners (`> …`) and description bodies are translatable. Screenshots must only be added to this file — they are locale-independent and ignored in companion files.
+- Section header lines inside a description body (lines ending with `:` or `：`) are rendered as styled labels in the modal. Use the appropriate punctuation for your language — both ASCII `:` and full-width `：` are supported.
+
 ---
 
 ## Syntax reference
@@ -46,6 +71,8 @@ Add one screenshot per release on its own line (not indented). It appears above 
 ```
 ![Alt text](https://assets.ministry-mapper.com/release-notes/YYYY-MM-DD/image.png)
 ```
+
+> **Only add screenshots in this file (`RELEASE_NOTES.md`).** Screenshots are locale-independent — the same image is shown to all users regardless of language. Screenshot lines in companion locale files are ignored.
 
 ### Notice banner
 
