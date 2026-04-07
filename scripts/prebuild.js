@@ -25,7 +25,9 @@ function parseReleaseNotes() {
   const releaseNotesPath = path.join(__dirname, "../RELEASE_NOTES.md");
   if (!fs.existsSync(releaseNotesPath)) return { releases: [] };
 
-  const content = fs.readFileSync(releaseNotesPath, "utf-8");
+  const raw = fs.readFileSync(releaseNotesPath, "utf-8");
+  // Strip code-fenced blocks so examples in the instructions aren't parsed as releases.
+  const content = raw.replace(/^```[\s\S]*?^```/gm, "");
   const releases = [];
   const TYPE_MAP = {
     NEW: "new",
@@ -44,6 +46,19 @@ function parseReleaseNotes() {
     let notice = null;
     let screenshot = null;
     const items = [];
+    let currentItem = null;
+    let descLines = [];
+    let seenBlank = false;
+
+    const flushDesc = () => {
+      if (currentItem && descLines.length > 0) {
+        while (descLines[descLines.length - 1] === "") descLines.pop();
+        if (descLines.length > 0)
+          currentItem.description = descLines.join("\n");
+      }
+      descLines = [];
+      seenBlank = false;
+    };
 
     for (const line of block.split("\n")) {
       const noticeMatch = line.match(/^>\s+(.+)/);
@@ -62,9 +77,24 @@ function parseReleaseNotes() {
         /^\[(NEW|FIX|IMPROVED|ANNOUNCEMENT)\]\s+(.+)/
       );
       if (itemMatch) {
-        items.push({ type: TYPE_MAP[itemMatch[1]], text: itemMatch[2].trim() });
+        flushDesc();
+        currentItem = {
+          type: TYPE_MAP[itemMatch[1]],
+          text: itemMatch[2].trim()
+        };
+        items.push(currentItem);
+        continue;
+      }
+
+      if (line.startsWith("  ") && currentItem) {
+        if (seenBlank && descLines.length > 0) descLines.push("");
+        descLines.push(line.slice(2));
+        seenBlank = false;
+      } else {
+        seenBlank = !line.trim() ? true : false;
       }
     }
+    flushDesc();
 
     if (items.length || notice) {
       releases.push({ id, notice, screenshot, items });

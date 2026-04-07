@@ -1,15 +1,103 @@
 # Release Notes
 
-User-facing release notes for Ministry Mapper. Add a new `## YYYY-MM-DD` block at the top before each release.
+User-facing release notes for Ministry Mapper. These are shown to users in-app when a new release is detected.
 
-**Syntax:**
+---
 
-- `[NEW]` — new feature
-- `[FIX]` — bug fix
-- `[IMPROVED]` — improvement or performance
-- `[ANNOUNCEMENT]` — important announcement within a release
-- `> Notice text` — action-required notice shown as a warning banner
-- `![alt](release-assets/YYYY-MM-DD/image.png)` — screenshot (place images in public/release-assets/)
+## How to add a release
+
+1. Add a new `## YYYY-MM-DD` section at the **top** of the file (below this header).
+2. Add one or more tagged items describing what changed.
+3. Optionally add a screenshot, a notice banner, and description body text.
+
+---
+
+## Syntax reference
+
+### Tags
+
+Each item must start with a tag on its own line:
+
+```
+[NEW] Short description of the new feature.
+[FIX] Short description of what was fixed.
+[IMPROVED] Short description of the improvement.
+[ANNOUNCEMENT] Important message for all users.
+```
+
+### Description body
+
+Add extra detail under any `[TAG]` item by indenting with **2 spaces**. Supports plain paragraphs and `- ` bullet lists. Blank lines between indented lines create paragraph breaks.
+
+```
+[NEW] Short headline for the feature.
+  A paragraph explaining it in more detail.
+
+  - Step one
+  - Step two
+
+  A closing sentence.
+```
+
+### Screenshot
+
+Add one screenshot per release on its own line (not indented). It appears above the item list in the modal.
+
+```
+![Alt text](https://assets.ministry-mapper.com/release-notes/YYYY-MM-DD/image.png)
+```
+
+### Notice banner
+
+Add a `>` line anywhere in the release block to show a warning banner at the top of the card. Use this for action-required messages only.
+
+```
+> Please clear your browser cache before continuing.
+```
+
+---
+
+## Example
+
+```
+## 2026-04-08
+
+[NEW] Add addresses on the fly — publishers can now add missing addresses directly.
+  This is built for congregations that are still building their territory records.
+
+  How to use:
+  - At the end of the address list, tap the + card.
+  - Enter the property number and any visit details, then tap Create.
+
+![Add address on the fly](https://assets.ministry-mapper.com/release-notes/2026-04-08/image.png)
+
+---
+
+## 2026-04-02
+
+> Please look out for publishers who may need help clearing their browser cache.
+
+[ANNOUNCEMENT] We upgraded our systems. Please make sure your app is on version 1.32 or above.
+```
+
+---
+
+## 2026-04-08
+
+[NEW] Add addresses on the fly.
+  Publishers can now add missing addresses directly while working a landed housing territory link, reducing the surveying burden on the territory servant and service overseer.
+
+  This is built for congregations that are still building their territory records, or have none at all. If you have uncharted territory, you can fill it in as you go — the territory documents itself through actual field work.
+
+  How to use:
+  - At the end of the address list, tap the + card.
+  - Enter the property number and any visit details, then tap Create.
+
+  The new address is saved immediately and visible to everyone working the same territory in real time.
+
+> New addresses are appended to the end of the list. Only administrators can resequence the list.
+
+![Add address on the fly](https://assets.ministry-mapper.com/release-notes/2026-04-08/add_more_add.png)
 
 ---
 
@@ -49,11 +137,11 @@ User-facing release notes for Ministry Mapper. Add a new `## YYYY-MM-DD` block a
 
 [NEW] Marker Guide on the map — a small legend in the top-right corner now explains what each coloured ring on an address marker represents.
 
-![Marker Guide](https://assets.ministry-mapper.com/release-notes/2026-03-11/marker-guide.png)
-
 - 🟢 Green — Assignment link
 - 🟠 Orange — Personal link
 - 🔵 Blue — Map completion progress
+
+![Marker Guide](https://assets.ministry-mapper.com/release-notes/2026-03-11/marker-guide.png)
 
 ---
 

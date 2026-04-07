@@ -4,6 +4,7 @@ import { useLocalStorage } from "./useLocalStorage";
 export interface ReleaseItem {
   type: "new" | "fix" | "improved" | "announcement";
   text: string;
+  description?: string;
 }
 
 export interface ReleaseEntry {
