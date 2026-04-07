@@ -568,6 +568,22 @@
   border-top-color: #495057;
 }
 
+.add-more-card {
+  cursor: pointer;
+  opacity: 0.6;
+  transition:
+    opacity 0.15s ease-in-out,
+    transform 0.1s ease-in-out;
+}
+
+.add-more-card:hover {
+  opacity: 1;
+}
+
+.add-more-card:active {
+  transform: scale(0.97);
+}
+
 /* Dark mode list group support */
 [data-bs-theme="dark"] .list-group-item {
   background-color: #212529;

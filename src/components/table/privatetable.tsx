@@ -1,13 +1,14 @@
 import { territorySingleProps } from "../../utils/interface";
-import { DEFAULT_AGGREGATES } from "../../utils/constants";
-
+import { DEFAULT_AGGREGATES, USER_ACCESS_LEVELS } from "../../utils/constants";
 import { Row, Col, Card } from "react-bootstrap";
 import AddressStatus from "./address";
+import ComponentAuthorizer from "../navigation/authorizer";
 const PrivateTerritoryTable = ({
   houses,
   policy,
   addressDetails,
-  handleHouseUpdate
+  handleHouseUpdate,
+  handleAddMoreClick
 }: territorySingleProps) => {
   const mapId = addressDetails?.id;
   const aggregates = addressDetails?.aggregates;
@@ -62,6 +63,36 @@ const PrivateTerritoryTable = ({
               </Card>
             </Col>
           ))}
+        <ComponentAuthorizer
+          requiredPermission={USER_ACCESS_LEVELS.PUBLISHER.CODE}
+          userPermission={policy.userRole}
+        >
+          <Col key="add-more-cell">
+            <Card
+              onClick={() => handleAddMoreClick?.()}
+              style={{ minHeight: "100%" }}
+              className="add-more-card"
+            >
+              <Card.Body
+                style={{
+                  padding: "0",
+                  textAlign: "center",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  minHeight: "3.5rem"
+                }}
+              >
+                <span
+                  className="text-muted"
+                  style={{ fontSize: "2rem", lineHeight: 1 }}
+                >
+                  +
+                </span>
+              </Card.Body>
+            </Card>
+          </Col>
+        </ComponentAuthorizer>
       </Row>
     </div>
   );

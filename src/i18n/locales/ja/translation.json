@@ -217,7 +217,11 @@
     "resetWarning": "「{{name}}」のすべての物件状態がデフォルト状態にリセットされます。\nこの操作は取り消せません。",
     "deleteWarning": "マップ「{{name}}」が完全に削除されます。\nこの操作は取り消せません。",
     "locationWithName": "{{name}}の位置",
-    "deleteFloorWarning": "フロア{{floor}}とそのすべてのユニットが「{{name}}」から完全に削除されます。\nこの操作は取り消せません。"
+    "deleteFloorWarning": "フロア{{floor}}とそのすべてのユニットが「{{name}}」から完全に削除されます。\nこの操作は取り消せません。",
+    "propertyNumber": "Property Number",
+    "propertyNumberPlaceholder": "e.g. 1, 2A, B3",
+    "createAddress": "{{name}}に物件を追加",
+    "duplicateCode": "住所 {{code}} はすでにこの区域の地図に存在します。"
   },
   "household": {
     "household": "世帯",

@@ -1,8 +1,8 @@
 import { AuthModel } from "pocketbase";
 import { LinkSession, Policy } from "./policies";
-import { Value } from "react-calendar/dist/shared/types";
 import { MultiValue } from "react-select";
 import { FallbackProps } from "react-error-boundary";
+import { Value } from "react-calendar/dist/shared/types.js";
 export interface userInterface {
   user: AuthModel;
 }
@@ -249,6 +249,7 @@ export interface territorySingleProps {
   policy: Policy;
   addressDetails: addressDetails;
   handleHouseUpdate: (event: React.MouseEvent<HTMLElement>) => void;
+  handleAddMoreClick?: () => void;
 }
 
 export interface SignInDifferentProps {
@@ -445,6 +446,13 @@ export interface UpdateAddressStatusModalProps {
   addressData: addressDetails | undefined;
   unitDetails: unitDetails;
   policy: Policy;
+}
+
+export interface CreateAddressModalProps {
+  addressData: addressDetails;
+  policy: Policy;
+  sequence: number;
+  existingCodes: Set<string>;
 }
 
 export interface AggregatesProps {

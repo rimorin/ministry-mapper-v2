@@ -217,7 +217,11 @@
     "notesInformation": "Notas de propiedad únicamente. Sin información personal.",
     "resetWarning": "Todos los estados de propiedad en \"{{name}}\" se restablecerán a su estado predeterminado.\nNo puedes deshacer esto.",
     "deleteWarning": "El mapa \"{{name}}\" se eliminará permanentemente.\nNo puedes deshacer esto.",
-    "locationWithName": "Ubicación de {{name}}"
+    "locationWithName": "Ubicación de {{name}}",
+    "propertyNumber": "Property Number",
+    "propertyNumberPlaceholder": "e.g. 1, 2A, B3",
+    "createAddress": "Agregar propiedad a {{name}}",
+    "duplicateCode": "La dirección {{code}} ya existe en este mapa de territorio."
   },
   "household": {
     "household": "Hogar",

@@ -217,7 +217,11 @@
     "notesInformation": "仅限物业备注。请勿包含个人信息。",
     "resetWarning": "\"{{name}}\"中的所有物业状态将重置为默认状态。\n您无法撤销此操作。",
     "deleteWarning": "地图\"{{name}}\"将被永久删除。\n您无法撤销此操作。",
-    "locationWithName": "{{name}} 位置"
+    "locationWithName": "{{name}} 位置",
+    "propertyNumber": "Property Number",
+    "propertyNumberPlaceholder": "e.g. 1, 2A, B3",
+    "createAddress": "将物业添加到 {{name}}",
+    "duplicateCode": "地址 {{code}} 已存在于此区域地图中。"
   },
   "household": {
     "household": "家庭",

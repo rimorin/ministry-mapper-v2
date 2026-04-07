@@ -217,7 +217,11 @@
     "notesInformation": "Property notes only. No personal information.",
     "resetWarning": "All property statuses in \"{{name}}\" will be reset to their default state.\nYou cannot undo this.",
     "deleteWarning": "Map \"{{name}}\" will be permanently deleted.\nYou cannot undo this.",
-    "locationWithName": "{{name}} Location"
+    "locationWithName": "{{name}} Location",
+    "propertyNumber": "Property Number",
+    "propertyNumberPlaceholder": "e.g. 1, 2A, B3",
+    "createAddress": "Add property to {{name}}",
+    "duplicateCode": "Address {{code}} already exists in this territory map."
   },
   "household": {
     "household": "Household",
