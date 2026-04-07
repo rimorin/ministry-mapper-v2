@@ -21,6 +21,8 @@ i18n
   .init({
     // Default language
     fallbackLng: "en",
+    // Store only the base language code ("zh" not "zh-TW") so locale maps match.
+    load: "languageOnly",
     // Debug mode in development
     debug: import.meta.env.DEV,
     // Default namespace

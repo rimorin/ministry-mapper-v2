@@ -1,15 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { useLocalStorage } from "./useLocalStorage";
 
+export type LocalizedString = string | Record<string, string>;
+
 export interface ReleaseItem {
   type: "new" | "fix" | "improved" | "announcement";
-  text: string;
-  description?: string;
+  text: LocalizedString;
+  description?: LocalizedString;
 }
 
 export interface ReleaseEntry {
   id: string;
-  notice?: string | null;
+  notice?: LocalizedString | null;
   screenshot?: string | null;
   items: ReleaseItem[];
 }
