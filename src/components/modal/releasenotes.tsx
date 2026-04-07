@@ -20,6 +20,69 @@ const ITEM_CONFIG = {
   }
 } as const;
 
+function renderDescription(text: string) {
+  const lines = text.split("\n");
+  const nodes: React.ReactNode[] = [];
+  let bullets: string[] = [];
+  let key = 0;
+
+  const flushBullets = () => {
+    if (bullets.length === 0) return;
+    nodes.push(
+      <ul
+        key={key++}
+        className="mb-0 mt-2 ps-3"
+        style={{ fontSize: "0.82rem", color: "var(--bs-secondary-color)" }}
+      >
+        {bullets.map((b, i) => (
+          <li key={i} className="mb-1">
+            {b.slice(2)}
+          </li>
+        ))}
+      </ul>
+    );
+    bullets = [];
+  };
+
+  for (const line of lines) {
+    if (line === "") {
+      flushBullets();
+    } else if (line.startsWith("- ")) {
+      bullets.push(line);
+    } else if (line.endsWith(":")) {
+      flushBullets();
+      nodes.push(
+        <p
+          key={key++}
+          className="mb-0 mt-3"
+          style={{
+            fontSize: "0.75rem",
+            fontWeight: 600,
+            textTransform: "uppercase",
+            letterSpacing: "0.04em",
+            color: "var(--bs-secondary-color)"
+          }}
+        >
+          {line.slice(0, -1)}
+        </p>
+      );
+    } else {
+      flushBullets();
+      nodes.push(
+        <p
+          key={key++}
+          className="mb-0 mt-2"
+          style={{ fontSize: "0.82rem", color: "var(--bs-secondary-color)" }}
+        >
+          {line}
+        </p>
+      );
+    }
+  }
+  flushBullets();
+  return nodes;
+}
+
 const ReleaseNotesModal = NiceModal.create(
   ({ releases, onSeen }: ReleaseNotesModalProps) => {
     const modal = useModal();
@@ -94,10 +157,7 @@ const ReleaseNotesModal = NiceModal.create(
                     }
                     alt={`release screenshot ${release.id}`}
                     className="w-100 d-block"
-                    style={{
-                      maxHeight: "300px",
-                      objectFit: "contain"
-                    }}
+                    style={{ maxHeight: "300px", objectFit: "contain" }}
                   />
                 )}
                 <ListGroup variant="flush">
@@ -113,13 +173,22 @@ const ReleaseNotesModal = NiceModal.create(
                           style={{
                             fontSize: "0.65rem",
                             minWidth: "4rem",
-                            textAlign: "center"
+                            textAlign: "center",
+                            marginTop: "0.15rem"
                           }}
                         >
                           {t(config.labelKey)}
                         </span>
-                        <span style={{ fontSize: "0.9rem", lineHeight: "1.5" }}>
+                        <span
+                          style={{
+                            fontSize: "1rem",
+                            lineHeight: "1.4",
+                            fontWeight: 600
+                          }}
+                        >
                           {item.text}
+                          {item.description &&
+                            renderDescription(item.description)}
                         </span>
                       </ListGroup.Item>
                     );
