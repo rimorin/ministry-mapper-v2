@@ -95,9 +95,8 @@ const ReleaseNotesModal = NiceModal.create(
                     alt={`release screenshot ${release.id}`}
                     className="w-100 d-block"
                     style={{
-                      height: "180px",
-                      objectFit: "cover",
-                      objectPosition: "top"
+                      maxHeight: "300px",
+                      objectFit: "contain"
                     }}
                   />
                 )}
