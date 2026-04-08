@@ -1,3 +1,17 @@
+# [1.33.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.6...v1.33.0) (2026-04-08)
+
+
+### Bug Fixes
+
+* adjust image styling in ReleaseNotesModal for better visibility ([bb983b5](https://github.com/rimorin/ministry-mapper-v2/commit/bb983b581f769fcf9e2fcb0571620ec0a01da2e6))
+
+
+### Features
+
+* add address on the fly for single story maps ([08a587b](https://github.com/rimorin/ministry-mapper-v2/commit/08a587bb0b507d6c862b7eef6c0125eee9d9fbfa))
+* enhance release notes structure and rendering for better user experience ([b563e4d](https://github.com/rimorin/ministry-mapper-v2/commit/b563e4d7e0c59027336d3d4d3a653113a84f00f5))
+* implement localized release notes ([fc44781](https://github.com/rimorin/ministry-mapper-v2/commit/fc447812ee4e21434bcdc37747c7d6d9a06cd9c1))
+
 ## [1.32.6](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.5...v1.32.6) (2026-04-06)
 
 
