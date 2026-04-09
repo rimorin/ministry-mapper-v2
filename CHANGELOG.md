@@ -1,3 +1,10 @@
+## [1.33.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.33.0...v1.33.1) (2026-04-09)
+
+
+### Bug Fixes
+
+* add missing territoryId for address creation modal ([4642b5b](https://github.com/rimorin/ministry-mapper-v2/commit/4642b5b9f625e7b48273e3b6a0cfd703895e5353))
+
 # [1.33.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.32.6...v1.33.0) (2026-04-08)
 
 
