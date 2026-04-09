@@ -141,7 +141,7 @@ const PB_FIELDS = {
   ASSIGNMENTS:
     "id, user, type, expiry_date, publisher, created, expand.map.description",
   ASSIGNMENT_LINKS:
-    "id, map, expiry_date, publisher, expand.map.description, expand.map.type, expand.map.location, expand.map.coordinates, expand.map.progress, expand.map.expand.congregation.max_tries, expand.map.expand.congregation.origin, expand.map.expand.congregation.expiry_hours, expand.map.expand.congregation.id",
+    "id, map, expiry_date, publisher, expand.map.description, expand.map.type, expand.map.location, expand.map.coordinates, expand.map.progress, expand.map.territory, expand.map.expand.congregation.max_tries, expand.map.expand.congregation.origin, expand.map.expand.congregation.expiry_hours, expand.map.expand.congregation.id",
   ADDRESSES_SUBSCRIPTION:
     "id, code, coordinates, notes, status, not_home_tries, dnc_time, sequence, floor, updated, updated_by",
   // Used only in fetchAddressData — includes expand subfields for address_options.

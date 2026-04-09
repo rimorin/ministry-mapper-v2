@@ -47,6 +47,7 @@ function MapRow({
   accordingKeys,
   isReadonly,
   dropDirections,
+  territoryId,
   handlers,
   t
 }: RowComponentProps<MapRowProps>) {
@@ -241,6 +242,7 @@ function MapRow({
               key={`table-${mapId}`}
               policy={policy}
               addressDetails={addressElement}
+              territoryId={territoryId}
             />
           </div>
         </div>
@@ -499,6 +501,7 @@ const MapListing: React.FC<MapListingProps> = ({
     accordingKeys,
     isReadonly,
     dropDirections,
+    territoryId,
     handlers: {
       handleDropdownDirection,
       handleToggleMapView,

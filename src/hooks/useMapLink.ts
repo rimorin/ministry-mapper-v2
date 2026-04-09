@@ -22,6 +22,7 @@ export default function useMapLink() {
   );
   const [policy, setPolicy] = useState<Policy>(new Policy());
   const [mapDetails, setMapDetails] = useState<addressDetails>();
+  const [territoryId, setTerritoryId] = useState("");
   const [hasPinnedMessages, setHasPinnedMessages] = useState(false);
 
   const checkPinnedMessages = async (
@@ -106,6 +107,7 @@ export default function useMapLink() {
       checkPinnedMessages(linkRecord.map, readPinnedMessages);
     }
     setMapDetails(details);
+    setTerritoryId(linkRecord.expand?.map.territory || "");
     return details;
   };
 
@@ -135,6 +137,7 @@ export default function useMapLink() {
     policy,
     mapDetails,
     setMapDetails,
+    territoryId,
     hasPinnedMessages,
     setHasPinnedMessages,
     getMapData,

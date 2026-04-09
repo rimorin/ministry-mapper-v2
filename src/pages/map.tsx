@@ -56,6 +56,7 @@ const Map = () => {
     policy,
     mapDetails,
     setMapDetails,
+    territoryId,
     hasPinnedMessages,
     setHasPinnedMessages,
     getMapData
@@ -210,6 +211,7 @@ const Map = () => {
             policy={policy}
             addressDetails={mapDetails}
             assignmentId={id}
+            territoryId={territoryId}
           />
         )}
         <Navbar>

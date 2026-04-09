@@ -203,7 +203,8 @@ const MainTable = ({
   policy,
   addressDetails,
   mapView = false,
-  assignmentId
+  assignmentId,
+  territoryId
 }: territoryTableProps) => {
   const mapId = addressDetails?.id;
   const mapName = addressDetails?.name;
@@ -348,7 +349,8 @@ const MainTable = ({
       sequence: addresses.size,
       existingCodes: new Set(
         Array.from(addresses.values()).map((u) => u.number)
-      )
+      ),
+      territoryId: territoryId
     });
   };
 

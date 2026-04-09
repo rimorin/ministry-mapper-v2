@@ -32,7 +32,8 @@ const CreateAddress = NiceModal.create(
     addressData,
     policy,
     sequence,
-    existingCodes
+    existingCodes,
+    territoryId
   }: CreateAddressModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
@@ -78,6 +79,7 @@ const CreateAddress = NiceModal.create(
 
         const newAddress = await createData("addresses", {
           map: mapId,
+          territory: territoryId,
           code: propertyNumber,
           status: unitStatus || STATUS_CODES.DEFAULT,
           notes: hhNote || "",

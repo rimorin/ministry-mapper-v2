@@ -229,6 +229,7 @@ export interface territoryTableProps {
   policy: Policy;
   addressDetails: addressDetails;
   assignmentId?: string;
+  territoryId: string;
   handleUnitStatusUpdate?: (event: React.MouseEvent<HTMLElement>) => void;
   handleUnitNoUpdate?: (event: React.MouseEvent<HTMLElement>) => void;
   handleFloorDelete?: (event: React.MouseEvent<HTMLElement>) => void;
@@ -453,6 +454,7 @@ export interface CreateAddressModalProps {
   policy: Policy;
   sequence: number;
   existingCodes: Set<string>;
+  territoryId: string;
 }
 
 export interface AggregatesProps {
@@ -538,6 +540,7 @@ export interface MapRowProps {
   accordingKeys: string[];
   isReadonly: boolean;
   dropDirections: DropDirections;
+  territoryId: string;
   handlers: {
     handleDropdownDirection: (
       event: React.MouseEvent<HTMLElement, globalThis.MouseEvent>,
