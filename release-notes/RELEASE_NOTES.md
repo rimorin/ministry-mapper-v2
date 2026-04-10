@@ -143,9 +143,11 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 > Please look out for fellow publishers who may need help clearing their browser cache.
 
-[ANNOUNCEMENT] We upgraded our systems recently. Please make sure your app is on version 1.32 or above. Your browser should update it for you automatically — if not, clearing your browser cache will fix it. Older versions may not work properly.
+[ANNOUNCEMENT] Please update your app to version 1.32 or above.
+  Your browser should update it automatically — if not, clearing your browser cache will fix it. Older versions may not work properly.
 
-[ANNOUNCEMENT] Ministry Mapper must be opened in a web browser (such as Chrome or Safari). Saving it to your home screen or using it as an installed app is not supported — if you have done so, please remove it and open the link in your browser directly instead.
+[ANNOUNCEMENT] Ministry Mapper must be opened in a web browser.
+  Use Chrome, Safari, or any standard browser. Saving it to your home screen or using it as an installed app is not supported — if you have done so, please remove it and open the link in your browser directly.
 
 ---
 
@@ -157,13 +159,16 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ## 2026-03-27
 
-[NEW] Account warnings — you'll receive an email reminder if your account has been inactive or has no role assigned, before it gets disabled. This ensures only authorised and active accounts retain access to the system. Inactive accounts are warned at 3 months, a final warning at 5 months, then disabled at 6 months. Accounts with no role assigned are warned on day 3, a final warning on day 6, then disabled on day 7.
+[NEW] Account warnings — get notified before your account is disabled.
+  Inactive accounts are warned at 3 months, a final warning at 5 months, then disabled at 6 months. Accounts with no role assigned are warned on day 3, a final warning on day 6, then disabled on day 7.
 
-[NEW] AI summaries in emails — emails for instructions, messages, notes, and the monthly report now open with an AI-generated summary, so you can catch the key points without reading the full content.
+[NEW] AI summaries in emails — catch the key points without reading the full content.
+  Emails for instructions, messages, notes, and the monthly report now open with an AI-generated summary.
 
 > AI summaries may not always be accurate — please verify before acting on them.
 
-[NEW] On-demand Congregation Report — administrators can now generate the congregation report at any time. Go to Congregation → Generate Report and it will be delivered to your inbox shortly after. The report covers activity from the past 30 days.
+[NEW] On-demand Congregation Report — generate it any time from Congregation → Generate Report.
+  The report covers the past 30 days and will be delivered to your inbox shortly after.
 
 [IMPROVED] Faster map updates — territory progress now refreshes more quickly.
 
@@ -175,9 +180,9 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 [NEW] Marker Guide on the map — a small legend in the top-right corner now explains what each coloured ring on an address marker represents.
 
-- 🟢 Green — Assignment link
-- 🟠 Orange — Personal link
-- 🔵 Blue — Map completion progress
+  - 🟢 Green — Assignment link
+  - 🟠 Orange — Personal link
+  - 🔵 Blue — Map completion progress
 
 ![Marker Guide](https://assets.ministry-mapper.com/release-notes/2026-03-11/marker-guide.png)
 
