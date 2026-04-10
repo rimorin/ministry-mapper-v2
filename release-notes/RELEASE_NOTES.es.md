@@ -30,9 +30,11 @@
 
 > Estén atentos a los publicadores que puedan necesitar ayuda para limpiar la caché del navegador.
 
-[ANNOUNCEMENT] Recientemente actualizamos nuestros sistemas. Asegúrate de que tu aplicación esté en la versión 1.32 o superior. El navegador debería actualizarla automáticamente — si no es así, limpiar la caché del navegador lo solucionará. Las versiones anteriores pueden no funcionar correctamente.
+[ANNOUNCEMENT] Asegúrate de que tu aplicación esté en la versión 1.32 o superior.
+  El navegador debería actualizarla automáticamente — si no es así, limpiar la caché del navegador lo solucionará. Las versiones anteriores pueden no funcionar correctamente.
 
-[ANNOUNCEMENT] Ministry Mapper debe abrirse en un navegador web (como Chrome o Safari). No se admite guardarla en la pantalla de inicio ni usarla como aplicación instalada — si lo has hecho, elimínala y abre el enlace directamente en el navegador.
+[ANNOUNCEMENT] Ministry Mapper debe abrirse en un navegador web.
+  No se admite guardarla en la pantalla de inicio ni usarla como aplicación instalada — si lo has hecho, elimínala y abre el enlace directamente en el navegador.
 
 ---
 
@@ -44,13 +46,16 @@
 
 ## 2026-03-27
 
-[NEW] Advertencias de cuenta — recibirás un recordatorio por correo electrónico si tu cuenta ha estado inactiva o no tiene un rol asignado, antes de que sea desactivada. Las cuentas inactivas reciben advertencia a los 3 meses, advertencia final a los 5 meses y se desactivan a los 6 meses. Las cuentas sin rol reciben advertencia el día 3, advertencia final el día 6 y se desactivan el día 7.
+[NEW] Advertencias de cuenta — recibirás una notificación antes de que tu cuenta sea desactivada.
+  Las cuentas inactivas reciben advertencia a los 3 meses, advertencia final a los 5 meses y se desactivan a los 6 meses. Las cuentas sin rol reciben advertencia el día 3, advertencia final el día 6 y se desactivan el día 7.
 
-[NEW] Resúmenes de IA en correos electrónicos — los correos de instrucciones, mensajes, notas e informe mensual ahora comienzan con un resumen generado por IA, para que puedas captar los puntos clave sin leer el contenido completo.
+[NEW] Resúmenes de IA en correos electrónicos — capta los puntos clave sin leer el contenido completo.
+  Los correos de instrucciones, mensajes, notas e informe mensual ahora comienzan con un resumen generado por IA.
 
 > Los resúmenes de IA pueden no ser siempre precisos — verifica antes de actuar en base a ellos.
 
-[NEW] Informe de congregación a demanda — los administradores ahora pueden generar el informe de congregación en cualquier momento. Ve a Congregación → Generar informe y se enviará a tu bandeja de entrada poco después. El informe cubre la actividad de los últimos 30 días.
+[NEW] Informe de congregación a demanda — genera en cualquier momento desde Congregación → Generar informe.
+  El informe cubre la actividad de los últimos 30 días y se enviará a tu bandeja de entrada poco después.
 
 [IMPROVED] Actualizaciones de mapa más rápidas — el progreso del territorio ahora se actualiza más rápidamente.
 
@@ -62,9 +67,9 @@
 
 [NEW] Guía de marcadores en el mapa — una pequeña leyenda en la esquina superior derecha ahora explica qué representa cada anillo de color en un marcador de dirección.
 
-- 🟢 Verde — Enlace de asignación
-- 🟠 Naranja — Enlace personal
-- 🔵 Azul — Progreso de finalización del mapa
+  - 🟢 Verde — Enlace de asignación
+  - 🟠 Naranja — Enlace personal
+  - 🔵 Azul — Progreso de finalización del mapa
 
 ---
 

@@ -30,9 +30,11 @@
 
 > Harap perhatikan rekan penerbit yang mungkin membutuhkan bantuan untuk menghapus cache browser mereka.
 
-[ANNOUNCEMENT] Kami baru-baru ini memperbarui sistem kami. Pastikan aplikasi Anda berada di versi 1.32 atau lebih tinggi. Browser Anda seharusnya memperbarui secara otomatis — jika tidak, menghapus cache browser akan memperbaikinya. Versi lama mungkin tidak berfungsi dengan baik.
+[ANNOUNCEMENT] Pastikan aplikasi Anda berada di versi 1.32 atau lebih tinggi.
+  Browser Anda seharusnya memperbarui secara otomatis — jika tidak, menghapus cache browser akan memperbaikinya. Versi lama mungkin tidak berfungsi dengan baik.
 
-[ANNOUNCEMENT] Ministry Mapper harus dibuka di browser web (seperti Chrome atau Safari). Menyimpannya ke layar beranda atau menggunakannya sebagai aplikasi yang terinstal tidak didukung — jika Anda telah melakukannya, hapus dan buka tautannya langsung di browser Anda.
+[ANNOUNCEMENT] Ministry Mapper harus dibuka di browser web.
+  Menyimpannya ke layar beranda atau menggunakannya sebagai aplikasi yang terinstal tidak didukung — jika Anda telah melakukannya, hapus dan buka tautannya langsung di browser Anda.
 
 ---
 
@@ -44,13 +46,16 @@
 
 ## 2026-03-27
 
-[NEW] Peringatan akun — Anda akan menerima pengingat email jika akun Anda tidak aktif atau tidak memiliki peran yang ditetapkan, sebelum dinonaktifkan. Akun tidak aktif diberi peringatan pada 3 bulan, peringatan terakhir pada 5 bulan, lalu dinonaktifkan pada 6 bulan. Akun tanpa peran diberi peringatan pada hari ke-3, peringatan terakhir pada hari ke-6, lalu dinonaktifkan pada hari ke-7.
+[NEW] Peringatan akun — Anda akan diberi tahu sebelum akun dinonaktifkan.
+  Akun tidak aktif diberi peringatan pada 3 bulan, peringatan terakhir pada 5 bulan, lalu dinonaktifkan pada 6 bulan. Akun tanpa peran diberi peringatan pada hari ke-3, peringatan terakhir pada hari ke-6, lalu dinonaktifkan pada hari ke-7.
 
-[NEW] Ringkasan AI dalam email — email untuk instruksi, pesan, catatan, dan laporan bulanan kini dibuka dengan ringkasan yang dibuat oleh AI, sehingga Anda dapat memahami poin utama tanpa membaca seluruh konten.
+[NEW] Ringkasan AI dalam email — pahami poin utama tanpa membaca seluruh konten.
+  Email untuk instruksi, pesan, catatan, dan laporan bulanan kini dibuka dengan ringkasan yang dibuat oleh AI.
 
 > Ringkasan AI mungkin tidak selalu akurat — harap verifikasi sebelum mengambil tindakan berdasarkan ringkasan tersebut.
 
-[NEW] Laporan Jemaat Sesuai Permintaan — administrator kini dapat membuat laporan jemaat kapan saja. Pergi ke Jemaat → Buat Laporan dan laporan akan dikirimkan ke kotak masuk Anda tidak lama setelah itu. Laporan mencakup aktivitas dari 30 hari terakhir.
+[NEW] Laporan Jemaat Sesuai Permintaan — buat kapan saja melalui Jemaat → Buat Laporan.
+  Laporan mencakup aktivitas dari 30 hari terakhir dan akan dikirimkan ke kotak masuk Anda tidak lama setelah itu.
 
 [IMPROVED] Pembaruan peta lebih cepat — kemajuan wilayah kini diperbarui lebih cepat.
 
@@ -62,9 +67,9 @@
 
 [NEW] Panduan Penanda di peta — legenda kecil di sudut kanan atas kini menjelaskan apa yang diwakili oleh setiap cincin berwarna pada penanda alamat.
 
-- 🟢 Hijau — Tautan penugasan
-- 🟠 Oranye — Tautan pribadi
-- 🔵 Biru — Kemajuan penyelesaian peta
+  - 🟢 Hijau — Tautan penugasan
+  - 🟠 Oranye — Tautan pribadi
+  - 🔵 Biru — Kemajuan penyelesaian peta
 
 ---
 
