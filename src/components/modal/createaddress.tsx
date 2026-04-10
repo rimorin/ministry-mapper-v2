@@ -5,7 +5,8 @@ import { useTranslation } from "react-i18next";
 import {
   STATUS_CODES,
   NOT_HOME_STATUS_CODES,
-  MIN_START_FLOOR
+  MIN_START_FLOOR,
+  ADDRESS_CREATE_SOURCE
 } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import {
@@ -76,7 +77,7 @@ const CreateAddress = NiceModal.create(
 
       try {
         setIsSaving(true);
-
+        const userName = policy.userName;
         const newAddress = await createData("addresses", {
           map: mapId,
           territory: territoryId,
@@ -89,7 +90,9 @@ const CreateAddress = NiceModal.create(
           floor: MIN_START_FLOOR,
           sequence,
           congregation: policy.congregation,
-          updated_by: policy.userName
+          updated_by: userName,
+          created_by: userName,
+          source: ADDRESS_CREATE_SOURCE
         });
 
         if (hhType && hhType.length > 0) {

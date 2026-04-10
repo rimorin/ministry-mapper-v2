@@ -1,5 +1,14 @@
 # Nota Pelepasan (Bahasa Melayu)
 
+## 2026-04-11
+
+[NEW] E-mel ringkasan harian untuk alamat harta tanah baharu yang ditambah oleh penerbit.
+  Pentadbir menerima ringkasan harian bagi sebarang alamat yang ditambah dalam tempoh 24 jam yang lalu. Setiap entri menunjukkan siapa yang menambahnya dan butiran lawatan, memudahkan semakan dan memastikan rekod sentiasa tepat.
+
+> Pentadbir: sila semak bahawa pemberitahuan e-mel diaktifkan dan e-mel Ministry Mapper tidak masuk ke folder spam.
+
+---
+
 ## 2026-04-08
 
 [NEW] Tambah alamat semasa di lapangan.

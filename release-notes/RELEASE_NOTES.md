@@ -109,6 +109,17 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ---
 
+## 2026-04-11
+
+[NEW] Daily summary email for new landed property addresses added by publishers.
+  Administrators receive a daily summary of any addresses added in the past 24 hours. Each entry shows who added it and any visit details, making it easy to review and keep records accurate.
+
+> Administrators: please check that email notifications are on and that Ministry Mapper emails aren't going to spam.
+
+![New address digest email](https://assets.ministry-mapper.com/release-notes/2026-04-11/new-addresses-email.png)
+
+---
+
 ## 2026-04-08
 
 [NEW] Add addresses on the fly.
