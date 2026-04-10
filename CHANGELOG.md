@@ -1,3 +1,10 @@
+## [1.33.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.33.1...v1.33.2) (2026-04-10)
+
+
+### Bug Fixes
+
+* add created_by and source fields to address creation and extract userName from policy ([e0b1af9](https://github.com/rimorin/ministry-mapper-v2/commit/e0b1af9188972d298b2a7842e201d0dfa88e98a2))
+
 ## [1.33.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.33.0...v1.33.1) (2026-04-09)
 
 
