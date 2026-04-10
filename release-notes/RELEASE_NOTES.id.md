@@ -1,5 +1,14 @@
 # Catatan Rilis (Bahasa Indonesia)
 
+## 2026-04-11
+
+[NEW] Email ringkasan harian untuk alamat perumahan baru yang ditambahkan oleh penerbit.
+  Administrator menerima ringkasan harian dari alamat yang ditambahkan dalam 24 jam terakhir. Setiap entri menampilkan siapa yang menambahkannya dan detail kunjungan, sehingga mudah untuk meninjau dan menjaga keakuratan catatan.
+
+> Administrator: mohon periksa bahwa notifikasi email sudah aktif dan email Ministry Mapper tidak masuk ke folder spam.
+
+---
+
 ## 2026-04-08
 
 [NEW] Tambah alamat langsung di lapangan.

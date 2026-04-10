@@ -1,5 +1,14 @@
 # Notas de versión (Español)
 
+## 2026-04-11
+
+[NEW] Correo de resumen diario para las nuevas direcciones residenciales añadidas por los publicadores.
+  Los administradores reciben un resumen diario de las direcciones añadidas en las últimas 24 horas. Cada entrada muestra quién la añadió y los detalles de la visita, lo que facilita revisar y mantener los registros al día.
+
+> Administradores: por favor verifica que las notificaciones por correo electrónico estén activadas y que los correos de Ministry Mapper no vayan a la carpeta de spam.
+
+---
+
 ## 2026-04-08
 
 [NEW] Agrega direcciones sobre la marcha.
