@@ -493,7 +493,8 @@
     "new": "Baru",
     "fix": "Perbaikan",
     "improved": "Peningkatan",
-    "announcement": "Pengumuman"
+    "announcement": "Pengumuman",
+    "history": "Riwayat Rilis"
   },
   "expiry": {
     "hour_other": "{{count}} jam",

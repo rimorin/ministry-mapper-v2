@@ -493,7 +493,8 @@
     "new": "Baharu",
     "fix": "Pembetulan",
     "improved": "Dipertingkat",
-    "announcement": "Pengumuman"
+    "announcement": "Pengumuman",
+    "history": "Sejarah Pelepasan"
   },
   "expiry": {
     "hour_other": "{{count}} jam",

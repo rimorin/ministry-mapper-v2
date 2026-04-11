@@ -5,6 +5,7 @@ import GenericButton from "../../../components/navigation/button";
 import AggregationBadge from "../../../components/navigation/aggrbadge";
 import ComponentAuthorizer from "../../../components/navigation/authorizer";
 import ThemeToggle from "../../../components/navigation/themetoggle";
+import ReleaseHistoryBtn from "../../../components/navigation/releasehistorybtn";
 import { getAssetUrl } from "../../../utils/helpers/assetpath";
 import { USER_ACCESS_LEVELS } from "../../../utils/constants";
 import { territoryDetails } from "../../../utils/interface";
@@ -182,6 +183,7 @@ export default function AdminNavbar({
             userAccessLevel={userAccessLevel}
             {...onAccountActions}
           />
+          <ReleaseHistoryBtn className="m-1" />
           <ThemeToggle className="m-1" />
           <GenericButton
             className="m-1"

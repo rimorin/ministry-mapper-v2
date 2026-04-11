@@ -4,11 +4,9 @@ import { useTranslation } from "react-i18next";
 import type { ReleaseEntry } from "../../hooks/useReleaseNotes";
 import { resolveLocalized } from "../../utils/resolveLocalized";
 
-const MAX_RELEASES = 3;
-
 interface ReleaseNotesModalProps {
   releases: ReleaseEntry[];
-  onSeen: () => void;
+  onSeen?: () => void;
 }
 
 const ITEM_CONFIG = {
@@ -101,10 +99,8 @@ const ReleaseNotesModal = NiceModal.create(
       });
     };
 
-    const visibleReleases = releases.slice(0, MAX_RELEASES);
-
     const handleDismiss = () => {
-      onSeen();
+      onSeen?.();
       modal.hide();
     };
 
@@ -124,7 +120,7 @@ const ReleaseNotesModal = NiceModal.create(
         </Modal.Header>
         <Modal.Body className="p-3">
           <div className="d-flex flex-column gap-3">
-            {visibleReleases.map((release, idx) => {
+            {releases.map((release, idx) => {
               const notice = resolve(release.notice);
               return (
                 <Card key={release.id} className="border overflow-hidden">

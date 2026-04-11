@@ -493,7 +493,8 @@
     "new": "புதியது",
     "fix": "திருத்தம்",
     "improved": "மேம்பட்டது",
-    "announcement": "அறிவிப்பு"
+    "announcement": "அறிவிப்பு",
+    "history": "வெளியீட்டு வரலாறு"
   },
   "expiry": {
     "hour_one": "{{count}} மணி நேரம்",
