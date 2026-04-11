@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { TFunction } from "i18next";
 import { RecordModel } from "pocketbase";
-import { getList, getDataById, getUser } from "../utils/pocketbase";
+import { getList, getPaginatedList, getDataById, getUser } from "../utils/pocketbase";
 import {
   DEFAULT_CONGREGATION_MAX_TRIES,
   DEFAULT_SELF_DESTRUCT_HOURS,
@@ -191,12 +191,12 @@ export default function useAdminData({
         .map((id) => `territory="${id}"`)
         .join(" || ");
 
-      const maps = await getList("maps", {
+      const maps = await getPaginatedList("maps", 1, 1, {
         filter: filterConditions,
         requestKey: null,
         fields: "id"
       });
-      setHasAnyMaps(maps.length > 0);
+      setHasAnyMaps(maps.items.length > 0);
     } catch {
       setHasAnyMaps(false);
     }
