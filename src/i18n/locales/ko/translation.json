@@ -493,7 +493,8 @@
     "new": "신규",
     "fix": "수정",
     "improved": "개선",
-    "announcement": "공지"
+    "announcement": "공지",
+    "history": "릴리스 기록"
   },
   "expiry": {
     "hour_other": "{{count}} 시간",

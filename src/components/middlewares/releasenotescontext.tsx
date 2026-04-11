@@ -7,6 +7,7 @@ import {
 interface ReleaseNotesContextValue {
   hasNewReleases: boolean;
   newReleases: ReleaseEntry[];
+  allReleases: ReleaseEntry[];
   isLoading: boolean;
   markAsSeen: () => void;
 }

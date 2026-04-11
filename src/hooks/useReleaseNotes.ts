@@ -19,6 +19,7 @@ export interface ReleaseEntry {
 interface UseReleaseNotesReturn {
   hasNewReleases: boolean;
   newReleases: ReleaseEntry[];
+  allReleases: ReleaseEntry[];
   isLoading: boolean;
   markAsSeen: () => void;
 }
@@ -29,6 +30,7 @@ export function useReleaseNotes(): UseReleaseNotesReturn {
   >("lastSeenReleaseId", null);
   const lastSeenRef = useRef(lastSeenReleaseId);
   const [newReleases, setNewReleases] = useState<ReleaseEntry[]>([]);
+  const [allReleases, setAllReleases] = useState<ReleaseEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -42,6 +44,8 @@ export function useReleaseNotes(): UseReleaseNotesReturn {
         if (!contentType?.includes("application/json")) return;
         const data: { releases: ReleaseEntry[] } = await response.json();
         if (!data.releases.length) return;
+
+        if (!ignore) setAllReleases(data.releases);
 
         const latestId = data.releases[0].id;
         const seenId = lastSeenRef.current;
@@ -75,6 +79,7 @@ export function useReleaseNotes(): UseReleaseNotesReturn {
   return {
     hasNewReleases: newReleases.length > 0,
     newReleases,
+    allReleases,
     isLoading,
     markAsSeen
   };

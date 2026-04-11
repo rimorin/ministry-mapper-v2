@@ -493,7 +493,8 @@
     "new": "新規",
     "fix": "修正",
     "improved": "改善",
-    "announcement": "お知らせ"
+    "announcement": "お知らせ",
+    "history": "リリース履歴"
   },
   "expiry": {
     "hour_other": "{{count}} 時間",

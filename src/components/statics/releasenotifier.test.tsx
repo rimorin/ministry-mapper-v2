@@ -48,6 +48,7 @@ describe("ReleaseNotifier", () => {
     vi.mocked(useReleaseNotesContext).mockReturnValue({
       hasNewReleases: false,
       newReleases: [],
+      allReleases: [],
       isLoading: false,
       markAsSeen: mockMarkAsSeen
     });
@@ -62,6 +63,7 @@ describe("ReleaseNotifier", () => {
     vi.mocked(useReleaseNotesContext).mockReturnValue({
       hasNewReleases: false,
       newReleases: [],
+      allReleases: [],
       isLoading: true,
       markAsSeen: mockMarkAsSeen
     });
@@ -74,6 +76,7 @@ describe("ReleaseNotifier", () => {
     vi.mocked(useReleaseNotesContext).mockReturnValue({
       hasNewReleases: false,
       newReleases: [],
+      allReleases: [],
       isLoading: false,
       markAsSeen: mockMarkAsSeen
     });
@@ -86,6 +89,7 @@ describe("ReleaseNotifier", () => {
     vi.mocked(useReleaseNotesContext).mockReturnValue({
       hasNewReleases: true,
       newReleases: sampleReleases,
+      allReleases: sampleReleases,
       isLoading: false,
       markAsSeen: mockMarkAsSeen
     });
@@ -105,6 +109,7 @@ describe("ReleaseNotifier", () => {
     vi.mocked(useReleaseNotesContext).mockReturnValue({
       hasNewReleases: true,
       newReleases: sampleReleases,
+      allReleases: sampleReleases,
       isLoading: false,
       markAsSeen: mockMarkAsSeen
     });

@@ -493,7 +493,8 @@
     "new": "New",
     "fix": "Fix",
     "improved": "Improved",
-    "announcement": "Announcement"
+    "announcement": "Announcement",
+    "history": "Release History"
   },
   "expiry": {
     "hour_one": "{{count}} hour",

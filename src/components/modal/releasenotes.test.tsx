@@ -123,4 +123,20 @@ describe("ReleaseNotesModal", () => {
     expect(onSeen).toHaveBeenCalledOnce();
     unmount();
   });
+
+  it("closes without error when onSeen is omitted", async () => {
+    const { unmount } = render(<></>);
+    NiceModal.show(ReleaseNotesModal, { releases: [englishRelease] });
+
+    await waitFor(() =>
+      expect(
+        screen.getByRole("button", { name: "Dismiss" })
+      ).toBeInTheDocument()
+    );
+
+    await expect(
+      userEvent.click(screen.getByRole("button", { name: "Dismiss" }))
+    ).resolves.not.toThrow();
+    unmount();
+  });
 });

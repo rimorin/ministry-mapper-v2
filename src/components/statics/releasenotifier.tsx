@@ -3,6 +3,8 @@ import NiceModal from "@ebay/nice-modal-react";
 import { useReleaseNotesContext } from "../middlewares/releasenotescontext";
 import ReleaseNotesModal from "../modal/releasenotes";
 
+const MAX_POPUP_RELEASES = 3;
+
 export function ReleaseNotifier() {
   const { hasNewReleases, newReleases, isLoading, markAsSeen } =
     useReleaseNotesContext();
@@ -12,7 +14,7 @@ export function ReleaseNotifier() {
     if (!isLoading && hasNewReleases && !hasOpened.current) {
       hasOpened.current = true;
       NiceModal.show(ReleaseNotesModal, {
-        releases: newReleases,
+        releases: newReleases.slice(0, MAX_POPUP_RELEASES),
         onSeen: markAsSeen
       });
     }
