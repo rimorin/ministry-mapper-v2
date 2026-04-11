@@ -1,7 +1,7 @@
 import { use, useEffect, useState, lazy } from "react";
-import { Container, Navbar, Image } from "react-bootstrap";
+import { Container, Navbar } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
-import { getAssetUrl } from "../utils/helpers/assetpath";
+
 import NavBarBranding from "../components/navigation/branding";
 import { StateContext } from "../components/utils/context";
 import { authListener, getUser } from "../utils/pocketbase";
@@ -14,6 +14,7 @@ import useUIState from "../hooks/useUIManagement";
 import GenericButton from "../components/navigation/button";
 import ThemeToggle from "../components/navigation/themetoggle";
 import ReleaseHistoryBtn from "../components/navigation/releasehistorybtn";
+import LanguageBtn from "../components/navigation/languagebtn";
 import SuspenseComponent from "../components/utils/suspense";
 const { VITE_ABOUT_URL } = import.meta.env;
 
@@ -92,21 +93,7 @@ const FrontPage = () => {
             />
             <ReleaseHistoryBtn className="m-1" />
             <ThemeToggle className="m-1" />
-            <GenericButton
-              className="m-1"
-              size="sm"
-              variant="outline-primary"
-              onClick={toggleLanguageSelector}
-              label={
-                <Image
-                  src={getAssetUrl("language.svg")}
-                  alt="Language"
-                  width={16}
-                  height={16}
-                  className="language-icon"
-                />
-              }
-            />
+            <LanguageBtn className="m-1" onClick={toggleLanguageSelector} />
           </div>
         </Container>
       </Navbar>

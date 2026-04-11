@@ -1,4 +1,4 @@
-import { Container, Navbar, Spinner, Image } from "react-bootstrap";
+import { Container, Navbar, Spinner } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import NavBarBranding from "../../../components/navigation/branding";
 import GenericButton from "../../../components/navigation/button";
@@ -6,7 +6,8 @@ import AggregationBadge from "../../../components/navigation/aggrbadge";
 import ComponentAuthorizer from "../../../components/navigation/authorizer";
 import ThemeToggle from "../../../components/navigation/themetoggle";
 import ReleaseHistoryBtn from "../../../components/navigation/releasehistorybtn";
-import { getAssetUrl } from "../../../utils/helpers/assetpath";
+import LanguageBtn from "../../../components/navigation/languagebtn";
+
 import { USER_ACCESS_LEVELS } from "../../../utils/constants";
 import { territoryDetails } from "../../../utils/interface";
 import { Policy } from "../../../utils/policies";
@@ -185,21 +186,7 @@ export default function AdminNavbar({
           />
           <ReleaseHistoryBtn className="m-1" />
           <ThemeToggle className="m-1" />
-          <GenericButton
-            className="m-1"
-            size="sm"
-            variant="outline-primary"
-            onClick={onToggleLanguageSelector}
-            label={
-              <Image
-                src={getAssetUrl("language.svg")}
-                alt="Language"
-                width={16}
-                height={16}
-                className="language-icon"
-              />
-            }
-          />
+          <LanguageBtn className="m-1" onClick={onToggleLanguageSelector} />
         </Navbar.Collapse>
       </Container>
     </Navbar>
