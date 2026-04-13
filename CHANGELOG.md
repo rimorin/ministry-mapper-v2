@@ -1,3 +1,24 @@
+# [1.34.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.33.2...v1.34.0) (2026-04-13)
+
+
+### Bug Fixes
+
+* add setHasAnyMaps to useAdminData hook for better map state management ([e3db5d0](https://github.com/rimorin/ministry-mapper-v2/commit/e3db5d091cbf87b15ef34a89affe6ef1b71eae57))
+* correct unread message count tracking and map existence check ([9ac8374](https://github.com/rimorin/ministry-mapper-v2/commit/9ac8374680cb8117f172ee0067dacf0fe989ce5b))
+* optimize data fetching by using Promise.all in useAdminData hook ([7164dbe](https://github.com/rimorin/ministry-mapper-v2/commit/7164dbe460f1d5cda3ca2d999c1b1eda0784e6b3))
+* reduce overscan count in MapListing component for performance optimization ([d4a1032](https://github.com/rimorin/ministry-mapper-v2/commit/d4a1032b1585c5278fa30f968f80b17fe46bd82d))
+* removed visibility management ([cf62125](https://github.com/rimorin/ministry-mapper-v2/commit/cf62125173b028de97b26496923b2dc0a11feb1e))
+* update announcement messages for clarity and consistency across release notes ([017ac62](https://github.com/rimorin/ministry-mapper-v2/commit/017ac6292e36e2fd56dd8aa131177a4926696e6c))
+* update map fetching to use paginated list and adjust response handling ([4f68c28](https://github.com/rimorin/ministry-mapper-v2/commit/4f68c2819d1b78e37bbf4e536f14af51b72de874))
+* update PB_FIELDS to include additional address options in fetchAddressData ([778a48e](https://github.com/rimorin/ministry-mapper-v2/commit/778a48e6824368801f19463b54d7180e6ee41db3))
+* update territory coordinates handling in Admin component ([9490abe](https://github.com/rimorin/ministry-mapper-v2/commit/9490abe591312c57f8ee07e14180a3827aae511a))
+
+
+### Features
+
+* add LanguageBtn component and fix dark mode SVG filter ([86c44c3](https://github.com/rimorin/ministry-mapper-v2/commit/86c44c39acc53f1d676cd1b43dc2f2d6f6e6984a))
+* add release history button next to theme toggle ([998182e](https://github.com/rimorin/ministry-mapper-v2/commit/998182eadcbd27f2bfbaceb237d426d21a8bf9ee))
+
 ## [1.33.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.33.1...v1.33.2) (2026-04-10)
 
 
