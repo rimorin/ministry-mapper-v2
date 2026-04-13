@@ -204,11 +204,10 @@ export default function useAdminData({
     setIsLoading(true);
     setUserAccessLevel(congregationAccessRef.current[congregationCode]);
 
-    const loadedTerritories = await fetchCongregationData(congregationCode);
-
-    if (loadedTerritories) {
-      await checkForMaps(congregationCode);
-    }
+    await Promise.all([
+      fetchCongregationData(congregationCode),
+      checkForMaps(congregationCode)
+    ]);
 
     setIsLoading(false);
   };
