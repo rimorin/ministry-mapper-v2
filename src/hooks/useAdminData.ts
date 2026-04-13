@@ -219,6 +219,7 @@ export default function useAdminData({
     checkForMaps,
     isLoading,
     setIsLoading,
-    hasAnyMaps
+    hasAnyMaps,
+    setHasAnyMaps
   };
 }

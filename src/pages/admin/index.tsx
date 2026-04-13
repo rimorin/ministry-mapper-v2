@@ -177,7 +177,8 @@ function Admin({ user }: adminProps) {
     loadAllCongregationData,
     checkForMaps,
     isLoading,
-    hasAnyMaps
+    hasAnyMaps,
+    setHasAnyMaps
   } = useAdminData({
     userId,
     congregationCodeCache,
@@ -537,10 +538,9 @@ function Admin({ user }: adminProps) {
       });
       if (dataAction === "create") {
         setAccordionKeys((prev) => [...prev, mapId]);
-      }
-      // Recheck for maps when maps are created/deleted
-      if (dataAction === "create" || dataAction === "delete") {
-        checkMapsOnRealtimeUpdate();
+        setHasAnyMaps(true); // map was just created, no need to query
+      } else if (dataAction === "delete") {
+        checkMapsOnRealtimeUpdate(); // recheck — may have deleted the last map
       }
     },
     {
