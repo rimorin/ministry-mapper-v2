@@ -255,45 +255,24 @@ describe("useAdminData", () => {
   });
 
   describe("checkForMaps", () => {
-    it("should set hasAnyMaps to false when no territories", async () => {
+    it("should set hasAnyMaps to false when no congregation id", async () => {
       const { result } = renderHook(() => useAdminData(defaultProps));
 
-      await result.current.checkForMaps(new Map());
+      await result.current.checkForMaps("");
 
       await waitFor(() => {
         expect(result.current.hasAnyMaps).toBe(false);
       });
     });
 
-    it("should check for maps across territories", async () => {
-      const territoryMap = new Map([
-        [
-          "terr-1",
-          {
-            id: "terr-1",
-            code: "T1",
-            name: "Territory 1",
-            aggregates: {} as any
-          }
-        ],
-        [
-          "terr-2",
-          {
-            id: "terr-2",
-            code: "T2",
-            name: "Territory 2",
-            aggregates: {} as any
-          }
-        ]
-      ]);
-
+    it("should check for maps by congregation id", async () => {
       vi.mocked(getPaginatedList).mockResolvedValueOnce({
         items: [{ id: "map-1" }]
       } as any);
 
       const { result } = renderHook(() => useAdminData(defaultProps));
 
-      await result.current.checkForMaps(territoryMap);
+      await result.current.checkForMaps("cong-1");
 
       await waitFor(() => {
         expect(result.current.hasAnyMaps).toBe(true);
@@ -302,7 +281,7 @@ describe("useAdminData", () => {
           1,
           1,
           expect.objectContaining({
-            filter: expect.stringContaining("terr-1"),
+            filter: `congregation="cong-1"`,
             fields: "id"
           })
         );
@@ -310,25 +289,13 @@ describe("useAdminData", () => {
     });
 
     it("should handle errors gracefully", async () => {
-      const territoryMap = new Map([
-        [
-          "terr-1",
-          {
-            id: "terr-1",
-            code: "T1",
-            name: "Territory 1",
-            aggregates: {} as any
-          }
-        ]
-      ]);
-
       vi.mocked(getPaginatedList).mockRejectedValueOnce(
         new Error("Network error")
       );
 
       const { result } = renderHook(() => useAdminData(defaultProps));
 
-      await result.current.checkForMaps(territoryMap);
+      await result.current.checkForMaps("cong-1");
 
       await waitFor(() => {
         expect(result.current.hasAnyMaps).toBe(false);

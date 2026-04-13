@@ -3,7 +3,7 @@ import { Marker } from "react-leaflet";
 import { divIcon } from "leaflet";
 import { addressDetails } from "../../utils/interface";
 import { LINK_TYPES } from "../../utils/constants";
-import { getFirstItemOfList } from "../../utils/pocketbase";
+import { getList } from "../../utils/pocketbase";
 import useRealtimeSubscription from "../../hooks/useRealtime";
 
 interface AddressMarkerProps {
@@ -29,21 +29,15 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
   const mapId = addressElement.id;
 
   const fetchData = async () => {
-    const [assignments, personal] = await Promise.all([
-      getFirstItemOfList(
-        "assignments",
-        `map="${mapId}" && type="${LINK_TYPES.ASSIGNMENT}"`,
-        { fields: "id", requestKey: `marker-assignments-${mapId}` }
-      ),
-      getFirstItemOfList(
-        "assignments",
-        `map="${mapId}" && type="${LINK_TYPES.PERSONAL}"`,
-        { fields: "id", requestKey: `marker-personal-${mapId}` }
-      )
-    ]);
-
-    setHasAssignments(!!assignments);
-    setHasPersonal(!!personal);
+    const assignments = await getList("assignments", {
+      filter: `map="${mapId}"`,
+      fields: "id, type",
+      requestKey: `marker-assignments-${mapId}`
+    });
+    setHasAssignments(
+      assignments.some((a) => a.type === LINK_TYPES.ASSIGNMENT)
+    );
+    setHasPersonal(assignments.some((a) => a.type === LINK_TYPES.PERSONAL));
   };
 
   useEffect(() => {
@@ -53,10 +47,18 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
 
   useRealtimeSubscription(
     "assignments",
-    fetchData,
+    (data) => {
+      const { action, record } = data;
+      if (action === "create") {
+        if (record.type === LINK_TYPES.ASSIGNMENT) setHasAssignments(true);
+        if (record.type === LINK_TYPES.PERSONAL) setHasPersonal(true);
+      } else if (action === "delete" || action === "update") {
+        fetchData();
+      }
+    },
     {
       filter: `map="${mapId}"`,
-      fields: "id"
+      fields: "id, type"
     },
     [mapId],
     !!mapId

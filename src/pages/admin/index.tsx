@@ -460,7 +460,7 @@ function Admin({ user }: adminProps) {
   }, [congregationCode]);
 
   const checkMapsOnRealtimeUpdate = () => {
-    checkForMaps(territories);
+    checkForMaps(congregationCode);
   };
 
   useRealtimeSubscription(

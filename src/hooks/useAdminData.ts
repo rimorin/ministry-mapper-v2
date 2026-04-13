@@ -182,22 +182,15 @@ export default function useAdminData({
     return territoryMap;
   };
 
-  const checkForMaps = async (territoryMap?: Map<string, territoryDetails>) => {
-    const mapToCheck = territoryMap || new Map();
-
-    if (mapToCheck.size === 0) {
+  const checkForMaps = async (congregationId: string) => {
+    if (!congregationId) {
       setHasAnyMaps(false);
       return;
     }
 
     try {
-      const territoryIds = Array.from(mapToCheck.keys());
-      const filterConditions = territoryIds
-        .map((id) => `territory="${id}"`)
-        .join(" || ");
-
       const maps = await getPaginatedList("maps", 1, 1, {
-        filter: filterConditions,
+        filter: `congregation="${congregationId}"`,
         requestKey: null,
         fields: "id"
       });
@@ -214,7 +207,7 @@ export default function useAdminData({
     const loadedTerritories = await fetchCongregationData(congregationCode);
 
     if (loadedTerritories) {
-      await checkForMaps(loadedTerritories);
+      await checkForMaps(congregationCode);
     }
 
     setIsLoading(false);
