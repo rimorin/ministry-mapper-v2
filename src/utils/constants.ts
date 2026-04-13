@@ -148,7 +148,7 @@ const PB_FIELDS = {
   // Used only in fetchAddressData — includes expand subfields for address_options.
   // Kept separate from ADDRESSES because subscription events don't carry expand data.
   ADDRESSES_FETCH:
-    "id, code, coordinates, notes, status, not_home_tries, dnc_time, sequence, floor, updated, updated_by, expand.address_options_via_address",
+    "id, code, coordinates, notes, status, not_home_tries, dnc_time, sequence, floor, updated, updated_by, expand.address_options_via_address.id, expand.address_options_via_address.option",
   ADDRESS_OPTIONS: "id,address,option",
   ROLES: "id, role, expand.congregation.id, expand.congregation.name",
   CONGREGATION_ROLES:
