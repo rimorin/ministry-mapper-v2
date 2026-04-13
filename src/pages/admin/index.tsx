@@ -6,7 +6,8 @@ import {
   adminProps,
   userDetails,
   valuesDetails,
-  addressDetails
+  addressDetails,
+  TerritoryPolygonCoordinate
 } from "../../utils/interface";
 import { LinkSession } from "../../utils/policies";
 import {
@@ -395,8 +396,17 @@ function Admin({ user }: adminProps) {
 
     // Only refresh if coordinates were actually saved (not cancelled)
     if (result !== undefined) {
-      // Refresh territory data after location change
-      await processCongregationTerritories(congregationCode);
+      setTerritories((prev) => {
+        const updated = new Map(prev);
+        const territory = updated.get(selectedTerritory.id);
+        if (territory) {
+          updated.set(selectedTerritory.id, {
+            ...territory,
+            coordinates: result as TerritoryPolygonCoordinate
+          });
+        }
+        return updated;
+      });
     }
   };
 
