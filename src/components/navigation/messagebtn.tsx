@@ -18,7 +18,7 @@ interface PersonalButtonGroupProps {
 }
 
 const useUnreadMessages = (mapId: string) => {
-  const [unreadMsgCount, setUnreadMsgCount] = React.useState(0);
+  const [unreadIds, setUnreadIds] = React.useState<Set<string>>(new Set());
 
   const fetchUnreadMsgs = async () => {
     const unreadMessages = await getList("messages", {
@@ -26,7 +26,7 @@ const useUnreadMessages = (mapId: string) => {
       fields: "id",
       requestKey: null
     });
-    setUnreadMsgCount(unreadMessages.length);
+    setUnreadIds(new Set(unreadMessages.map((r) => r.id)));
   };
 
   useEffect(() => {
@@ -38,22 +38,28 @@ const useUnreadMessages = (mapId: string) => {
   useRealtimeSubscription(
     "messages",
     (data) => {
-      const { action } = data;
-      if (action === "create") {
-        setUnreadMsgCount((prevCount) => prevCount + 1);
-      } else if (action === "update") {
-        setUnreadMsgCount((prevCount) => prevCount - 1);
-      }
+      const { action, record } = data;
+      setUnreadIds((prev) => {
+        const next = new Set(prev);
+        if (action === "create" && !record.read) {
+          next.add(record.id);
+        } else if (action === "update" && record.read) {
+          next.delete(record.id);
+        } else if (action === "delete") {
+          next.delete(record.id);
+        }
+        return next;
+      });
     },
     {
       filter: `map="${mapId}" && type!="${MESSAGE_TYPES.ADMIN}"`,
-      fields: "id"
+      fields: "id, read"
     },
     [mapId],
     !!mapId
   );
 
-  return unreadMsgCount;
+  return unreadIds.size;
 };
 
 const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
