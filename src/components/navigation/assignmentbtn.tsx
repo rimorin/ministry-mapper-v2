@@ -15,7 +15,6 @@ import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import ComponentAuthorizer from "./authorizer";
 import addHours from "../../utils/helpers/addhours";
 import { RecordModel } from "pocketbase";
-import useVisibilityChange from "../../hooks/useVisibilityManagement";
 import { getList, createData } from "../../utils/pocketbase";
 import useRealtimeSubscription from "../../hooks/useRealtime";
 import { useModalManagement } from "../../hooks/useModalManagement";
@@ -102,8 +101,6 @@ const useAssignments = (mapId: string) => {
     [mapId],
     !!mapId
   );
-
-  useVisibilityChange(retrieveAssignments);
 
   return { personalLinks, normalLinks };
 };

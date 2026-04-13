@@ -18,7 +18,6 @@ import {
   USER_ACCESS_LEVELS
 } from "../../utils/constants";
 import { RecordModel, RecordSubscribeOptions } from "pocketbase";
-import useVisibilityChange from "../../hooks/useVisibilityManagement";
 import {
   createData,
   deleteDataById,
@@ -93,8 +92,6 @@ const useMessages = (mapId: string, assignmentId?: string) => {
     [mapId, assignmentId],
     !!mapId
   );
-
-  useVisibilityChange(fetchFeedbacks);
 
   return { messages };
 };

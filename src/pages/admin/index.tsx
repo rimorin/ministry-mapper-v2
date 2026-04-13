@@ -22,7 +22,6 @@ import useMapManagement from "../../hooks/useMapManagement";
 import useCongregationManagement from "../../hooks/useCongManagement";
 import useUIState from "../../hooks/useUIManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
-import useVisibilityChange from "../../hooks/useVisibilityManagement";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useAdminData from "../../hooks/useAdminData";
 import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
@@ -541,8 +540,6 @@ function Admin({ user }: adminProps) {
     [selectedTerritory.id],
     !!selectedTerritory.id
   );
-
-  useVisibilityChange(() => setupMaps(selectedTerritory.id));
 
   if (isLoading) return <Loader />;
   if (isUnauthorised) {

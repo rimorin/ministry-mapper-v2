@@ -1,4 +1,10 @@
-import React, { lazy, useEffect, useEffectEvent, useState } from "react";
+import React, {
+  lazy,
+  useEffect,
+  useEffectEvent,
+  useRef,
+  useState
+} from "react";
 import {
   TERRITORY_TYPES,
   NOT_HOME_STATUS_CODES,
@@ -131,11 +137,20 @@ const useAddresses = (
     });
   };
 
+  const lastReconnectRef = useRef(0);
+
   const onReconnect = useEffectEvent(() => {
-    fetchAddressData();
+    const now = Date.now();
+    if (now - lastReconnectRef.current >= 10_000) {
+      lastReconnectRef.current = now;
+      fetchAddressData();
+    }
   });
 
   useEffect(() => {
+    // Stamp the reconnect ref so the PB_CONNECT event that fires immediately
+    // after subscribing doesn't trigger a second redundant fetch.
+    lastReconnectRef.current = Date.now();
     fetchAddressData();
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes fetchAddressData
   }, [mapId]);

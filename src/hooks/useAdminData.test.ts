@@ -12,6 +12,7 @@ vi.mock("./useNotification", () => ({
 
 vi.mock("../utils/pocketbase", () => ({
   getList: vi.fn(() => Promise.resolve([])),
+  getPaginatedList: vi.fn(() => Promise.resolve({ items: [] })),
   getDataById: vi.fn(() => Promise.resolve(null)),
   getUser: vi.fn(() => "Test User")
 }));
@@ -34,7 +35,8 @@ const mockT = vi.fn((key: string, defaultValue: string) => defaultValue) as any;
 
 // Import after mocks
 const { default: useAdminData } = await import("./useAdminData");
-const { getList, getDataById } = await import("../utils/pocketbase");
+const { getList, getPaginatedList, getDataById } =
+  await import("../utils/pocketbase");
 
 describe("useAdminData", () => {
   const defaultProps = {
@@ -285,7 +287,9 @@ describe("useAdminData", () => {
         ]
       ]);
 
-      vi.mocked(getList).mockResolvedValueOnce([{ id: "map-1" }] as any);
+      vi.mocked(getPaginatedList).mockResolvedValueOnce({
+        items: [{ id: "map-1" }]
+      } as any);
 
       const { result } = renderHook(() => useAdminData(defaultProps));
 
@@ -293,8 +297,10 @@ describe("useAdminData", () => {
 
       await waitFor(() => {
         expect(result.current.hasAnyMaps).toBe(true);
-        expect(getList).toHaveBeenCalledWith(
+        expect(getPaginatedList).toHaveBeenCalledWith(
           "maps",
+          1,
+          1,
           expect.objectContaining({
             filter: expect.stringContaining("terr-1"),
             fields: "id"
@@ -316,7 +322,9 @@ describe("useAdminData", () => {
         ]
       ]);
 
-      vi.mocked(getList).mockRejectedValueOnce(new Error("Network error"));
+      vi.mocked(getPaginatedList).mockRejectedValueOnce(
+        new Error("Network error")
+      );
 
       const { result } = renderHook(() => useAdminData(defaultProps));
 
@@ -355,8 +363,7 @@ describe("useAdminData", () => {
       vi.mocked(getDataById).mockResolvedValueOnce(mockCongregation);
       vi.mocked(getList)
         .mockResolvedValueOnce([]) // options
-        .mockResolvedValueOnce([]) // territories
-        .mockResolvedValueOnce([]); // maps
+        .mockResolvedValueOnce([]); // territories
 
       mockProcessCongregationTerritories.mockReturnValueOnce(territoryMap);
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { getDataById, getList } from "../utils/pocketbase";
 import { addressDetails, latlongInterface } from "../utils/interface";
 import { Policy } from "../utils/policies";
@@ -128,6 +128,19 @@ export default function useMapLink() {
       setIsLoading(false);
     }
   };
+
+  // Automatically mark the link as expired at exactly tokenEndTime.
+  // This replaces polling on visibility change — no network requests needed.
+  useEffect(() => {
+    if (!tokenEndTime) return;
+    const remaining = tokenEndTime - Date.now();
+    if (remaining <= 0) {
+      setIsLinkExpired(true);
+      return;
+    }
+    const timer = setTimeout(() => setIsLinkExpired(true), remaining);
+    return () => clearTimeout(timer);
+  }, [tokenEndTime]);
 
   return {
     isLinkExpired,

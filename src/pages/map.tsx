@@ -19,7 +19,6 @@ import {
 import "../css/slip.css";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { useParams } from "wouter";
-import useVisibilityChange from "../hooks/useVisibilityManagement";
 import { LanguageContext } from "../i18n/LanguageContext";
 import LanguageSelector from "../i18n/LanguageSelector";
 import { useModalManagement } from "../hooks/useModalManagement";
@@ -166,10 +165,6 @@ const Map = () => {
     [mapId, id],
     !!mapId && !!id
   );
-  useVisibilityChange(() => {
-    if (id) getMapData(id, readPinnedMessages);
-  });
-
   useEffect(() => {
     if (isLinkExpired) document.title = "Ministry Mapper";
   }, [isLinkExpired]);

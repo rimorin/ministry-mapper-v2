@@ -1,7 +1,12 @@
 import { useState } from "react";
 import { TFunction } from "i18next";
 import { RecordModel } from "pocketbase";
-import { getList, getPaginatedList, getDataById, getUser } from "../utils/pocketbase";
+import {
+  getList,
+  getPaginatedList,
+  getDataById,
+  getUser
+} from "../utils/pocketbase";
 import {
   DEFAULT_CONGREGATION_MAX_TRIES,
   DEFAULT_SELF_DESTRUCT_HOURS,
