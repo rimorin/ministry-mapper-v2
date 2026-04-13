@@ -5,7 +5,6 @@ import { addressDetails } from "../../utils/interface";
 import { Policy } from "../../utils/policies";
 import { useTranslation } from "react-i18next";
 
-import useVisibilityChange from "../../hooks/useVisibilityManagement";
 import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
 import { getList } from "../../utils/pocketbase";
 import useRealtimeSubscription from "../../hooks/useRealtime";
@@ -53,8 +52,6 @@ const useUnreadMessages = (mapId: string) => {
     [mapId],
     !!mapId
   );
-
-  useVisibilityChange(fetchUnreadMsgs);
 
   return unreadMsgCount;
 };
