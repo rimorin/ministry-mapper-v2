@@ -8,6 +8,8 @@ import packageJson from "./package.json";
 
 export default defineConfig(() => {
   const isProduction = process.env.NODE_ENV === "production";
+  const isCI = !!process.env.CI;
+  const isAnalyze = !!process.env.ANALYZE;
 
   return {
     define: {
@@ -48,14 +50,10 @@ export default defineConfig(() => {
             )
               return "vendor-ui";
 
-            if (id.includes("leaflet")) {
-              return "vendor-mapping";
-            }
+            if (id.includes("leaflet")) return "vendor-mapping";
 
             // Everything else from node_modules
-            if (id.includes("node_modules")) {
-              return "vendor-libs";
-            }
+            if (id.includes("node_modules")) return "vendor-libs";
           }
         }
       }
@@ -68,32 +66,29 @@ export default defineConfig(() => {
       babel({
         plugins: ["babel-plugin-react-compiler"]
       }),
-      visualizer(),
-      ...(!isProduction ? [TurboConsole()] : []),
-      ...(isProduction
-        ? [
-            sentryVitePlugin({
-              org: process.env.SENTRY_ORG,
-              project: process.env.SENTRY_PROJECT,
-              authToken: process.env.SENTRY_AUTH_TOKEN,
-              telemetry: false,
-              release: {
-                name: process.env.npm_package_version
-              },
-              bundleSizeOptimizations: {
-                excludeDebugStatements: true,
-                excludeTracing: true,
-                excludeReplayIframe: true,
-                excludeReplayShadowDom: true,
-                excludeReplayCanvas: true,
-                excludeReplayWorker: true
-              },
-              sourcemaps: {
-                filesToDeleteAfterUpload: ["./build/**/*.map"]
-              }
-            })
-          ]
-        : [])
+      isAnalyze && visualizer(),
+      !isProduction && !isCI && TurboConsole(),
+      isProduction &&
+        sentryVitePlugin({
+          org: process.env.SENTRY_ORG,
+          project: process.env.SENTRY_PROJECT,
+          authToken: process.env.SENTRY_AUTH_TOKEN,
+          telemetry: false,
+          release: {
+            name: process.env.npm_package_version
+          },
+          bundleSizeOptimizations: {
+            excludeDebugStatements: true,
+            excludeTracing: true,
+            excludeReplayIframe: true,
+            excludeReplayShadowDom: true,
+            excludeReplayCanvas: true,
+            excludeReplayWorker: true
+          },
+          sourcemaps: {
+            filesToDeleteAfterUpload: ["./build/**/*.map"]
+          }
+        })
     ],
     css: {
       preprocessorOptions: {
