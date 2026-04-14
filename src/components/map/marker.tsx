@@ -44,7 +44,7 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
 
   const fetchData = async () => {
     const assignments = await getList("assignments", {
-      filter: `map="${mapId}"`,
+      filter: `map="${mapId}" && expiry_date >= @now`,
       fields: "id, type",
       requestKey: `marker-assignments-${mapId}`
     });
@@ -66,7 +66,7 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
       }
     },
     {
-      filter: `map="${mapId}"`,
+      filter: `map="${mapId}" && expiry_date >= @now`,
       fields: "id, type"
     },
     [mapId],

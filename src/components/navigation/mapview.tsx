@@ -45,7 +45,8 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
   useEffect(() => {
     if (!sortedAddressList.length) return;
     const mapIds = sortedAddressList.map((a) => a.id);
-    const filter = mapIds.map((id) => `map="${id}"`).join(" || ");
+    const mapsFilter = mapIds.map((id) => `map="${id}"`).join(" || ");
+    const filter = `(${mapsFilter}) && expiry_date >= @now`;
     getList("assignments", {
       filter,
       fields: "map, type",
