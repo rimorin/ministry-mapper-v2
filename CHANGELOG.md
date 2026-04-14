@@ -1,3 +1,13 @@
+## [1.34.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.0...v1.34.1) (2026-04-14)
+
+
+### Bug Fixes
+
+* enhance AddressMarker and MapView components with initial status handling for assignments ([909e975](https://github.com/rimorin/ministry-mapper-v2/commit/909e975c74e735d33d55530dff067ca642feaef5))
+* remove unused getDataById mock and refactor congregation data handling in useAdminData ([bfc1468](https://github.com/rimorin/ministry-mapper-v2/commit/bfc1468d03fc769462d180e48c281d5d82fbf87a))
+* update assignment filters in AddressMarker and MapView to include expiry date check ([4a0ffea](https://github.com/rimorin/ministry-mapper-v2/commit/4a0ffead507a47f724639fbcf7542e187d7de1f5))
+* update map aggregates handling and include additional fields in PB_FIELDS ([e30cf9c](https://github.com/rimorin/ministry-mapper-v2/commit/e30cf9c5e03aa0ed2210dfff7e578c84798e8164))
+
 # [1.34.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.33.2...v1.34.0) (2026-04-13)
 
 
