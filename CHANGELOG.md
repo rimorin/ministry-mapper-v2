@@ -1,3 +1,13 @@
+## [1.34.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.1...v1.34.2) (2026-04-14)
+
+
+### Bug Fixes
+
+* add batch size to address fetch options for improved performance ([0401baa](https://github.com/rimorin/ministry-mapper-v2/commit/0401baa5668d4b6dd33d9ce61ccb6c8b6d9f5e2a))
+* correct formatting in PB_FIELDS for consistency in congregation role data ([2ba8a8b](https://github.com/rimorin/ministry-mapper-v2/commit/2ba8a8b7c830806b66704c5699d6bbc777be15aa))
+* refactor theme resolution logic in ThemeMiddleware for clarity and efficiency ([15b3e16](https://github.com/rimorin/ministry-mapper-v2/commit/15b3e163cd7aa4818b1e3aa4e8e49871da0a51e4))
+* remove BackendHealthMiddleware and related components for cleanup ([3484ebd](https://github.com/rimorin/ministry-mapper-v2/commit/3484ebd83a7b0233acc37d8ac09a13f3434be743))
+
 ## [1.34.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.0...v1.34.1) (2026-04-14)
 
 
