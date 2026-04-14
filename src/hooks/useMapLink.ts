@@ -97,7 +97,9 @@ export default function useMapLink() {
       location: linkRecord.expand?.map.location || "",
       aggregates: {
         display: linkRecord.expand?.map.progress + "%",
-        value: linkRecord.expand?.map.progress
+        value: linkRecord.expand?.map.progress,
+        notDone: linkRecord.expand?.map.aggregates?.notDone ?? 0,
+        notHome: linkRecord.expand?.map.aggregates?.notHome ?? 0
       },
       name: linkRecord.expand?.map.description,
       coordinates: linkRecord.expand?.map.coordinates

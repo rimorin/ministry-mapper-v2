@@ -142,7 +142,7 @@ const PB_FIELDS = {
   ASSIGNMENTS:
     "id, user, type, expiry_date, publisher, created, expand.map.description",
   ASSIGNMENT_LINKS:
-    "id, map, expiry_date, publisher, expand.map.description, expand.map.type, expand.map.location, expand.map.coordinates, expand.map.progress, expand.map.territory, expand.map.expand.congregation.max_tries, expand.map.expand.congregation.origin, expand.map.expand.congregation.expiry_hours, expand.map.expand.congregation.id",
+    "id, map, expiry_date, publisher, expand.map.description, expand.map.type, expand.map.location, expand.map.coordinates, expand.map.progress, expand.map.aggregates, expand.map.territory, expand.map.expand.congregation.max_tries, expand.map.expand.congregation.origin, expand.map.expand.congregation.expiry_hours, expand.map.expand.congregation.id",
   ADDRESSES_SUBSCRIPTION:
     "id, code, coordinates, notes, status, not_home_tries, dnc_time, sequence, floor, updated, updated_by",
   // Used only in fetchAddressData — includes expand subfields for address_options.
@@ -150,7 +150,8 @@ const PB_FIELDS = {
   ADDRESSES_FETCH:
     "id, code, coordinates, notes, status, not_home_tries, dnc_time, sequence, floor, updated, updated_by, expand.address_options_via_address.id, expand.address_options_via_address.option",
   ADDRESS_OPTIONS: "id,address,option",
-  ROLES: "id, role, expand.congregation.id, expand.congregation.name",
+  ROLES:
+    "id, role, expand.congregation.id, expand.congregation.name, expand.congregation.code, expand.congregation.max_tries, expand.congregation.origin, expand.congregation.expiry_hours",
   CONGREGATION_ROLES:
     "id, role, expand.user.name, expand.user.email, expand.user.verified",
   TERRITORIES: "id, code, description, progress, coordinates",
