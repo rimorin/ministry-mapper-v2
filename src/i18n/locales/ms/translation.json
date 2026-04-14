@@ -507,10 +507,5 @@
       "title": "Kaedah Akses Tidak Disokong 📱",
       "message": "Apl ini tidak menyokong dibuka sebagai apl yang dipasang (PWA). Sila buka terus dalam penyemak imbas web anda."
     }
-  },
-  "backendOffline": {
-    "title": "Perkhidmatan Tidak Tersedia",
-    "description": "Ministry Mapper tidak dapat dicapai pada masa ini. Perkhidmatan mungkin sedang bermasalah. Sila cuba lagi sebentar lagi.",
-    "retry": "Cuba Lagi"
   }
 }
