@@ -146,8 +146,8 @@ const Map = () => {
           aggregates: {
             display: mapData.progress + "%",
             value: mapData.progress,
-            notDone: mapData.aggregates?.not_done,
-            notHome: mapData.aggregates?.not_home
+            notDone: mapData.aggregates?.notDone,
+            notHome: mapData.aggregates?.notHome
           },
           location: mapData.location,
           name: mapData.description,
