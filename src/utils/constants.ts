@@ -150,7 +150,7 @@ const PB_FIELDS = {
     "id, code, coordinates, notes, status, not_home_tries, dnc_time, sequence, floor, updated, updated_by, expand.address_options_via_address.id, expand.address_options_via_address.option",
   ADDRESS_OPTIONS: "id,address,option",
   ROLES:
-    "id, role, expand.congregation.id, expand.congregation.name, expand.congregation.code, expand.congregation.max_tries, expand.congregation.origin, expand.congregation.expiry_hours",
+    "id, role, expand.congregation.id, expand.congregation.name, expand.congregation.max_tries, expand.congregation.origin, expand.congregation.expiry_hours",
   CONGREGATION_ROLES:
     "id, role, expand.user.name, expand.user.email, expand.user.verified",
   TERRITORIES: "id, code, description, progress, coordinates",
