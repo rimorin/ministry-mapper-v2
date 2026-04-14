@@ -66,7 +66,8 @@ const useAddresses = (
       filter: `map="${mapId}"`,
       requestKey: null,
       fields: PB_FIELDS.ADDRESSES_FETCH,
-      expand: "address_options_via_address"
+      expand: "address_options_via_address",
+      batch: 1000
     });
 
     const addressMap = new Map();
