@@ -7,35 +7,34 @@ interface ThemeMiddlewareProps {
   children: ReactNode;
 }
 
+const resolveActualTheme = (mode: ThemeMode): "light" | "dark" =>
+  mode === "system"
+    ? window.matchMedia("(prefers-color-scheme: dark)").matches
+      ? "dark"
+      : "light"
+    : mode;
+
 const ThemeMiddleware: FC<ThemeMiddlewareProps> = ({ children }) => {
   const [theme, setTheme] = useLocalStorage<ThemeMode>("mm-theme", "system");
-  const [actualTheme, setActualTheme] = useState<"light" | "dark">("light");
+  const [actualTheme, setActualTheme] = useState<"light" | "dark">(() =>
+    resolveActualTheme(theme)
+  );
 
   useEffect(() => {
-    const getSystemTheme = (): "light" | "dark" => {
-      return window.matchMedia("(prefers-color-scheme: dark)").matches
-        ? "dark"
-        : "light";
-    };
-
     const applyTheme = (newTheme: "light" | "dark") => {
       document.documentElement.setAttribute("data-bs-theme", newTheme);
       setActualTheme(newTheme);
     };
 
-    if (theme === "system") {
-      const systemTheme = getSystemTheme();
-      applyTheme(systemTheme);
+    applyTheme(resolveActualTheme(theme));
 
+    if (theme === "system") {
       const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-      const handleChange = (e: MediaQueryListEvent) => {
+      const handleChange = (e: MediaQueryListEvent) =>
         applyTheme(e.matches ? "dark" : "light");
-      };
 
       mediaQuery.addEventListener("change", handleChange);
       return () => mediaQuery.removeEventListener("change", handleChange);
-    } else {
-      applyTheme(theme);
     }
   }, [theme]);
 
