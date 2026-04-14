@@ -1,12 +1,7 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { TFunction } from "i18next";
 import { RecordModel } from "pocketbase";
-import {
-  getList,
-  getPaginatedList,
-  getDataById,
-  getUser
-} from "../utils/pocketbase";
+import { getList, getPaginatedList, getUser } from "../utils/pocketbase";
 import {
   DEFAULT_CONGREGATION_MAX_TRIES,
   DEFAULT_SELF_DESTRUCT_HOURS,
@@ -73,6 +68,7 @@ export default function useAdminData({
 }: UseAdminDataProps) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasAnyMaps, setHasAnyMaps] = useState<boolean>(false);
+  const congregationDetailsRef = useRef<Record<string, RecordModel>>({});
   const fetchData = async () => {
     const userRoles = await getList("roles", {
       filter: `user="${userId}"`,
@@ -101,6 +97,14 @@ export default function useAdminData({
       },
       {} as Record<string, string>
     );
+    congregationDetailsRef.current = userRoles.reduce(
+      (acc, record) => {
+        const cong = record.expand?.congregation;
+        if (cong) acc[cong.id] = cong;
+        return acc;
+      },
+      {} as Record<string, RecordModel>
+    );
     setUserCongregationAccesses(congregationAccesses);
     const isCongregationCodeCacheValid = congregationAccesses.some(
       (access) => access.code === congregationCodeCache
@@ -117,11 +121,7 @@ export default function useAdminData({
   };
 
   const fetchCongregationData = async (id: string) => {
-    const [congDetails, congOptions, territoryRecords] = await Promise.all([
-      getDataById("congregations", id, {
-        requestKey: `congregation-${id}`,
-        fields: PB_FIELDS.CONGREGATION
-      }),
+    const [congOptions, territoryRecords] = await Promise.all([
       getList("options", {
         filter: `congregation="${id}"`,
         requestKey: `congregation-options-${id}`,
@@ -135,6 +135,8 @@ export default function useAdminData({
         fields: PB_FIELDS.TERRITORIES
       })
     ]);
+
+    const congDetails = congregationDetailsRef.current[id];
 
     if (!congDetails) {
       notifyWarning(t("congregation.notFound", "Congregation not found."));
