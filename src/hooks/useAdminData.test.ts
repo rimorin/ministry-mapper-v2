@@ -13,7 +13,6 @@ vi.mock("./useNotification", () => ({
 vi.mock("../utils/pocketbase", () => ({
   getList: vi.fn(() => Promise.resolve([])),
   getPaginatedList: vi.fn(() => Promise.resolve({ items: [] })),
-  getDataById: vi.fn(() => Promise.resolve(null)),
   getUser: vi.fn(() => "Test User")
 }));
 
@@ -35,8 +34,7 @@ const mockT = vi.fn((key: string, defaultValue: string) => defaultValue) as any;
 
 // Import after mocks
 const { default: useAdminData } = await import("./useAdminData");
-const { getList, getPaginatedList, getDataById } =
-  await import("../utils/pocketbase");
+const { getList, getPaginatedList } = await import("../utils/pocketbase");
 
 describe("useAdminData", () => {
   const defaultProps = {
@@ -172,15 +170,23 @@ describe("useAdminData", () => {
 
   describe("fetchCongregationData", () => {
     it("should fetch congregation details and territories", async () => {
-      const mockCongregation = {
-        id: "cong-1",
-        collectionId: "congregations",
-        collectionName: "congregations",
-        name: "Test Congregation",
-        expiry_hours: 48,
-        max_tries: 3,
-        origin: { lat: 0, lng: 0 }
-      } as any;
+      const mockRoles = [
+        {
+          id: "role-1",
+          collectionId: "roles",
+          collectionName: "roles",
+          role: "ADMIN",
+          expand: {
+            congregation: {
+              id: "cong-1",
+              name: "Test Congregation",
+              expiry_hours: 48,
+              max_tries: 3,
+              origin: { lat: 0, lng: 0 }
+            }
+          }
+        }
+      ] as any;
 
       const mockOptions = [
         {
@@ -206,8 +212,8 @@ describe("useAdminData", () => {
         }
       ] as any;
 
-      vi.mocked(getDataById).mockResolvedValueOnce(mockCongregation);
       vi.mocked(getList)
+        .mockResolvedValueOnce(mockRoles)
         .mockResolvedValueOnce(mockOptions)
         .mockResolvedValueOnce(mockTerritories);
 
@@ -226,6 +232,9 @@ describe("useAdminData", () => {
 
       const { result } = renderHook(() => useAdminData(defaultProps));
 
+      await act(async () => {
+        await result.current.fetchData();
+      });
       const territories = await result.current.fetchCongregationData("cong-1");
 
       await waitFor(() => {
@@ -240,8 +249,6 @@ describe("useAdminData", () => {
     });
 
     it("should notify when congregation not found", async () => {
-      vi.mocked(getDataById).mockResolvedValueOnce(null);
-
       const { result } = renderHook(() => useAdminData(defaultProps));
 
       await result.current.fetchCongregationData("invalid-cong");
@@ -305,15 +312,23 @@ describe("useAdminData", () => {
 
   describe("loadAllCongregationData", () => {
     it("should load congregation data and check for maps", async () => {
-      const mockCongregation = {
-        id: "cong-1",
-        collectionId: "congregations",
-        collectionName: "congregations",
-        name: "Test Congregation",
-        expiry_hours: 24,
-        max_tries: 3,
-        origin: { lat: 0, lng: 0 }
-      } as any;
+      const mockRoles = [
+        {
+          id: "role-1",
+          collectionId: "roles",
+          collectionName: "roles",
+          role: "ADMIN",
+          expand: {
+            congregation: {
+              id: "cong-1",
+              name: "Test Congregation",
+              expiry_hours: 24,
+              max_tries: 3,
+              origin: { lat: 0, lng: 0 }
+            }
+          }
+        }
+      ] as any;
 
       const territoryMap = new Map([
         [
@@ -327,8 +342,8 @@ describe("useAdminData", () => {
         ]
       ]);
 
-      vi.mocked(getDataById).mockResolvedValueOnce(mockCongregation);
       vi.mocked(getList)
+        .mockResolvedValueOnce(mockRoles) // roles (fetchData)
         .mockResolvedValueOnce([]) // options
         .mockResolvedValueOnce([]); // territories
 
@@ -343,6 +358,9 @@ describe("useAdminData", () => {
 
       const { result } = renderHook(() => useAdminData(propsWithAccess));
 
+      await act(async () => {
+        await result.current.fetchData();
+      });
       await result.current.loadAllCongregationData("cong-1");
 
       await waitFor(() => {
@@ -352,20 +370,34 @@ describe("useAdminData", () => {
     });
 
     it("should set loading state correctly during process", async () => {
-      const mockCongregation = {
-        id: "cong-1",
-        collectionId: "congregations",
-        collectionName: "congregations",
-        name: "Test",
-        expiry_hours: 24,
-        max_tries: 3,
-        origin: { lat: 0, lng: 0 }
-      } as any;
+      const mockRoles = [
+        {
+          id: "role-1",
+          collectionId: "roles",
+          collectionName: "roles",
+          role: "ADMIN",
+          expand: {
+            congregation: {
+              id: "cong-1",
+              name: "Test",
+              expiry_hours: 24,
+              max_tries: 3,
+              origin: { lat: 0, lng: 0 }
+            }
+          }
+        }
+      ] as any;
 
-      vi.mocked(getDataById).mockResolvedValueOnce(mockCongregation);
-      vi.mocked(getList).mockResolvedValueOnce([]).mockResolvedValueOnce([]);
+      vi.mocked(getList)
+        .mockResolvedValueOnce(mockRoles) // roles (fetchData)
+        .mockResolvedValueOnce([]) // options
+        .mockResolvedValueOnce([]); // territories
 
       const { result } = renderHook(() => useAdminData(defaultProps));
+
+      await act(async () => {
+        await result.current.fetchData();
+      });
 
       const loadPromise = result.current.loadAllCongregationData("cong-1");
 
