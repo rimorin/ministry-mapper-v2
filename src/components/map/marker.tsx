@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Marker } from "react-leaflet";
 import { divIcon } from "leaflet";
-import { addressDetails } from "../../utils/interface";
+import { addressDetails, AssignmentStatus } from "../../utils/interface";
 import { LINK_TYPES } from "../../utils/constants";
 import { getList } from "../../utils/pocketbase";
 import useRealtimeSubscription from "../../hooks/useRealtime";
 
 interface AddressMarkerProps {
   addressElement: addressDetails;
+  initialStatus?: AssignmentStatus;
   isSelected: boolean;
   onClick: () => void;
 }
@@ -20,13 +21,26 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 const AddressMarker: React.FC<AddressMarkerProps> = ({
   addressElement,
+  initialStatus,
   isSelected,
   onClick
 }) => {
-  const [hasAssignments, setHasAssignments] = useState(false);
-  const [hasPersonal, setHasPersonal] = useState(false);
+  const [hasAssignments, setHasAssignments] = useState(
+    initialStatus?.hasAssignments ?? false
+  );
+  const [hasPersonal, setHasPersonal] = useState(
+    initialStatus?.hasPersonal ?? false
+  );
 
   const mapId = addressElement.id;
+
+  // Sync state if the parent bulk-fetch resolves after this marker mounts
+  useEffect(() => {
+    if (initialStatus) {
+      setHasAssignments(initialStatus.hasAssignments);
+      setHasPersonal(initialStatus.hasPersonal);
+    }
+  }, [initialStatus]);
 
   const fetchData = async () => {
     const assignments = await getList("assignments", {
@@ -39,11 +53,6 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
     );
     setHasPersonal(assignments.some((a) => a.type === LINK_TYPES.PERSONAL));
   };
-
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes fetchData
-  }, [mapId]);
 
   useRealtimeSubscription(
     "assignments",

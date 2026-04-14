@@ -1,20 +1,24 @@
 import "leaflet/dist/leaflet.css";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MapContainer, TileLayer, Marker } from "react-leaflet";
-import { DEFAULT_COORDINATES, USER_ACCESS_LEVELS } from "../../utils/constants";
+import {
+  DEFAULT_COORDINATES,
+  LINK_TYPES,
+  USER_ACCESS_LEVELS
+} from "../../utils/constants";
 import { currentLocationIcon } from "../../utils/helpers/mapicons";
 import {
   addressDetails,
+  AssignmentStatus,
   latlongInterface,
   MapViewProps
 } from "../../utils/interface";
 import { Card, Table } from "react-bootstrap";
 import AddressMarker from "../map/marker";
 import AssignmentButtonGroup from "./assignmentbtn";
-import { getUser } from "../../utils/pocketbase";
+import { getList, getUser } from "../../utils/pocketbase";
 import ComponentAuthorizer from "./authorizer";
-import MapPlaceholder from "../statics/placeholder";
 import { MapController } from "../map/mapcontroller";
 import CustomControl from "../map/customcontrol";
 import useGeolocation from "../../hooks/useGeolocation";
@@ -27,14 +31,44 @@ const RING_LEGEND = [
 
 const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
   const { t } = useTranslation();
-  const [isLoading] = useState(false);
   const { currentLocation } = useGeolocation();
   const [center, setCenter] = useState<latlongInterface>();
   const [selectedAddress, setSelectedAddress] = useState<addressDetails | null>(
     null
   );
+  const [assignmentStatuses, setAssignmentStatuses] = useState<
+    Map<string, AssignmentStatus>
+  >(new Map());
 
-  if (isLoading) return <MapPlaceholder policy={policy} rows={6} columns={3} />;
+  const mapIdsKey = sortedAddressList.map((a) => a.id).join(",");
+
+  useEffect(() => {
+    if (!sortedAddressList.length) return;
+    const mapIds = sortedAddressList.map((a) => a.id);
+    const filter = mapIds.map((id) => `map="${id}"`).join(" || ");
+    getList("assignments", {
+      filter,
+      fields: "map, type",
+      requestKey: "mapview-assignments-bulk"
+    }).then((assignments) => {
+      const statuses = new Map<string, AssignmentStatus>();
+      for (const id of mapIds) {
+        statuses.set(id, { hasAssignments: false, hasPersonal: false });
+      }
+      for (const a of assignments) {
+        const current = statuses.get(a.map) ?? {
+          hasAssignments: false,
+          hasPersonal: false
+        };
+        if (a.type === LINK_TYPES.ASSIGNMENT) current.hasAssignments = true;
+        if (a.type === LINK_TYPES.PERSONAL) current.hasPersonal = true;
+        statuses.set(a.map, current);
+      }
+      setAssignmentStatuses(statuses);
+    });
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- mapIdsKey is a stable string derived from sortedAddressList ids; using it prevents the fetch re-firing on referential array changes
+  }, [mapIdsKey]);
+
   if (!sortedAddressList.length) return <div>No addresses found</div>;
 
   const defaultCenter = sortedAddressList[0].coordinates || DEFAULT_COORDINATES;
@@ -66,6 +100,7 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
           <AddressMarker
             key={addressElement.id}
             addressElement={addressElement}
+            initialStatus={assignmentStatuses.get(addressElement.id)}
             isSelected={selectedAddress?.id === addressElement.id}
             onClick={() => {
               setSelectedAddress(addressElement);
