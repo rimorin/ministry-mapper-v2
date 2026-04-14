@@ -511,10 +511,5 @@
       "title": "Método de Acceso No Compatible 📱",
       "message": "Esta aplicación no admite abrirse como una aplicación instalada (PWA). Por favor, ábrela directamente en tu navegador web."
     }
-  },
-  "backendOffline": {
-    "title": "Servicio no disponible",
-    "description": "Ministry Mapper no está disponible en este momento. El servicio puede estar caído o experimentando problemas. Por favor, inténtalo de nuevo más tarde.",
-    "retry": "Intentar de nuevo"
   }
 }
