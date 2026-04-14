@@ -651,10 +651,9 @@ export interface MaintenanceMiddlewareProps {
   children: React.ReactElement;
 }
 
-export interface AddressMarkerProps {
-  addressElement: addressDetails;
-  isSelected: boolean;
-  onClick: () => void;
+export interface AssignmentStatus {
+  hasAssignments: boolean;
+  hasPersonal: boolean;
 }
 
 export interface MapsMiddlewareProps {
