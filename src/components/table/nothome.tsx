@@ -1,5 +1,4 @@
 import { nothomeProps } from "../../utils/interface";
-import { Image } from "react-bootstrap";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 
 const NotHomeIcon = ({ nhcount, classProp }: nothomeProps) => {
@@ -8,10 +7,10 @@ const NotHomeIcon = ({ nhcount, classProp }: nothomeProps) => {
   return (
     <div className={parentClass}>
       <div className="container-nothome">
-        <Image
-          fluid
+        <img
           src={getAssetUrl("envelope.svg")}
           className="nothome-envelope"
+          alt=""
         />
         {nhcount && <div className="badge-nothome">{nhcount}</div>}
       </div>
