@@ -42,8 +42,11 @@ import {
 } from "../../utils/pocketbase";
 
 import AdminNavbar from "./components/adminnavbar";
-import TerritoryContent from "./components/territorycontent";
 import FloatingActions from "./components/floatingactions";
+
+const TerritoryContent = SuspenseComponent(
+  lazy(() => import("./components/territorycontent"))
+);
 
 const UnauthorizedPage = SuspenseComponent(
   lazy(() => import("../../components/statics/unauth"))
