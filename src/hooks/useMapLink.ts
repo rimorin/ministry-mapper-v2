@@ -52,6 +52,13 @@ export default function useMapLink() {
       setIsLinkExpired(true);
       return;
     }
+    const expiryTimestamp = new Date(linkRecord.expiry_date).getTime();
+    setTokenEndTime(expiryTimestamp);
+    const isLinkExpired = new Date().getTime() > expiryTimestamp;
+    setIsLinkExpired(isLinkExpired);
+    if (isLinkExpired) {
+      return;
+    }
     const congId = linkRecord.expand?.map.expand?.congregation.id;
     const congOptions = await getList("options", {
       filter: `congregation="${congId}"`,
@@ -59,14 +66,6 @@ export default function useMapLink() {
       fields: PB_FIELDS.CONGREGATION_OPTIONS,
       sort: "sequence"
     });
-    const expiryTimestamp = new Date(linkRecord.expiry_date).getTime();
-    setTokenEndTime(expiryTimestamp);
-    const currentTimestamp = new Date().getTime();
-    const isLinkExpired = currentTimestamp > expiryTimestamp;
-    setIsLinkExpired(isLinkExpired);
-    if (isLinkExpired) {
-      return;
-    }
     setCoordinates(
       linkRecord.expand?.map.coordinates || DEFAULT_COORDINATES.Singapore
     );
