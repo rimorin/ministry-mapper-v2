@@ -1,3 +1,11 @@
+## [1.34.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.2...v1.34.3) (2026-04-15)
+
+
+### Bug Fixes
+
+* replace Image component with img tag in NotHomeIcon for consistency ([c632a83](https://github.com/rimorin/ministry-mapper-v2/commit/c632a83ac19753046aaafcd19c208f71aec343d4))
+* streamline link expiration check in retrieveLinkData for improved clarity ([b805f8f](https://github.com/rimorin/ministry-mapper-v2/commit/b805f8f32054505a461c261d937d20f334177dc5))
+
 ## [1.34.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.1...v1.34.2) (2026-04-14)
 
 
