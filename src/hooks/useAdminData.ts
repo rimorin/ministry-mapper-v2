@@ -69,10 +69,13 @@ export default function useAdminData({
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [hasAnyMaps, setHasAnyMaps] = useState<boolean>(false);
   const congregationDetailsRef = useRef<Record<string, RecordModel>>({});
+  const congregationOptionsRef = useRef<Record<string, RecordModel[]>>({});
+  const congregationTerritoriesRef = useRef<Record<string, RecordModel[]>>({});
   const fetchData = async () => {
     const userRoles = await getList("roles", {
       filter: `user="${userId}"`,
-      expand: "congregation",
+      expand:
+        "congregation, congregation.options_via_congregation, congregation.territories_via_congregation",
       fields: PB_FIELDS.ROLES,
       requestKey: `user-roles-${userId}`
     });
@@ -82,29 +85,30 @@ export default function useAdminData({
       notifyError(`Unauthorised access by ${userEmail}`, true);
       return;
     }
-    const congregationAccesses = userRoles.map((record) => {
-      return {
-        code: record.expand?.congregation.id,
-        access: record.role,
-        name: record.expand?.congregation.name
-      };
-    });
+    const congregationAccesses: Array<{
+      code: string;
+      access: string;
+      name: string;
+    }> = [];
 
-    congregationAccessRef.current = congregationAccesses.reduce(
-      (acc, { code, access }) => {
-        acc[code] = access;
-        return acc;
-      },
-      {} as Record<string, string>
-    );
-    congregationDetailsRef.current = userRoles.reduce(
-      (acc, record) => {
-        const cong = record.expand?.congregation;
-        if (cong) acc[cong.id] = cong;
-        return acc;
-      },
-      {} as Record<string, RecordModel>
-    );
+    userRoles.forEach((record) => {
+      const cong = record.expand?.congregation;
+      if (!cong) return;
+      congregationAccesses.push({
+        code: cong.id,
+        access: record.role,
+        name: cong.name
+      });
+      congregationAccessRef.current[cong.id] = record.role;
+      congregationDetailsRef.current[cong.id] = cong;
+      congregationOptionsRef.current[cong.id] =
+        (cong.expand?.options_via_congregation as RecordModel[] | undefined) ??
+        [];
+      congregationTerritoriesRef.current[cong.id] =
+        (cong.expand?.territories_via_congregation as
+          | RecordModel[]
+          | undefined) ?? [];
+    });
     setUserCongregationAccesses(congregationAccesses);
     const isCongregationCodeCacheValid = congregationAccesses.some(
       (access) => access.code === congregationCodeCache
@@ -121,20 +125,8 @@ export default function useAdminData({
   };
 
   const fetchCongregationData = async (id: string) => {
-    const [congOptions, territoryRecords] = await Promise.all([
-      getList("options", {
-        filter: `congregation="${id}"`,
-        requestKey: `congregation-options-${id}`,
-        fields: PB_FIELDS.CONGREGATION_OPTIONS,
-        sort: "sequence"
-      }),
-      getList("territories", {
-        filter: `congregation="${id}"`,
-        requestKey: `territories-${id}`,
-        sort: "code",
-        fields: PB_FIELDS.TERRITORIES
-      })
-    ]);
+    const congOptions = congregationOptionsRef.current[id] ?? [];
+    const territoryRecords = congregationTerritoriesRef.current[id] ?? [];
 
     const congDetails = congregationDetailsRef.current[id];
 
@@ -151,7 +143,7 @@ export default function useAdminData({
     setPolicy(
       new Policy(
         getUser("name") as string,
-        congOptions?.map((option) => {
+        congOptions.map((option) => {
           return {
             id: option.id,
             code: option.code,
@@ -189,7 +181,6 @@ export default function useAdminData({
       setHasAnyMaps(false);
       return;
     }
-
     try {
       const maps = await getPaginatedList("maps", 1, 1, {
         filter: `congregation="${congregationId}"`,

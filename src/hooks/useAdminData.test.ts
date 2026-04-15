@@ -170,24 +170,6 @@ describe("useAdminData", () => {
 
   describe("fetchCongregationData", () => {
     it("should fetch congregation details and territories", async () => {
-      const mockRoles = [
-        {
-          id: "role-1",
-          collectionId: "roles",
-          collectionName: "roles",
-          role: "ADMIN",
-          expand: {
-            congregation: {
-              id: "cong-1",
-              name: "Test Congregation",
-              expiry_hours: 48,
-              max_tries: 3,
-              origin: { lat: 0, lng: 0 }
-            }
-          }
-        }
-      ] as any;
-
       const mockOptions = [
         {
           id: "opt-1",
@@ -212,10 +194,29 @@ describe("useAdminData", () => {
         }
       ] as any;
 
-      vi.mocked(getList)
-        .mockResolvedValueOnce(mockRoles)
-        .mockResolvedValueOnce(mockOptions)
-        .mockResolvedValueOnce(mockTerritories);
+      const mockRoles = [
+        {
+          id: "role-1",
+          collectionId: "roles",
+          collectionName: "roles",
+          role: "ADMIN",
+          expand: {
+            congregation: {
+              id: "cong-1",
+              name: "Test Congregation",
+              expiry_hours: 48,
+              max_tries: 3,
+              origin: { lat: 0, lng: 0 },
+              expand: {
+                options_via_congregation: mockOptions,
+                territories_via_congregation: mockTerritories
+              }
+            }
+          }
+        }
+      ] as any;
+
+      vi.mocked(getList).mockResolvedValueOnce(mockRoles);
 
       const territoryMap = new Map([
         [
@@ -324,7 +325,11 @@ describe("useAdminData", () => {
               name: "Test Congregation",
               expiry_hours: 24,
               max_tries: 3,
-              origin: { lat: 0, lng: 0 }
+              origin: { lat: 0, lng: 0 },
+              expand: {
+                options_via_congregation: [],
+                territories_via_congregation: []
+              }
             }
           }
         }
@@ -342,10 +347,7 @@ describe("useAdminData", () => {
         ]
       ]);
 
-      vi.mocked(getList)
-        .mockResolvedValueOnce(mockRoles) // roles (fetchData)
-        .mockResolvedValueOnce([]) // options
-        .mockResolvedValueOnce([]); // territories
+      vi.mocked(getList).mockResolvedValueOnce(mockRoles);
 
       mockProcessCongregationTerritories.mockReturnValueOnce(territoryMap);
 
@@ -382,16 +384,17 @@ describe("useAdminData", () => {
               name: "Test",
               expiry_hours: 24,
               max_tries: 3,
-              origin: { lat: 0, lng: 0 }
+              origin: { lat: 0, lng: 0 },
+              expand: {
+                options_via_congregation: [],
+                territories_via_congregation: []
+              }
             }
           }
         }
       ] as any;
 
-      vi.mocked(getList)
-        .mockResolvedValueOnce(mockRoles) // roles (fetchData)
-        .mockResolvedValueOnce([]) // options
-        .mockResolvedValueOnce([]); // territories
+      vi.mocked(getList).mockResolvedValueOnce(mockRoles);
 
       const { result } = renderHook(() => useAdminData(defaultProps));
 
