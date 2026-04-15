@@ -45,7 +45,8 @@ export default function useMapLink() {
   ): Promise<addressDetails | undefined> => {
     const linkRecord = await getDataById("assignments", id, {
       requestKey: null,
-      expand: "map, map.congregation",
+      expand:
+        "map, map.congregation, map.congregation.options_via_congregation",
       fields: PB_FIELDS.ASSIGNMENT_LINKS
     });
     if (!linkRecord) {
@@ -59,56 +60,54 @@ export default function useMapLink() {
     if (isLinkExpired) {
       return;
     }
-    const congId = linkRecord.expand?.map.expand?.congregation.id;
-    const congOptions = await getList("options", {
-      filter: `congregation="${congId}"`,
-      requestKey: null,
-      fields: PB_FIELDS.CONGREGATION_OPTIONS,
-      sort: "sequence"
-    });
-    setCoordinates(
-      linkRecord.expand?.map.coordinates || DEFAULT_COORDINATES.Singapore
-    );
+    const mapExpand = linkRecord.expand?.map;
+    const congregation = mapExpand?.expand?.congregation;
+    const congId = congregation?.id;
+    const congOptions = (
+      (congregation?.expand?.options_via_congregation as
+        | RecordModel[]
+        | undefined) ?? []
+    ).sort((a, b) => a.sequence - b.sequence);
+
+    setCoordinates(mapExpand?.coordinates || DEFAULT_COORDINATES.Singapore);
     setPolicy(
       new Policy(
         linkRecord.publisher,
-        congOptions.map((option: RecordModel) => {
-          return {
-            id: option.id,
-            code: option.code,
-            description: option.description,
-            isCountable: option.is_countable,
-            isDefault: option.is_default,
-            sequence: option.sequence
-          };
-        }),
-        linkRecord.expand?.map.expand?.congregation.max_tries,
-        linkRecord.expand?.map.expand?.congregation.origin,
+        congOptions.map((option: RecordModel) => ({
+          id: option.id,
+          code: option.code,
+          description: option.description,
+          isCountable: option.is_countable,
+          isDefault: option.is_default,
+          sequence: option.sequence
+        })),
+        congregation?.max_tries,
+        congregation?.origin,
         USER_ACCESS_LEVELS.PUBLISHER.CODE,
-        linkRecord.expand?.map.expand?.congregation.expiry_hours,
+        congregation?.expiry_hours,
         congId
       )
     );
 
     const details = {
       id: linkRecord.map,
-      type: linkRecord.expand?.map.type || TERRITORY_TYPES.MULTIPLE_STORIES,
-      location: linkRecord.expand?.map.location || "",
+      type: mapExpand?.type || TERRITORY_TYPES.MULTIPLE_STORIES,
+      location: mapExpand?.location || "",
       aggregates: {
-        display: linkRecord.expand?.map.progress + "%",
-        value: linkRecord.expand?.map.progress,
-        notDone: linkRecord.expand?.map.aggregates?.notDone ?? 0,
-        notHome: linkRecord.expand?.map.aggregates?.notHome ?? 0
+        display: mapExpand?.progress + "%",
+        value: mapExpand?.progress,
+        notDone: mapExpand?.aggregates?.notDone ?? 0,
+        notHome: mapExpand?.aggregates?.notHome ?? 0
       },
-      name: linkRecord.expand?.map.description,
-      coordinates: linkRecord.expand?.map.coordinates
+      name: mapExpand?.description,
+      coordinates: mapExpand?.coordinates
     } as addressDetails;
 
     if (localStorage.getItem(`${id}-readPinnedMessages`) === null) {
       checkPinnedMessages(linkRecord.map, readPinnedMessages);
     }
     setMapDetails(details);
-    setTerritoryId(linkRecord.expand?.map.territory || "");
+    setTerritoryId(mapExpand?.territory || "");
     return details;
   };
 
