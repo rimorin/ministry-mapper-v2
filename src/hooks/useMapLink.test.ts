@@ -115,14 +115,11 @@ describe("useMapLink", () => {
           map: {
             congregation: "cong123",
             expand: {
-              congregation: {
-                id: "cong123"
-              }
+              congregation: { id: "cong123" }
             }
           }
         }
       } as RecordModel);
-      vi.spyOn(pocketbase, "getList").mockResolvedValue([]);
 
       const { result } = renderHook(() => useMapLink());
 
@@ -176,8 +173,21 @@ describe("useMapLink", () => {
         } as RecordModel
       ];
 
-      vi.spyOn(pocketbase, "getDataById").mockResolvedValue(mockLinkRecord);
-      vi.spyOn(pocketbase, "getList").mockResolvedValue(mockOptions);
+      const baseExpand = mockLinkRecord.expand!;
+      vi.spyOn(pocketbase, "getDataById").mockResolvedValue({
+        ...mockLinkRecord,
+        expand: {
+          map: {
+            ...baseExpand.map,
+            expand: {
+              congregation: {
+                ...baseExpand.map.expand.congregation,
+                expand: { options_via_congregation: mockOptions }
+              }
+            }
+          }
+        }
+      } as RecordModel);
 
       const { result } = renderHook(() => useMapLink());
 
@@ -201,17 +211,16 @@ describe("useMapLink", () => {
         "link123",
         {
           requestKey: null,
-          expand: "map, map.congregation",
+          expand:
+            "map, map.congregation, map.congregation.options_via_congregation",
           fields: PB_FIELDS.ASSIGNMENT_LINKS
         }
       );
 
-      expect(pocketbase.getList).toHaveBeenCalledWith("options", {
-        filter: `congregation="cong123"`,
-        requestKey: null,
-        fields: PB_FIELDS.CONGREGATION_OPTIONS,
-        sort: "sequence"
-      });
+      expect(pocketbase.getList).not.toHaveBeenCalledWith(
+        "options",
+        expect.anything()
+      );
     });
 
     it("should handle errors and call notifyError", async () => {
@@ -253,16 +262,28 @@ describe("useMapLink", () => {
         }
       } as RecordModel;
 
-      vi.spyOn(pocketbase, "getDataById").mockResolvedValue(mockLinkRecord);
-      vi.spyOn(pocketbase, "getList")
-        .mockResolvedValueOnce([]) // congregation options
-        .mockResolvedValueOnce([
-          {
-            id: "msg1",
-            collectionId: "messages",
-            collectionName: "messages"
-          } as RecordModel
-        ]); // pinned messages
+      const baseExpand = mockLinkRecord.expand!;
+      vi.spyOn(pocketbase, "getDataById").mockResolvedValue({
+        ...mockLinkRecord,
+        expand: {
+          map: {
+            ...baseExpand.map,
+            expand: {
+              congregation: {
+                ...baseExpand.map.expand.congregation,
+                expand: { options_via_congregation: [] }
+              }
+            }
+          }
+        }
+      } as RecordModel);
+      vi.spyOn(pocketbase, "getList").mockResolvedValueOnce([
+        {
+          id: "msg1",
+          collectionId: "messages",
+          collectionName: "messages"
+        } as RecordModel
+      ]); // pinned messages
 
       const { result } = renderHook(() => useMapLink());
 
