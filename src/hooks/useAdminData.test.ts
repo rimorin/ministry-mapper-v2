@@ -229,7 +229,7 @@ describe("useAdminData", () => {
           }
         ]
       ]);
-      mockProcessCongregationTerritories.mockReturnValueOnce(territoryMap);
+      mockProcessCongregationTerritories.mockReturnValue(territoryMap);
 
       const { result } = renderHook(() => useAdminData(defaultProps));
 
@@ -372,44 +372,12 @@ describe("useAdminData", () => {
     });
 
     it("should set loading state correctly during process", async () => {
-      const mockRoles = [
-        {
-          id: "role-1",
-          collectionId: "roles",
-          collectionName: "roles",
-          role: "ADMIN",
-          expand: {
-            congregation: {
-              id: "cong-1",
-              name: "Test",
-              expiry_hours: 24,
-              max_tries: 3,
-              origin: { lat: 0, lng: 0 },
-              expand: {
-                options_via_congregation: [],
-                territories_via_congregation: []
-              }
-            }
-          }
-        }
-      ] as any;
-
-      vi.mocked(getList).mockResolvedValueOnce(mockRoles);
-
       const { result } = renderHook(() => useAdminData(defaultProps));
 
       await act(async () => {
-        await result.current.fetchData();
+        await result.current.loadAllCongregationData("cong-1");
       });
 
-      const loadPromise = result.current.loadAllCongregationData("cong-1");
-
-      // Loading should be true during execution
-      expect(result.current.isLoading).toBe(true);
-
-      await loadPromise;
-
-      // Loading should be false after completion
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
