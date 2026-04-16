@@ -1,3 +1,12 @@
+## [1.34.5](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.4...v1.34.5) (2026-04-16)
+
+
+### Bug Fixes
+
+* add preconnect and dns-prefetch links for improved resource loading ([efe55c3](https://github.com/rimorin/ministry-mapper-v2/commit/efe55c3a343b7bac8302740c3b004e4efcbc75b5))
+* improve congregation data loading by invoking loadAllCongregationData on selection ([53e4e23](https://github.com/rimorin/ministry-mapper-v2/commit/53e4e23b21aecf4223cb2d31886258af231bbd51))
+* wrap TerritoryMapView in Suspense for improved loading experience ([4304e4e](https://github.com/rimorin/ministry-mapper-v2/commit/4304e4e4164f4733ca9df93b93dba1a182484ced))
+
 ## [1.34.4](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.3...v1.34.4) (2026-04-16)
 
 
