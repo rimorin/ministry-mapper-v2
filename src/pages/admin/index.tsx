@@ -292,6 +292,7 @@ function Admin({ user }: adminProps) {
   const toggleCongregation = (selectedCode: string | null) => {
     handleCongregationSelect(selectedCode);
     clearTerritorySelection();
+    loadAllCongregationData(selectedCode);
   };
 
   const handleShowCongregationSettings = () => {
@@ -466,12 +467,6 @@ function Admin({ user }: adminProps) {
     };
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- intentionally run on mount only
   }, []);
-
-  useEffect(() => {
-    if (!congregationCode) return;
-    loadAllCongregationData(congregationCode);
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes loadAllCongregationData
-  }, [congregationCode]);
 
   const checkMapsOnRealtimeUpdate = () => {
     checkForMaps(congregationCode);

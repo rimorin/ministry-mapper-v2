@@ -122,6 +122,11 @@ export default function useAdminData({
       setCongregationCodeCache("");
     }
     setCongregationCode(initialSelectedCode);
+    if (initialSelectedCode) {
+      await loadAllCongregationData(initialSelectedCode);
+    } else {
+      setIsLoading(false);
+    }
   };
 
   const fetchCongregationData = async (id: string) => {
@@ -193,7 +198,8 @@ export default function useAdminData({
     }
   };
 
-  const loadAllCongregationData = async (congregationCode: string) => {
+  const loadAllCongregationData = async (congregationCode: string | null) => {
+    if (!congregationCode) return;
     setIsLoading(true);
     setUserAccessLevel(congregationAccessRef.current[congregationCode]);
 
