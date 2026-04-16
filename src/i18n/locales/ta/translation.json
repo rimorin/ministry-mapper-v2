@@ -279,6 +279,7 @@
     "expiryDate": "காலாவதி தேதி",
     "publisher": "வெளியீட்டாளர்",
     "linkExpirationTimer": "இணைப்பு காலாவதி டைமர்",
+    "expiresIn": "{{time}} பிறகு காலாவதியாகும்",
     "normalAssignment": "{{greeting}} வணக்கம், {{publisherName}}!!\n\nநீங்கள் {{address}} க்கு நியமிக்கப்பட்டுள்ளீர்கள்.\n\nதொடர கீழே உள்ள இணைப்பைக் கிளிக் செய்யவும்.",
     "personalSlip": "{{greeting}} வணக்கம், {{publisherName}}!!\n\n{{address}} க்கான தனிப்பட்ட துண்டு உள்ளது.\n\nஇந்த இணைப்பு {{expiryHrs}} பிறகு காலாவதியாகும்.\n\nதொடர கீழே உள்ள இணைப்பைக் கிளிக் செய்யவும்."
   },
@@ -289,7 +290,6 @@
   },
   "navigation": {
     "help": "உதவி",
-    "legend": "விளக்கம்",
     "listView": "பட்டியல் காட்சி",
     "mapView": "வரைபட காட்சி",
     "direction": "திசை",

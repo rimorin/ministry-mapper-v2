@@ -305,6 +305,7 @@
     "expiryDate": "到期日期",
     "publisher": "发布者",
     "linkExpirationTimer": "链接过期计时器",
+    "expiresIn": "{{time}}后过期",
     "normalAssignment": "{{greeting}}好，{{publisherName}}！\n\n你被分配到{{address}}。\n\n请点击下方链接继续。",
     "personalSlip": "{{greeting}}好，{{publisherName}}！\n\n你有一张{{address}}的个人传道区单。\n\n此链接将在{{expiryHrs}}后过期。\n\n请点击下方链接继续。"
   },
@@ -315,7 +316,6 @@
   },
   "navigation": {
     "help": "帮助",
-    "legend": "图例",
     "listView": "列表视图",
     "mapView": "地图视图",
     "direction": "方向",

@@ -305,6 +305,7 @@
     "expiryDate": "만료일",
     "publisher": "출판자",
     "linkExpirationTimer": "링크 만료 타이머",
+    "expiresIn": "{{time}} 후 만료",
     "normalAssignment": "{{greeting}}, {{publisherName}}!!\n\n{{address}}에 할당되었습니다.\n\n아래 링크를 클릭하여 진행해주세요.",
     "personalSlip": "{{greeting}}, {{publisherName}}!!\n\n{{address}}의 개인 전도 구역이 있습니다.\n\n이 링크는 {{expiryHrs}} 후 만료됩니다.\n\n아래 링크를 클릭하여 진행해주세요."
   },
@@ -315,7 +316,6 @@
   },
   "navigation": {
     "help": "도움말",
-    "legend": "범례",
     "listView": "목록 보기",
     "mapView": "맵 보기",
     "direction": "방향",

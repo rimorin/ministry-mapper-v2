@@ -173,11 +173,6 @@ export interface SubmitBtnProps {
   disabled?: boolean;
 }
 
-export interface LegendProps {
-  showLegend: boolean;
-  hideFunction?: () => void;
-}
-
 export interface TerritoryListingProps {
   showListing: boolean;
   hideFunction: () => void;
@@ -201,10 +196,6 @@ export interface AuthorizerProp {
 export interface aggregateBadgeProp {
   aggregate?: number;
   width?: string;
-}
-
-export interface ExpiryButtonProp {
-  endtime: number;
 }
 
 export interface floorHeaderProp extends floorInterface {
