@@ -5,7 +5,6 @@ import { configureHeader } from "../utils/pocketbase";
 import { Image, Nav, Navbar } from "react-bootstrap";
 import { getAssetUrl } from "../utils/helpers/assetpath";
 import { handleKeyboardActivation } from "../utils/helpers/keyboard";
-import Legend from "../components/navigation/legend";
 import InvalidPage from "../components/statics/invalidpage";
 import MainTable from "../components/table/map";
 import MapPlaceholder from "../components/statics/placeholder";
@@ -27,7 +26,6 @@ import useMapLink from "../hooks/useMapLink";
 import useAnalytics, { ANALYTICS_EVENTS } from "../hooks/useAnalytics";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 const UpdateMapMessages = lazy(() => import("../components/modal/mapmessages"));
-const ShowExpiry = lazy(() => import("../components/modal/slipexpiry"));
 const ThemeSettingsModal = lazy(
   () => import("../components/modal/themesettings")
 );
@@ -37,7 +35,6 @@ const Map = () => {
   const { t } = useTranslation();
   const { currentLanguage, changeLanguage, languageOptions } =
     use(LanguageContext);
-  const [showLegend, setShowLegend] = useState(false);
   const [mapView, setMapView] = useState(false);
   const [readPinnedMessages, setReadPinnedMessages] = useLocalStorage(
     `${id}-readPinnedMessages`,
@@ -60,10 +57,6 @@ const Map = () => {
     setHasPinnedMessages,
     getMapData
   } = useMapLink();
-
-  const toggleLegend = () => {
-    setShowLegend((prevShowLegend) => !prevShowLegend);
-  };
 
   const toggleLanguageSelector = () => {
     setShowLanguageSelector(
@@ -103,12 +96,6 @@ const Map = () => {
       coordinates: coordinates,
       name: mapDetails?.name,
       origin: policy.origin
-    });
-  };
-
-  const showExpiryModal = () => {
-    showModal(ShowExpiry, {
-      endtime: tokenEndTime
     });
   };
 
@@ -175,10 +162,7 @@ const Map = () => {
   if (isLoading) {
     return (
       <>
-        <TopNavbar
-          title={t("common.Loading", "Loading...")}
-          onLegendClick={toggleLegend}
-        />
+        <TopNavbar title={t("common.Loading", "Loading...")} />
         <MapPlaceholder policy={policy} />
       </>
     );
@@ -186,7 +170,6 @@ const Map = () => {
 
   return (
     <>
-      <Legend showLegend={showLegend} hideFunction={toggleLegend} />
       <LanguageSelector
         showListing={showLanguageSelector}
         hideFunction={toggleLanguageSelector}
@@ -195,10 +178,7 @@ const Map = () => {
         languageOptions={languageOptions}
       />
       <div className="map-content">
-        <TopNavbar
-          title={mapDetails?.name || ""}
-          onLegendClick={toggleLegend}
-        />
+        <TopNavbar title={mapDetails?.name || ""} tokenEndTime={tokenEndTime} />
         {mapDetails && (
           <MainTable
             key={`link-map-${id}`}
@@ -272,17 +252,6 @@ const Map = () => {
               <div className="small">
                 {t("common.Directions", "Directions")}
               </div>
-            </Nav.Item>
-            <Nav.Item
-              className="text-center nav-item-hover"
-              onClick={showExpiryModal}
-              tabIndex={0}
-              onKeyDown={(e) => handleKeyboardActivation(e, showExpiryModal)}
-              role="button"
-              aria-label={t("common.Expiry", "Expiry")}
-            >
-              <Image src={getAssetUrl("time.svg")} alt="Expiry" />
-              <div className="small">{t("common.Expiry", "Expiry")}</div>
             </Nav.Item>
             <Nav.Item
               className="text-center nav-item-hover"

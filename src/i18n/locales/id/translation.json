@@ -279,6 +279,7 @@
     "expiryDate": "Tgl Kadaluarsa",
     "publisher": "Penerbit",
     "linkExpirationTimer": "Timer Kedaluwarsa Tautan",
+    "expiresIn": "Kedaluwarsa dalam {{time}}",
     "normalAssignment": "Selamat {{greeting}}, {{publisherName}}!!\n\nAnda ditugaskan ke {{address}}.\n\nSilakan klik link di bawah untuk melanjutkan.",
     "personalSlip": "Selamat {{greeting}}, {{publisherName}}!!\n\nAnda memiliki slip pribadi untuk {{address}}.\n\nTautan ini berakhir dalam {{expiryHrs}}.\n\nSilakan klik link di bawah untuk melanjutkan."
   },
@@ -289,7 +290,6 @@
   },
   "navigation": {
     "help": "Bantuan",
-    "legend": "Legenda",
     "listView": "Tampilan Daftar",
     "mapView": "Tampilan Peta",
     "direction": "Arah",

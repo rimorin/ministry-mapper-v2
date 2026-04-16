@@ -305,6 +305,7 @@
     "expiryDate": "Fecha de caducidad",
     "publisher": "Publicador",
     "linkExpirationTimer": "Temporizador de caducidad del enlace",
+    "expiresIn": "Expira en {{time}}",
     "normalAssignment": "¡Buen {{greeting}}, {{publisherName}}!\n\nSe te asignó {{address}}.\n\nPor favor, haz clic en el enlace a continuación para continuar.",
     "personalSlip": "¡Buen {{greeting}}, {{publisherName}}!\n\nTienes un slip personal para {{address}}.\n\nEste enlace expira en {{expiryHrs}}.\n\nPor favor, haz clic en el enlace a continuación para continuar."
   },
@@ -315,7 +316,6 @@
   },
   "navigation": {
     "help": "Ayuda",
-    "legend": "Leyenda",
     "listView": "Vista de lista",
     "mapView": "Vista de mapa",
     "direction": "Dirección",

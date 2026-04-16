@@ -305,6 +305,7 @@
     "expiryDate": "Tarikh Tamat",
     "publisher": "Penerbit",
     "linkExpirationTimer": "Pengatur Masa Tamat Tempoh Pautan",
+    "expiresIn": "Tamat dalam {{time}}",
     "normalAssignment": "Selamat {{greeting}}, {{publisherName}}!!\n\nAnda ditugaskan ke {{address}}.\n\nSila klik pada pautan di bawah untuk meneruskan.",
     "personalSlip": "Selamat {{greeting}}, {{publisherName}}!!\n\nAnda mempunyai slip peribadi untuk {{address}}.\n\nPautan ini tamat dalam {{expiryHrs}}.\n\nSila klik pada pautan di bawah untuk meneruskan."
   },
@@ -315,7 +316,6 @@
   },
   "navigation": {
     "help": "Bantuan",
-    "legend": "Petunjuk",
     "listView": "Paparan Senarai",
     "mapView": "Paparan Peta",
     "direction": "Arah",

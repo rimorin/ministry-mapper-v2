@@ -1,12 +1,13 @@
 import { Container, Image, Navbar } from "react-bootstrap";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
+import ExpiryBadge from "./expirybadge";
 
 interface TopNavbarProps {
   title: string;
-  onLegendClick: () => void;
+  tokenEndTime?: number;
 }
 
-const TopNavbar = ({ title, onLegendClick }: TopNavbarProps) => {
+const TopNavbar = ({ title, tokenEndTime = 0 }: TopNavbarProps) => {
   return (
     <Navbar expand="sm">
       <Container fluid>
@@ -28,13 +29,11 @@ const TopNavbar = ({ title, onLegendClick }: TopNavbarProps) => {
               {title}
             </Navbar.Text>
           </div>
-          <div style={{ flex: 0, textAlign: "right", marginLeft: 10 }}>
-            <Image
-              src={getAssetUrl("information.svg")}
-              alt="Legend"
-              onClick={onLegendClick}
-            />
-          </div>
+          {tokenEndTime > 0 && (
+            <div style={{ flex: 0, marginLeft: 10 }}>
+              <ExpiryBadge endtime={tokenEndTime} />
+            </div>
+          )}
         </Navbar.Brand>
       </Container>
     </Navbar>

@@ -305,6 +305,7 @@
     "expiryDate": "Expiry Dt",
     "publisher": "Publisher",
     "linkExpirationTimer": "Link Expiration Timer",
+    "expiresIn": "Expires in {{time}}",
     "normalAssignment": "Good {{greeting}}, {{publisherName}}!!\n\nYou are assigned to {{address}}.\n\nPlease click on the link below to proceed.",
     "personalSlip": "Good {{greeting}}, {{publisherName}}!!\n\nYou have a personal slip for {{address}}.\n\nThis link expires in {{expiryHrs}}.\n\nPlease click on the link below to proceed."
   },
@@ -315,7 +316,6 @@
   },
   "navigation": {
     "help": "Help",
-    "legend": "Legend",
     "listView": "List View",
     "mapView": "Map View",
     "direction": "Direction",

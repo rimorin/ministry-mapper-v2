@@ -305,6 +305,7 @@
     "expiryDate": "期限日",
     "publisher": "伝道者",
     "linkExpirationTimer": "リンク期限タイマー",
+    "expiresIn": "残り時間: {{time}}",
     "normalAssignment": "{{greeting}}！{{publisherName}}さん、\n\n{{address}}に割り当てられました。\n\n下のリンクをクリックしてください。",
     "personalSlip": "{{greeting}}！{{publisherName}}さん、\n\n{{address}}の個人伝道区があります。\n\nこのリンクは{{expiryHrs}}後に期限切れになります。\n\n下のリンクをクリックしてください。"
   },
@@ -315,7 +316,6 @@
   },
   "navigation": {
     "help": "ヘルプ",
-    "legend": "凡例",
     "listView": "リスト表示",
     "mapView": "マップ表示",
     "direction": "方向",

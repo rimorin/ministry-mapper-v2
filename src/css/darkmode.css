@@ -371,11 +371,6 @@
   box-shadow: var(--mm-focus-shadow);
 }
 
-[data-bs-theme="dark"] .navbar img[alt="Legend"],
-[data-bs-theme="dark"] .navbar img[alt="Information"] {
-  filter: var(--mm-icon-invert-bright);
-}
-
 /* ===== ADMIN PAGE ===== */
 [data-bs-theme="dark"] .aggregate-dark-text {
   color: var(--mm-gray-950);

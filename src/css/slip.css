@@ -77,3 +77,43 @@
 .map-placeholder-content {
   animation: fadeIn 0.3s ease-in-out;
 }
+
+/* Expiry badge — inline countdown timer in TopNavbar */
+.expiry-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.875rem;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  transition:
+    color 0.4s ease,
+    opacity 0.4s ease;
+  user-select: none;
+}
+
+.expiry-badge--safe {
+  color: var(--mm-text-body);
+  opacity: 0.75;
+}
+
+.expiry-badge--warning {
+  color: var(--mm-warning);
+  opacity: 1;
+}
+
+.expiry-badge--critical {
+  color: var(--mm-danger);
+  opacity: 1;
+  animation: expiry-pulse 0.9s infinite ease-in-out;
+}
+
+@keyframes expiry-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.4;
+  }
+}
