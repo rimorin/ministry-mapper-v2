@@ -1,4 +1,10 @@
-import React, { lazy, useEffect, useEffectEvent, useState } from "react";
+import React, {
+  lazy,
+  Suspense,
+  useEffect,
+  useEffectEvent,
+  useState
+} from "react";
 import {
   TERRITORY_TYPES,
   NOT_HOME_STATUS_CODES,
@@ -14,7 +20,6 @@ import {
 } from "../../utils/interface";
 import PrivateTerritoryTable from "./privatetable";
 import PublicTerritoryTable from "./publictable";
-import TerritoryMapView from "./mapmode";
 import useNotification from "../../hooks/useNotification";
 import useConfirm from "../../hooks/useConfirm";
 import MapPlaceholder from "../statics/placeholder";
@@ -24,6 +29,7 @@ import { useTranslation } from "react-i18next";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
 import { RecordModel } from "pocketbase";
+const TerritoryMapView = lazy(() => import("./mapmode"));
 const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
 const CreateAddress = lazy(() => import("../modal/createaddress"));
 
@@ -380,12 +386,14 @@ const MainTable = ({
   if (mapType == TERRITORY_TYPES.SINGLE_STORY) {
     if (mapView) {
       return (
-        <TerritoryMapView
-          addressDetails={addressDetails}
-          houses={floorList[0] || []}
-          policy={policy}
-          handleHouseUpdate={handleHouseUpdate}
-        />
+        <Suspense fallback={<MapPlaceholder policy={policy} />}>
+          <TerritoryMapView
+            addressDetails={addressDetails}
+            houses={floorList[0] || []}
+            policy={policy}
+            handleHouseUpdate={handleHouseUpdate}
+          />
+        </Suspense>
       );
     }
     return (
