@@ -1,3 +1,12 @@
+## [1.34.4](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.3...v1.34.4) (2026-04-16)
+
+
+### Bug Fixes
+
+* convert TerritoryContent import to lazy loading for improved performance ([4242dab](https://github.com/rimorin/ministry-mapper-v2/commit/4242dabad9ebaf75693b5ce070b1a6f627848c03))
+* enhance congregation data fetching by including options and territories in expand fields ([c965f19](https://github.com/rimorin/ministry-mapper-v2/commit/c965f19908381d92907f020a0b7ffe13c5d9d8cf))
+* enhance map link data retrieval by including options_via_congregation in expand fields ([461e46e](https://github.com/rimorin/ministry-mapper-v2/commit/461e46ec6a7227175e44f56149d55761bda1b8dc))
+
 ## [1.34.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.2...v1.34.3) (2026-04-15)
 
 
