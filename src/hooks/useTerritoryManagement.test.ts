@@ -17,17 +17,13 @@ vi.mock("./useLocalStorage", () => ({
 }));
 
 describe("useTerritoryManagement", () => {
-  const mockCongregationCode = "CONG001";
-
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   describe("initialization", () => {
     it("should initialize with default values", () => {
-      const { result } = renderHook(() =>
-        useTerritoryManagement({ congregationCode: mockCongregationCode })
-      );
+      const { result } = renderHook(() => useTerritoryManagement());
 
       expect(result.current.selectedTerritory).toEqual({
         id: "",
@@ -43,9 +39,7 @@ describe("useTerritoryManagement", () => {
 
   describe("toggleTerritoryListing", () => {
     it("should toggle the territory listing visibility", () => {
-      const { result } = renderHook(() =>
-        useTerritoryManagement({ congregationCode: mockCongregationCode })
-      );
+      const { result } = renderHook(() => useTerritoryManagement());
 
       expect(result.current.showTerritoryListing).toBe(false);
 
@@ -65,9 +59,7 @@ describe("useTerritoryManagement", () => {
 
   describe("handleTerritorySelect", () => {
     it("should update selected territory and close listing", () => {
-      const { result } = renderHook(() =>
-        useTerritoryManagement({ congregationCode: mockCongregationCode })
-      );
+      const { result } = renderHook(() => useTerritoryManagement());
 
       act(() => {
         result.current.toggleTerritoryListing();
@@ -86,31 +78,20 @@ describe("useTerritoryManagement", () => {
 
   describe("deleteTerritory", () => {
     it("should not delete if no territory is selected", async () => {
-      const deleteDataByIdSpy = vi.spyOn(pocketbase, "deleteDataById");
-      const { result } = renderHook(() =>
-        useTerritoryManagement({ congregationCode: mockCongregationCode })
-      );
+      const callFunctionSpy = vi.spyOn(pocketbase, "callFunction");
+      const { result } = renderHook(() => useTerritoryManagement());
 
       await act(async () => {
         await result.current.deleteTerritory();
       });
 
-      expect(deleteDataByIdSpy).not.toHaveBeenCalled();
+      expect(callFunctionSpy).not.toHaveBeenCalled();
     });
 
-    it("should delete territory and reload page on success", async () => {
-      const deleteDataByIdSpy = vi
-        .spyOn(pocketbase, "deleteDataById")
-        .mockResolvedValue(true);
-      const reloadSpy = vi.fn();
-      Object.defineProperty(window, "location", {
-        value: { reload: reloadSpy },
-        writable: true
-      });
+    it("should call /territory/delete and clear selection on success", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue(undefined);
 
-      const { result } = renderHook(() =>
-        useTerritoryManagement({ congregationCode: mockCongregationCode })
-      );
+      const { result } = renderHook(() => useTerritoryManagement());
 
       act(() => {
         result.current.setSelectedTerritory({
@@ -124,23 +105,25 @@ describe("useTerritoryManagement", () => {
         await result.current.deleteTerritory();
       });
 
-      expect(deleteDataByIdSpy).toHaveBeenCalledWith(
-        "territories",
-        "territory123",
+      expect(pocketbase.callFunction).toHaveBeenCalledWith(
+        "/territory/delete",
         {
-          requestKey: `territory-del-${mockCongregationCode}-T-01`
+          method: "POST",
+          body: { territory: "territory123" }
         }
       );
-      expect(reloadSpy).toHaveBeenCalled();
+      expect(result.current.selectedTerritory).toEqual({
+        id: "",
+        code: undefined,
+        name: undefined
+      });
     });
   });
 
   describe("resetTerritory", () => {
     it("should not reset if no territory code is set", async () => {
       const callFunctionSpy = vi.spyOn(pocketbase, "callFunction");
-      const { result } = renderHook(() =>
-        useTerritoryManagement({ congregationCode: mockCongregationCode })
-      );
+      const { result } = renderHook(() => useTerritoryManagement());
 
       await act(async () => {
         await result.current.resetTerritory();
@@ -154,9 +137,7 @@ describe("useTerritoryManagement", () => {
         .spyOn(pocketbase, "callFunction")
         .mockResolvedValue({});
 
-      const { result } = renderHook(() =>
-        useTerritoryManagement({ congregationCode: mockCongregationCode })
-      );
+      const { result } = renderHook(() => useTerritoryManagement());
 
       act(() => {
         result.current.setSelectedTerritory({
@@ -181,9 +162,7 @@ describe("useTerritoryManagement", () => {
 
   describe("processCongregationTerritories", () => {
     it("should return empty map for null/undefined input", () => {
-      const { result } = renderHook(() =>
-        useTerritoryManagement({ congregationCode: mockCongregationCode })
-      );
+      const { result } = renderHook(() => useTerritoryManagement());
 
       const territoryMap = result.current.processCongregationTerritories(null);
 
@@ -191,9 +170,7 @@ describe("useTerritoryManagement", () => {
     });
 
     it("should process congregation territories correctly", () => {
-      const { result } = renderHook(() =>
-        useTerritoryManagement({ congregationCode: mockCongregationCode })
-      );
+      const { result } = renderHook(() => useTerritoryManagement());
 
       const mockTerritories = {
         t1: {
@@ -231,9 +208,7 @@ describe("useTerritoryManagement", () => {
 
   describe("clearTerritorySelection", () => {
     it("should clear selected territory", () => {
-      const { result } = renderHook(() =>
-        useTerritoryManagement({ congregationCode: mockCongregationCode })
-      );
+      const { result } = renderHook(() => useTerritoryManagement());
 
       act(() => {
         result.current.setSelectedTerritory({
@@ -259,9 +234,7 @@ describe("useTerritoryManagement", () => {
 
   describe("updateTerritoryCode", () => {
     it("should update territory code in both selectedTerritory and territories map", () => {
-      const { result } = renderHook(() =>
-        useTerritoryManagement({ congregationCode: mockCongregationCode })
-      );
+      const { result } = renderHook(() => useTerritoryManagement());
 
       const mockTerritories = new Map([
         [
@@ -307,9 +280,7 @@ describe("useTerritoryManagement", () => {
 
   describe("updateTerritoryName", () => {
     it("should update territory name in both selectedTerritory and territories map", () => {
-      const { result } = renderHook(() =>
-        useTerritoryManagement({ congregationCode: mockCongregationCode })
-      );
+      const { result } = renderHook(() => useTerritoryManagement());
 
       const mockTerritories = new Map([
         [
@@ -362,9 +333,7 @@ describe("useTerritoryManagement", () => {
 
   describe("congregationTerritoryList", () => {
     it("should return array of territory values", () => {
-      const { result } = renderHook(() =>
-        useTerritoryManagement({ congregationCode: mockCongregationCode })
-      );
+      const { result } = renderHook(() => useTerritoryManagement());
 
       const mockTerritories = new Map([
         [

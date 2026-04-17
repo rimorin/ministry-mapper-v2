@@ -153,7 +153,7 @@ function Admin({ user }: adminProps) {
     clearTerritorySelection,
     updateTerritoryCode,
     updateTerritoryName
-  } = useTerritoryManagement({ congregationCode });
+  } = useTerritoryManagement();
 
   const {
     showBkTopButton,
