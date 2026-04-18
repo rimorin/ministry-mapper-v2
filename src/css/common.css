@@ -410,19 +410,38 @@
 }
 
 /* ===== RESPONSIVE TYPOGRAPHY ===== */
-@media screen and (max-width: 450px) {
-  .fluid-button {
-    font-size: clamp(0.5rem, 2.8vw, 2rem);
-    font-weight: bolder;
-  }
+/*
+ * Fluid sizing via linear interpolation (point-slope formula):
+ *   preferred = intercept + slope·vi
+ *   slope  = (maxFS - minFS) / (maxVW - minVW)
+ *   intercept = minFS - slope * minVW
+ *
+ * vi = viewport inline unit (1vi = 1% of viewport width for LTR text)
+ * Mixing a rem base with vi means font-size responds to BOTH viewport AND zoom/user-preference.
+ * Purely vi-only would be hostile to user zoom settings (web.dev WCAG 1.4.4 guidance).
+ *
+ * WCAG 1.4.4 compliance: max ≤ 2.5 × min ensures effective 200% zoom is always possible.
+ */
 
-  .fluid-bolding {
-    font-weight: bolder;
-  }
+/* Navbar titles / primary labels: 0.9rem at 320px → 1.25rem at 1024px
+ * slope = (1.25-0.9)rem / (1024-320)px = 0.00795 → 0.795vi
+ * intercept = 0.9rem - 0.00795*320px = 14.4px - 2.544px = 11.856px ≈ 0.741rem
+ * WCAG: 1.25rem ≤ 2.5 × 0.9rem (2.25rem) ✓ */
+.fluid-text {
+  font-size: clamp(0.9rem, 0.741rem + 0.795vi, 1.25rem);
+}
 
-  .fluid-text {
-    font-size: clamp(0.5rem, 3.2vw, 2rem);
-  }
+.fluid-bolding {
+  font-weight: 700;
+}
+
+/* Buttons: 0.65rem at 320px → 1rem at 1024px
+ * slope = (1-0.65)rem / (1024-320)px = 0.00497 → 0.497vi
+ * intercept = 0.65rem - 0.00497*320px = 10.4px - 1.591px = 8.809px ≈ 0.551rem
+ * WCAG: 1rem ≤ 2.5 × 0.65rem (1.625rem) ✓ */
+.fluid-button {
+  font-size: clamp(0.65rem, 0.551rem + 0.497vi, 1rem);
+  font-weight: 700;
 }
 
 /* Dark mode fix for outline-dark buttons */

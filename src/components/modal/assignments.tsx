@@ -71,7 +71,7 @@ const GetAssignments = NiceModal.create(
                   className="d-flex justify-content-between align-items-center"
                 >
                   <div className="ms-2 me-auto">
-                    <div className="fluid-text fw-bold">
+                    <div className="fluid-text fluid-bolding">
                       <a
                         href={`map/${assignment.id}`}
                         target="_blank"
