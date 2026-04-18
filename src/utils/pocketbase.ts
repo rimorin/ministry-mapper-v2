@@ -71,6 +71,13 @@ const withRetry = async <T>(
 };
 
 /**
+ * Returns true when a caught error is a PocketBase auto-cancellation abort.
+ * Use this in catch blocks to silently ignore intentionally cancelled requests.
+ */
+const isAbortError = (error: unknown): boolean =>
+  (error as { isAbort?: boolean })?.isAbort === true;
+
+/**
  * Authenticates a user with email and password
  * @param email User's email address
  * @param password User's password
@@ -497,5 +504,6 @@ export {
   updateDataById,
   getFirstItemOfList,
   authenticateEmailAndPassword,
-  confirmPasswordReset
+  confirmPasswordReset,
+  isAbortError
 };
