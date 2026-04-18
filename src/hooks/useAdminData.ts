@@ -189,12 +189,12 @@ export default function useAdminData({
     try {
       const maps = await getPaginatedList("maps", 1, 1, {
         filter: `congregation="${congregationId}"`,
-        requestKey: null,
+        requestKey: "admin-checkForMaps",
         fields: "id"
       });
       setHasAnyMaps(maps.items.length > 0);
-    } catch {
-      setHasAnyMaps(false);
+    } catch (error: unknown) {
+      if (!(error as { isAbort?: boolean })?.isAbort) setHasAnyMaps(false);
     }
   };
 

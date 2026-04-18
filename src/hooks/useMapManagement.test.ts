@@ -291,7 +291,7 @@ describe("useMapManagement", () => {
       await waitFor(() => {
         expect(getList).toHaveBeenCalledWith("maps", {
           filter: 'territory="territory-123"',
-          requestKey: null,
+          requestKey: "setup-maps",
           sort: "sequence",
           fields: expect.any(String)
         });

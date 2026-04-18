@@ -105,7 +105,7 @@ export default function useMapManagement() {
     if (!territoryId) return;
     const maps = await getList("maps", {
       filter: `territory="${territoryId}"`,
-      requestKey: null,
+      requestKey: "setup-maps",
       sort: "sequence",
       fields: PB_FIELDS.MAPS
     });

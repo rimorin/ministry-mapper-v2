@@ -118,7 +118,7 @@ const ChangeTerritoryMapSequence = NiceModal.create(
               "maps",
               map.id,
               { sequence: index + 1 },
-              { requestKey: null }
+              { requestKey: `tmaps-seq-${map.id}` }
             )
           )
         );
