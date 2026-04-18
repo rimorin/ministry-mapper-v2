@@ -13,7 +13,10 @@ vi.mock("./useNotification", () => ({
 vi.mock("../utils/pocketbase", () => ({
   getList: vi.fn(() => Promise.resolve([])),
   getPaginatedList: vi.fn(() => Promise.resolve({ items: [] })),
-  getUser: vi.fn(() => "Test User")
+  getUser: vi.fn(() => "Test User"),
+  isAbortError: vi.fn(
+    (error: unknown) => (error as { isAbort?: boolean })?.isAbort === true
+  )
 }));
 
 const mockProcessCongregationTerritories = vi.fn(() => new Map());

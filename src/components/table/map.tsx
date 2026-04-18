@@ -91,18 +91,21 @@ const useAddresses = (
     const addressId = data.record.id;
     const dataAction = data.action;
     setAddresses((prev) => {
-      const newAddresses = new Map(prev);
-      if (dataAction === "update" || dataAction === "create") {
-        // Address events don't carry expand data — preserve existing type from state.
-        // Type changes come via the address_options subscription instead.
-        const existingType = prev.get(addressId)?.type ?? [];
-        newAddresses.set(addressId, {
-          ...createUnitDetails(data.record),
-          type: existingType
-        });
-      } else if (dataAction === "delete") {
+      if (dataAction === "delete") {
+        if (!prev.has(addressId)) return prev; // bail out — already gone
+        const newAddresses = new Map(prev);
         newAddresses.delete(addressId);
+        return newAddresses;
       }
+      // update or create
+      // Address events don't carry expand data — preserve existing type from state.
+      // Type changes come via the address_options subscription instead.
+      const existingType = prev.get(addressId)?.type ?? [];
+      const newAddresses = new Map(prev);
+      newAddresses.set(addressId, {
+        ...createUnitDetails(data.record),
+        type: existingType
+      });
       return newAddresses;
     });
   };
@@ -116,23 +119,28 @@ const useAddresses = (
     const dataAction = data.action;
     setAddresses((prev) => {
       if (!prev.has(addressId)) return prev;
-      const newAddresses = new Map(prev);
-      const unit = newAddresses.get(addressId)!;
-      let newType = [...unit.type];
+      const unit = prev.get(addressId)!;
+      let newType: typeof unit.type;
+
       if (dataAction === "create") {
-        if (!newType.some((t) => t.id === optionId)) {
-          newType = [
-            ...newType,
-            {
-              id: optionId,
-              code: options.get(optionId)?.code ?? "",
-              aoId: data.record.id
-            }
-          ];
-        }
+        if (unit.type.some((t) => t.id === optionId)) return prev; // bail out — duplicate
+        newType = [
+          ...unit.type,
+          {
+            id: optionId,
+            code: options.get(optionId)?.code ?? "",
+            aoId: data.record.id
+          }
+        ];
       } else if (dataAction === "delete") {
-        newType = newType.filter((t) => t.id !== optionId);
+        const filtered = unit.type.filter((t) => t.id !== optionId);
+        if (filtered.length === unit.type.length) return prev; // bail out — nothing removed
+        newType = filtered;
+      } else {
+        return prev; // unknown action
       }
+
+      const newAddresses = new Map(prev);
       newAddresses.set(addressId, { ...unit, type: newType });
       return newAddresses;
     });

@@ -1,15 +1,10 @@
 import { useState } from "react";
-import {
-  territoryDetails,
-  TerritoryManagementOptions
-} from "../utils/interface";
-import { deleteDataById, callFunction } from "../utils/pocketbase";
+import { territoryDetails } from "../utils/interface";
+import { callFunction } from "../utils/pocketbase";
 import useNotification from "./useNotification";
 import useLocalStorage from "./useLocalStorage";
 
-export default function useTerritoryManagement({
-  congregationCode
-}: TerritoryManagementOptions) {
+export default function useTerritoryManagement() {
   const { notifyError } = useNotification();
   const [isProcessingTerritory, setIsProcessingTerritory] =
     useState<boolean>(false);
@@ -45,10 +40,11 @@ export default function useTerritoryManagement({
     if (!selectedTerritory.id) return;
     setIsProcessingTerritory(true);
     try {
-      await deleteDataById("territories", selectedTerritory.id, {
-        requestKey: `territory-del-${congregationCode}-${selectedTerritory.code}`
+      await callFunction("/territory/delete", {
+        method: "POST",
+        body: { territory: selectedTerritory.id }
       });
-      window.location.reload();
+      clearTerritorySelection();
     } catch (error) {
       notifyError(error);
     } finally {

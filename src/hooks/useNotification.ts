@@ -1,5 +1,6 @@
 import { useToast } from "../components/middlewares/toast";
 import * as Sentry from "@sentry/react";
+import { isAbortError } from "../utils/pocketbase";
 
 type NotificationType = "success" | "error" | "warning" | "info";
 
@@ -50,8 +51,7 @@ export const useNotification = () => {
     const { title, silent = false } = options || {};
 
     if (type === "error") {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if ((messageOrError as any)?.isAbort) {
+      if (isAbortError(messageOrError)) {
         console.warn("Request was aborted:", messageOrError);
         return;
       }

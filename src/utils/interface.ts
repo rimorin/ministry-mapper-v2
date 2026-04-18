@@ -685,10 +685,6 @@ export interface CongregationManagementOptions {
   userId: string;
 }
 
-export interface TerritoryManagementOptions {
-  congregationCode: string;
-}
-
 // State management interfaces
 
 export interface StateType {

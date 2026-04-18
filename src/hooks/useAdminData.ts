@@ -1,7 +1,12 @@
 import { useState, useRef } from "react";
 import { TFunction } from "i18next";
 import { RecordModel } from "pocketbase";
-import { getList, getPaginatedList, getUser } from "../utils/pocketbase";
+import {
+  getList,
+  getPaginatedList,
+  getUser,
+  isAbortError
+} from "../utils/pocketbase";
 import {
   DEFAULT_CONGREGATION_MAX_TRIES,
   DEFAULT_SELF_DESTRUCT_HOURS,
@@ -189,12 +194,12 @@ export default function useAdminData({
     try {
       const maps = await getPaginatedList("maps", 1, 1, {
         filter: `congregation="${congregationId}"`,
-        requestKey: null,
+        requestKey: "admin-checkForMaps",
         fields: "id"
       });
       setHasAnyMaps(maps.items.length > 0);
-    } catch {
-      setHasAnyMaps(false);
+    } catch (error: unknown) {
+      if (!isAbortError(error)) setHasAnyMaps(false);
     }
   };
 
