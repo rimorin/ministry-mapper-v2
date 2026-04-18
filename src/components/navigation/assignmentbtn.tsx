@@ -65,13 +65,15 @@ const useAssignments = (mapId: string) => {
     record: RecordModel,
     action: string
   ) => {
-    const updatedSet = new Map(prev);
     if (action === "delete") {
-      updatedSet.delete(record.id);
-    } else {
-      updatedSet.set(record.id, new LinkSession(record));
+      if (!prev.has(record.id)) return prev;
+      const updated = new Map(prev);
+      updated.delete(record.id);
+      return updated;
     }
-    return updatedSet;
+    const updated = new Map(prev);
+    updated.set(record.id, new LinkSession(record));
+    return updated;
   };
 
   useEffect(() => {
@@ -86,11 +88,16 @@ const useAssignments = (mapId: string) => {
       const { action, record } = data;
       const isPersonal = record.type === LINK_TYPES.PERSONAL;
 
-      if (action === "delete" || action === "update" || action === "create") {
+      if (action === "delete") {
+        setPersonalLinks((prev) => updateLinks(prev, record, "delete"));
+        setNormalLinks((prev) => updateLinks(prev, record, "delete"));
+      } else if (action === "create" || action === "update") {
         if (isPersonal) {
-          setPersonalLinks((prev) => updateLinks(prev, record, action));
+          setPersonalLinks((prev) => updateLinks(prev, record, "upsert"));
+          setNormalLinks((prev) => updateLinks(prev, record, "delete"));
         } else {
-          setNormalLinks((prev) => updateLinks(prev, record, action));
+          setNormalLinks((prev) => updateLinks(prev, record, "upsert"));
+          setPersonalLinks((prev) => updateLinks(prev, record, "delete"));
         }
       }
     },

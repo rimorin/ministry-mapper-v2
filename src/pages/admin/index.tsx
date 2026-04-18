@@ -477,19 +477,21 @@ function Admin({ user }: adminProps) {
     (data) => {
       const territoryData = data.record;
       setTerritories((prev) => {
-        const updatedTerritories = new Map(prev);
         if (data.action === "delete") {
-          updatedTerritories.delete(territoryData.id);
-        } else {
-          updatedTerritories.set(territoryData.id, {
-            id: territoryData.id,
-            code: territoryData.code,
-            name: territoryData.description,
-            aggregates: territoryData.progress,
-            coordinates: territoryData.coordinates
-          });
+          if (!prev.has(territoryData.id)) return prev; // bail out — already gone
+          const updated = new Map(prev);
+          updated.delete(territoryData.id);
+          return updated;
         }
-        return updatedTerritories;
+        const updated = new Map(prev);
+        updated.set(territoryData.id, {
+          id: territoryData.id,
+          code: territoryData.code,
+          name: territoryData.description,
+          aggregates: territoryData.progress,
+          coordinates: territoryData.coordinates
+        });
+        return updated;
       });
     },
     {
