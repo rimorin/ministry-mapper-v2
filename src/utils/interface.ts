@@ -50,6 +50,26 @@ export interface unitDetails {
   totalunits?: number;
 }
 
+export interface addressOptionResponse {
+  id: string;
+  aoId: string;
+}
+
+export interface mapAddressResponse {
+  id: string;
+  code: string;
+  floor: number;
+  sequence: number;
+  status: string;
+  notes: string;
+  not_home_tries: number;
+  dnc_time: string;
+  coordinates: latlongInterface | null;
+  updated: string;
+  updated_by: string;
+  options: addressOptionResponse[];
+}
+
 export interface nothomeProps {
   nhcount?: string;
   classProp?: string;

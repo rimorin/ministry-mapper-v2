@@ -16,7 +16,8 @@ import {
   floorDetails,
   HHOptionProps,
   territoryTableProps,
-  unitDetails
+  unitDetails,
+  mapAddressResponse
 } from "../../utils/interface";
 import PrivateTerritoryTable from "./privatetable";
 import PublicTerritoryTable from "./publictable";
@@ -24,7 +25,7 @@ import useNotification from "../../hooks/useNotification";
 import useConfirm from "../../hooks/useConfirm";
 import MapPlaceholder from "../statics/placeholder";
 
-import { getList, callFunction, pb } from "../../utils/pocketbase";
+import { callFunction, pb } from "../../utils/pocketbase";
 import { useTranslation } from "react-i18next";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
@@ -47,39 +48,45 @@ const useAddresses = (
     coordinates: address.coordinates,
     number: address.code,
     note: address.notes,
-    type:
-      (
-        address.expand?.["address_options_via_address"] as
-          | RecordModel[]
-          | undefined
-      )?.map((ao) => ({
-        id: ao.option as string,
-        code: options.get(ao.option as string)?.code ?? "",
-        aoId: ao.id
-      })) ?? [],
+    type: [],
     status: address.status,
-    nhcount: address.not_home_tries ?? NOT_HOME_STATUS_CODES.DEFAULT,
-    dnctime: address.dnc_time ?? null,
+    nhcount: String(address.not_home_tries ?? NOT_HOME_STATUS_CODES.DEFAULT),
+    dnctime: address.dnc_time ? Date.parse(address.dnc_time) : 0,
     sequence: address.sequence,
     floor: address.floor,
-    updated: address.updated,
+    updated: address.updated ? Date.parse(address.updated) : undefined,
     updatedBy: address.updated_by
   });
 
   const fetchAddressData = async () => {
     if (!mapId) return;
-    const addresses = await getList("addresses", {
-      filter: `map="${mapId}"`,
-      requestKey: null,
-      fields: PB_FIELDS.ADDRESSES_FETCH,
-      expand: "address_options_via_address",
-      batch: 1000
-    });
+    const response = (await callFunction("/map/addresses", {
+      method: "POST",
+      body: { map_id: mapId },
+      requestKey: null
+    })) as mapAddressResponse[];
 
-    const addressMap = new Map();
-    addresses.forEach((address) => {
-      addressMap.set(address.id, createUnitDetails(address));
-    });
+    const addressMap = new Map<string, unitDetails>();
+    for (const addr of response) {
+      addressMap.set(addr.id, {
+        id: addr.id,
+        coordinates: addr.coordinates ?? undefined,
+        number: addr.code,
+        note: addr.notes,
+        type: addr.options.map((ao) => ({
+          id: ao.id,
+          code: options.get(ao.id)?.code ?? "",
+          aoId: ao.aoId
+        })),
+        status: addr.status,
+        nhcount: String(addr.not_home_tries ?? NOT_HOME_STATUS_CODES.DEFAULT),
+        dnctime: addr.dnc_time ? Date.parse(addr.dnc_time) : 0,
+        sequence: addr.sequence,
+        floor: addr.floor,
+        updated: addr.updated ? Date.parse(addr.updated) : undefined,
+        updatedBy: addr.updated_by
+      });
+    }
 
     setAddresses(addressMap);
   };
