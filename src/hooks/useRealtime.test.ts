@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 
 // Mock setupRealtimeListener before imports
@@ -227,6 +227,99 @@ describe("useRealtimeSubscription", () => {
           expect.objectContaining({ expand: "user,maps" })
         );
       });
+    });
+  });
+
+  describe("debounce", () => {
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+    });
+
+    it("should not subscribe before debounce fires", () => {
+      const callback = vi.fn();
+
+      renderHook(() =>
+        useRealtimeSubscription(
+          "territories",
+          callback,
+          undefined,
+          [],
+          true,
+          50
+        )
+      );
+
+      expect(setupRealtimeListener).not.toHaveBeenCalled();
+    });
+
+    it("should subscribe after debounce fires", async () => {
+      const callback = vi.fn();
+
+      renderHook(() =>
+        useRealtimeSubscription(
+          "territories",
+          callback,
+          undefined,
+          [],
+          true,
+          50
+        )
+      );
+
+      await vi.runAllTimersAsync();
+
+      expect(setupRealtimeListener).toHaveBeenCalledWith(
+        "territories",
+        expect.any(Function),
+        undefined
+      );
+    });
+
+    it("should not subscribe if unmounted before debounce fires", async () => {
+      const callback = vi.fn();
+
+      const { unmount } = renderHook(() =>
+        useRealtimeSubscription(
+          "territories",
+          callback,
+          undefined,
+          [],
+          true,
+          50
+        )
+      );
+
+      unmount();
+      await vi.runAllTimersAsync();
+
+      expect(setupRealtimeListener).not.toHaveBeenCalled();
+    });
+
+    it("should not subscribe if dependency changes before debounce fires", async () => {
+      const callback = vi.fn();
+
+      const { rerender } = renderHook(
+        ({ deps }) =>
+          useRealtimeSubscription(
+            "territories",
+            callback,
+            undefined,
+            deps,
+            true,
+            50
+          ),
+        { initialProps: { deps: ["dep1"] } }
+      );
+
+      rerender({ deps: ["dep2"] });
+      await vi.runAllTimersAsync();
+
+      // Only one subscription should be set up (for dep2), not two
+      expect(setupRealtimeListener).toHaveBeenCalledTimes(1);
     });
   });
 

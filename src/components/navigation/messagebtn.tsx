@@ -1,6 +1,10 @@
 import React, { lazy, useEffect } from "react";
 import { ButtonGroup, Badge } from "react-bootstrap";
-import { MESSAGE_TYPES, USER_ACCESS_LEVELS } from "../../utils/constants";
+import {
+  MESSAGE_TYPES,
+  REALTIME_DEBOUNCE_MS,
+  USER_ACCESS_LEVELS
+} from "../../utils/constants";
 import { addressDetails } from "../../utils/interface";
 import { Policy } from "../../utils/policies";
 import { useTranslation } from "react-i18next";
@@ -56,7 +60,8 @@ const useUnreadMessages = (mapId: string) => {
       fields: "id, read"
     },
     [mapId],
-    !!mapId
+    !!mapId,
+    REALTIME_DEBOUNCE_MS
   );
 
   return unreadIds.size;
