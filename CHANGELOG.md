@@ -1,3 +1,11 @@
+# [1.35.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.6...v1.35.0) (2026-04-20)
+
+
+### Features
+
+* implement ignoreAbort utility to handle PocketBase auto-cancellation errors ([c144f49](https://github.com/rimorin/ministry-mapper-v2/commit/c144f49bdafd033652311310f8664e381e85a363))
+* implement realtime debounce for subscription management ([09bce29](https://github.com/rimorin/ministry-mapper-v2/commit/09bce296b01097fe4fd16af641cfedf8e4b47600))
+
 ## [1.34.6](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.5...v1.34.6) (2026-04-20)
 
 
