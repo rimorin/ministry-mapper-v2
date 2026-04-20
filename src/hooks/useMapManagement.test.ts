@@ -22,7 +22,16 @@ vi.mock("./useLocalStorage", () => ({
 vi.mock("../utils/pocketbase", () => ({
   deleteDataById: vi.fn(() => Promise.resolve()),
   callFunction: vi.fn(() => Promise.resolve()),
-  getList: vi.fn(() => Promise.resolve([]))
+  getList: vi.fn(() => Promise.resolve([])),
+  ignoreAbort:
+    <TArgs extends unknown[]>(fn: (...args: TArgs) => Promise<unknown>) =>
+    async (...args: TArgs): Promise<void> => {
+      try {
+        await fn(...args);
+      } catch (err) {
+        if (!((err as { isAbort?: boolean })?.isAbort === true)) throw err;
+      }
+    }
 }));
 
 vi.mock("react-i18next", () => ({

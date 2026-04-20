@@ -4,7 +4,12 @@ import {
   territoryDetails,
   valuesDetails
 } from "../utils/interface";
-import { deleteDataById, callFunction, getList } from "../utils/pocketbase";
+import {
+  deleteDataById,
+  callFunction,
+  getList,
+  ignoreAbort
+} from "../utils/pocketbase";
 import { RecordModel } from "pocketbase";
 import {
   TERRITORY_TYPES,
@@ -101,7 +106,7 @@ export default function useMapManagement() {
     } as addressDetails;
   };
 
-  const setupMaps = async (territoryId: string) => {
+  const setupMaps = ignoreAbort(async (territoryId: string) => {
     if (!territoryId) return;
     const maps = await getList("maps", {
       filter: `territory="${territoryId}"`,
@@ -120,7 +125,7 @@ export default function useMapManagement() {
     setSortedAddressList(sortedMaps);
     setAccordionKeys(newAccordionKeys);
     setMapViews(newMapViews);
-  };
+  });
 
   const handleAddressTerritorySelect = async (
     newTerritoryId: string | null,
