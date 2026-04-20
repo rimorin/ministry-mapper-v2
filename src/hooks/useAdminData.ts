@@ -5,6 +5,7 @@ import {
   getList,
   getPaginatedList,
   getUser,
+  ignoreAbort,
   isAbortError
 } from "../utils/pocketbase";
 import {
@@ -76,7 +77,7 @@ export default function useAdminData({
   const congregationDetailsRef = useRef<Record<string, RecordModel>>({});
   const congregationOptionsRef = useRef<Record<string, RecordModel[]>>({});
   const congregationTerritoriesRef = useRef<Record<string, RecordModel[]>>({});
-  const fetchData = async () => {
+  const fetchData = ignoreAbort(async () => {
     const userRoles = await getList("roles", {
       filter: `user="${userId}"`,
       expand:
@@ -132,7 +133,7 @@ export default function useAdminData({
     } else {
       setIsLoading(false);
     }
-  };
+  });
 
   const fetchCongregationData = async (id: string) => {
     const congOptions = congregationOptionsRef.current[id] ?? [];

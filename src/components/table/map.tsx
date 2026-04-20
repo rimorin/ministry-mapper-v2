@@ -26,7 +26,7 @@ import useNotification from "../../hooks/useNotification";
 import useConfirm from "../../hooks/useConfirm";
 import MapPlaceholder from "../statics/placeholder";
 
-import { callFunction, pb } from "../../utils/pocketbase";
+import { callFunction, ignoreAbort, pb } from "../../utils/pocketbase";
 import { useTranslation } from "react-i18next";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
@@ -59,7 +59,7 @@ const useAddresses = (
     updatedBy: address.updated_by
   });
 
-  const fetchAddressData = async () => {
+  const fetchAddressData = ignoreAbort(async () => {
     if (!mapId) return;
     const response = (await callFunction("/map/addresses", {
       method: "POST",
@@ -90,7 +90,7 @@ const useAddresses = (
     }
 
     setAddresses(addressMap);
-  };
+  });
 
   const handleSubscription = (data: {
     action: string;

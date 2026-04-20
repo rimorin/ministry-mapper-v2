@@ -3,7 +3,7 @@ import { Marker } from "react-leaflet";
 import { divIcon } from "leaflet";
 import { addressDetails, AssignmentStatus } from "../../utils/interface";
 import { LINK_TYPES } from "../../utils/constants";
-import { getList } from "../../utils/pocketbase";
+import { getList, ignoreAbort } from "../../utils/pocketbase";
 import useRealtimeSubscription from "../../hooks/useRealtime";
 
 interface AddressMarkerProps {
@@ -42,7 +42,7 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
     }
   }, [initialStatus]);
 
-  const fetchData = async () => {
+  const fetchData = ignoreAbort(async () => {
     const assignments = await getList("assignments", {
       filter: `map="${mapId}" && expiry_date >= @now`,
       fields: "id, type",
@@ -52,7 +52,7 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
       assignments.some((a) => a.type === LINK_TYPES.ASSIGNMENT)
     );
     setHasPersonal(assignments.some((a) => a.type === LINK_TYPES.PERSONAL));
-  };
+  });
 
   useRealtimeSubscription(
     "assignments",

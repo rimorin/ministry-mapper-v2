@@ -78,6 +78,29 @@ const isAbortError = (error: unknown): boolean =>
   (error as { isAbort?: boolean })?.isAbort === true;
 
 /**
+ * Wraps an async function so that PocketBase auto-cancellation AbortErrors are
+ * silently ignored. All other errors are re-thrown normally.
+ *
+ * Use this for fire-and-forget fetch functions called from useEffect, where
+ * PocketBase may auto-cancel duplicate requests sharing the same requestKey.
+ *
+ * @example
+ * const fetchData = ignoreAbort(async () => {
+ *   const result = await getList("maps", { requestKey: "setup-maps" });
+ *   setMaps(result);
+ * });
+ */
+const ignoreAbort =
+  <TArgs extends unknown[]>(fn: (...args: TArgs) => Promise<unknown>) =>
+  async (...args: TArgs): Promise<void> => {
+    try {
+      await fn(...args);
+    } catch (err) {
+      if (!isAbortError(err)) throw err;
+    }
+  };
+
+/**
  * Authenticates a user with email and password
  * @param email User's email address
  * @param password User's password
@@ -505,5 +528,6 @@ export {
   getFirstItemOfList,
   authenticateEmailAndPassword,
   confirmPasswordReset,
-  isAbortError
+  isAbortError,
+  ignoreAbort
 };

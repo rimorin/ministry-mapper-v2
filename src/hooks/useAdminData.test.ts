@@ -16,7 +16,16 @@ vi.mock("../utils/pocketbase", () => ({
   getUser: vi.fn(() => "Test User"),
   isAbortError: vi.fn(
     (error: unknown) => (error as { isAbort?: boolean })?.isAbort === true
-  )
+  ),
+  ignoreAbort:
+    <TArgs extends unknown[]>(fn: (...args: TArgs) => Promise<unknown>) =>
+    async (...args: TArgs): Promise<void> => {
+      try {
+        await fn(...args);
+      } catch (err) {
+        if (!((err as { isAbort?: boolean })?.isAbort === true)) throw err;
+      }
+    }
 }));
 
 const mockProcessCongregationTerritories = vi.fn(() => new Map());
