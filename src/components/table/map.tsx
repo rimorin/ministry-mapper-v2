@@ -63,7 +63,7 @@ const useAddresses = (
     const response = (await callFunction("/map/addresses", {
       method: "POST",
       body: { map_id: mapId },
-      requestKey: null
+      requestKey: `map-addresses-${mapId}`
     })) as mapAddressResponse[];
 
     const addressMap = new Map<string, unitDetails>();
