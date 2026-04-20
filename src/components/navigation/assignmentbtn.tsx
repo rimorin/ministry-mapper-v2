@@ -5,7 +5,8 @@ import {
   UNSUPPORTED_BROWSER_MSG,
   LINK_TYPES,
   USER_ACCESS_LEVELS,
-  PB_FIELDS
+  PB_FIELDS,
+  REALTIME_DEBOUNCE_MS
 } from "../../utils/constants";
 import { addressDetails } from "../../utils/interface";
 import { LinkSession, Policy } from "../../utils/policies";
@@ -106,7 +107,8 @@ const useAssignments = (mapId: string) => {
       fields: PB_FIELDS.ASSIGNMENTS
     },
     [mapId],
-    !!mapId
+    !!mapId,
+    REALTIME_DEBOUNCE_MS
   );
 
   return { personalLinks, normalLinks };

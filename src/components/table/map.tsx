@@ -10,7 +10,8 @@ import {
   NOT_HOME_STATUS_CODES,
   DEFAULT_UNIT_PADDING,
   PB_SECURITY_HEADER_KEY,
-  PB_FIELDS
+  PB_FIELDS,
+  REALTIME_DEBOUNCE_MS
 } from "../../utils/constants";
 import {
   floorDetails,
@@ -198,7 +199,8 @@ const useAddresses = (
       })
     },
     [mapId, assignmentId],
-    !!mapId
+    !!mapId,
+    REALTIME_DEBOUNCE_MS
   );
 
   useRealtimeSubscription(
@@ -215,7 +217,8 @@ const useAddresses = (
       })
     },
     [mapId, assignmentId],
-    !!mapId
+    !!mapId,
+    REALTIME_DEBOUNCE_MS
   );
 
   return addresses;
