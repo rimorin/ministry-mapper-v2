@@ -10,7 +10,7 @@ const ModalUnitTitle = ({ unit, floor, name, type }: TitleProps) => {
       key={`modal-title-${unit}-${floor}-${name}`}
       style={{ justifyContent: "space-between" }}
     >
-      <Modal.Title>
+      <Modal.Title className="fluid-text fluid-bolding">
         {isMultipleStories ? (
           <>
             <div>{name}</div>

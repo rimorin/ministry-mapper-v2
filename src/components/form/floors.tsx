@@ -23,10 +23,9 @@ const FloorField = ({ handleChange, changeValue }: FloorProps) => {
           onChange={handleChange}
         />
         <Form.Text
-          className="text-muted d-flex align-items-center"
+          className="text-muted d-flex align-items-center fluid-text"
           style={{
             minWidth: "50px",
-            fontSize: "1.1rem",
             paddingBottom: "0.25rem"
           }}
         >

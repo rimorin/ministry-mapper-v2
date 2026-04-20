@@ -39,7 +39,13 @@ const PrivateTerritoryTable = ({
                   data-sequence={element.sequence}
                 >
                   <Card.Header
-                    style={{ padding: "0.10rem" }}
+                    style={{
+                      padding: "0.10rem",
+                      overflow: "hidden",
+                      whiteSpace: "nowrap",
+                      textOverflow: "ellipsis"
+                    }}
+                    title={element.number}
                     className="fluid-bolding fluid-text"
                   >
                     {element.number}
@@ -84,8 +90,8 @@ const PrivateTerritoryTable = ({
                 }}
               >
                 <span
-                  className="text-muted"
-                  style={{ fontSize: "2rem", lineHeight: 1 }}
+                  className="text-muted fluid-text"
+                  style={{ lineHeight: 1 }}
                 >
                   +
                 </span>

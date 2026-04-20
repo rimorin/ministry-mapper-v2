@@ -51,7 +51,7 @@ const SignupComponent = () => {
     >
       <Form.Group className="mb-2 text-center">
         <h1 className="h4 mb-1">{t("auth.signUp", "Sign Up")}</h1>
-        <p className="text-muted mb-0" style={{ fontSize: "0.85rem" }}>
+        <p className="text-muted mb-0 fluid-small">
           {t(
             "auth.createAccount",
             "Create your account to get started with Ministry Mapper"
@@ -130,7 +130,7 @@ const SignupComponent = () => {
         </FloatingLabel>
       </Form.Group>
       <Form.Group className="mb-2">
-        <div id="password-requirements" style={{ fontSize: "0.8rem" }}>
+        <div id="password-requirements" className="fluid-small">
           <PasswordChecklist
             password={formData.password}
             passwordConfirm={formData.confirmPassword}
@@ -153,7 +153,7 @@ const SignupComponent = () => {
         </div>
       </Form.Group>
       <Form.Group className="text-center mb-2">
-        <p className="mb-0" style={{ fontSize: "0.75rem", lineHeight: "1.3" }}>
+        <p className="mb-0 fluid-small" style={{ lineHeight: "1.3" }}>
           {t("auth.termsAgreement", "By signing up, you agree to our")}{" "}
           <a
             href={VITE_PRIVACY_URL}
@@ -205,7 +205,7 @@ const SignupComponent = () => {
             onClick={resetCreationForm}
           />
         </div>
-        <p className="mb-0" style={{ fontSize: "0.85rem" }}>
+        <p className="mb-0 fluid-small">
           {t("auth.alreadyHaveAccount", "Already have an account?")}{" "}
           <a
             href="#"
