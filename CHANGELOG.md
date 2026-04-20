@@ -1,3 +1,10 @@
+## [1.34.6](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.5...v1.34.6) (2026-04-20)
+
+
+### Bug Fixes
+
+* fluid typography for better responsiveness and accessibility ([f064418](https://github.com/rimorin/ministry-mapper-v2/commit/f06441838b8ceb85b63936707eae45c4d40fdd52))
+
 ## [1.34.5](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.4...v1.34.5) (2026-04-16)
 
 
