@@ -30,8 +30,8 @@ function renderDescription(text: string) {
     nodes.push(
       <ul
         key={key++}
-        className="mb-0 mt-2 ps-3"
-        style={{ fontSize: "0.82rem", color: "var(--bs-secondary-color)" }}
+        className="mb-0 mt-2 ps-3 fluid-small"
+        style={{ color: "var(--bs-secondary-color)" }}
       >
         {bullets.map((b, i) => (
           <li key={i} className="mb-1">
@@ -53,9 +53,8 @@ function renderDescription(text: string) {
       nodes.push(
         <p
           key={key++}
-          className="mb-0 mt-3"
+          className="mb-0 mt-3 fluid-small"
           style={{
-            fontSize: "0.75rem",
             fontWeight: 600,
             textTransform: "uppercase",
             letterSpacing: "0.04em",
@@ -70,8 +69,8 @@ function renderDescription(text: string) {
       nodes.push(
         <p
           key={key++}
-          className="mb-0 mt-2"
-          style={{ fontSize: "0.82rem", color: "var(--bs-secondary-color)" }}
+          className="mb-0 mt-2 fluid-small"
+          style={{ color: "var(--bs-secondary-color)" }}
         >
           {line}
         </p>
@@ -114,7 +113,10 @@ const ReleaseNotesModal = NiceModal.create(
         aria-labelledby="release-notes-title"
       >
         <Modal.Header>
-          <Modal.Title id="release-notes-title">
+          <Modal.Title
+            id="release-notes-title"
+            className="fluid-text fluid-bolding"
+          >
             {t("releaseNotes.title", "What's New")}
           </Modal.Title>
         </Modal.Header>
@@ -125,7 +127,7 @@ const ReleaseNotesModal = NiceModal.create(
               return (
                 <Card key={release.id} className="border overflow-hidden">
                   <Card.Header className="d-flex align-items-center gap-2 py-2">
-                    <strong style={{ fontSize: "0.9rem" }}>
+                    <strong className="fluid-small">
                       {formatDate(release.id.substring(0, 10))}
                     </strong>
                     {idx === 0 && (
@@ -136,12 +138,11 @@ const ReleaseNotesModal = NiceModal.create(
                   </Card.Header>
                   {notice && (
                     <div
-                      className="px-3 py-2 border-bottom d-flex align-items-start gap-2"
+                      className="px-3 py-2 border-bottom d-flex align-items-start gap-2 fluid-small"
                       style={{
                         borderLeft: "3px solid var(--bs-warning)",
                         backgroundColor: "var(--bs-warning-bg-subtle)",
-                        color: "var(--bs-warning-text-emphasis)",
-                        fontSize: "0.85rem"
+                        color: "var(--bs-warning-text-emphasis)"
                       }}
                     >
                       <span style={{ flexShrink: 0, marginTop: "0.1rem" }}>
@@ -173,9 +174,8 @@ const ReleaseNotesModal = NiceModal.create(
                           className="d-flex align-items-start gap-2 py-2 px-3"
                         >
                           <span
-                            className={`badge flex-shrink-0 ${config.colorClass}`}
+                            className={`badge flex-shrink-0 fluid-button ${config.colorClass}`}
                             style={{
-                              fontSize: "0.65rem",
                               minWidth: "4rem",
                               textAlign: "center",
                               marginTop: "0.15rem"
@@ -184,8 +184,8 @@ const ReleaseNotesModal = NiceModal.create(
                             {t(config.labelKey)}
                           </span>
                           <span
+                            className="fluid-text"
                             style={{
-                              fontSize: "1rem",
                               lineHeight: "1.4",
                               fontWeight: 600
                             }}

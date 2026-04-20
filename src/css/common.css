@@ -435,6 +435,14 @@
   font-weight: 700;
 }
 
+/* Secondary / helper text: 0.75rem at 320px → 0.95rem at 1024px
+ * slope = (0.95-0.75)rem / (1024-320)px = 0.00284 → 0.284vi
+ * intercept = 0.75rem - 0.00284*320px = 12px - 0.909px = 11.091px ≈ 0.693rem
+ * WCAG: 0.95rem ≤ 2.5 × 0.75rem (1.875rem) ✓ */
+.fluid-small {
+  font-size: clamp(0.75rem, 0.693rem + 0.284vi, 0.95rem);
+}
+
 /* Buttons: 0.65rem at 320px → 1rem at 1024px
  * slope = (1-0.65)rem / (1024-320)px = 0.00497 → 0.497vi
  * intercept = 0.65rem - 0.00497*320px = 10.4px - 1.591px = 8.809px ≈ 0.551rem

@@ -61,7 +61,7 @@ const TerritoryListing = ({
     >
       <Offcanvas.Header closeButton>
         <Offcanvas.Title className="d-flex justify-content-between align-items-center w-100 me-3">
-          <span style={{ fontSize: "1.125rem", fontWeight: "600" }}>
+          <span className="fluid-text fluid-bolding">
             {t("territory.selectTerritory")}
           </span>
           <ToggleButtonGroup

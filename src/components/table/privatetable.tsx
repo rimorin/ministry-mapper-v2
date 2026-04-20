@@ -90,8 +90,8 @@ const PrivateTerritoryTable = ({
                 }}
               >
                 <span
-                  className="text-muted"
-                  style={{ fontSize: "2rem", lineHeight: 1 }}
+                  className="text-muted fluid-text"
+                  style={{ lineHeight: 1 }}
                 >
                   +
                 </span>

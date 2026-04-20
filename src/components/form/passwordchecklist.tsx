@@ -59,8 +59,8 @@ const PasswordChecklist = ({
       {validationRules.map((rule) => (
         <li
           key={rule.key}
-          className="d-flex align-items-start mb-1"
-          style={{ fontSize: "0.8rem", lineHeight: "1.4" }}
+          className="d-flex align-items-start mb-1 fluid-small"
+          style={{ lineHeight: "1.4" }}
         >
           <span
             className="me-2"
