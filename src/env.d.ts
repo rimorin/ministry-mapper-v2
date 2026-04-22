@@ -9,7 +9,6 @@ interface ImportMetaEnv {
     | "staging"
     | "production";
   readonly VITE_POCKETBASE_URL: string;
-  readonly VITE_OPENROUTE_API_KEY: string;
   readonly VITE_LOCATIONIQ_API_KEY: string;
   readonly VITE_PRIVACY_URL: string;
   readonly VITE_TERMS_URL: string;

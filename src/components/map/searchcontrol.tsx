@@ -20,12 +20,22 @@ export const SearchControl = ({
     const providerParams: Record<string, string | number> = {
       key: import.meta.env.VITE_LOCATIONIQ_API_KEY,
       limit: 5,
-      addressdetails: 1
+      addressdetails: 1,
+      normalizeaddress: 1
     };
 
     if (origin) {
       providerParams.countrycodes = origin.toLowerCase();
     }
+
+    const bounds = map.getBounds();
+    providerParams.viewbox = [
+      bounds.getWest(),
+      bounds.getNorth(),
+      bounds.getEast(),
+      bounds.getSouth()
+    ].join(",");
+    providerParams.bounded = 0;
 
     const provider = new LocationIQProvider({ params: providerParams });
 
