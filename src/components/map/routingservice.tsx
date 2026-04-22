@@ -31,35 +31,24 @@ const RoutingService: React.FC<RoutingServiceProps> = ({
     }
 
     abortControllerRef.current = new AbortController();
-    const profile = travelMode === "DRIVING" ? "driving-car" : "foot-walking";
+    const profile = travelMode === "DRIVING" ? "driving" : "walking";
+    const coords = `${start.lng},${start.lat};${end.lng},${end.lat}`;
 
     const fetchRoute = async () => {
       onLoadingChange?.(true);
       try {
         const response = await fetch(
-          `https://api.openrouteservice.org/v2/directions/${profile}/geojson`,
+          `https://us1.locationiq.com/v1/directions/${profile}/${coords}?key=${import.meta.env.VITE_LOCATIONIQ_API_KEY}&geometries=geojson&overview=simplified`,
           {
-            method: "POST",
-            headers: {
-              Authorization: import.meta.env.VITE_OPENROUTE_API_KEY,
-              "Content-Type": "application/json",
-              Accept: "application/geo+json"
-            },
-            body: JSON.stringify({
-              coordinates: [
-                [start.lng, start.lat],
-                [end.lng, end.lat]
-              ]
-            }),
             signal: abortControllerRef.current?.signal
           }
         );
 
         const data = await response.json();
 
-        if (data.features?.[0]?.geometry?.coordinates) {
+        if (data.routes?.[0]?.geometry?.coordinates) {
           const latLngs: [number, number][] =
-            data.features[0].geometry.coordinates.map(
+            data.routes[0].geometry.coordinates.map(
               (coord: number[]) => [coord[1], coord[0]] as [number, number]
             );
 

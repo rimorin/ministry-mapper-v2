@@ -208,8 +208,8 @@ cp .env.example .env
 |---|:---:|---|
 | `VITE_POCKETBASE_URL` | ✅ | URL of your PocketBase backend (e.g. `http://localhost:8090`) |
 | `VITE_SYSTEM_ENVIRONMENT` | ✅ | `local` \| `staging` \| `production` |
-| `VITE_OPENROUTE_API_KEY` | ✅ | [OpenRouteService](https://openrouteservice.org/) API key (routing) |
-| `VITE_LOCATIONIQ_API_KEY` | ✅ | [LocationIQ](https://locationiq.com/) API key (geocoding) |
+
+| `VITE_LOCATIONIQ_API_KEY` | ✅ | [LocationIQ](https://locationiq.com/) API key (geocoding and routing) |
 | `VITE_PRIVACY_URL` | ✅ | Link to your privacy policy |
 | `VITE_TERMS_URL` | ✅ | Link to your terms of service |
 | `VITE_ABOUT_URL` | ✅ | Link to your about page |
