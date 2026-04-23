@@ -1,5 +1,17 @@
 # Notas de versión (Español)
 
+## 2026-04-23
+
+> Por favor, no publiques enlaces de mapas en historias o estados públicos (por ejemplo, Estado de WhatsApp) — pueden ser vistos por personas fuera de la congregación.
+
+[ANNOUNCEMENT] Por favor, ten cuidado al compartir enlaces de mapas en aplicaciones de mensajería.
+  Los enlaces de mapas permiten a los publicadores acceder directamente al mapa sin iniciar sesión — lo que significa que cualquiera que reciba el enlace puede hacer lo mismo, incluidos externos. Si lo publicaste públicamente por error, por favor elimina la publicación de inmediato y avisa a tu conductor o administrador para que puedan eliminar el enlace y enviar uno nuevo.
+
+[ANNOUNCEMENT] Administradores: por favor considera acortar el tiempo de expiración del enlace.
+  Una "vida útil" más corta significa que incluso si un enlace se comparte en el lugar equivocado, dejará de funcionar rápidamente y la ventana de riesgo será muy pequeña.
+
+---
+
 ## 2026-04-11
 
 [NEW] Correo de resumen diario para las nuevas direcciones residenciales añadidas por los publicadores.

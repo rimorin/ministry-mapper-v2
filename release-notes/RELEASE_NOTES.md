@@ -109,6 +109,18 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ---
 
+## 2026-04-23
+
+> Please do not post map links to public stories or statuses (e.g. WhatsApp Status) — they can be seen by people outside your congregation.
+
+[ANNOUNCEMENT] Please be careful when sharing map links on messaging apps.
+  Map links let publishers jump straight into the map without logging in — which means anyone who gets the link can access it, including outsiders. If you accidentally post one publicly, please remove the post immediately and let your conductor or admin know so they can delete the link and send a new one.
+
+[ANNOUNCEMENT] Admins: please consider shortening the link expiry.
+  A shorter "lifespan" means that even if a link ends up in the wrong place, it stops working quickly, keeping the window of risk very small.
+
+---
+
 ## 2026-04-11
 
 [NEW] Daily summary email for new landed property addresses added by publishers.

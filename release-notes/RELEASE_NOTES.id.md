@@ -1,5 +1,17 @@
 # Catatan Rilis (Bahasa Indonesia)
 
+## 2026-04-23
+
+> Mohon jangan posting tautan peta ke stories atau status publik (misalnya Status WhatsApp) — bisa dilihat oleh orang di luar jemaat.
+
+[ANNOUNCEMENT] Mohon berhati-hatilah saat membagikan tautan peta di aplikasi pesan.
+  Tautan peta memungkinkan penerbit langsung masuk ke peta tanpa perlu login — artinya siapa pun yang mendapatkan tautannya bisa mengaksesnya, termasuk orang luar. Jika tidak sengaja mempostingnya secara publik, segera hapus postingan tersebut dan mohon beritahu konduktor atau administrator Anda agar mereka bisa menghapus tautan dan mengirimkan yang baru.
+
+[ANNOUNCEMENT] Administrator: mohon pertimbangkan untuk memperpendek masa berlaku tautan.
+  "Masa hidup" yang lebih singkat berarti meskipun tautan dibagikan ke tempat yang salah, tautan tersebut akan segera berhenti bekerja sehingga jendela risiko tetap sangat kecil.
+
+---
+
 ## 2026-04-11
 
 [NEW] Email ringkasan harian untuk alamat perumahan baru yang ditambahkan oleh penerbit.

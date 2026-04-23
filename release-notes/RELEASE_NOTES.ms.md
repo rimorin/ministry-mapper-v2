@@ -1,5 +1,17 @@
 # Nota Pelepasan (Bahasa Melayu)
 
+## 2026-04-23
+
+> Sila jangan hantar pautan peta ke stories atau status awam (contohnya Status WhatsApp) — ia boleh dilihat oleh orang di luar jemaat.
+
+[ANNOUNCEMENT] Sila berhati-hati semasa berkongsi pautan peta di aplikasi pemesejan.
+  Pautan peta membolehkan penerbit terus masuk ke dalam peta tanpa perlu log masuk — bermakna sesiapa yang mendapat pautan boleh berbuat demikian, termasuk orang luar. Jika anda tersalah hantar pautan secara awam, sila padamkan siaran tersebut dengan segera dan maklumkan konduktor atau pentadbir anda supaya mereka boleh memadamkan pautan dan menghantar yang baharu.
+
+[ANNOUNCEMENT] Pentadbir: sila pertimbangkan untuk memendekkan tempoh luput pautan.
+  "Jangka hayat" yang lebih pendek bermakna walaupun pautan dikongsi di tempat yang salah, ia akan berhenti berfungsi dengan cepat, mengurangkan tempoh risiko seminimum mungkin.
+
+---
+
 ## 2026-04-11
 
 [NEW] E-mel ringkasan harian untuk alamat harta tanah baharu yang ditambah oleh penerbit.
