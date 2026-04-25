@@ -10,6 +10,7 @@ import {
   TerritoryPolygonCoordinate
 } from "../../utils/interface";
 import { LinkSession } from "../../utils/policies";
+import { sortByCode } from "../../utils/helpers/sorthelpers";
 import {
   USER_ACCESS_LEVELS,
   DEFAULT_CONGREGATION_MAX_TRIES,
@@ -491,7 +492,9 @@ function Admin({ user }: adminProps) {
           aggregates: territoryData.progress,
           coordinates: territoryData.coordinates
         });
-        return updated;
+        return new Map(
+          sortByCode(Array.from(updated.values())).map((v) => [v.id, v])
+        );
       });
     },
     {

@@ -11,6 +11,7 @@ import {
 } from "../utils/constants";
 import { RecordModel } from "pocketbase";
 import useNotification from "./useNotification";
+import { sortBySequence } from "../utils/helpers/sorthelpers";
 
 export default function useMapLink() {
   const { notifyError } = useNotification();
@@ -63,11 +64,11 @@ export default function useMapLink() {
     const mapExpand = linkRecord.expand?.map;
     const congregation = mapExpand?.expand?.congregation;
     const congId = congregation?.id;
-    const congOptions = (
+    const congOptions = sortBySequence(
       (congregation?.expand?.options_via_congregation as
         | RecordModel[]
         | undefined) ?? []
-    ).sort((a, b) => a.sequence - b.sequence);
+    );
 
     setCoordinates(mapExpand?.coordinates || DEFAULT_COORDINATES.Singapore);
     setPolicy(
