@@ -16,6 +16,7 @@ import {
 } from "../utils/constants";
 import { Policy } from "../utils/policies";
 import { territoryDetails } from "../utils/interface";
+import { sortByCode, sortBySequence } from "../utils/helpers/sorthelpers";
 
 interface UseAdminDataProps {
   userId: string;
@@ -107,13 +108,15 @@ export default function useAdminData({
       });
       congregationAccessRef.current[cong.id] = record.role;
       congregationDetailsRef.current[cong.id] = cong;
-      congregationOptionsRef.current[cong.id] =
+      congregationOptionsRef.current[cong.id] = sortBySequence(
         (cong.expand?.options_via_congregation as RecordModel[] | undefined) ??
-        [];
-      congregationTerritoriesRef.current[cong.id] =
+          []
+      );
+      congregationTerritoriesRef.current[cong.id] = sortByCode(
         (cong.expand?.territories_via_congregation as
           | RecordModel[]
-          | undefined) ?? [];
+          | undefined) ?? []
+      );
     });
     setUserCongregationAccesses(congregationAccesses);
     const isCongregationCodeCacheValid = congregationAccesses.some(

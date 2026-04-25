@@ -3,6 +3,7 @@ import { territoryDetails } from "../utils/interface";
 import { callFunction } from "../utils/pocketbase";
 import useNotification from "./useNotification";
 import useLocalStorage from "./useLocalStorage";
+import { sortByCode } from "../utils/helpers/sorthelpers";
 
 export default function useTerritoryManagement() {
   const { notifyError } = useNotification();
@@ -108,14 +109,12 @@ export default function useTerritoryManagement() {
       ...prev,
       code: updatedCode
     }));
+    const updatedValues = Array.from(territories.values()).map((value) =>
+      value.id === territoryId ? { ...value, code: updatedCode } : value
+    );
     setTerritories(
       new Map<string, territoryDetails>(
-        Array.from(territories).map(([key, value]) => {
-          if (key === territoryId) {
-            value.code = updatedCode;
-          }
-          return [key, value];
-        })
+        sortByCode(updatedValues).map((v) => [v.id, v])
       )
     );
   };
