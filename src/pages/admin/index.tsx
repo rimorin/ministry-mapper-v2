@@ -1,6 +1,6 @@
 import "../../css/admin.css";
 
-import { useEffect, use, lazy } from "react";
+import { useEffect, useEffectEvent, use, lazy } from "react";
 import { useTranslation } from "react-i18next";
 import {
   adminProps,
@@ -24,6 +24,7 @@ import useMapManagement from "../../hooks/useMapManagement";
 import useCongregationManagement from "../../hooks/useCongManagement";
 import useUIState from "../../hooks/useUIManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
+import useOnTabFocus from "../../hooks/useOnTabFocus";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useAdminData from "../../hooks/useAdminData";
 import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
@@ -39,11 +40,13 @@ import {
   cleanupSession,
   getList,
   getUser,
+  pb,
   requestPasswordReset
 } from "../../utils/pocketbase";
 
 import AdminNavbar from "./components/adminnavbar";
 import FloatingActions from "./components/floatingactions";
+import { useSmartSync, SmartSyncProvider } from "../../hooks/useSmartSync";
 
 const TerritoryContent = SuspenseComponent(
   lazy(() => import("./components/territorycontent"))
@@ -473,6 +476,36 @@ function Admin({ user }: adminProps) {
     checkForMaps(congregationCode);
   };
 
+  const onReconnect = useEffectEvent(() => {
+    if (selectedTerritory.id) setupMaps(selectedTerritory.id);
+  });
+
+  // Refresh maps list whenever the SSE connection (re)establishes — covers network
+  // drops and cold starts. PB_CONNECT fires only on genuine reconnects.
+  useEffect(() => {
+    if (!selectedTerritory.id) return;
+
+    let isCleaned = false;
+    let unsubscribe: (() => void) | undefined;
+
+    pb.realtime.subscribe("PB_CONNECT", onReconnect).then((unsub) => {
+      if (isCleaned) {
+        unsub();
+        return;
+      }
+      unsubscribe = unsub;
+    });
+
+    return () => {
+      isCleaned = true;
+      if (unsubscribe) unsubscribe();
+    };
+  }, [selectedTerritory.id]);
+
+  useOnTabFocus(() => {
+    if (selectedTerritory.id) setupMaps(selectedTerritory.id);
+  });
+
   useRealtimeSubscription(
     "territories",
     (data) => {
@@ -526,7 +559,7 @@ function Admin({ user }: adminProps) {
       const mapId = data.record.id;
       const dataAction = data.action;
       setSortedAddressList((prevList) => {
-        let updatedList: addressDetails[] = [];
+        let updatedList: addressDetails[];
         if (dataAction === "update") {
           updatedList = prevList.map((map) =>
             map.id === mapId ? processMapRecord(data.record) : map
@@ -535,9 +568,10 @@ function Admin({ user }: adminProps) {
           updatedList = [...prevList, processMapRecord(data.record)];
         } else if (dataAction === "delete") {
           updatedList = prevList.filter((address) => address.id !== mapId);
+        } else {
+          return prevList;
         }
-        updatedList.sort((a, b) => a.sequence - b.sequence);
-        return updatedList;
+        return [...updatedList].sort((a, b) => a.sequence - b.sequence);
       });
       if (dataAction === "create") {
         setAccordionKeys((prev) => [...prev, mapId]);
@@ -553,6 +587,11 @@ function Admin({ user }: adminProps) {
     [selectedTerritory.id],
     !!selectedTerritory.id
   );
+
+  const smartSync = useSmartSync(
+    policy.congregation ? { congregationId: policy.congregation } : undefined
+  );
+  const { displayPendingCount } = smartSync;
 
   if (isLoading) return <Loader />;
   if (isUnauthorised) {
@@ -611,6 +650,7 @@ function Admin({ user }: adminProps) {
         userAccessLevel={userAccessLevel}
         isProcessingTerritory={isProcessingTerritory}
         isShowingUserListing={isShowingUserListing}
+        pendingCount={displayPendingCount}
         onToggleCongregationListing={toggleCongregationListing}
         onToggleTerritoryListing={toggleTerritoryListing}
         onToggleLanguageSelector={toggleLanguageSelector}
@@ -639,40 +679,42 @@ function Admin({ user }: adminProps) {
           onLogout: logoutUser
         }}
       />
-      <TerritoryContent
-        selectedTerritory={selectedTerritory}
-        userName={userName}
-        isMapView={isMapView}
-        sortedAddressList={sortedAddressList}
-        accordingKeys={accordingKeys}
-        setAccordionKeys={setAccordionKeys}
-        mapViews={mapViews}
-        setMapViews={setMapViews}
-        policy={policy}
-        values={values}
-        setValues={setValues}
-        userAccessLevel={userAccessLevel}
-        isReadonly={isReadonly}
-        deleteMap={deleteMap}
-        addFloorToMap={addFloorToMap}
-        resetMap={resetMap}
-        processingMap={processingMap}
-        toggleAddressTerritoryListing={toggleAddressTerritoryListing}
-        congregationOptions={policy.options}
-        territories={territories}
-        onCreateOptions={handleShowCongregationOptions}
-        onCreateTerritory={handleCreateTerritory}
-        hasAnyMaps={hasAnyMaps}
-      />
-      {selectedTerritory.code && (
-        <FloatingActions
-          showBkTopButton={showBkTopButton}
+      <SmartSyncProvider value={smartSync}>
+        <TerritoryContent
+          selectedTerritory={selectedTerritory}
+          userName={userName}
           isMapView={isMapView}
-          isAssignmentLoading={isAssignmentLoading}
-          onToggleMapView={() => setIsMapView(!isMapView)}
-          onGenerateLink={handleGenerateTerritoryMap}
+          sortedAddressList={sortedAddressList}
+          accordingKeys={accordingKeys}
+          setAccordionKeys={setAccordionKeys}
+          mapViews={mapViews}
+          setMapViews={setMapViews}
+          policy={policy}
+          values={values}
+          setValues={setValues}
+          userAccessLevel={userAccessLevel}
+          isReadonly={isReadonly}
+          deleteMap={deleteMap}
+          addFloorToMap={addFloorToMap}
+          resetMap={resetMap}
+          processingMap={processingMap}
+          toggleAddressTerritoryListing={toggleAddressTerritoryListing}
+          congregationOptions={policy.options}
+          territories={territories}
+          onCreateOptions={handleShowCongregationOptions}
+          onCreateTerritory={handleCreateTerritory}
+          hasAnyMaps={hasAnyMaps}
         />
-      )}
+        {selectedTerritory.code && (
+          <FloatingActions
+            showBkTopButton={showBkTopButton}
+            isMapView={isMapView}
+            isAssignmentLoading={isAssignmentLoading}
+            onToggleMapView={() => setIsMapView(!isMapView)}
+            onGenerateLink={handleGenerateTerritoryMap}
+          />
+        )}
+      </SmartSyncProvider>
     </>
   );
 }

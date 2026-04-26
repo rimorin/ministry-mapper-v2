@@ -4,7 +4,6 @@ import { Route, Switch } from "wouter";
 import * as Sentry from "@sentry/react";
 import Loader from "../components/statics/loader";
 import ErrorBoundaryFallback from "../components/statics/errorboundary";
-import { UpdateNotification } from "../components/statics/updatenotification";
 import { ReleaseNotifier } from "../components/statics/releasenotifier";
 
 const LazyLoad = (
@@ -44,7 +43,6 @@ const NotFoundPage = lazy(() => import("../components/statics/notfound"));
 
 const Router: FC = () => (
   <>
-    <UpdateNotification />
     <ReleaseNotifier />
     <ErrorBoundary
       FallbackComponent={ErrorBoundaryFallback}

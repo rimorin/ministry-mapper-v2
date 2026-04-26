@@ -1,5 +1,21 @@
 # Notas de versión (Español)
 
+## 2026-05-05
+
+> Publicadores: Smart Sync solo cubre sus actualizaciones de direcciones. Administradores: las acciones de administrador aún requieren una conexión activa.
+
+[NEW] Sincronización Inteligente.
+  Tus actualizaciones se guardan al instante, incluso con señal débil. Guardar una visita siempre ha requerido una conexión a internet — en ascensores, estacionamientos subterráneos, zonas rurales o lugares con datos móviles poco confiables, eso a menudo no era posible.
+
+  En el momento en que tocas Guardar, la actualización se almacena en tu dispositivo y el mapa refleja tus cambios de inmediato. El sistema la envía al servidor en segundo plano cuando tu conexión esté lista.
+
+  - Un distintivo 📤 en la barra de navegación superior muestra cuántas actualizaciones están en camino. Desaparece una vez que todas han llegado.
+  - Un punto rojo aparece en cada dirección que aún no se ha sincronizado.
+
+  Solo registra tus visitas como de costumbre — la Sincronización Inteligente se encarga del resto.
+
+---
+
 ## 2026-04-23
 
 > Por favor, no publiques enlaces de mapas en historias o estados públicos (por ejemplo, Estado de WhatsApp) — pueden ser vistos por personas fuera de la congregación.

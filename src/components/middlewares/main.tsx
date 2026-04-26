@@ -3,6 +3,7 @@ import { Container } from "react-bootstrap";
 import VersionDisplay from "../navigation/versiondisplay";
 import EnvironmentIndicator from "../navigation/environment";
 import { NetworkStatusBanner } from "../statics/networkstatus";
+import { NetworkStatusProvider } from "./networkstatuscontext";
 import Loader from "../statics/loader";
 const MissingSetupPage = lazy(() => import("../statics/missingsetup"));
 const { VITE_SYSTEM_ENVIRONMENT } = import.meta.env;
@@ -20,18 +21,20 @@ const MainMiddleware: FC<MainMiddlewareProps> = ({ children }) => {
     );
   }
   return (
-    <Container
-      className="p-2"
-      fluid
-      style={{
-        minHeight: "95vh"
-      }}
-    >
-      <NetworkStatusBanner />
-      <EnvironmentIndicator environment={VITE_SYSTEM_ENVIRONMENT} />
-      {children}
-      <VersionDisplay />
-    </Container>
+    <NetworkStatusProvider>
+      <Container
+        className="p-2"
+        fluid
+        style={{
+          minHeight: "95vh"
+        }}
+      >
+        <NetworkStatusBanner />
+        <EnvironmentIndicator environment={VITE_SYSTEM_ENVIRONMENT} />
+        {children}
+        <VersionDisplay />
+      </Container>
+    </NetworkStatusProvider>
   );
 };
 

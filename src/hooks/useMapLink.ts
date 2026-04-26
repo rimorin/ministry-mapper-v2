@@ -12,6 +12,7 @@ import {
 import { RecordModel } from "pocketbase";
 import useNotification from "./useNotification";
 import { sortBySequence } from "../utils/helpers/sorthelpers";
+import { loadAssignmentCache, saveAssignmentCache } from "../utils/smartsync";
 
 export default function useMapLink() {
   const { notifyError } = useNotification();
@@ -42,14 +43,17 @@ export default function useMapLink() {
 
   const retrieveLinkData = async (
     id: string,
-    readPinnedMessages: string
+    readPinnedMessages: string,
+    preloadedRecord?: RecordModel
   ): Promise<addressDetails | undefined> => {
-    const linkRecord = await getDataById("assignments", id, {
-      requestKey: null,
-      expand:
-        "map, map.congregation, map.congregation.options_via_congregation",
-      fields: PB_FIELDS.ASSIGNMENT_LINKS
-    });
+    const linkRecord =
+      preloadedRecord ??
+      (await getDataById("assignments", id, {
+        requestKey: null,
+        expand:
+          "map, map.congregation, map.congregation.options_via_congregation",
+        fields: PB_FIELDS.ASSIGNMENT_LINKS
+      }));
     if (!linkRecord) {
       setIsLinkExpired(true);
       return;
@@ -109,6 +113,9 @@ export default function useMapLink() {
     }
     setMapDetails(details);
     setTerritoryId(mapExpand?.territory || "");
+    if (!preloadedRecord) {
+      saveAssignmentCache(id, linkRecord);
+    }
     return details;
   };
 
@@ -124,6 +131,16 @@ export default function useMapLink() {
       }
       return mapDetails.id;
     } catch (error) {
+      const cached = loadAssignmentCache<RecordModel>(linkId);
+      if (cached) {
+        const cachedDetails = await retrieveLinkData(
+          linkId,
+          readPinnedMessages,
+          cached
+        );
+        if (cachedDetails) return cachedDetails.id;
+        return;
+      }
       notifyError(error, true);
     } finally {
       setIsLoading(false);

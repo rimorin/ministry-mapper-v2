@@ -1,6 +1,9 @@
 import { latlongInterface } from "../interface";
 import { DEFAULT_COORDINATES } from "../constants";
 
+export const getNextSequence = (sequences: number[]): number =>
+  Math.max(0, ...sequences) + 1;
+
 /**
  * Validate if a coordinate has valid lat/lng numbers
  */

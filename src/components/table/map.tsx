@@ -3,6 +3,7 @@ import React, {
   Suspense,
   useEffect,
   useEffectEvent,
+  useRef,
   useState
 } from "react";
 import {
@@ -16,6 +17,7 @@ import {
 import {
   floorDetails,
   HHOptionProps,
+  QueuedOp,
   territoryTableProps,
   unitDetails,
   mapAddressResponse
@@ -27,134 +29,215 @@ import useConfirm from "../../hooks/useConfirm";
 import MapPlaceholder from "../statics/placeholder";
 
 import { callFunction, ignoreAbort, pb } from "../../utils/pocketbase";
+import { getNextSequence } from "../../utils/helpers/maphelpers";
+import {
+  applyAddressEvent,
+  applyAddressOptionsEvent,
+  RealtimeEvent
+} from "../../utils/helpers/addressReducers";
+import {
+  saveAddressCache,
+  loadAddressCache,
+  getQueue,
+  applyOpTypes
+} from "../../utils/smartsync";
 import { useTranslation } from "react-i18next";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
-import { RecordModel } from "pocketbase";
+import useOnTabFocus from "../../hooks/useOnTabFocus";
+import { useSmartSyncContext } from "../../hooks/useSmartSync";
 const TerritoryMapView = lazy(() => import("./mapmode"));
-const UpdateUnitStatus = lazy(() => import("../modal/updatestatus"));
-const CreateAddress = lazy(() => import("../modal/createaddress"));
+// Eager imports — both modals are needed for queued writes and must be
+// bundled with this chunk rather than fetched on-demand (which fails offline).
+import UpdateUnitStatus from "../modal/updatestatus";
+import CreateAddress from "../modal/createaddress";
+
+function applyPendingOpsToAddressMap(
+  addressMap: Map<string, unitDetails>,
+  pendingOps: QueuedOp[],
+  optionCodeMap: Map<string, string>
+): void {
+  for (const op of pendingOps) {
+    if (op.kind === "create" && op.createPayload) {
+      if (!addressMap.has(op.addressId)) {
+        addressMap.set(op.addressId, {
+          id: op.addressId,
+          number: op.createPayload.code,
+          note: op.updateData.notes,
+          status: op.updateData.status,
+          nhcount: String(op.updateData.not_home_tries),
+          dnctime: op.updateData.dnc_time
+            ? Date.parse(op.updateData.dnc_time)
+            : 0,
+          floor: op.createPayload.floor,
+          sequence: op.createPayload.sequence,
+          coordinates: op.updateData.coordinates
+            ? (JSON.parse(op.updateData.coordinates) as {
+                lat: number;
+                lng: number;
+              })
+            : undefined,
+          type: applyOpTypes(op, optionCodeMap)
+        });
+      }
+      continue;
+    }
+    const base = addressMap.get(op.addressId);
+    if (!base) continue;
+    addressMap.set(op.addressId, {
+      ...base,
+      status: op.updateData.status,
+      note: op.updateData.notes,
+      nhcount: String(op.updateData.not_home_tries),
+      dnctime: op.updateData.dnc_time ? Date.parse(op.updateData.dnc_time) : 0,
+      coordinates: op.updateData.coordinates
+        ? (JSON.parse(op.updateData.coordinates) as {
+            lat: number;
+            lng: number;
+          })
+        : base.coordinates,
+      type: applyOpTypes(op, optionCodeMap)
+    });
+  }
+}
 
 const useAddresses = (
   mapId: string,
   options: Map<string, HHOptionProps>,
-  assignmentId?: string
+  assignmentId?: string,
+  pendingAddressIds: Set<string> = new Set()
 ) => {
   const [addresses, setAddresses] = useState<Map<string, unitDetails>>(
     new Map()
   );
 
-  const createUnitDetails = (address: RecordModel): unitDetails => ({
-    id: address.id,
-    coordinates: address.coordinates,
-    number: address.code,
-    note: address.notes,
-    type: [],
-    status: address.status,
-    nhcount: String(address.not_home_tries ?? NOT_HOME_STATUS_CODES.DEFAULT),
-    dnctime: address.dnc_time ? Date.parse(address.dnc_time) : 0,
-    sequence: address.sequence,
-    floor: address.floor,
-    updated: address.updated ? Date.parse(address.updated) : undefined,
-    updatedBy: address.updated_by
-  });
+  const cacheKey = assignmentId ?? mapId;
+  // Read inside the cache-persistence effect so a cacheKey change alone (e.g.
+  // mapId switch) does not write the *old* map's data under the *new* key
+  // before the new fetch lands.
+  const cacheKeyRef = useRef(cacheKey);
+  cacheKeyRef.current = cacheKey;
+
+  const optionCodeMap = new Map(
+    [...options.entries()].map(([id, o]) => [id, o.code])
+  );
 
   const fetchAddressData = ignoreAbort(async () => {
     if (!mapId) return;
-    const response = (await callFunction("/map/addresses", {
-      method: "POST",
-      body: { map_id: mapId },
-      requestKey: `map-addresses-${mapId}`
-    })) as mapAddressResponse[];
+    try {
+      const response = (await callFunction("/map/addresses", {
+        method: "POST",
+        body: { map_id: mapId },
+        requestKey: `map-addresses-${mapId}`
+      })) as mapAddressResponse[];
 
-    const addressMap = new Map<string, unitDetails>();
-    for (const addr of response) {
-      addressMap.set(addr.id, {
-        id: addr.id,
-        coordinates: addr.coordinates ?? undefined,
-        number: addr.code,
-        note: addr.notes,
-        type: addr.options.map((ao) => ({
-          id: ao.id,
-          code: options.get(ao.id)?.code ?? "",
-          aoId: ao.aoId
-        })),
-        status: addr.status,
-        nhcount: String(addr.not_home_tries ?? NOT_HOME_STATUS_CODES.DEFAULT),
-        dnctime: addr.dnc_time ? Date.parse(addr.dnc_time) : 0,
-        sequence: addr.sequence,
-        floor: addr.floor,
-        updated: addr.updated ? Date.parse(addr.updated) : undefined,
-        updatedBy: addr.updated_by
-      });
+      const addressMap = new Map<string, unitDetails>();
+      for (const addr of response) {
+        addressMap.set(addr.id, {
+          id: addr.id,
+          coordinates: addr.coordinates ?? undefined,
+          number: addr.code,
+          note: addr.notes,
+          type: addr.options.map((ao) => ({
+            id: ao.id,
+            code: options.get(ao.id)?.code ?? "",
+            aoId: ao.aoId
+          })),
+          status: addr.status,
+          nhcount: String(addr.not_home_tries ?? NOT_HOME_STATUS_CODES.DEFAULT),
+          dnctime: addr.dnc_time ? Date.parse(addr.dnc_time) : 0,
+          sequence: addr.sequence,
+          floor: addr.floor,
+          updated: addr.updated ? Date.parse(addr.updated) : undefined,
+          updatedBy: addr.updated_by
+        });
+      }
+
+      // Overlay pending smart sync writes on top of the server snapshot.
+      // Firestore-style: local writes always take precedence until confirmed.
+      // Ops are keyed by `mapId:addressId` so there is at most one op per address.
+      const pendingOps = await getQueue(mapId);
+      applyPendingOpsToAddressMap(addressMap, pendingOps, optionCodeMap);
+
+      setAddresses(addressMap);
+      // Cache persistence is centralized in the effect below.
+    } catch (error) {
+      // Rethrow AbortErrors so the ignoreAbort wrapper can handle them
+      if (error instanceof DOMException && error.name === "AbortError") {
+        throw error;
+      }
+      const cached = await loadAddressCache(cacheKey);
+      if (cached) {
+        // Re-apply pending ops on top of the cached snapshot so the user sees
+        // their queued edits, not the last-known server state.
+        const cachedMap = new Map(Object.entries(cached.data));
+        const pendingOps = await getQueue(mapId);
+        applyPendingOpsToAddressMap(cachedMap, pendingOps, optionCodeMap);
+        setAddresses(cachedMap);
+        return;
+      }
     }
-
-    setAddresses(addressMap);
   });
 
-  const handleSubscription = (data: {
-    action: string;
-    record: RecordModel;
-  }) => {
-    const addressId = data.record.id;
-    const dataAction = data.action;
+  const updateAddressOptimistically = (
+    addressId: string,
+    updateData: QueuedOp["updateData"],
+    newTypes: Array<{ id: string; code: string; aoId?: string }>
+  ) => {
     setAddresses((prev) => {
-      if (dataAction === "delete") {
-        if (!prev.has(addressId)) return prev; // bail out — already gone
-        const newAddresses = new Map(prev);
-        newAddresses.delete(addressId);
-        return newAddresses;
-      }
-      // update or create
-      // Address events don't carry expand data — preserve existing type from state.
-      // Type changes come via the address_options subscription instead.
-      const existingType = prev.get(addressId)?.type ?? [];
-      const newAddresses = new Map(prev);
-      newAddresses.set(addressId, {
-        ...createUnitDetails(data.record),
-        type: existingType
+      const existing = prev.get(addressId);
+      if (!existing) return prev;
+      const next = new Map(prev);
+      next.set(addressId, {
+        ...existing,
+        status: updateData.status,
+        note: updateData.notes,
+        nhcount: String(updateData.not_home_tries),
+        dnctime: updateData.dnc_time ? Date.parse(updateData.dnc_time) : 0,
+        coordinates: updateData.coordinates
+          ? (JSON.parse(updateData.coordinates) as { lat: number; lng: number })
+          : existing.coordinates,
+        type: newTypes
       });
-      return newAddresses;
+      return next;
     });
   };
 
-  const handleAddressOptionsSubscription = (data: {
-    action: string;
-    record: RecordModel;
-  }) => {
-    const addressId = data.record.address as string;
-    const optionId = data.record.option as string;
-    const dataAction = data.action;
+  const addAddressOptimistically = (newUnit: unitDetails) => {
     setAddresses((prev) => {
-      if (!prev.has(addressId)) return prev;
-      const unit = prev.get(addressId)!;
-      let newType: typeof unit.type;
-
-      if (dataAction === "create") {
-        if (unit.type.some((t) => t.id === optionId)) return prev; // bail out — duplicate
-        newType = [
-          ...unit.type,
-          {
-            id: optionId,
-            code: options.get(optionId)?.code ?? "",
-            aoId: data.record.id
-          }
-        ];
-      } else if (dataAction === "delete") {
-        const filtered = unit.type.filter((t) => t.id !== optionId);
-        if (filtered.length === unit.type.length) return prev; // bail out — nothing removed
-        newType = filtered;
-      } else {
-        return prev; // unknown action
-      }
-
-      const newAddresses = new Map(prev);
-      newAddresses.set(addressId, { ...unit, type: newType });
-      return newAddresses;
+      const next = new Map(prev);
+      next.set(newUnit.id, newUnit);
+      return next;
     });
+  };
+
+  // Functional updater so bursts of events (e.g. reset-all) compose against
+  // the latest queued state, not a render-stale snapshot. Each event would
+  // otherwise read the same `prev` and the last setAddresses would win,
+  // dropping intermediate updates. Merge logic lives in addressReducers.ts.
+  const handleSubscription = (data: RealtimeEvent) => {
+    setAddresses((prev) => applyAddressEvent(prev, data, pendingAddressIds));
+  };
+
+  const handleAddressOptionsSubscription = (data: RealtimeEvent) => {
+    setAddresses((prev) =>
+      applyAddressOptionsEvent(prev, data, pendingAddressIds, options)
+    );
   };
 
   const onReconnect = useEffectEvent(() => {
+    fetchAddressData();
+    // Mirror Firestore/RxDB's transport-coupled flush: SSE reconnect is a strong
+    // signal the connection is back. Trigger an immediate health check (via
+    // useNetworkStatus) and a direct flush attempt (via useSmartSync) so pending
+    // ops go out as soon as possible — without waiting for the 30s polling tick.
+    window.dispatchEvent(new CustomEvent("mm-sse-reconnect"));
+  });
+
+  const onFlushComplete = useEffectEvent(() => {
+    // Re-fetch after smart sync queue is flushed so the cache reflects the
+    // post-write server state. PB_CONNECT may have cached stale data if it
+    // fired before batch.send() committed (race condition on reconnect).
     fetchAddressData();
   });
 
@@ -163,9 +246,25 @@ const useAddresses = (
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes fetchAddressData
   }, [mapId]);
 
-  // Refresh data whenever the SSE connection (re)establishes — covers network drops.
-  // SSE stays alive in background tabs so events are processed continuously;
-  // PB_CONNECT fires only on genuine reconnects (network drop, cold start).
+  useEffect(() => {
+    window.addEventListener("mm-flush-complete", onFlushComplete);
+    return () =>
+      window.removeEventListener("mm-flush-complete", onFlushComplete);
+  }, []);
+
+  // Persist `addresses` to IndexedDB whenever it changes. Centralizing the
+  // write here (instead of inline at every setAddresses call site) coalesces
+  // bursts of realtime events into a single write per render commit, and
+  // keeps setState updaters pure (StrictMode-safe). cacheKey is read via ref
+  // so that a mapId/assignmentId switch does not write the previous map's
+  // data under the new key before the new fetch lands.
+  useEffect(() => {
+    if (addresses.size === 0) return;
+    void saveAddressCache(cacheKeyRef.current, Object.fromEntries(addresses));
+  }, [addresses]);
+
+  // Refresh data whenever the SSE connection (re)establishes — covers network drops
+  // and cold starts. PB_CONNECT fires only on genuine reconnects.
   useEffect(() => {
     if (!mapId) return;
 
@@ -185,6 +284,8 @@ const useAddresses = (
       if (unsubscribe) unsubscribe();
     };
   }, [mapId]);
+
+  useOnTabFocus(fetchAddressData);
 
   useRealtimeSubscription(
     "addresses",
@@ -221,7 +322,7 @@ const useAddresses = (
     REALTIME_DEBOUNCE_MS
   );
 
-  return addresses;
+  return { addresses, updateAddressOptimistically, addAddressOptimistically };
 };
 
 const MainTable = ({
@@ -238,7 +339,54 @@ const MainTable = ({
   const { notifyError, notifyWarning } = useNotification();
   const { showModal } = useModalManagement();
   const { confirm } = useConfirm();
-  const addresses = useAddresses(mapId, policy.getOptionMap(), assignmentId);
+  const {
+    pendingAddressIds,
+    displayPendingAddressIds,
+    writeUpdate,
+    writeCreate
+  } = useSmartSyncContext();
+  const { addresses, updateAddressOptimistically, addAddressOptimistically } =
+    useAddresses(mapId, policy.getOptionMap(), assignmentId, pendingAddressIds);
+
+  const onOpDiscarded = useEffectEvent((e: Event) => {
+    const count = (e as CustomEvent<{ count: number }>).detail.count;
+    notifyWarning(
+      t(
+        "smartSync.discardedOps",
+        "{{count}} edit(s) could not be saved and were discarded.",
+        { count }
+      )
+    );
+  });
+
+  const onAuthExpired = useEffectEvent(() => {
+    notifyWarning(
+      t(
+        "smartSync.authExpired",
+        "Your session expired. Please sign in again — your offline edits are saved locally."
+      )
+    );
+  });
+
+  const onIdbBlocked = useEffectEvent(() => {
+    notifyWarning(
+      t(
+        "smartSync.idbBlocked",
+        "App update pending. Please close other open tabs to continue."
+      )
+    );
+  });
+
+  useEffect(() => {
+    window.addEventListener("mm-op-discarded", onOpDiscarded);
+    window.addEventListener("mm-auth-expired", onAuthExpired);
+    window.addEventListener("mm-idb-blocked", onIdbBlocked);
+    return () => {
+      window.removeEventListener("mm-op-discarded", onOpDiscarded);
+      window.removeEventListener("mm-auth-expired", onAuthExpired);
+      window.removeEventListener("mm-idb-blocked", onIdbBlocked);
+    };
+  }, []);
 
   const deleteAddressFloor = async (floor: number) => {
     try {
@@ -259,7 +407,9 @@ const MainTable = ({
     showModal(UpdateUnitStatus, {
       addressData: addressDetails,
       unitDetails,
-      policy: policy
+      policy: policy,
+      writeUpdate,
+      onOptimisticUpdate: updateAddressOptimistically
     });
   };
 
@@ -338,7 +488,6 @@ const MainTable = ({
 
     let maxUnitLength = DEFAULT_UNIT_PADDING;
 
-    // Use a Map to group units by floor
     const floorMap = new Map<number, unitDetails[]>();
 
     // Single pass to group by floor and track maxUnitLength
@@ -352,7 +501,6 @@ const MainTable = ({
       floorMap.get(floor)!.push(address);
     }
 
-    // Convert to final format, sort floors and units
     const floorList: floorDetails[] = Array.from(floorMap.entries())
       .map(([floor, units]) => ({
         floor,
@@ -368,14 +516,19 @@ const MainTable = ({
   };
 
   const handleAddMoreClick = () => {
+    const nextSequence = getNextSequence(
+      Array.from(addresses.values()).map((u) => u.sequence)
+    );
     showModal(CreateAddress, {
       addressData: addressDetails,
       policy,
-      sequence: addresses.size,
+      sequence: nextSequence,
       existingCodes: new Set(
         Array.from(addresses.values()).map((u) => u.number)
       ),
-      territoryId: territoryId
+      territoryId: territoryId,
+      writeCreate,
+      onOptimisticCreate: addAddressOptimistically
     });
   };
 
@@ -421,6 +574,7 @@ const MainTable = ({
         handleHouseUpdate={handleHouseUpdate}
         handleAddMoreClick={handleAddMoreClick}
         policy={policy}
+        pendingAddressIds={displayPendingAddressIds}
       />
     );
   }
@@ -434,6 +588,7 @@ const MainTable = ({
       handleUnitStatusUpdate={handleHouseUpdate}
       handleFloorDelete={handleFloorDeleteEvent}
       handleUnitDelete={handleUnitDeleteEvent}
+      pendingAddressIds={displayPendingAddressIds}
     />
   );
 };

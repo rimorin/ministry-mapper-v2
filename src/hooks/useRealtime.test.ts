@@ -192,6 +192,142 @@ describe("useRealtimeSubscription", () => {
 
       expect(() => unmount()).not.toThrow();
     });
+
+    it("retries after a failed subscription attempt", async () => {
+      vi.useFakeTimers();
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      (setupRealtimeListener as ReturnType<typeof vi.fn>)
+        .mockRejectedValueOnce(new Error("Connection failed"))
+        .mockResolvedValueOnce(mockUnsubscribe);
+
+      const callback = vi.fn();
+      renderHook(() =>
+        useRealtimeSubscription("territories", callback, undefined, [], true)
+      );
+
+      // Advance 1000ms — flushes the rejection microtask and fires the retry timer
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1000);
+      });
+
+      expect(setupRealtimeListener).toHaveBeenCalledTimes(2);
+
+      consoleErrorSpy.mockRestore();
+      vi.useRealTimers();
+    });
+
+    it("uses exponential backoff for successive retries", async () => {
+      vi.useFakeTimers();
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      (setupRealtimeListener as ReturnType<typeof vi.fn>)
+        .mockRejectedValueOnce(new Error("Error 1"))
+        .mockRejectedValueOnce(new Error("Error 2"))
+        .mockResolvedValueOnce(mockUnsubscribe);
+
+      const callback = vi.fn();
+      renderHook(() =>
+        useRealtimeSubscription("territories", callback, undefined, [], true)
+      );
+
+      // First retry fires after 1000ms (2^0 * 1000)
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1000);
+      });
+      expect(setupRealtimeListener).toHaveBeenCalledTimes(2);
+
+      // Second retry fires after 2000ms (2^1 * 1000)
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(2000);
+      });
+      expect(setupRealtimeListener).toHaveBeenCalledTimes(3);
+
+      consoleErrorSpy.mockRestore();
+      vi.useRealTimers();
+    });
+
+    it("stops retrying when component unmounts during backoff", async () => {
+      vi.useFakeTimers();
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      (setupRealtimeListener as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+        new Error("Connection failed")
+      );
+
+      const callback = vi.fn();
+      const { unmount } = renderHook(() =>
+        useRealtimeSubscription("territories", callback, undefined, [], true)
+      );
+
+      // Flush the rejection microtask without advancing past the retry timer
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0);
+      });
+
+      // Unmount before the 1000ms retry timer fires
+      unmount();
+
+      // Advance past what would have been the retry delay
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1000);
+      });
+
+      // Only the initial call; no retry after unmount
+      expect(setupRealtimeListener).toHaveBeenCalledTimes(1);
+
+      consoleErrorSpy.mockRestore();
+      vi.useRealTimers();
+    });
+
+    it("cancels retry when enabled changes to false during backoff", async () => {
+      vi.useFakeTimers();
+      const consoleErrorSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      (setupRealtimeListener as ReturnType<typeof vi.fn>).mockRejectedValueOnce(
+        new Error("Connection failed")
+      );
+
+      const callback = vi.fn();
+      const { rerender } = renderHook(
+        ({ enabled }) =>
+          useRealtimeSubscription(
+            "territories",
+            callback,
+            undefined,
+            [],
+            enabled
+          ),
+        { initialProps: { enabled: true } }
+      );
+
+      // Flush the rejection microtask without advancing into the retry window
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0);
+      });
+
+      // Disable — cleanup runs, setting isCleaned=true and clearing the timer
+      rerender({ enabled: false });
+
+      // Advance past what would have been the 1000ms retry delay
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(1000);
+      });
+
+      // Only the initial call; no retry after disabling
+      expect(setupRealtimeListener).toHaveBeenCalledTimes(1);
+
+      consoleErrorSpy.mockRestore();
+      vi.useRealTimers();
+    });
   });
 
   describe("subscription options", () => {
