@@ -6,12 +6,6 @@ import Main from "./pages/index";
 
 initAnalytics();
 
-if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.getRegistrations().then((registrations) => {
-    registrations.forEach((registration) => registration.unregister());
-  });
-}
-
 // This automatically reloads when chunks fail to load after a fresh deployment
 window.addEventListener("vite:preloadError", () => {
   window.location.reload();

@@ -31,13 +31,13 @@
     "Language": "言語",
     "Loading": "読み込み中...",
     "noConnection": "インターネット接続なし",
-    "weakConnection": "接続が弱い",
     "confirm": "確認",
     "confirmDelete": "削除の確認",
     "confirmReset": "リセットの確認",
     "update": "更新",
     "reset": "リセット",
-    "proceed": "続行"
+    "proceed": "続行",
+    "weakConnection": "接続が弱い"
   },
   "auth": {
     "signIn": "ログイン",
@@ -507,5 +507,11 @@
       "title": "非対応のアクセス方法 📱",
       "message": "このアプリはインストール済みアプリ（PWA）として開くことに対応していません。ウェブブラウザから直接開いてください。"
     }
+  },
+  "smartSync": {
+    "discardedOps": "{{count}} 件の編集を保存できず、破棄されました。",
+    "authExpired": "セッションの有効期限が切れました。再度サインインしてください — オフラインでの編集はローカルに保存されています。",
+    "upgradeLostOps": "アプリの更新後、{{count}} 件のオフライン編集を引き継げませんでした。再入力してください。",
+    "idbBlocked": "アプリの更新が保留中です。続行するには他の開いているタブを閉じてください。"
   }
 }

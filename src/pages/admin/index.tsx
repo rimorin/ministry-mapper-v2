@@ -44,6 +44,7 @@ import {
 
 import AdminNavbar from "./components/adminnavbar";
 import FloatingActions from "./components/floatingactions";
+import { useSmartSync, SmartSyncProvider } from "../../hooks/useSmartSync";
 
 const TerritoryContent = SuspenseComponent(
   lazy(() => import("./components/territorycontent"))
@@ -554,6 +555,11 @@ function Admin({ user }: adminProps) {
     !!selectedTerritory.id
   );
 
+  const smartSync = useSmartSync(
+    policy.congregation ? { congregationId: policy.congregation } : undefined
+  );
+  const { displayPendingCount } = smartSync;
+
   if (isLoading) return <Loader />;
   if (isUnauthorised) {
     return <UnauthorizedPage handleClick={logoutUser} name={userName} />;
@@ -611,6 +617,7 @@ function Admin({ user }: adminProps) {
         userAccessLevel={userAccessLevel}
         isProcessingTerritory={isProcessingTerritory}
         isShowingUserListing={isShowingUserListing}
+        pendingCount={displayPendingCount}
         onToggleCongregationListing={toggleCongregationListing}
         onToggleTerritoryListing={toggleTerritoryListing}
         onToggleLanguageSelector={toggleLanguageSelector}
@@ -639,40 +646,42 @@ function Admin({ user }: adminProps) {
           onLogout: logoutUser
         }}
       />
-      <TerritoryContent
-        selectedTerritory={selectedTerritory}
-        userName={userName}
-        isMapView={isMapView}
-        sortedAddressList={sortedAddressList}
-        accordingKeys={accordingKeys}
-        setAccordionKeys={setAccordionKeys}
-        mapViews={mapViews}
-        setMapViews={setMapViews}
-        policy={policy}
-        values={values}
-        setValues={setValues}
-        userAccessLevel={userAccessLevel}
-        isReadonly={isReadonly}
-        deleteMap={deleteMap}
-        addFloorToMap={addFloorToMap}
-        resetMap={resetMap}
-        processingMap={processingMap}
-        toggleAddressTerritoryListing={toggleAddressTerritoryListing}
-        congregationOptions={policy.options}
-        territories={territories}
-        onCreateOptions={handleShowCongregationOptions}
-        onCreateTerritory={handleCreateTerritory}
-        hasAnyMaps={hasAnyMaps}
-      />
-      {selectedTerritory.code && (
-        <FloatingActions
-          showBkTopButton={showBkTopButton}
+      <SmartSyncProvider value={smartSync}>
+        <TerritoryContent
+          selectedTerritory={selectedTerritory}
+          userName={userName}
           isMapView={isMapView}
-          isAssignmentLoading={isAssignmentLoading}
-          onToggleMapView={() => setIsMapView(!isMapView)}
-          onGenerateLink={handleGenerateTerritoryMap}
+          sortedAddressList={sortedAddressList}
+          accordingKeys={accordingKeys}
+          setAccordionKeys={setAccordionKeys}
+          mapViews={mapViews}
+          setMapViews={setMapViews}
+          policy={policy}
+          values={values}
+          setValues={setValues}
+          userAccessLevel={userAccessLevel}
+          isReadonly={isReadonly}
+          deleteMap={deleteMap}
+          addFloorToMap={addFloorToMap}
+          resetMap={resetMap}
+          processingMap={processingMap}
+          toggleAddressTerritoryListing={toggleAddressTerritoryListing}
+          congregationOptions={policy.options}
+          territories={territories}
+          onCreateOptions={handleShowCongregationOptions}
+          onCreateTerritory={handleCreateTerritory}
+          hasAnyMaps={hasAnyMaps}
         />
-      )}
+        {selectedTerritory.code && (
+          <FloatingActions
+            showBkTopButton={showBkTopButton}
+            isMapView={isMapView}
+            isAssignmentLoading={isAssignmentLoading}
+            onToggleMapView={() => setIsMapView(!isMapView)}
+            onGenerateLink={handleGenerateTerritoryMap}
+          />
+        )}
+      </SmartSyncProvider>
     </>
   );
 }

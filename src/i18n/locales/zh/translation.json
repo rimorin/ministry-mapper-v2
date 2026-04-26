@@ -31,13 +31,13 @@
     "Language": "语言",
     "Loading": "加载中...",
     "noConnection": "无网络连接",
-    "weakConnection": "网络信号弱",
     "confirm": "确认",
     "confirmDelete": "确认删除",
     "confirmReset": "确认重置",
     "update": "更新",
     "reset": "重置",
-    "proceed": "继续"
+    "proceed": "继续",
+    "weakConnection": "网络信号弱"
   },
   "auth": {
     "signIn": "登录",
@@ -507,5 +507,11 @@
       "title": "不支持的访问方式 📱",
       "message": "此应用不支持以已安装应用（PWA）方式打开。请直接在您的网络浏览器中打开它。"
     }
+  },
+  "smartSync": {
+    "discardedOps": "{{count}} 个编辑无法保存，已被丢弃。",
+    "authExpired": "您的会话已过期。请重新登录 — 您的离线编辑已保存在本地。",
+    "upgradeLostOps": "应用更新后，{{count}} 条离线编辑无法保留。请重新输入。",
+    "idbBlocked": "应用更新待处理。请关闭其他打开的标签页以继续。"
   }
 }

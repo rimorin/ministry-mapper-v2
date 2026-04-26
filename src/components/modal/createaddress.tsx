@@ -22,7 +22,6 @@ import HHNotHomeField from "../form/nothome";
 import HHStatusField from "../form/status";
 import GenericTextAreaField from "../form/textarea";
 import HHTypeField from "../form/household";
-import { createData, createBatch } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import { sanitizePropertyCode } from "../../utils/helpers/processpropertyno";
 import { MultiValue } from "react-select";
@@ -34,7 +33,9 @@ const CreateAddress = NiceModal.create(
     policy,
     sequence,
     existingCodes,
-    territoryId
+    territoryId,
+    writeCreate,
+    onOptimisticCreate
   }: CreateAddressModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
@@ -75,39 +76,49 @@ const CreateAddress = NiceModal.create(
         return;
       }
 
+      const updateData = {
+        notes: hhNote || "",
+        status: unitStatus || STATUS_CODES.DEFAULT,
+        not_home_tries: hhNhcount ? parseInt(hhNhcount) : 0,
+        dnc_time: hhDnctime ? new Date(hhDnctime).toISOString() : "",
+        coordinates: coordinates ? JSON.stringify(coordinates) : "",
+        updated_by: policy.userName
+      };
+      setIsSaving(true);
       try {
-        setIsSaving(true);
-        const userName = policy.userName;
-        const newAddress = await createData("addresses", {
-          map: mapId,
-          territory: territoryId,
-          code: propertyNumber,
-          status: unitStatus || STATUS_CODES.DEFAULT,
-          notes: hhNote || "",
-          not_home_tries: hhNhcount ? parseInt(hhNhcount) : 0,
-          dnc_time: hhDnctime ? new Date(hhDnctime).toISOString() : "",
-          coordinates: coordinates ? JSON.stringify(coordinates) : "",
-          floor: MIN_START_FLOOR,
-          sequence,
+        await writeCreate({
+          mapId,
           congregation: policy.congregation,
-          updated_by: userName,
-          created_by: userName,
-          source: ADDRESS_CREATE_SOURCE
+          createPayload: {
+            map: mapId,
+            territory: territoryId,
+            code: propertyNumber,
+            floor: MIN_START_FLOOR,
+            sequence,
+            congregation: policy.congregation,
+            created_by: policy.userName,
+            source: ADDRESS_CREATE_SOURCE
+          },
+          updateData,
+          desiredTypes: hhType ?? [],
+          onOptimistic: onOptimisticCreate
+            ? (clientId) =>
+                onOptimisticCreate({
+                  id: clientId,
+                  number: propertyNumber,
+                  note: updateData.notes,
+                  status: updateData.status,
+                  nhcount: String(updateData.not_home_tries),
+                  dnctime: updateData.dnc_time
+                    ? Date.parse(updateData.dnc_time)
+                    : 0,
+                  floor: MIN_START_FLOOR,
+                  sequence,
+                  coordinates,
+                  type: hhType ?? []
+                })
+            : undefined
         });
-
-        if (hhType && hhType.length > 0) {
-          const batch = createBatch();
-          hhType.forEach((t) =>
-            batch.collection("address_options").create({
-              address: newAddress.id,
-              option: t.id,
-              congregation: policy.congregation,
-              map: mapId
-            })
-          );
-          await batch.send();
-        }
-
         modal.hide();
       } catch (error) {
         notifyError(error);
@@ -246,7 +257,6 @@ const CreateAddress = NiceModal.create(
                 )}
                 handleClick={handleMapCoordinatesClick}
                 changeValue={location}
-                required={false}
                 handleChange={() => {}}
                 information={t(
                   "address.coordinatesDescription",

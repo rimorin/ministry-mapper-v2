@@ -109,6 +109,22 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ---
 
+## 2026-05-05
+
+[NEW] Smart Synchronization.
+  Your updates are saved instantly, even with a weak signal. Saving a visit has always needed a working internet connection — in lifts, basement carparks, rural areas, or places with unreliable mobile data, that often wasn't there.
+
+  The moment you tap Save, your update is stored on your device and the map reflects your changes immediately. The system sends it to the server in the background when your connection is ready.
+
+  - A 📤 badge next to the territory title shows how many updates are still on their way. It disappears once they've all gone through.
+  - A red dot appears on each address that hasn't synced yet.
+
+  Just record your visits as usual — Smart Sync handles the rest.
+
+![Smart Sync pending indicator in the top navigation bar](https://assets.ministry-mapper.com/release-notes/2026-05-05/smart-sync-indicator.png)
+
+---
+
 ## 2026-04-23
 
 > Please do not post map links to public stories or statuses (e.g. WhatsApp Status) — they can be seen by people outside your congregation.

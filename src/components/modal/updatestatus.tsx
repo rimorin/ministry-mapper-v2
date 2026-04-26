@@ -27,7 +27,7 @@ import ModalUnitTitle from "../form/title";
 import HHTypeField from "../form/household";
 import ComponentAuthorizer from "../navigation/authorizer";
 import DateFormat from "../../utils/helpers/dateformat";
-import { callFunction, createBatch } from "../../utils/pocketbase";
+import { callFunction } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import GenericButton from "../navigation/button";
 import { MultiValue } from "react-select";
@@ -38,7 +38,13 @@ const hasValidCoordinates = (
 ): coords is latlongInterface => !!coords && !!coords.lat && !!coords.lng;
 
 const UpdateUnitStatus = NiceModal.create(
-  ({ addressData, unitDetails, policy }: UpdateAddressStatusModalProps) => {
+  ({
+    addressData,
+    unitDetails,
+    policy,
+    writeUpdate,
+    onOptimisticUpdate
+  }: UpdateAddressStatusModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
     const { notifyError } = useNotification();
@@ -105,38 +111,18 @@ const UpdateUnitStatus = NiceModal.create(
         coordinates: coordinates ? JSON.stringify(coordinates) : "",
         updated_by: policy.userName
       };
-
+      setIsSaving(true);
       try {
-        setIsSaving(true);
-
-        const newOptionIds = new Set(hhType?.map((t) => t.id) ?? []);
-        const initialTypes = unitDetails?.type ?? [];
-        const initialOptionIds = new Set(initialTypes.map((t) => t.id));
-
-        const toDelete = initialTypes.filter((t) => !newOptionIds.has(t.id));
-        const toAdd = [...newOptionIds].filter(
-          (id) => !initialOptionIds.has(id)
-        );
-
-        const batch = createBatch();
-        const addressOptions = batch.collection("address_options");
-
-        toDelete
-          .filter((t) => t.aoId)
-          .forEach((t) => addressOptions.delete(t.aoId!));
-
-        toAdd.forEach((id) =>
-          addressOptions.create({
-            address: addressId,
-            option: id,
-            congregation: policy.congregation,
-            map: mapId
-          })
-        );
-
-        batch.collection("addresses").update(addressId, updateData);
-
-        await batch.send();
+        await writeUpdate({
+          addressId,
+          mapId,
+          congregation: policy.congregation,
+          updateData,
+          initialTypes: unitDetails?.type ?? [],
+          desiredTypes: hhType ?? [],
+          onOptimistic: () =>
+            onOptimisticUpdate?.(addressId, updateData, hhType ?? [])
+        });
         modal.hide();
       } catch (error) {
         notifyError(error);
@@ -213,7 +199,11 @@ const UpdateUnitStatus = NiceModal.create(
 
     const handleHHTypeChange = (option: MultiValue<SelectProps>) => {
       setHhtype(
-        option.map((opt: SelectProps) => ({ id: opt.value, code: opt.label }))
+        option.map((opt: SelectProps) => ({
+          id: opt.value,
+          code:
+            policy.options.find((o) => o.id === opt.value)?.code ?? opt.label
+        }))
       );
     };
 
@@ -282,7 +272,6 @@ const UpdateUnitStatus = NiceModal.create(
                 )}
                 handleClick={handleMapCoordinatesClick}
                 changeValue={location}
-                required={false}
                 // Empty handleChange added to satisfy React's controlled component pattern
                 // This input is primarily updated through map selection via handleClick,
                 // but React requires an onChange handler when a value prop is provided

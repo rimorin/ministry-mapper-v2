@@ -1,7 +1,7 @@
-import { useEffect, useState, lazy, use } from "react";
+import { useEffect, useState, use, lazy } from "react";
 import { useTranslation } from "react-i18next";
 
-import { configureHeader } from "../utils/pocketbase";
+import { configureHeader, clearHeader } from "../utils/pocketbase";
 import { Image, Nav, Navbar } from "react-bootstrap";
 import { getAssetUrl } from "../utils/helpers/assetpath";
 import { handleKeyboardActivation } from "../utils/helpers/keyboard";
@@ -24,6 +24,7 @@ import { useModalManagement } from "../hooks/useModalManagement";
 import useRealtimeSubscription from "../hooks/useRealtime";
 import useMapLink from "../hooks/useMapLink";
 import useAnalytics, { ANALYTICS_EVENTS } from "../hooks/useAnalytics";
+import { useSmartSync, SmartSyncProvider } from "../hooks/useSmartSync";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 const UpdateMapMessages = lazy(() => import("../components/modal/mapmessages"));
 const ThemeSettingsModal = lazy(
@@ -110,6 +111,8 @@ const Map = () => {
   };
 
   const [mapId, setMapId] = useState<string | undefined>();
+  const smartSync = useSmartSync(mapId ? { mapId } : undefined);
+  const { isOnline, displayPendingCount } = smartSync;
 
   useEffect(() => {
     if (!id) return;
@@ -119,6 +122,7 @@ const Map = () => {
       setMapId(resolvedMapId);
     };
     init(id);
+    return () => clearHeader();
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes getMapData and readPinnedMessages
   }, [id]);
 
@@ -178,21 +182,29 @@ const Map = () => {
         languageOptions={languageOptions}
       />
       <div className="map-content">
-        <TopNavbar title={mapDetails?.name || ""} tokenEndTime={tokenEndTime} />
+        <TopNavbar
+          title={mapDetails?.name || ""}
+          tokenEndTime={tokenEndTime}
+          pendingCount={displayPendingCount}
+        />
         {mapDetails && (
-          <MainTable
-            key={`link-map-${id}`}
-            mapView={mapView}
-            policy={policy}
-            addressDetails={mapDetails}
-            assignmentId={id}
-            territoryId={territoryId}
-          />
+          <SmartSyncProvider value={smartSync}>
+            <MainTable
+              key={`link-map-${id}`}
+              mapView={mapView}
+              policy={policy}
+              addressDetails={mapDetails}
+              assignmentId={id}
+              territoryId={territoryId}
+            />
+          </SmartSyncProvider>
         )}
         <Navbar>
-          <Nav className="w-100 justify-content-between mx-4">
+          <Nav
+            className={`w-100 justify-content-between mx-4${!isOnline ? " opacity-50 pe-none" : ""}`}
+          >
             <Nav.Item
-              className={`text-center nav-item-hover`}
+              className="text-center nav-item-hover"
               onClick={handleMessageClick}
               tabIndex={0}
               onKeyDown={(e) => handleKeyboardActivation(e, handleMessageClick)}

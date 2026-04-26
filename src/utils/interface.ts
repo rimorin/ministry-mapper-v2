@@ -251,6 +251,7 @@ export interface territoryMultiProps {
   addressDetails: addressDetails;
   policy: Policy;
   maxUnitLength: number;
+  pendingAddressIds?: Set<string>;
   handleUnitStatusUpdate: (event: React.MouseEvent<HTMLElement>) => void;
   handleFloorDelete?: (event: React.MouseEvent<HTMLElement>) => void;
   handleUnitDelete?: (event: React.MouseEvent<HTMLElement>) => void;
@@ -260,6 +261,7 @@ export interface territorySingleProps {
   houses: floorDetails;
   policy: Policy;
   addressDetails: addressDetails;
+  pendingAddressIds?: Set<string>;
   handleHouseUpdate: (event: React.MouseEvent<HTMLElement>) => void;
   handleAddMoreClick?: () => void;
 }
@@ -454,10 +456,73 @@ export interface UpdateAddressFeedbackModalProps
   assignmentId?: string;
 }
 
+export interface QueuedOp {
+  addressId: string;
+  assignmentId: string;
+  congregation: string;
+  updateData: {
+    notes: string;
+    status: string;
+    not_home_tries: number;
+    dnc_time: string;
+    coordinates: string;
+    updated_by: string;
+  };
+  /** Option IDs the user saw when opening the modal — used for 3-way merge at flush time. */
+  initialOptionIds: string[];
+  /** Option IDs the user wants after saving — the intended final state. */
+  desiredOptionIds: string[];
+  /** Final rendered type array at enqueue time — used to overlay ops on server snapshots. */
+  newTypes?: typeInterface[];
+  ts: number;
+  /**
+   * Present only for address creation ops (absent = update).
+   * Flush path checks `op.kind === "create"` to call batchCreateAddress
+   * instead of batchUpdateAddress.
+   */
+  kind?: "create";
+  /** Server-record fields that only exist for create ops. */
+  createPayload?: {
+    map: string;
+    territory: string;
+    code: string;
+    floor: number;
+    sequence: number;
+    congregation: string;
+    created_by: string;
+    source: string;
+  };
+}
+
+export interface WriteUpdateParams {
+  addressId: string;
+  mapId: string;
+  congregation: string;
+  updateData: QueuedOp["updateData"];
+  initialTypes: NonNullable<QueuedOp["newTypes"]>;
+  desiredTypes: NonNullable<QueuedOp["newTypes"]>;
+  onOptimistic?: () => void;
+}
+
+export interface WriteCreateParams {
+  mapId: string;
+  congregation: string;
+  createPayload: NonNullable<QueuedOp["createPayload"]>;
+  updateData: QueuedOp["updateData"];
+  desiredTypes: NonNullable<QueuedOp["newTypes"]>;
+  onOptimistic?: (clientId: string) => void;
+}
+
 export interface UpdateAddressStatusModalProps {
   addressData: addressDetails | undefined;
   unitDetails: unitDetails;
   policy: Policy;
+  writeUpdate: (params: WriteUpdateParams) => Promise<void>;
+  onOptimisticUpdate?: (
+    addressId: string,
+    updateData: QueuedOp["updateData"],
+    newTypes: Array<{ id: string; code: string; aoId?: string }>
+  ) => void;
 }
 
 export interface CreateAddressModalProps {
@@ -466,6 +531,8 @@ export interface CreateAddressModalProps {
   sequence: number;
   existingCodes: Set<string>;
   territoryId: string;
+  writeCreate: (params: WriteCreateParams) => Promise<void>;
+  onOptimisticCreate?: (newUnit: unitDetails) => void;
 }
 
 export interface AggregatesProps {

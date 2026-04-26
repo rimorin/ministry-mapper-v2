@@ -31,13 +31,13 @@
     "Language": "Bahasa",
     "Loading": "Memuat...",
     "noConnection": "Tidak ada koneksi internet",
-    "weakConnection": "Koneksi lemah",
     "confirm": "Konfirmasi",
     "confirmDelete": "Konfirmasi Penghapusan",
     "confirmReset": "Konfirmasi Reset",
     "update": "Perbarui",
     "reset": "Reset",
-    "proceed": "Lanjutkan"
+    "proceed": "Lanjutkan",
+    "weakConnection": "Koneksi lemah"
   },
   "auth": {
     "signIn": "Masuk",
@@ -507,5 +507,11 @@
       "title": "Metode Akses Tidak Didukung 📱",
       "message": "Aplikasi ini tidak mendukung dibuka sebagai aplikasi yang diinstal (PWA). Silakan buka langsung di browser web Anda."
     }
+  },
+  "smartSync": {
+    "discardedOps": "{{count}} pengeditan tidak dapat disimpan dan telah dibuang.",
+    "authExpired": "Sesi Anda telah berakhir. Silakan masuk kembali — pengeditan offline Anda tersimpan secara lokal.",
+    "upgradeLostOps": "{{count}} pengeditan offline tidak dapat dibawa setelah pembaruan aplikasi. Silakan masukkan kembali.",
+    "idbBlocked": "Pembaruan aplikasi tertunda. Tutup tab lain yang terbuka untuk melanjutkan."
   }
 }

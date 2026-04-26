@@ -58,3 +58,19 @@ const AddressStatus = (props: unitProps) => {
 };
 
 export default AddressStatus;
+
+export const PendingSyncDot = () => (
+  <span
+    aria-label="pending smart sync"
+    style={{
+      position: "absolute",
+      top: 3,
+      right: 3,
+      width: 7,
+      height: 7,
+      borderRadius: "50%",
+      backgroundColor: "#fd7e14",
+      pointerEvents: "none"
+    }}
+  />
+);
