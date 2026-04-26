@@ -1,3 +1,10 @@
+## [1.35.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.35.0...v1.35.1) (2026-04-26)
+
+
+### Bug Fixes
+
+* add missing sorting functions for options and territories ([1498871](https://github.com/rimorin/ministry-mapper-v2/commit/14988715cf14a6bd0e8db23d2b0daf6956f1b418))
+
 # [1.35.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.34.6...v1.35.0) (2026-04-20)
 
 
