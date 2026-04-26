@@ -7,16 +7,6 @@ const packageJson = JSON.parse(
   fs.readFileSync(path.join(__dirname, "../package.json"), "utf-8")
 );
 
-const versionInfo = {
-  version: packageJson.version,
-  buildTime: new Date().toISOString()
-};
-
-fs.writeFileSync(
-  path.join(__dirname, "../public/version.json"),
-  JSON.stringify(versionInfo, null, 2)
-);
-
 // Supported locale codes — must match LanguageContext.tsx LANGUAGE_OPTIONS.
 const SUPPORTED_LOCALES = ["en", "es", "zh", "ta", "id", "ms", "ja", "ko"];
 

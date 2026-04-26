@@ -1,13 +1,20 @@
 import { Container, Image, Navbar } from "react-bootstrap";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 import ExpiryBadge from "./expirybadge";
+import PendingBadge from "./pendingbadge";
+import "../../css/networkstatus.css";
 
 interface TopNavbarProps {
   title: string;
   tokenEndTime?: number;
+  pendingCount?: number;
 }
 
-const TopNavbar = ({ title, tokenEndTime = 0 }: TopNavbarProps) => {
+const TopNavbar = ({
+  title,
+  tokenEndTime = 0,
+  pendingCount = 0
+}: TopNavbarProps) => {
   return (
     <Navbar expand="sm">
       <Container fluid>
@@ -29,6 +36,11 @@ const TopNavbar = ({ title, tokenEndTime = 0 }: TopNavbarProps) => {
               {title}
             </Navbar.Text>
           </div>
+          {pendingCount > 0 && (
+            <div style={{ flex: 0, marginLeft: 10 }}>
+              <PendingBadge count={pendingCount} />
+            </div>
+          )}
           {tokenEndTime > 0 && (
             <div style={{ flex: 0, marginLeft: 10 }}>
               <ExpiryBadge endtime={tokenEndTime} />

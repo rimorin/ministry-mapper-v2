@@ -37,7 +37,7 @@ export default function useRealtimeSubscription(
     let isCleaned = false;
     let unsubscribe: (() => void) | undefined;
 
-    const subscribe = () => {
+    const subscribe = (retryCount = 0) => {
       if (isCleaned) return;
       setupRealtimeListener(collectionName, onData, options)
         .then((unsub) => {
@@ -49,6 +49,9 @@ export default function useRealtimeSubscription(
         })
         .catch((error) => {
           console.error("Failed to setup realtime listener:", error);
+          if (isCleaned) return;
+          const delay = Math.min(1_000 * 2 ** retryCount, 30_000);
+          setTimeout(() => subscribe(retryCount + 1), delay);
         });
     };
 

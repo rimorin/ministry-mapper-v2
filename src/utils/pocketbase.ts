@@ -283,6 +283,10 @@ const configureHeader = (token: string) => {
   };
 };
 
+const clearHeader = () => {
+  pb.beforeSend = undefined;
+};
+
 /**
  * Calls a PocketBase backend function (hook)
  *
@@ -517,6 +521,7 @@ export {
   authenticateOAuth2,
   authListener,
   configureHeader,
+  clearHeader,
   callFunction,
   createData,
   deleteDataById,
