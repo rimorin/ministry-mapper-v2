@@ -1,6 +1,6 @@
 import "../../css/admin.css";
 
-import { useEffect, use, lazy } from "react";
+import { useEffect, useEffectEvent, use, lazy } from "react";
 import { useTranslation } from "react-i18next";
 import {
   adminProps,
@@ -24,6 +24,7 @@ import useMapManagement from "../../hooks/useMapManagement";
 import useCongregationManagement from "../../hooks/useCongManagement";
 import useUIState from "../../hooks/useUIManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
+import useOnTabFocus from "../../hooks/useOnTabFocus";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useAdminData from "../../hooks/useAdminData";
 import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
@@ -39,6 +40,7 @@ import {
   cleanupSession,
   getList,
   getUser,
+  pb,
   requestPasswordReset
 } from "../../utils/pocketbase";
 
@@ -473,6 +475,36 @@ function Admin({ user }: adminProps) {
   const checkMapsOnRealtimeUpdate = () => {
     checkForMaps(congregationCode);
   };
+
+  const onReconnect = useEffectEvent(() => {
+    if (selectedTerritory.id) setupMaps(selectedTerritory.id);
+  });
+
+  // Refresh maps list whenever the SSE connection (re)establishes — covers network
+  // drops and cold starts. PB_CONNECT fires only on genuine reconnects.
+  useEffect(() => {
+    if (!selectedTerritory.id) return;
+
+    let isCleaned = false;
+    let unsubscribe: (() => void) | undefined;
+
+    pb.realtime.subscribe("PB_CONNECT", onReconnect).then((unsub) => {
+      if (isCleaned) {
+        unsub();
+        return;
+      }
+      unsubscribe = unsub;
+    });
+
+    return () => {
+      isCleaned = true;
+      if (unsubscribe) unsubscribe();
+    };
+  }, [selectedTerritory.id]);
+
+  useOnTabFocus(() => {
+    if (selectedTerritory.id) setupMaps(selectedTerritory.id);
+  });
 
   useRealtimeSubscription(
     "territories",

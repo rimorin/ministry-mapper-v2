@@ -39,6 +39,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
+import useOnTabFocus from "../../hooks/useOnTabFocus";
 import { useSmartSyncContext } from "../../hooks/useSmartSync";
 import { RecordModel } from "pocketbase";
 const TerritoryMapView = lazy(() => import("./mapmode"));
@@ -312,9 +313,8 @@ const useAddresses = (
       window.removeEventListener("mm-flush-complete", onFlushComplete);
   }, []);
 
-  // Refresh data whenever the SSE connection (re)establishes — covers network drops.
-  // SSE stays alive in background tabs so events are processed continuously;
-  // PB_CONNECT fires only on genuine reconnects (network drop, cold start).
+  // Refresh data whenever the SSE connection (re)establishes — covers network drops
+  // and cold starts. PB_CONNECT fires only on genuine reconnects.
   useEffect(() => {
     if (!mapId) return;
 
@@ -334,6 +334,8 @@ const useAddresses = (
       if (unsubscribe) unsubscribe();
     };
   }, [mapId]);
+
+  useOnTabFocus(fetchAddressData);
 
   useRealtimeSubscription(
     "addresses",
