@@ -31,13 +31,13 @@
     "Language": "Language",
     "Loading": "Loading...",
     "noConnection": "No internet connection",
-    "weakConnection": "Weak connection",
     "confirm": "Confirm",
     "confirmDelete": "Confirm Delete",
     "confirmReset": "Confirm Reset",
     "update": "Update",
     "reset": "Reset",
-    "proceed": "Proceed"
+    "proceed": "Proceed",
+    "weakConnection": "Weak connection"
   },
   "auth": {
     "signIn": "Sign In",
@@ -511,5 +511,11 @@
       "title": "Unsupported Access Method 📱",
       "message": "This app does not support being opened as an installed app (PWA). Please open it directly in your web browser instead."
     }
+  },
+  "smartSync": {
+    "discardedOps": "{{count}} edit(s) could not be saved and were discarded.",
+    "authExpired": "Your session expired. Please sign in again — your offline edits are saved locally.",
+    "upgradeLostOps": "{{count}} offline edit(s) could not be carried over after an app update. Please re-enter them.",
+    "idbBlocked": "App update pending. Please close other open tabs to continue."
   }
 }

@@ -1,5 +1,19 @@
 # Catatan Rilis (Bahasa Indonesia)
 
+## 2026-05-05
+
+[NEW] Sinkronisasi Cerdas.
+  Pembaruan Anda tersimpan seketika, bahkan dengan sinyal yang lemah. Menyimpan kunjungan selalu membutuhkan koneksi internet yang berfungsi — di dalam lift, tempat parkir bawah tanah, daerah pedesaan, atau tempat dengan data seluler yang tidak stabil, hal itu sering kali tidak tersedia.
+
+  Saat Anda mengetuk Simpan, pembaruan langsung tersimpan di perangkat Anda dan peta segera mencerminkan perubahan Anda. Sistem akan mengirimkannya ke server di latar belakang saat koneksi Anda siap.
+
+  - Lencana 📤 di sebelah judul wilayah menampilkan berapa banyak pembaruan yang masih dalam perjalanan. Hilang setelah semuanya selesai terkirim.
+  - Titik merah muncul pada setiap alamat yang belum tersinkronisasi.
+
+  Cukup catat kunjungan Anda seperti biasa — Sinkronisasi Cerdas yang mengurus sisanya.
+
+---
+
 ## 2026-04-23
 
 > Mohon jangan posting tautan peta ke stories atau status publik (misalnya Status WhatsApp) — bisa dilihat oleh orang di luar jemaat.

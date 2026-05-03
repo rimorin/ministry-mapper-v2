@@ -31,13 +31,13 @@
     "Language": "Idioma",
     "Loading": "Cargando...",
     "noConnection": "Sin conexión a internet",
-    "weakConnection": "Conexión débil",
     "confirm": "Confirmar",
     "confirmDelete": "Confirmar eliminación",
     "confirmReset": "Confirmar reinicio",
     "update": "Actualizar",
     "reset": "Reiniciar",
-    "proceed": "Proceder"
+    "proceed": "Proceder",
+    "weakConnection": "Conexión débil"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -511,5 +511,11 @@
       "title": "Método de Acceso No Compatible 📱",
       "message": "Esta aplicación no admite abrirse como una aplicación instalada (PWA). Por favor, ábrela directamente en tu navegador web."
     }
+  },
+  "smartSync": {
+    "discardedOps": "{{count}} edición/es no se pudieron guardar y fueron descartadas.",
+    "authExpired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo — tus ediciones sin conexión están guardadas localmente.",
+    "upgradeLostOps": "{{count}} edición/es sin conexión no se pudieron conservar tras una actualización. Por favor, vuelve a ingresarlas.",
+    "idbBlocked": "Actualización pendiente. Por favor, cierra otras pestañas abiertas para continuar."
   }
 }

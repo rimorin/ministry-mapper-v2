@@ -3,7 +3,8 @@ import {
   getPolygonCenter,
   getPolygonCenterAsObject,
   isValidCoordinate,
-  getDefaultMapCenter
+  getDefaultMapCenter,
+  getNextSequence
 } from "./maphelpers";
 import { DEFAULT_COORDINATES } from "../constants";
 
@@ -223,5 +224,27 @@ describe("getDefaultMapCenter", () => {
 
       expect(center).toEqual(coordinate);
     });
+  });
+});
+
+describe("getNextSequence", () => {
+  it("returns 1 for an empty list", () => {
+    expect(getNextSequence([])).toBe(1);
+  });
+
+  it("returns max + 1 for a single-element list", () => {
+    expect(getNextSequence([3])).toBe(4);
+  });
+
+  it("returns max + 1 for contiguous 1-indexed sequences", () => {
+    expect(getNextSequence([1, 2, 3, 4, 5])).toBe(6);
+  });
+
+  it("returns max + 1 regardless of order", () => {
+    expect(getNextSequence([3, 1, 4, 2])).toBe(5);
+  });
+
+  it("handles gaps in sequence values", () => {
+    expect(getNextSequence([1, 5, 10])).toBe(11);
   });
 });

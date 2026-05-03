@@ -1,5 +1,19 @@
 # Nota Pelepasan (Bahasa Melayu)
 
+## 2026-05-05
+
+[NEW] Penyegerakan Pintar.
+  Kemas kini anda disimpan serta-merta, walaupun dengan isyarat yang lemah. Menyimpan lawatan sentiasa memerlukan sambungan internet yang berfungsi — di dalam lif, tempat letak kereta bawah tanah, kawasan luar bandar, atau tempat dengan data mudah alih yang tidak stabil, perkara itu sering tiada.
+
+  Sebaik sahaja anda mengetuk Simpan, kemas kini anda disimpan pada peranti anda dan peta segera mencerminkan perubahan anda. Sistem akan menghantarnya ke pelayan di latar belakang apabila sambungan anda sudah bersedia.
+
+  - Lencana 📤 di sebelah tajuk wilayah menunjukkan bilangan kemas kini yang masih dalam perjalanan. Ia hilang apabila semuanya telah selesai.
+  - Titik merah muncul pada setiap alamat yang belum disegerakkan.
+
+  Hanya rekodkan lawatan anda seperti biasa — Penyegerakan Pintar uruskan selebihnya.
+
+---
+
 ## 2026-04-23
 
 > Sila jangan hantar pautan peta ke stories atau status awam (contohnya Status WhatsApp) — ia boleh dilihat oleh orang di luar jemaat.

@@ -31,13 +31,13 @@
     "Language": "Bahasa",
     "Loading": "Memuatkan...",
     "noConnection": "Tiada sambungan internet",
-    "weakConnection": "Sambungan lemah",
     "confirm": "Sahkan",
     "confirmDelete": "Sahkan Padam",
     "confirmReset": "Sahkan Reset",
     "update": "Kemas Kini",
     "reset": "Reset",
-    "proceed": "Teruskan"
+    "proceed": "Teruskan",
+    "weakConnection": "Sambungan lemah"
   },
   "auth": {
     "signIn": "Log Masuk",
@@ -507,5 +507,11 @@
       "title": "Kaedah Akses Tidak Disokong 📱",
       "message": "Apl ini tidak menyokong dibuka sebagai apl yang dipasang (PWA). Sila buka terus dalam penyemak imbas web anda."
     }
+  },
+  "smartSync": {
+    "discardedOps": "{{count}} suntingan tidak dapat disimpan dan telah dibuang.",
+    "authExpired": "Sesi anda telah tamat. Sila log masuk semula — suntingan luar talian anda disimpan secara setempat.",
+    "upgradeLostOps": "{{count}} suntingan luar talian tidak dapat dibawa selepas kemas kini aplikasi. Sila masukkan semula.",
+    "idbBlocked": "Kemas kini aplikasi tertangguh. Sila tutup tab lain yang terbuka untuk meneruskan."
   }
 }

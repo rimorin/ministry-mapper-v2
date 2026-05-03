@@ -1,7 +1,7 @@
 import { Table } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import { territoryMultiProps } from "../../utils/interface";
-import AddressStatus from "./address";
+import AddressStatus, { PendingSyncDot } from "./address";
 import {
   DEFAULT_AGGREGATES,
   DEFAULT_FLOOR_PADDING,
@@ -17,6 +17,7 @@ const PublicTerritoryTable = ({
   addressDetails,
   policy,
   maxUnitLength,
+  pendingAddressIds,
   handleUnitStatusUpdate,
   handleFloorDelete,
   handleUnitDelete
@@ -110,12 +111,14 @@ const PublicTerritoryTable = ({
                       addressDetails.aggregates?.value ||
                         DEFAULT_AGGREGATES.value
                     )}`}
+                    style={{ position: "relative" }}
                     onClick={handleUnitStatusUpdate}
                     data-id={element.id}
                     data-floor={item.floor}
                     data-unitno={element.number}
                     key={`td-${item.floor}-${element.number}`}
                   >
+                    {pendingAddressIds?.has(element.id) && <PendingSyncDot />}
                     <AddressStatus
                       type={element.type}
                       note={element.note}

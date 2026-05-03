@@ -1,99 +1,81 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { describe, it, expect, vi, afterEach } from "vitest";
 import { render } from "../../utils/test";
 import { NetworkStatusBanner } from "./networkstatus";
 
-// Mock the hooks
-vi.mock("../../hooks/useNetworkStatus", () => ({
-  useNetworkStatus: vi.fn()
+vi.mock("../middlewares/networkstatuscontext", () => ({
+  useNetworkStatusContext: vi.fn()
 }));
 
-vi.mock("../../hooks/useLocalStorage", () => ({
-  useLocalStorage: vi.fn()
-}));
-
-import { useNetworkStatus } from "../../hooks/useNetworkStatus";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
+import { useNetworkStatusContext } from "../middlewares/networkstatuscontext";
 
 describe("NetworkStatusBanner", () => {
-  let mockSetIsDismissed: ReturnType<typeof vi.fn>;
-  let mockRemoveValue: ReturnType<typeof vi.fn>;
-
-  beforeEach(() => {
-    mockSetIsDismissed = vi.fn();
-    mockRemoveValue = vi.fn();
-  });
-
   afterEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should not render when online and connection is good", () => {
-    vi.mocked(useNetworkStatus).mockReturnValue({
+  it("should not render any pill when online and fast", () => {
+    vi.mocked(useNetworkStatusContext).mockReturnValue({
       isOnline: true,
-      isSlowConnection: false
+      isSlow: false,
+      lastHealthyAt: 0
     });
-    vi.mocked(useLocalStorage).mockReturnValue([
-      false,
-      mockSetIsDismissed as (value: unknown) => void,
-      mockRemoveValue as () => void
-    ]);
 
     const { container } = render(<NetworkStatusBanner />);
 
     expect(
-      container.querySelector(".network-status-banner")
+      container.querySelector(".network-status-indicator")
     ).not.toBeInTheDocument();
   });
 
-  it("should not render when dismissed", () => {
-    vi.mocked(useNetworkStatus).mockReturnValue({
+  it("should render offline pill when offline", () => {
+    vi.mocked(useNetworkStatusContext).mockReturnValue({
       isOnline: false,
-      isSlowConnection: false
+      isSlow: false,
+      lastHealthyAt: 0
     });
-    vi.mocked(useLocalStorage).mockReturnValue([
-      true,
-      mockSetIsDismissed as (value: unknown) => void,
-      mockRemoveValue as () => void
-    ]);
 
-    const { container } = render(<NetworkStatusBanner />);
+    const { container, getByText } = render(<NetworkStatusBanner />);
 
     expect(
-      container.querySelector(".network-status-banner")
-    ).not.toBeInTheDocument();
+      container.querySelector(".network-status-indicator")
+    ).toBeInTheDocument();
+    expect(getByText(/No internet connection/i)).toBeInTheDocument();
   });
 
-  it("should render component structure when offline", () => {
-    vi.mocked(useNetworkStatus).mockReturnValue({
-      isOnline: false,
-      isSlowConnection: false
-    });
-    vi.mocked(useLocalStorage).mockReturnValue([
-      false,
-      mockSetIsDismissed as (value: unknown) => void,
-      mockRemoveValue as () => void
-    ]);
-
-    const { container } = render(<NetworkStatusBanner />);
-
-    const banner = container.querySelector(".network-status-banner");
-    expect(banner).toBeInTheDocument();
-  });
-
-  it("should render component structure when slow", () => {
-    vi.mocked(useNetworkStatus).mockReturnValue({
+  it("should render slow connection pill when online but slow", () => {
+    vi.mocked(useNetworkStatusContext).mockReturnValue({
       isOnline: true,
-      isSlowConnection: true
+      isSlow: true,
+      lastHealthyAt: 0
     });
-    vi.mocked(useLocalStorage).mockReturnValue([
-      false,
-      mockSetIsDismissed as (value: unknown) => void,
-      mockRemoveValue as () => void
-    ]);
 
-    const { container } = render(<NetworkStatusBanner />);
+    const { container, getByText } = render(<NetworkStatusBanner />);
+    const indicator = container.querySelector(".network-status-indicator");
 
-    const banner = container.querySelector(".network-status-banner");
-    expect(banner).toBeInTheDocument();
+    expect(indicator).toBeInTheDocument();
+    expect(indicator).toHaveAttribute("data-slow", "true");
+    expect(getByText(/Weak connection/i)).toBeInTheDocument();
+  });
+
+  it("should always render the ARIA live region regardless of network state", () => {
+    vi.mocked(useNetworkStatusContext).mockReturnValue({
+      isOnline: true,
+      isSlow: false,
+      lastHealthyAt: 0
+    });
+    const { container: onlineContainer } = render(<NetworkStatusBanner />);
+    expect(
+      onlineContainer.querySelector("[role='status']")
+    ).toBeInTheDocument();
+
+    vi.mocked(useNetworkStatusContext).mockReturnValue({
+      isOnline: false,
+      isSlow: false,
+      lastHealthyAt: 0
+    });
+    const { container: offlineContainer } = render(<NetworkStatusBanner />);
+    expect(
+      offlineContainer.querySelector("[role='status']")
+    ).toBeInTheDocument();
   });
 });

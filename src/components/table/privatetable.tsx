@@ -1,14 +1,15 @@
 import { territorySingleProps } from "../../utils/interface";
 import { DEFAULT_AGGREGATES, USER_ACCESS_LEVELS } from "../../utils/constants";
 import { Row, Col, Card } from "react-bootstrap";
-import AddressStatus from "./address";
+import AddressStatus, { PendingSyncDot } from "./address";
 import ComponentAuthorizer from "../navigation/authorizer";
 const PrivateTerritoryTable = ({
   houses,
   policy,
   addressDetails,
   handleHouseUpdate,
-  handleAddMoreClick
+  handleAddMoreClick,
+  pendingAddressIds
 }: territorySingleProps) => {
   const mapId = addressDetails?.id;
   const aggregates = addressDetails?.aggregates;
@@ -25,7 +26,8 @@ const PrivateTerritoryTable = ({
                 <Card.Body
                   style={{
                     padding: "0",
-                    textAlign: "center"
+                    textAlign: "center",
+                    position: "relative"
                   }}
                   onClick={handleHouseUpdate}
                   data-id={element.id}
@@ -38,6 +40,7 @@ const PrivateTerritoryTable = ({
                   data-dnctime={element.dnctime}
                   data-sequence={element.sequence}
                 >
+                  {pendingAddressIds?.has(element.id) && <PendingSyncDot />}
                   <Card.Header
                     style={{
                       padding: "0.10rem",

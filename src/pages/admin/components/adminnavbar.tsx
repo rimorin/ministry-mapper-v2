@@ -1,4 +1,5 @@
 import { Container, Navbar, Spinner } from "react-bootstrap";
+import "../../../css/networkstatus.css";
 import { useTranslation } from "react-i18next";
 import NavBarBranding from "../../../components/navigation/branding";
 import GenericButton from "../../../components/navigation/button";
@@ -7,6 +8,7 @@ import ComponentAuthorizer from "../../../components/navigation/authorizer";
 import ThemeToggle from "../../../components/navigation/themetoggle";
 import ReleaseHistoryBtn from "../../../components/navigation/releasehistorybtn";
 import LanguageBtn from "../../../components/navigation/languagebtn";
+import PendingBadge from "../../../components/navigation/pendingbadge";
 
 import { USER_ACCESS_LEVELS } from "../../../utils/constants";
 import { territoryDetails } from "../../../utils/interface";
@@ -60,6 +62,7 @@ interface AdminNavbarProps {
     onPasswordReset: () => void;
     onLogout: () => void;
   };
+  pendingCount?: number;
 }
 
 export default function AdminNavbar({
@@ -72,6 +75,7 @@ export default function AdminNavbar({
   userAccessLevel,
   isProcessingTerritory,
   isShowingUserListing,
+  pendingCount = 0,
   onToggleCongregationListing,
   onToggleTerritoryListing,
   onToggleLanguageSelector,
@@ -91,11 +95,23 @@ export default function AdminNavbar({
         ) : (
           <Spinner animation="border" as="span" size="sm" variant="primary" />
         )}
+        {pendingCount > 0 && (
+          <PendingBadge
+            count={pendingCount}
+            className="d-flex d-lg-none ms-auto me-2"
+          />
+        )}
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse
           id="basic-navbar-nav"
           className="justify-content-end mt-1"
         >
+          {pendingCount > 0 && (
+            <PendingBadge
+              count={pendingCount}
+              className="d-none d-lg-flex me-1"
+            />
+          )}
           {userCongregationAccesses.length > 1 && (
             <GenericButton
               className="m-1"

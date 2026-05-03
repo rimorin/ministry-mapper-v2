@@ -2,8 +2,8 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
 import { visualizer } from "rollup-plugin-visualizer";
-import TurboConsole from "unplugin-turbo-console/vite";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
+import { VitePWA } from "vite-plugin-pwa";
 import packageJson from "./package.json";
 
 export default defineConfig(() => {
@@ -67,7 +67,6 @@ export default defineConfig(() => {
         plugins: ["babel-plugin-react-compiler"]
       }),
       isAnalyze && visualizer(),
-      !isProduction && !isCI && TurboConsole(),
       isProduction &&
         sentryVitePlugin({
           org: process.env.SENTRY_ORG,
@@ -88,7 +87,23 @@ export default defineConfig(() => {
           sourcemaps: {
             filesToDeleteAfterUpload: ["./build/**/*.map"]
           }
-        })
+        }),
+      VitePWA({
+        strategies: "generateSW",
+        registerType: "autoUpdate",
+        injectRegister: "auto",
+        // Use the existing site.webmanifest — don't generate a new one
+        manifest: false,
+        workbox: {
+          globPatterns: ["**/*.{js,css,html}"],
+          navigateFallback: "/index.html",
+          inlineWorkboxRuntime: true,
+          cleanupOutdatedCaches: true
+        },
+        devOptions: {
+          enabled: false
+        }
+      })
     ],
     css: {
       preprocessorOptions: {
