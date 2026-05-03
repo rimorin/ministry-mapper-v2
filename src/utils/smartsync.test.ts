@@ -9,7 +9,7 @@ const defaultUpdateData: QueuedOp["updateData"] = {
   status: "X",
   not_home_tries: 0,
   dnc_time: "",
-  coordinates: "",
+  coordinates: null,
   updated_by: "user-1"
 };
 

@@ -1,4 +1,4 @@
-import { createBatch, getList } from "./pocketbase";
+import { callFunction, getList } from "./pocketbase";
 import type { QueuedOp } from "./interface";
 
 /**
@@ -26,68 +26,67 @@ export async function fetchAddressOptionMap(
 export async function batchUpdateAddress({
   addressId,
   mapId,
-  congregation,
   updateData,
   toDeleteAoIds,
   toAddOptionIds
 }: {
   addressId: string;
   mapId: string;
-  congregation: string;
   updateData: QueuedOp["updateData"];
   toDeleteAoIds: string[];
   toAddOptionIds: string[];
 }): Promise<void> {
-  const batch = createBatch();
-  const addressOptions = batch.collection("address_options");
-
-  toDeleteAoIds.forEach((aoId) => addressOptions.delete(aoId));
-  toAddOptionIds.forEach((id) =>
-    addressOptions.create({
-      address: addressId,
-      option: id,
-      congregation,
-      map: mapId
-    })
-  );
-
-  batch.collection("addresses").update(addressId, updateData);
-  await batch.send();
+  await callFunction("/address/update", {
+    method: "POST",
+    body: {
+      address_id: addressId,
+      map_id: mapId,
+      notes: updateData.notes,
+      status: updateData.status,
+      not_home_tries: updateData.not_home_tries,
+      dnc_time: updateData.dnc_time,
+      coordinates: updateData.coordinates
+        ? JSON.parse(updateData.coordinates)
+        : null,
+      updated_by: updateData.updated_by,
+      delete_ao_ids: toDeleteAoIds,
+      add_option_ids: toAddOptionIds
+    }
+  });
 }
 
 /**
- * Atomically creates an address record and its initial address_options in a
- * single batch. Using the client-generated addressId ensures PocketBase can
- * accept a custom ID and the batch is all-or-nothing — no partial state.
+ * Creates an address record and its initial address_options via the
+ * /address/add endpoint.
  */
 export async function batchCreateAddress({
   addressId,
   mapId,
-  congregation,
   createPayload,
   updateData,
   optionIds
 }: {
   addressId: string;
   mapId: string;
-  congregation: string;
   createPayload: NonNullable<QueuedOp["createPayload"]>;
   updateData: QueuedOp["updateData"];
   optionIds: string[];
 }): Promise<void> {
-  const batch = createBatch();
-  batch.collection("addresses").create({
-    id: addressId,
-    ...createPayload,
-    ...updateData
+  await callFunction("/address/add", {
+    method: "POST",
+    body: {
+      address_id: addressId,
+      map_id: mapId,
+      ...createPayload,
+      notes: updateData.notes,
+      status: updateData.status,
+      not_home_tries: updateData.not_home_tries,
+      dnc_time: updateData.dnc_time,
+      coordinates: updateData.coordinates
+        ? JSON.parse(updateData.coordinates)
+        : null,
+      updated_by: updateData.updated_by,
+      add_option_ids: optionIds
+    }
   });
-  optionIds.forEach((optId) =>
-    batch.collection("address_options").create({
-      address: addressId,
-      option: optId,
-      congregation,
-      map: mapId
-    })
-  );
-  await batch.send();
 }

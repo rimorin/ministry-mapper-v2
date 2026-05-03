@@ -81,7 +81,7 @@ const CreateAddress = NiceModal.create(
         status: unitStatus || STATUS_CODES.DEFAULT,
         not_home_tries: hhNhcount ? parseInt(hhNhcount) : 0,
         dnc_time: hhDnctime ? new Date(hhDnctime).toISOString() : "",
-        coordinates: coordinates ? JSON.stringify(coordinates) : "",
+        coordinates: coordinates ? JSON.stringify(coordinates) : null,
         updated_by: policy.userName
       };
       setIsSaving(true);

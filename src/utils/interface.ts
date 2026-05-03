@@ -465,7 +465,7 @@ export interface QueuedOp {
     status: string;
     not_home_tries: number;
     dnc_time: string;
-    coordinates: string;
+    coordinates: string | null;
     updated_by: string;
   };
   /** Option IDs the user saw when opening the modal — used for 3-way merge at flush time. */

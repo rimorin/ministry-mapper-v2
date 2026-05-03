@@ -266,7 +266,6 @@ export function useSmartSync(scope?: SmartSyncScope): UseSmartSyncResult {
               await batchCreateAddress({
                 addressId: op.addressId,
                 mapId: op.assignmentId,
-                congregation: op.congregation,
                 createPayload: op.createPayload,
                 updateData: op.updateData,
                 optionIds: op.desiredOptionIds
@@ -297,7 +296,6 @@ export function useSmartSync(scope?: SmartSyncScope): UseSmartSyncResult {
             await batchUpdateAddress({
               addressId: op.addressId,
               mapId: op.assignmentId,
-              congregation: op.congregation,
               updateData: op.updateData,
               toDeleteAoIds,
               toAddOptionIds
@@ -360,8 +358,12 @@ export function useSmartSync(scope?: SmartSyncScope): UseSmartSyncResult {
                   hadTransientFailures = true;
                 }
               }
-            } else if (isPermanentError(error)) {
-              // 403/404/422 — count against retry budget
+            } else if (
+              isPermanentError(error) ||
+              getErrorStatus(error) === 400
+            ) {
+              // 400/403/404/422 — count against retry budget; retrying
+              // the same payload will never succeed.
               try {
                 const fails = await incrementFailCount(op.opKey);
                 if (fails >= MAX_FAIL_COUNT) {
@@ -530,7 +532,6 @@ export function useSmartSync(scope?: SmartSyncScope): UseSmartSyncResult {
       await batchUpdateAddress({
         addressId,
         mapId,
-        congregation,
         updateData,
         toDeleteAoIds,
         toAddOptionIds
@@ -565,7 +566,6 @@ export function useSmartSync(scope?: SmartSyncScope): UseSmartSyncResult {
       await batchCreateAddress({
         addressId: clientId,
         mapId,
-        congregation,
         createPayload,
         updateData,
         optionIds: desiredTypes.map((t) => t.id)
