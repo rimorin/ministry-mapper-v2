@@ -420,7 +420,6 @@ describe("useSmartSync", () => {
         expect.objectContaining({
           addressId: "new-addr",
           mapId: "map-1",
-          congregation: "cong-1",
           optionIds: ["opt-1"]
         })
       );

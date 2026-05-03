@@ -29,6 +29,7 @@ import useConfirm from "../../hooks/useConfirm";
 import MapPlaceholder from "../statics/placeholder";
 
 import { callFunction, ignoreAbort, pb } from "../../utils/pocketbase";
+import { getNextSequence } from "../../utils/helpers/maphelpers";
 import {
   saveAddressCache,
   loadAddressCache,
@@ -583,10 +584,13 @@ const MainTable = ({
   };
 
   const handleAddMoreClick = () => {
+    const nextSequence = getNextSequence(
+      Array.from(addresses.values()).map((u) => u.sequence)
+    );
     showModal(CreateAddress, {
       addressData: addressDetails,
       policy,
-      sequence: addresses.size,
+      sequence: nextSequence,
       existingCodes: new Set(
         Array.from(addresses.values()).map((u) => u.number)
       ),
