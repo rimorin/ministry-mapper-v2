@@ -80,7 +80,13 @@
 }
 
 .landed-unit {
-  height: 2rem;
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.15rem;
+  padding: 0.2rem;
 }
 
 /* ===== TEXT & TYPOGRAPHY ===== */

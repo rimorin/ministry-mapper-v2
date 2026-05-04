@@ -47,6 +47,7 @@ describe("AddressStatus", () => {
     const badge = container.querySelector(".badge");
     expect(badge).toBeInTheDocument();
     expect(badge).toHaveTextContent("CH, EN");
+    expect(badge).toHaveAttribute("title", "CH, EN");
   });
 
   it("filters out default option from household types", () => {
@@ -89,6 +90,37 @@ describe("AddressStatus", () => {
 
     const badge = container.querySelector(".badge");
     expect(badge).not.toBeInTheDocument();
+  });
+
+  it("shows overflow count in badge when types exceed visible limit", () => {
+    const types = [
+      { id: "1", code: "CH" },
+      { id: "2", code: "EN" },
+      { id: "3", code: "ML" },
+      { id: "4", code: "BD" }
+    ];
+    const { container } = render(
+      <AddressStatus status={STATUS_CODES.DEFAULT} type={types} />
+    );
+
+    const badge = container.querySelector(".badge");
+    expect(badge).toBeInTheDocument();
+    expect(badge).toHaveTextContent("CH, EN +2");
+    expect(badge).toHaveAttribute("title", "CH, EN, ML, BD");
+  });
+
+  it("does not show overflow when types are exactly at visible limit", () => {
+    const types = [
+      { id: "1", code: "CH" },
+      { id: "2", code: "EN" }
+    ];
+    const { container } = render(
+      <AddressStatus status={STATUS_CODES.DEFAULT} type={types} />
+    );
+
+    const badge = container.querySelector(".badge");
+    expect(badge).toHaveTextContent("CH, EN");
+    expect(badge).not.toHaveTextContent("+");
   });
 
   it("combines multiple status indicators", () => {

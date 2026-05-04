@@ -14,20 +14,23 @@ const status = (status: string) => {
   }
 };
 
-const getHouseholdBadge = (type: typeInterface[], defaultOption: string) => {
-  if (!type || type.length === 0) {
-    return null;
-  }
+const MAX_VISIBLE_BADGES = 2;
 
-  const filteredTypes = type.filter((type) => type.id !== defaultOption);
+const getHouseholdBadge = (types: typeInterface[], defaultOption: string) => {
+  const filtered = types?.filter((t) => t.id !== defaultOption);
+  if (!filtered?.length) return null;
 
-  if (filteredTypes.length === 0) {
-    return null;
-  }
+  const visible = filtered.slice(0, MAX_VISIBLE_BADGES);
+  const overflow = filtered.length - MAX_VISIBLE_BADGES;
+  const allCodes = filtered.map((t) => t.code).join(", ");
+  const label =
+    overflow > 0
+      ? `${visible.map((t) => t.code).join(", ")} +${overflow}`
+      : allCodes;
 
   return (
-    <Badge bg="secondary" className="me-1" pill>
-      {filteredTypes.map((type) => type.code).join(", ")}
+    <Badge bg="secondary" pill title={allCodes}>
+      {label}
     </Badge>
   );
 };

@@ -58,7 +58,6 @@ const PrivateTerritoryTable = ({
                       element,
                       aggregates?.value || DEFAULT_AGGREGATES.value
                     )}`}
-                    style={{ padding: "0.3rem 0" }}
                   >
                     <AddressStatus
                       type={element.type}
