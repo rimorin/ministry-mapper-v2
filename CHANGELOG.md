@@ -1,3 +1,15 @@
+# [1.36.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.35.1...v1.36.0) (2026-05-04)
+
+
+### Bug Fixes
+
+* improve private table cell layout and badge overflow handling ([e428ea8](https://github.com/rimorin/ministry-mapper-v2/commit/e428ea814dfcd6b06a7e643964e27926355ec578))
+
+
+### Features
+
+* smart sync - local first add updates ([bd27416](https://github.com/rimorin/ministry-mapper-v2/commit/bd2741641c066e31b3c4f8166aa56feb1a0acfdc))
+
 ## [1.35.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.35.0...v1.35.1) (2026-04-26)
 
 
