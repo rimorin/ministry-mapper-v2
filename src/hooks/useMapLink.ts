@@ -1,5 +1,7 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { getDataById, getList } from "../utils/pocketbase";
+import { resolveLocalized } from "../utils/resolveLocalized";
 import { addressDetails, latlongInterface } from "../utils/interface";
 import { Policy } from "../utils/policies";
 import {
@@ -15,6 +17,7 @@ import { sortBySequence } from "../utils/helpers/sorthelpers";
 import { loadAssignmentCache, saveAssignmentCache } from "../utils/smartsync";
 
 export default function useMapLink() {
+  const { i18n } = useTranslation();
   const { notifyError } = useNotification();
   const [isLinkExpired, setIsLinkExpired] = useState(false);
   const [tokenEndTime, setTokenEndTime] = useState(0);
@@ -104,7 +107,7 @@ export default function useMapLink() {
         notDone: mapExpand?.aggregates?.notDone ?? 0,
         notHome: mapExpand?.aggregates?.notHome ?? 0
       },
-      name: mapExpand?.description,
+      name: resolveLocalized(mapExpand?.description, i18n.language),
       coordinates: mapExpand?.coordinates
     } as addressDetails;
 

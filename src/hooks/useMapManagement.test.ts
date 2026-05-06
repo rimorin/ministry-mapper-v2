@@ -36,7 +36,8 @@ vi.mock("../utils/pocketbase", () => ({
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, defaultValue: string) => defaultValue
+    t: (key: string, defaultValue: string) => defaultValue,
+    i18n: { language: "en" }
   })
 }));
 

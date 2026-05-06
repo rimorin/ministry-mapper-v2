@@ -1,4 +1,6 @@
 import { RecordModel } from "pocketbase";
+import i18n from "../i18n";
+import { resolveLocalized } from "./resolveLocalized";
 import {
   COUNTABLE_HOUSEHOLD_STATUS,
   STATUS_CODES,
@@ -126,7 +128,10 @@ export class LinkSession {
     this.key = key || "";
     this.userId = linkData.user;
     this.tokenCreatetime = new Date(linkData.created).getTime();
-    this.name = linkData.expand?.map.description || "";
+    this.name = resolveLocalized(
+      linkData.expand?.map.description,
+      i18n.language
+    );
     this.publisherName = linkData.publisher;
     this.tokenEndtime = new Date(linkData.expiry_date).getTime();
   }

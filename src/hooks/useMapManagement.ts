@@ -18,10 +18,11 @@ import {
 } from "../utils/constants";
 import { useTranslation } from "react-i18next";
 import useNotification from "./useNotification";
+import { resolveLocalized } from "../utils/resolveLocalized";
 import useLocalStorage from "./useLocalStorage";
 
 export default function useMapManagement() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { notifyError, notifySuccess, notifyWarning } = useNotification();
   const [processingMap, setProcessingMap] = useState<{
     isProcessing: boolean;
@@ -100,7 +101,7 @@ export default function useMapManagement() {
         notDone: mapRecord.aggregates?.notDone || 0,
         notHome: mapRecord.aggregates?.notHome || 0
       },
-      name: mapRecord.description,
+      name: resolveLocalized(mapRecord.description, i18n.language),
       coordinates: mapRecord.coordinates || DEFAULT_COORDINATES.Singapore,
       sequence: mapRecord.sequence
     } as addressDetails;
