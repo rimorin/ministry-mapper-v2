@@ -6,7 +6,26 @@ import { userDetails } from "./../utils/interface";
 // Mock dependencies before imports
 vi.mock("./useNotification", () => ({
   default: () => ({
-    notifyError: vi.fn()
+    notifyError: vi.fn(),
+    notifyInfo: vi.fn(),
+    runAction: vi.fn().mockImplementation(
+      async (
+        fn: () => Promise<unknown>,
+        options?: {
+          setLoading?: (v: boolean) => void;
+          onError?: (e: unknown) => void;
+        }
+      ) => {
+        options?.setLoading?.(true);
+        try {
+          await fn();
+        } catch (error) {
+          options?.onError?.(error);
+        } finally {
+          options?.setLoading?.(false);
+        }
+      }
+    )
   })
 }));
 

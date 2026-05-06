@@ -47,7 +47,7 @@ const UpdateUnitStatus = NiceModal.create(
   }: UpdateAddressStatusModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
-    const { notifyError } = useNotification();
+    const { runAction } = useNotification();
     const { showModal } = useModalManagement();
     const { confirm } = useConfirm();
 
@@ -84,21 +84,16 @@ const UpdateUnitStatus = NiceModal.create(
     );
 
     const handleDeleteProperty = async () => {
-      setIsSaving(true);
-      try {
-        await callFunction("/map/code/delete", {
-          method: "POST",
-          body: {
-            map: mapId,
-            code: unitNumber
-          }
-        });
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          await callFunction("/map/code/delete", {
+            method: "POST",
+            body: { map: mapId, code: unitNumber }
+          });
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
 
     const handleSubmitClick = async (event: FormEvent<HTMLElement>) => {
@@ -111,24 +106,22 @@ const UpdateUnitStatus = NiceModal.create(
         coordinates: coordinates ? JSON.stringify(coordinates) : null,
         updated_by: policy.userName
       };
-      setIsSaving(true);
-      try {
-        await writeUpdate({
-          addressId,
-          mapId,
-          congregation: policy.congregation,
-          updateData,
-          initialTypes: unitDetails?.type ?? [],
-          desiredTypes: hhType ?? [],
-          onOptimistic: () =>
-            onOptimisticUpdate?.(addressId, updateData, hhType ?? [])
-        });
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          await writeUpdate({
+            addressId,
+            mapId,
+            congregation: policy.congregation,
+            updateData,
+            initialTypes: unitDetails?.type ?? [],
+            desiredTypes: hhType ?? [],
+            onOptimistic: () =>
+              onOptimisticUpdate?.(addressId, updateData, hhType ?? [])
+          });
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
 
     const handleMapCoordinatesClick = async () => {

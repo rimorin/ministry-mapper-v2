@@ -26,7 +26,7 @@ const NewTerritoryCode = NiceModal.create(
     origin
   }: NewTerritoryCodeModalProps) => {
     const { t } = useTranslation();
-    const { notifyError, notifyWarning } = useNotification();
+    const { notifyWarning, runAction } = useNotification();
     const { showModal } = useModalManagement();
     const [code, setCode] = useState("");
     const [name, setName] = useState("");
@@ -50,48 +50,44 @@ const NewTerritoryCode = NiceModal.create(
 
     const handleCreateTerritory = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
-
-      setIsSaving(true);
-      try {
-        if (
-          await getFirstItemOfList(
-            "territories",
-            `code="${code}" && congregation="${congregation}"`,
-            {
-              requestKey: `check-territory-${code}-${congregation}`,
-              fields: "id"
-            }
-          )
-        ) {
-          notifyWarning(
-            t("territory.codeAlreadyExists", "Territory code already exists.")
-          );
-          return;
-        }
-        await createData(
-          "territories",
-          {
-            code,
-            description: name,
-            congregation,
-            coordinates: coordinates.length >= 3 ? coordinates : undefined
-          },
-          {
-            requestKey: `create-territory-${congregation}-${code}`
+      await runAction(
+        async () => {
+          if (
+            await getFirstItemOfList(
+              "territories",
+              `code="${code}" && congregation="${congregation}"`,
+              {
+                requestKey: `check-territory-${code}-${congregation}`,
+                fields: "id"
+              }
+            )
+          ) {
+            notifyWarning(
+              t("territory.codeAlreadyExists", "Territory code already exists.")
+            );
+            return;
           }
-        );
-        notifyWarning(
-          t("territory.createdSuccess", "Created territory, {{name}}.", {
-            name
-          })
-        );
-        window.location.reload();
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+          await createData(
+            "territories",
+            {
+              code,
+              description: name,
+              congregation,
+              coordinates: coordinates.length >= 3 ? coordinates : undefined
+            },
+            {
+              requestKey: `create-territory-${congregation}-${code}`
+            }
+          );
+          notifyWarning(
+            t("territory.createdSuccess", "Created territory, {{name}}.", {
+              name
+            })
+          );
+          window.location.reload();
+        },
+        { setLoading: setIsSaving }
+      );
     };
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>

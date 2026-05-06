@@ -9,7 +9,7 @@ import useNotification from "./useNotification";
 import useAnalytics, { ANALYTICS_EVENTS } from "./useAnalytics";
 
 export default function useAuthentication() {
-  const { notifyError, notifyInfo } = useNotification();
+  const { notifyError, notifyInfo, runAction } = useNotification();
   const { trackEvent } = useAnalytics();
   const [isLogin, setIsLogin] = useState(false);
   const [isOAuthLoading, setIsOAuthLoading] = useState(false);
@@ -20,11 +20,9 @@ export default function useAuthentication() {
   const processEmail = (email: string) => email.trim().toLowerCase();
 
   const handleOtpRequest = async (email: string) => {
-    try {
+    await runAction(async () => {
       setOtpSessionId(await requestOTP(email));
-    } catch (err) {
-      notifyError(err);
-    }
+    });
   };
 
   const loginInWithEmailAndPassword = async (
@@ -51,15 +49,13 @@ export default function useAuthentication() {
   };
 
   const handleOtpSubmit = async (otpSessionId: string, otpCode: string) => {
-    try {
-      setIsLogin(true);
-      await authenticateOTP(otpSessionId, otpCode, mfaId);
-      trackEvent(ANALYTICS_EVENTS.OTP_VERIFIED);
-    } catch (err) {
-      notifyError(err);
-    } finally {
-      setIsLogin(false);
-    }
+    await runAction(
+      async () => {
+        await authenticateOTP(otpSessionId, otpCode, mfaId);
+        trackEvent(ANALYTICS_EVENTS.OTP_VERIFIED);
+      },
+      { setLoading: setIsLogin }
+    );
   };
 
   const handleResendOtp = async (email: string) => {
@@ -68,17 +64,13 @@ export default function useAuthentication() {
   };
 
   const handleOAuthSignIn = (provider: string) => {
-    setIsOAuthLoading(true);
-    authenticateOAuth2(provider)
-      .then(() => {
+    runAction(
+      async () => {
+        await authenticateOAuth2(provider);
         trackEvent(ANALYTICS_EVENTS.LOGIN_OAUTH, { provider });
-      })
-      .catch((err) => {
-        notifyError(err);
-      })
-      .finally(() => {
-        setIsOAuthLoading(false);
-      });
+      },
+      { setLoading: setIsOAuthLoading }
+    );
   };
 
   const clearOtpState = () => {

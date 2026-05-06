@@ -104,12 +104,38 @@ export const useNotification = () => {
   const notifyInfo = (message: string, title?: string) =>
     handleNotification("info", message, { title });
 
+  const runAction = async <T>(
+    fn: () => Promise<T>,
+    options?: {
+      setLoading?: (v: boolean) => void;
+      onSuccess?: (result: T) => void;
+      onError?: (error: unknown) => void;
+    }
+  ): Promise<void> => {
+    options?.setLoading?.(true);
+    try {
+      const result = await fn();
+      options?.onSuccess?.(result);
+    } catch (error) {
+      if (!isAbortError(error)) {
+        if (options?.onError) {
+          options.onError(error);
+        } else {
+          notifyError(error);
+        }
+      }
+    } finally {
+      options?.setLoading?.(false);
+    }
+  };
+
   return {
     handleNotification,
     notifySuccess,
     notifyError,
     notifyWarning,
-    notifyInfo
+    notifyInfo,
+    runAction
   };
 };
 

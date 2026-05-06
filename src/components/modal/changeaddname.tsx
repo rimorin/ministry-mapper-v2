@@ -17,29 +17,27 @@ const ChangeAddressName = NiceModal.create(
     mapId
   }: ChangeAddressNameModalProps) => {
     const { t } = useTranslation();
-    const { notifyError } = useNotification();
+    const { runAction } = useNotification();
     const [addressName, setAddressName] = useState(name);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
 
     const handleUpdateBlockName = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
-      setIsSaving(true);
-      try {
-        await updateDataById(
-          "maps",
-          mapId,
-          { description: addressName },
-          {
-            requestKey: `update-map-desc-${mapId}`
-          }
-        );
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          await updateDataById(
+            "maps",
+            mapId,
+            { description: addressName },
+            {
+              requestKey: `update-map-desc-${mapId}`
+            }
+          );
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>

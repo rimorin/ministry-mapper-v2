@@ -6,7 +6,7 @@ import useLocalStorage from "./useLocalStorage";
 import { sortByCode } from "../utils/helpers/sorthelpers";
 
 export default function useTerritoryManagement() {
-  const { notifyError } = useNotification();
+  const { notifyError, runAction } = useNotification();
   const [isProcessingTerritory, setIsProcessingTerritory] =
     useState<boolean>(false);
   const [territories, setTerritories] = useState(
@@ -39,35 +39,28 @@ export default function useTerritoryManagement() {
 
   const deleteTerritory = async () => {
     if (!selectedTerritory.id) return;
-    setIsProcessingTerritory(true);
-    try {
-      await callFunction("/territory/delete", {
-        method: "POST",
-        body: { territory: selectedTerritory.id }
-      });
-      clearTerritorySelection();
-    } catch (error) {
-      notifyError(error);
-    } finally {
-      setIsProcessingTerritory(false);
-    }
+    await runAction(
+      async () => {
+        await callFunction("/territory/delete", {
+          method: "POST",
+          body: { territory: selectedTerritory.id }
+        });
+        clearTerritorySelection();
+      },
+      { setLoading: setIsProcessingTerritory }
+    );
   };
 
   const resetTerritory = async () => {
     if (!selectedTerritory.code) return;
-    setIsProcessingTerritory(true);
-    try {
-      await callFunction("/territory/reset", {
-        method: "POST",
-        body: {
-          territory: selectedTerritory.id
-        }
-      });
-    } catch (error) {
-      notifyError(error);
-    } finally {
-      setIsProcessingTerritory(false);
-    }
+    await runAction(
+      () =>
+        callFunction("/territory/reset", {
+          method: "POST",
+          body: { territory: selectedTerritory.id }
+        }),
+      { setLoading: setIsProcessingTerritory }
+    );
   };
 
   const processCongregationTerritories = (

@@ -3,7 +3,8 @@ import { renderHook, act } from "@testing-library/react";
 
 // Mock setupRealtimeListener before imports
 vi.mock("../utils/pocketbase", () => ({
-  setupRealtimeListener: vi.fn()
+  setupRealtimeListener: vi.fn(),
+  isAbortError: vi.fn().mockReturnValue(false)
 }));
 
 // Import after mocks

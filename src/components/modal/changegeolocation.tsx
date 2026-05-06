@@ -44,7 +44,7 @@ const ChangeMapGeolocation = NiceModal.create(
     isSelectOnly = false
   }: ConfigureAddressCoordinatesModalProps) => {
     const { t } = useTranslation();
-    const { notifyError } = useNotification();
+    const { runAction } = useNotification();
     const { trackEvent } = useAnalytics();
     const [addressLocation, setAddressLocation] =
       useState<latlongInterface>(coordinates);
@@ -75,24 +75,22 @@ const ChangeMapGeolocation = NiceModal.create(
 
     const handleUpdateGeoLocation = async (event: SubmitEvent<HTMLElement>) => {
       event.preventDefault();
-      setIsSaving(true);
-      try {
-        if (!isSelectOnly) {
-          await updateDataById(
-            "maps",
-            mapId,
-            { coordinates: JSON.stringify(addressLocation) },
-            { requestKey: `update-map-coordinates-${mapId}` }
-          );
-          trackEvent(ANALYTICS_EVENTS.ADDRESS_GEOLOCATION_UPDATED);
-        }
-        modal.resolve(addressLocation);
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          if (!isSelectOnly) {
+            await updateDataById(
+              "maps",
+              mapId,
+              { coordinates: JSON.stringify(addressLocation) },
+              { requestKey: `update-map-coordinates-${mapId}` }
+            );
+            trackEvent(ANALYTICS_EVENTS.ADDRESS_GEOLOCATION_UPDATED);
+          }
+          modal.resolve(addressLocation);
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
 
     return (

@@ -5,7 +5,7 @@ import { Form, Image, Modal } from "react-bootstrap";
 import ModalFooter from "../form/footer";
 import { FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { callFunction } from "../../utils/pocketbase";
+import { callFunction, ignoreAbort } from "../../utils/pocketbase";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 import "../../css/sortable.css";
 import {
@@ -87,7 +87,7 @@ const ChangeMapSequence = NiceModal.create(
   }: MapSequenceUpdateModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
-    const { notifyError } = useNotification();
+    const { runAction } = useNotification();
     const [isSaving, setIsSaving] = useState(false);
     const [codeList, setCodeList] = useState<string[]>([]);
     const [activeId, setActiveId] = useState<string | null>(null);
@@ -107,7 +107,7 @@ const ChangeMapSequence = NiceModal.create(
         });
         setCodeList(response.codes || []);
       };
-      fetchAddressList();
+      ignoreAbort(fetchAddressList)();
     }, [mapId]);
 
     const handleDragStart = (event: DragStartEvent) => {
@@ -129,24 +129,22 @@ const ChangeMapSequence = NiceModal.create(
 
     const handleSave = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
-      setIsSaving(true);
-      try {
-        await callFunction("/map/codes/update", {
-          method: "POST",
-          body: {
-            map: mapId,
-            codes: codeList.map((code, index) => ({
-              code,
-              sequence: index
-            }))
-          }
-        });
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          await callFunction("/map/codes/update", {
+            method: "POST",
+            body: {
+              map: mapId,
+              codes: codeList.map((code, index) => ({
+                code,
+                sequence: index
+              }))
+            }
+          });
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
 
     const activeIndex = activeId ? codeList.indexOf(activeId) : -1;

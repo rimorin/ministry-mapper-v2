@@ -17,30 +17,28 @@ const ChangeTerritoryName = NiceModal.create(
     territoryCode
   }: ChangeTerritoryNameModalProps) => {
     const { t } = useTranslation();
-    const { notifyError } = useNotification();
+    const { runAction } = useNotification();
     const [territoryName, setTerritoryName] = useState(name);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
 
     const handleUpdateTerritoryName = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
-      setIsSaving(true);
-      try {
-        await updateDataById(
-          "territories",
-          territoryCode,
-          { description: territoryName },
-          {
-            requestKey: `update-territory-name-${territoryCode}`
-          }
-        );
-        modal.resolve(territoryName);
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          await updateDataById(
+            "territories",
+            territoryCode,
+            { description: territoryName },
+            {
+              requestKey: `update-territory-name-${territoryCode}`
+            }
+          );
+          modal.resolve(territoryName);
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>

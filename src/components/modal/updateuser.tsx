@@ -18,36 +18,34 @@ const UpdateUser = NiceModal.create(
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE
   }: UserModalProps) => {
     const { t } = useTranslation();
-    const { notifyError } = useNotification();
+    const { runAction } = useNotification();
     const [userRole, setUserRole] = useState(role);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
 
     const handleUserDetails = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
-      setIsSaving(true);
-      try {
-        if (userRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
-          await deleteDataById("roles", uid, {
-            requestKey: `delete-usr-role-${uid}`
-          });
-        } else {
-          await updateDataById(
-            "roles",
-            uid,
-            { role: userRole },
-            {
-              requestKey: `update-usr-role-${uid}`
-            }
-          );
-        }
-        modal.resolve(userRole);
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          if (userRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
+            await deleteDataById("roles", uid, {
+              requestKey: `delete-usr-role-${uid}`
+            });
+          } else {
+            await updateDataById(
+              "roles",
+              uid,
+              { role: userRole },
+              {
+                requestKey: `update-usr-role-${uid}`
+              }
+            );
+          }
+          modal.resolve(userRole);
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>

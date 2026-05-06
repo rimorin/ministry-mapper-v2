@@ -35,7 +35,7 @@ const NewMap = NiceModal.create(
   }: NewPrivateAddressModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
-    const { notifyError, notifyWarning } = useNotification();
+    const { notifyWarning, runAction } = useNotification();
     const { showModal } = useModalManagement();
     const [name, setName] = useState("");
     const [location, setLocation] = useState("");
@@ -65,27 +65,25 @@ const NewMap = NiceModal.create(
         return;
       }
 
-      setIsSaving(true);
-      try {
-        await callFunction("/map/add", {
-          method: "POST",
-          body: {
-            name,
-            sequence,
-            type: mapType,
-            coordinates: JSON.stringify(coordinates),
-            congregation,
-            territory: territoryCode,
-            floors: isMultiStory ? floors : MIN_START_FLOOR
-          }
-        });
-        modal.resolve();
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          await callFunction("/map/add", {
+            method: "POST",
+            body: {
+              name,
+              sequence,
+              type: mapType,
+              coordinates: JSON.stringify(coordinates),
+              congregation,
+              territory: territoryCode,
+              floors: isMultiStory ? floors : MIN_START_FLOOR
+            }
+          });
+          modal.resolve();
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
 
     const handleLocationSelect = async () => {

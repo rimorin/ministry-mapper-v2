@@ -10,7 +10,7 @@ import { Policy } from "../../utils/policies";
 import { useTranslation } from "react-i18next";
 
 import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
-import { getList } from "../../utils/pocketbase";
+import { getList, ignoreAbort } from "../../utils/pocketbase";
 import useRealtimeSubscription from "../../hooks/useRealtime";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import GenericButton from "./button";
@@ -35,7 +35,7 @@ const useUnreadMessages = (mapId: string) => {
 
   useEffect(() => {
     if (!mapId) return;
-    fetchUnreadMsgs();
+    ignoreAbort(fetchUnreadMsgs)();
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes fetchUnreadMsgs
   }, [mapId]);
 
