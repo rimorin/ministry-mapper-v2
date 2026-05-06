@@ -1,3 +1,14 @@
+## [1.36.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.36.0...v1.36.1) (2026-05-06)
+
+
+### Bug Fixes
+
+* centralize PocketBase error handling via runAction ([dade372](https://github.com/rimorin/ministry-mapper-v2/commit/dade3729dda97f4f67fdbe443690bd6bbf96d6de))
+* fall back to en on invalid locale tag in date formatters ([9262d5a](https://github.com/rimorin/ministry-mapper-v2/commit/9262d5acd4d5bc454717b4b6b84cd6b8c906618f))
+* guard against undefined aggregates ([0794f01](https://github.com/rimorin/ministry-mapper-v2/commit/0794f0196afc992721cd0bb53921d7e49f048245))
+* resolve localized map description before assigning to name ([8487989](https://github.com/rimorin/ministry-mapper-v2/commit/8487989309673163c85ab0848edb817d0ff0a3e1))
+* skip roles with missing user expand ([8497215](https://github.com/rimorin/ministry-mapper-v2/commit/849721548d41e2f1dda3f8184c3fbbc756d9a33c))
+
 # [1.36.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.35.1...v1.36.0) (2026-05-04)
 
 
