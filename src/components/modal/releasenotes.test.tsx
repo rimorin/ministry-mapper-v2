@@ -124,6 +124,15 @@ describe("ReleaseNotesModal", () => {
     unmount();
   });
 
+  it("renders a date without throwing when the locale tag is invalid (e.g. en-US@posix)", async () => {
+    const { unmount } = render(<></>, { locale: "en-US@posix" });
+    show([englishRelease]);
+    await waitFor(() =>
+      expect(screen.getByText("What's New")).toBeInTheDocument()
+    );
+    unmount();
+  });
+
   it("closes without error when onSeen is omitted", async () => {
     const { unmount } = render(<></>);
     NiceModal.show(ReleaseNotesModal, { releases: [englishRelease] });
