@@ -33,7 +33,7 @@ const TerritoryMapView = ({
         const className =
           policy?.getUnitColor(
             element,
-            aggregates.value || DEFAULT_AGGREGATES.value
+            aggregates?.value || DEFAULT_AGGREGATES.value
           ) || "";
 
         // Use data attributes to pass status info to CSS
