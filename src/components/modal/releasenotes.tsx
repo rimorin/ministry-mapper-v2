@@ -91,11 +91,17 @@ const ReleaseNotesModal = NiceModal.create(
 
     const formatDate = (iso: string) => {
       const [year, month, day] = iso.split("-").map(Number);
-      return new Date(year, month - 1, day).toLocaleDateString(i18n.language, {
+      const date = new Date(year, month - 1, day);
+      const options: Intl.DateTimeFormatOptions = {
         year: "numeric",
         month: "short",
         day: "numeric"
-      });
+      };
+      try {
+        return date.toLocaleDateString(i18n.language, options);
+      } catch {
+        return date.toLocaleDateString("en", options);
+      }
     };
 
     const handleDismiss = () => {
