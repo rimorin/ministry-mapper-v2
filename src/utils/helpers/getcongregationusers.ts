@@ -17,10 +17,11 @@ const getCongregationUsers = async (
   const userListing = new Map<string, userDetails>();
   for (const key of records) {
     const user = key.expand?.user;
+    if (!user) continue;
     userListing.set(key.id, {
       name: user.name,
       verified: user.verified,
-      email: user?.email,
+      email: user.email,
       role: key.role,
       roleId: key.id
     });
