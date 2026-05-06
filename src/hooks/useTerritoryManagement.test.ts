@@ -7,7 +7,25 @@ import * as pocketbase from "../utils/pocketbase";
 vi.mock("../utils/pocketbase");
 vi.mock("./useNotification", () => ({
   default: () => ({
-    notifyError: vi.fn()
+    notifyError: vi.fn(),
+    runAction: vi.fn().mockImplementation(
+      async (
+        fn: () => Promise<unknown>,
+        options?: {
+          setLoading?: (v: boolean) => void;
+          onError?: (e: unknown) => void;
+        }
+      ) => {
+        options?.setLoading?.(true);
+        try {
+          await fn();
+        } catch (error) {
+          options?.onError?.(error);
+        } finally {
+          options?.setLoading?.(false);
+        }
+      }
+    )
   })
 }));
 vi.mock("./useLocalStorage", () => ({

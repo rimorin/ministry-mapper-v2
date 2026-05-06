@@ -11,6 +11,20 @@ window.addEventListener("vite:preloadError", () => {
   window.location.reload();
 });
 
+// Suppress unhandled-rejection noise from PocketBase auto-cancellations and
+// Web Share / AbortController aborts. Genuine errors are already captured by
+// Sentry's default unhandledrejection integration.
+window.addEventListener("unhandledrejection", (event) => {
+  const err = event.reason;
+  if (
+    err?.isAbort === true ||
+    err?.name === "AbortError" ||
+    err?.message === "Aborted"
+  ) {
+    event.preventDefault();
+  }
+});
+
 const rootElement = document.getElementById("root");
 
 if (rootElement) {

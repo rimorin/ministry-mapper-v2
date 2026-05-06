@@ -25,7 +25,7 @@ const InviteUser = NiceModal.create(
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE
   }: UserModalProps) => {
     const { t } = useTranslation();
-    const { notifyError, notifyWarning } = useNotification();
+    const { notifyWarning, runAction } = useNotification();
     const { actualTheme } = use(ThemeContext);
     const [userRole, setUserRole] = useState(USER_ACCESS_LEVELS.READ_ONLY.CODE);
     const [userId, setUserId] = useState("");
@@ -60,57 +60,55 @@ const InviteUser = NiceModal.create(
 
     const handleUserDetails = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
-      setIsSaving(true);
-      try {
-        if (userId === uid) {
-          notifyWarning(
-            t("user.dontInviteSelf", "Please do not invite yourself.")
-          );
-          return;
-        }
-        if (
-          await getFirstItemOfList(
-            "roles",
-            `user="${userId}" && congregation="${congregation}"`,
-            {
-              requestKey: `check-role-${userId}-${congregation}`,
-              fields: "id"
-            }
-          )
-        ) {
-          notifyWarning(
-            t(
-              "user.alreadyInCongregation",
-              "This user is already part of the congregation."
-            )
-          );
-          return;
-        }
-
-        await createData(
-          "roles",
-          {
-            user: userId,
-            congregation,
-            role: userRole
-          },
-          {
-            requestKey: `create-role-${userId}-${congregation}`
+      await runAction(
+        async () => {
+          if (userId === uid) {
+            notifyWarning(
+              t("user.dontInviteSelf", "Please do not invite yourself.")
+            );
+            return;
           }
-        );
+          if (
+            await getFirstItemOfList(
+              "roles",
+              `user="${userId}" && congregation="${congregation}"`,
+              {
+                requestKey: `check-role-${userId}-${congregation}`,
+                fields: "id"
+              }
+            )
+          ) {
+            notifyWarning(
+              t(
+                "user.alreadyInCongregation",
+                "This user is already part of the congregation."
+              )
+            );
+            return;
+          }
 
-        const roleName = getRoleDisplayName(userRole);
-        notifyWarning(
-          t("user.accessGranted", "Granted {{role}} access to user.", {
-            role: roleName
-          })
-        );
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+          await createData(
+            "roles",
+            {
+              user: userId,
+              congregation,
+              role: userRole
+            },
+            {
+              requestKey: `create-role-${userId}-${congregation}`
+            }
+          );
+
+          const roleName = getRoleDisplayName(userRole);
+          notifyWarning(
+            t("user.accessGranted", "Granted {{role}} access to user.", {
+              role: roleName
+            })
+          );
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
 
     const promiseOptions = async (

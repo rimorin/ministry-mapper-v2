@@ -22,6 +22,7 @@ import {
   createData,
   deleteDataById,
   getList,
+  ignoreAbort,
   updateDataById
 } from "../../utils/pocketbase";
 import useRealtimeSubscription from "../../hooks/useRealtime";
@@ -55,7 +56,7 @@ const useMessages = (mapId: string, assignmentId?: string) => {
 
   useEffect(() => {
     if (!mapId) return;
-    fetchFeedbacks();
+    ignoreAbort(fetchFeedbacks)();
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes fetchFeedbacks
   }, [mapId]);
 
@@ -105,7 +106,7 @@ const UpdateMapMessages = NiceModal.create(
     assignmentId
   }: UpdateAddressFeedbackModalProps) => {
     const { t } = useTranslation();
-    const { notifyError } = useNotification();
+    const { runAction } = useNotification();
     const { trackEvent } = useAnalytics();
     const [feedback, setFeedback] = useState("");
     const [isSaving, setIsSaving] = useState(false);
@@ -117,29 +118,27 @@ const UpdateMapMessages = NiceModal.create(
 
     const handleSubmitFeedback = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
-      setIsSaving(true);
-      try {
-        await createData(
-          "messages",
-          {
-            map: mapId,
-            message: feedback,
-            read: isAdmin,
-            created_by: policy.userName,
-            type: messageType,
-            congregation: policy.congregation
-          },
-          {
-            requestKey: `create-msg-${mapId}`
-          }
-        );
-        trackEvent(ANALYTICS_EVENTS.MESSAGE_SENT, { role: messageType });
-        setFeedback("");
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          await createData(
+            "messages",
+            {
+              map: mapId,
+              message: feedback,
+              read: isAdmin,
+              created_by: policy.userName,
+              type: messageType,
+              congregation: policy.congregation
+            },
+            {
+              requestKey: `create-msg-${mapId}`
+            }
+          );
+          trackEvent(ANALYTICS_EVENTS.MESSAGE_SENT, { role: messageType });
+          setFeedback("");
+        },
+        { setLoading: setIsSaving }
+      );
     };
 
     return (
@@ -155,33 +154,39 @@ const UpdateMapMessages = NiceModal.create(
               <FeedbackList
                 feedbacks={messages}
                 policy={policy}
-                handleDelete={async (id: string) => {
-                  await deleteDataById("messages", id, {
-                    requestKey: `msg-del-${id}`
-                  });
-                  trackEvent(ANALYTICS_EVENTS.MESSAGE_DELETED);
-                }}
-                handlePin={async (id: string, pinned: boolean) => {
-                  await updateDataById(
-                    "messages",
-                    id,
-                    { pinned: pinned },
-                    {
-                      requestKey: `msg-pin-${id}`
-                    }
-                  );
-                  trackEvent(ANALYTICS_EVENTS.MESSAGE_PINNED, { pinned });
-                }}
-                handleRead={async (id: string) => {
-                  await updateDataById(
-                    "messages",
-                    id,
-                    { read: true },
-                    {
-                      requestKey: `msg-read-${id}`
-                    }
-                  );
-                }}
+                handleDelete={(id: string) =>
+                  runAction(async () => {
+                    await deleteDataById("messages", id, {
+                      requestKey: `msg-del-${id}`
+                    });
+                    trackEvent(ANALYTICS_EVENTS.MESSAGE_DELETED);
+                  })
+                }
+                handlePin={(id: string, pinned: boolean) =>
+                  runAction(async () => {
+                    await updateDataById(
+                      "messages",
+                      id,
+                      { pinned: pinned },
+                      {
+                        requestKey: `msg-pin-${id}`
+                      }
+                    );
+                    trackEvent(ANALYTICS_EVENTS.MESSAGE_PINNED, { pinned });
+                  })
+                }
+                handleRead={(id: string) =>
+                  runAction(async () => {
+                    await updateDataById(
+                      "messages",
+                      id,
+                      { read: true },
+                      {
+                        requestKey: `msg-read-${id}`
+                      }
+                    );
+                  })
+                }
               />
             )}
             <GenericTextAreaField

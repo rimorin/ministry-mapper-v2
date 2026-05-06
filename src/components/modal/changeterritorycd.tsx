@@ -19,45 +19,43 @@ const ChangeTerritoryCode = NiceModal.create(
     territoryId
   }: ChangeTerritoryCodeModalProps) => {
     const { t } = useTranslation();
-    const { notifyError, notifyWarning } = useNotification();
+    const { notifyWarning, runAction } = useNotification();
     const [newTerritoryCode, setNewTerritoryCode] = useState(territoryCode);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
 
     const handleUpdateTerritoryCode = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
-      setIsSaving(true);
-      try {
-        if (
-          await getFirstItemOfList(
-            "territories",
-            `code="${newTerritoryCode}" && congregation="${congregation}" && id!="${territoryId}"`,
-            {
-              requestKey: `check-territory-${newTerritoryCode}-${congregation}`,
-              fields: "id"
-            }
-          )
-        ) {
-          notifyWarning(
-            t("territory.codeAlreadyExists", "Territory code already exists.")
-          );
-          return;
-        }
-        await updateDataById(
-          "territories",
-          territoryId,
-          { code: newTerritoryCode },
-          {
-            requestKey: `update-territory-code-${territoryId}`
+      await runAction(
+        async () => {
+          if (
+            await getFirstItemOfList(
+              "territories",
+              `code="${newTerritoryCode}" && congregation="${congregation}" && id!="${territoryId}"`,
+              {
+                requestKey: `check-territory-${newTerritoryCode}-${congregation}`,
+                fields: "id"
+              }
+            )
+          ) {
+            notifyWarning(
+              t("territory.codeAlreadyExists", "Territory code already exists.")
+            );
+            return;
           }
-        );
-        modal.resolve(newTerritoryCode);
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+          await updateDataById(
+            "territories",
+            territoryId,
+            { code: newTerritoryCode },
+            {
+              requestKey: `update-territory-code-${territoryId}`
+            }
+          );
+          modal.resolve(newTerritoryCode);
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>

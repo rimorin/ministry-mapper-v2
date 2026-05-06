@@ -45,7 +45,7 @@ interface MapDataType {
 const QuickLinkModal = NiceModal.create(
   ({ territoryId }: QuickLinkModalProps) => {
     const { t } = useTranslation();
-    const { notifyError, notifyWarning } = useNotification();
+    const { notifyError, notifyWarning, runAction } = useNotification();
     const { trackEvent } = useAnalytics();
     const modal = useModal();
     const { requestLocation } = useGeolocation({
@@ -77,32 +77,30 @@ const QuickLinkModal = NiceModal.create(
       e.preventDefault();
       if (!publisher.trim()) return;
 
-      setIsLoading(true);
-      try {
-        const origin = await requestLocation();
-        if (!origin) {
-          notifyWarning(t("errors.unableToGetLocation"));
-          return;
-        }
-
-        const linkData = await callFunction("/territory/link", {
-          method: "POST",
-          body: {
-            territory: territoryId,
-            publisher: publisher.trim(),
-            coordinates: origin
+      await runAction(
+        async () => {
+          const origin = await requestLocation();
+          if (!origin) {
+            notifyWarning(t("errors.unableToGetLocation"));
+            return;
           }
-        });
 
-        setMapData({ ...linkData, origin });
-        setCurrentCenter(linkData.coordinates);
-        trackEvent(ANALYTICS_EVENTS.QUICK_LINK_GENERATED);
-        setIsInputMode(false);
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsLoading(false);
-      }
+          const linkData = await callFunction("/territory/link", {
+            method: "POST",
+            body: {
+              territory: territoryId,
+              publisher: publisher.trim(),
+              coordinates: origin
+            }
+          });
+
+          setMapData({ ...linkData, origin });
+          setCurrentCenter(linkData.coordinates);
+          trackEvent(ANALYTICS_EVENTS.QUICK_LINK_GENERATED);
+          setIsInputMode(false);
+        },
+        { setLoading: setIsLoading }
+      );
     };
 
     const shareTimedLink = async (linkId: string, body: string) => {

@@ -13,6 +13,7 @@ import { AssignmentModalProps } from "../../utils/interface";
 import { deleteDataById } from "../../utils/pocketbase";
 import { useTranslation } from "react-i18next";
 import GenericButton from "../navigation/button";
+import useNotification from "../../hooks/useNotification";
 
 const GetAssignments = NiceModal.create(
   ({
@@ -22,6 +23,7 @@ const GetAssignments = NiceModal.create(
   }: AssignmentModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
+    const { runAction } = useNotification();
 
     const [currentAssignments, setCurrentAssignments] =
       useState<LinkSession[]>(assignments);
@@ -111,12 +113,14 @@ const GetAssignments = NiceModal.create(
                     className="me-1"
                     onClick={async (event) => {
                       const { linkid } = event.currentTarget.dataset;
-                      await deleteAssignment(linkid as string);
-                      setCurrentAssignments((currentAssignments) =>
-                        currentAssignments.filter(
-                          (assignment) => assignment.id !== linkid
-                        )
-                      );
+                      await runAction(async () => {
+                        await deleteAssignment(linkid as string);
+                        setCurrentAssignments((currentAssignments) =>
+                          currentAssignments.filter(
+                            (assignment) => assignment.id !== linkid
+                          )
+                        );
+                      });
                     }}
                     dataAttributes={{
                       linkid: assignment.id,

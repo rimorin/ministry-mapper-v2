@@ -4,7 +4,7 @@ import {
   RecordSubscribeOptions,
   RecordSubscription
 } from "pocketbase";
-import { setupRealtimeListener } from "../utils/pocketbase";
+import { setupRealtimeListener, isAbortError } from "../utils/pocketbase";
 
 /**
  * Custom hook to manage a PocketBase real-time subscription.
@@ -48,8 +48,8 @@ export default function useRealtimeSubscription(
           unsubscribe = unsub;
         })
         .catch((error) => {
+          if (isCleaned || isAbortError(error)) return;
           console.error("Failed to setup realtime listener:", error);
-          if (isCleaned) return;
           const delay = Math.min(1_000 * 2 ** retryCount, 30_000);
           setTimeout(() => subscribe(retryCount + 1), delay);
         });

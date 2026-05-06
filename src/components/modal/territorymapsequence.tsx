@@ -5,7 +5,7 @@ import { Form, Modal } from "react-bootstrap";
 import ModalFooter from "../form/footer";
 import { FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getList, createBatch } from "../../utils/pocketbase";
+import { getList, createBatch, isAbortError } from "../../utils/pocketbase";
 import "../../css/sortable.css";
 import {
   DndContext,
@@ -77,7 +77,7 @@ const ChangeTerritoryMapSequence = NiceModal.create(
   }: TerritoryMapSequenceModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
-    const { notifyError } = useNotification();
+    const { runAction } = useNotification();
     const [isSaving, setIsSaving] = useState(false);
     const [mapList, setMapList] = useState<MapItem[]>([]);
 
@@ -94,7 +94,11 @@ const ChangeTerritoryMapSequence = NiceModal.create(
         sort: "sequence",
         fields: PB_FIELDS.MAPS_SEQUENCE,
         requestKey: null
-      }).then((response) => setMapList(response as unknown as MapItem[]));
+      })
+        .then((response) => setMapList(response as unknown as MapItem[]))
+        .catch((err) => {
+          if (!isAbortError(err)) console.error(err);
+        });
     }, [territoryId]);
 
     const handleDragEnd = (event: DragEndEvent) => {
@@ -110,20 +114,18 @@ const ChangeTerritoryMapSequence = NiceModal.create(
 
     const handleSave = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
-      setIsSaving(true);
-      try {
-        const batch = createBatch();
-        const maps = batch.collection("maps");
-        mapList.forEach((map, index) => {
-          maps.update(map.id, { sequence: index + 1 });
-        });
-        await batch.send();
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          const batch = createBatch();
+          const maps = batch.collection("maps");
+          mapList.forEach((map, index) => {
+            maps.update(map.id, { sequence: index + 1 });
+          });
+          await batch.send();
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
 
     return (

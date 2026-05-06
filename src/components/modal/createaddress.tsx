@@ -39,7 +39,7 @@ const CreateAddress = NiceModal.create(
   }: CreateAddressModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
-    const { notifyError } = useNotification();
+    const { notifyWarning, runAction } = useNotification();
     const { showModal } = useModalManagement();
 
     const mapId = addressData.id;
@@ -66,7 +66,7 @@ const CreateAddress = NiceModal.create(
       event.preventDefault();
 
       if (existingCodes.has(propertyNumber)) {
-        notifyError(
+        notifyWarning(
           t(
             "address.duplicateCode",
             "Address {{code}} already exists in this territory map.",
@@ -84,47 +84,45 @@ const CreateAddress = NiceModal.create(
         coordinates: coordinates ? JSON.stringify(coordinates) : null,
         updated_by: policy.userName
       };
-      setIsSaving(true);
-      try {
-        await writeCreate({
-          mapId,
-          congregation: policy.congregation,
-          createPayload: {
-            map: mapId,
-            territory: territoryId,
-            code: propertyNumber,
-            floor: MIN_START_FLOOR,
-            sequence,
+      await runAction(
+        async () => {
+          await writeCreate({
+            mapId,
             congregation: policy.congregation,
-            created_by: policy.userName,
-            source: ADDRESS_CREATE_SOURCE
-          },
-          updateData,
-          desiredTypes: hhType ?? [],
-          onOptimistic: onOptimisticCreate
-            ? (clientId) =>
-                onOptimisticCreate({
-                  id: clientId,
-                  number: propertyNumber,
-                  note: updateData.notes,
-                  status: updateData.status,
-                  nhcount: String(updateData.not_home_tries),
-                  dnctime: updateData.dnc_time
-                    ? Date.parse(updateData.dnc_time)
-                    : 0,
-                  floor: MIN_START_FLOOR,
-                  sequence,
-                  coordinates,
-                  type: hhType ?? []
-                })
-            : undefined
-        });
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+            createPayload: {
+              map: mapId,
+              territory: territoryId,
+              code: propertyNumber,
+              floor: MIN_START_FLOOR,
+              sequence,
+              congregation: policy.congregation,
+              created_by: policy.userName,
+              source: ADDRESS_CREATE_SOURCE
+            },
+            updateData,
+            desiredTypes: hhType ?? [],
+            onOptimistic: onOptimisticCreate
+              ? (clientId) =>
+                  onOptimisticCreate({
+                    id: clientId,
+                    number: propertyNumber,
+                    note: updateData.notes,
+                    status: updateData.status,
+                    nhcount: String(updateData.not_home_tries),
+                    dnctime: updateData.dnc_time
+                      ? Date.parse(updateData.dnc_time)
+                      : 0,
+                    floor: MIN_START_FLOOR,
+                    sequence,
+                    coordinates,
+                    type: hhType ?? []
+                  })
+              : undefined
+          });
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
 
     const handleMapCoordinatesClick = async () => {

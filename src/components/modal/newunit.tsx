@@ -21,7 +21,7 @@ const NewUnit = NiceModal.create(
     addressData
   }: NewUnitModalProps) => {
     const { t } = useTranslation();
-    const { notifyError, notifyWarning } = useNotification();
+    const { notifyWarning, runAction } = useNotification();
     const [unitTags, setUnitTags] = useState<UnitOption[]>([]);
     const [isSaving, setIsSaving] = useState(false);
     const modal = useModal();
@@ -46,22 +46,17 @@ const NewUnit = NiceModal.create(
         return;
       }
 
-      setIsSaving(true);
-      try {
-        const codes = unitTags.map((tag) => tag.value);
-        await callFunction("/map/code/add", {
-          method: "POST",
-          body: {
-            map: mapId,
-            codes
-          }
-        });
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          const codes = unitTags.map((tag) => tag.value);
+          await callFunction("/map/code/add", {
+            method: "POST",
+            body: { map: mapId, codes }
+          });
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
     return (
       <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>

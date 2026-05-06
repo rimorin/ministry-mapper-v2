@@ -312,7 +312,7 @@ const ConfigureTerritoryCoordinates = NiceModal.create(
     isSelectOnly = false
   }: ConfigureTerritoryCoordinatesModalProps) => {
     const { t } = useTranslation();
-    const { notifyError } = useNotification();
+    const { runAction } = useNotification();
     const { trackEvent } = useAnalytics();
     const modal = useModal();
 
@@ -379,21 +379,19 @@ const ConfigureTerritoryCoordinates = NiceModal.create(
         return;
       }
 
-      setIsSaving(true);
-      try {
-        await updateDataById("territories", territoryId, {
-          coordinates: vertices.length >= 3 ? vertices : null
-        });
-        trackEvent(ANALYTICS_EVENTS.TERRITORY_BOUNDARY_SAVED, {
-          point_count: vertices.length
-        });
-        modal.resolve(vertices);
-        modal.hide();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          await updateDataById("territories", territoryId, {
+            coordinates: vertices.length >= 3 ? vertices : null
+          });
+          trackEvent(ANALYTICS_EVENTS.TERRITORY_BOUNDARY_SAVED, {
+            point_count: vertices.length
+          });
+          modal.resolve(vertices);
+          modal.hide();
+        },
+        { setLoading: setIsSaving }
+      );
     };
 
     return (

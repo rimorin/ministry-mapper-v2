@@ -22,7 +22,7 @@ const UpdateCongregationSettings = NiceModal.create(
   }: UpdateCongregationSettingsModalProps) => {
     const modal = useModal();
     const { t } = useTranslation();
-    const { notifyError, notifyWarning } = useNotification();
+    const { notifyWarning, runAction } = useNotification();
 
     const [maxTries, setMaxTries] = useState(currentMaxTries);
     const [defaultExpiryHrs, setDefaultExpiryHrs] = useState(
@@ -33,29 +33,27 @@ const UpdateCongregationSettings = NiceModal.create(
 
     const handleSubmitCongSettings = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
-      try {
-        setIsSaving(true);
-        await updateDataById(
-          "congregations",
-          currentCongregation,
-          {
-            name: name,
-            expiry_hours: defaultExpiryHrs,
-            max_tries: maxTries
-          },
-          {
-            requestKey: `congregations-details-${currentCongregation}`
-          }
-        );
-        notifyWarning(
-          t("congregation.settingsUpdated", "Congregation settings updated.")
-        );
-        window.location.reload();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          await updateDataById(
+            "congregations",
+            currentCongregation,
+            {
+              name: name,
+              expiry_hours: defaultExpiryHrs,
+              max_tries: maxTries
+            },
+            {
+              requestKey: `congregations-details-${currentCongregation}`
+            }
+          );
+          notifyWarning(
+            t("congregation.settingsUpdated", "Congregation settings updated.")
+          );
+          window.location.reload();
+        },
+        { setLoading: setIsSaving }
+      );
     };
 
     return (

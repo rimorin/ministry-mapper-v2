@@ -17,7 +17,7 @@ export default function useCongregationManagement({
   userId
 }: CongregationManagementOptions) {
   const { t } = useTranslation();
-  const { notifyError, notifyInfo } = useNotification();
+  const { notifyInfo, runAction } = useNotification();
   const { trackEvent } = useAnalytics();
   const [congregationName, setCongregationName] = useState<string>("");
   const [congregationUsers, setCongregationUsers] = useState(
@@ -52,17 +52,15 @@ export default function useCongregationManagement({
   };
 
   const getUsers = async () => {
-    try {
-      setIsShowingUserListing(true);
-      setCongregationUsers(
-        await getCongregationUsers(congregationCode, userId)
-      );
-      toggleUserListing();
-    } catch (error) {
-      notifyError(error);
-    } finally {
-      setIsShowingUserListing(false);
-    }
+    await runAction(
+      async () => {
+        setCongregationUsers(
+          await getCongregationUsers(congregationCode, userId)
+        );
+        toggleUserListing();
+      },
+      { setLoading: setIsShowingUserListing }
+    );
   };
 
   const handleCongregationSelect = (newCongCode: string | null) => {
@@ -74,7 +72,7 @@ export default function useCongregationManagement({
   };
 
   const generateReport = async () => {
-    try {
+    await runAction(async () => {
       await callFunction("/report/generate", {
         method: "POST",
         body: { congregation: congregationCode }
@@ -86,9 +84,7 @@ export default function useCongregationManagement({
           "Report generation started. You will receive an email shortly."
         )
       );
-    } catch (error) {
-      notifyError(error);
-    }
+    });
   };
 
   return {

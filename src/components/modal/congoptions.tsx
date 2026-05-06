@@ -25,7 +25,7 @@ import {
 } from "../../utils/interface";
 import GenericInputField from "../form/input";
 import ModalSubmitButton from "../form/submit";
-import { callFunction, getList } from "../../utils/pocketbase";
+import { callFunction, getList, ignoreAbort } from "../../utils/pocketbase";
 import GenericButton from "../navigation/button";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 import "../../css/sortable.css";
@@ -254,7 +254,7 @@ const SortableOptionRow = ({
 const UpdateCongregationOptions = NiceModal.create(
   ({ currentCongregation }: UpdateCongregationOptionsModalProps) => {
     const { t } = useTranslation();
-    const { notifyError, notifyWarning } = useNotification();
+    const { notifyWarning, runAction } = useNotification();
     const modal = useModal();
     const { confirm } = useConfirm();
 
@@ -342,35 +342,33 @@ const UpdateCongregationOptions = NiceModal.create(
     };
 
     const updateOptions = async () => {
-      try {
-        setIsSaving(true);
-        const optionsList = options
-          .filter((option) => !(option.isNew && option.isDeleted))
-          .map((option, index) => ({
-            id: option.isNew ? "" : option.id,
-            code: option.code,
-            description: option.description,
-            is_countable: option.isCountable,
-            is_default: option.isDefault,
-            sequence: index + 1,
-            is_deleted: option.isDeleted
-          }));
-        await callFunction("options/update", {
-          method: "POST",
-          body: { congregation: currentCongregation, options: optionsList }
-        });
-        notifyWarning(
-          t(
-            "congregation.optionsUpdated",
-            "Congregation household options updated."
-          )
-        );
-        window.location.reload();
-      } catch (error) {
-        notifyError(error);
-      } finally {
-        setIsSaving(false);
-      }
+      await runAction(
+        async () => {
+          const optionsList = options
+            .filter((option) => !(option.isNew && option.isDeleted))
+            .map((option, index) => ({
+              id: option.isNew ? "" : option.id,
+              code: option.code,
+              description: option.description,
+              is_countable: option.isCountable,
+              is_default: option.isDefault,
+              sequence: index + 1,
+              is_deleted: option.isDeleted
+            }));
+          await callFunction("options/update", {
+            method: "POST",
+            body: { congregation: currentCongregation, options: optionsList }
+          });
+          notifyWarning(
+            t(
+              "congregation.optionsUpdated",
+              "Congregation household options updated."
+            )
+          );
+          window.location.reload();
+        },
+        { setLoading: setIsSaving }
+      );
     };
 
     useEffect(() => {
@@ -392,7 +390,7 @@ const UpdateCongregationOptions = NiceModal.create(
         }));
         setOptions(householdTypes);
       };
-      getHHOptions();
+      ignoreAbort(getHHOptions)();
     }, [currentCongregation]);
 
     useEffect(() => {

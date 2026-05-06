@@ -11,7 +11,7 @@ interface SignupFormData {
 }
 
 export default function useSignup() {
-  const { notifyError, notifyWarning } = useNotification();
+  const { notifyError, notifyWarning, runAction } = useNotification();
   const { trackEvent } = useAnalytics();
   const [formData, setFormData] = useState<SignupFormData>({
     email: "",
@@ -29,34 +29,35 @@ export default function useSignup() {
   };
 
   const handleCreateSubmit = async (onSuccess?: () => void) => {
-    setIsCreating(true);
-    try {
-      await createData(
-        "users",
-        {
-          email: formData.email,
-          name: formData.name,
-          password: formData.password,
-          passwordConfirm: formData.confirmPassword
-        },
-        {
-          requestKey: `user-signup-${formData.email}`
+    await runAction(
+      async () => {
+        await createData(
+          "users",
+          {
+            email: formData.email,
+            name: formData.name,
+            password: formData.password,
+            passwordConfirm: formData.confirmPassword
+          },
+          {
+            requestKey: `user-signup-${formData.email}`
+          }
+        );
+        await verifyEmail(formData.email);
+        trackEvent(ANALYTICS_EVENTS.SIGNUP);
+        notifyWarning(
+          "Account created! Please check your email for verification procedures."
+        );
+        onSuccess?.();
+      },
+      {
+        setLoading: setIsCreating,
+        onError: (err) => {
+          setValidated(false);
+          notifyError(err);
         }
-      );
-      await verifyEmail(formData.email);
-      trackEvent(ANALYTICS_EVENTS.SIGNUP);
-      notifyWarning(
-        "Account created! Please check your email for verification procedures."
-      );
-      if (onSuccess) {
-        onSuccess();
       }
-    } catch (err) {
-      setValidated(false);
-      notifyError(err);
-    } finally {
-      setIsCreating(false);
-    }
+    );
   };
 
   const resetCreationForm = () => {

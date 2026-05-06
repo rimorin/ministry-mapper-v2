@@ -11,7 +11,7 @@ import { updateDataById } from "../../utils/pocketbase";
 
 const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
   const { t } = useTranslation();
-  const { notifyError, notifyWarning } = useNotification();
+  const { notifyWarning, runAction } = useNotification();
   const modal = useModal();
 
   const [isSaving, setIsSaving] = useState(false);
@@ -19,25 +19,19 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
 
   const handleUpdateProfile = async (event: FormEvent<HTMLElement>) => {
     event.preventDefault();
-    setIsSaving(true);
-    try {
-      await updateDataById(
-        "users",
-        user?.id as string,
-        {
-          name: username
-        },
-        {
-          requestKey: `update-name-${user?.id}`
-        }
-      );
-      notifyWarning(t("profile.updateSuccess"));
-      modal.hide();
-    } catch (error) {
-      notifyError(error);
-    } finally {
-      setIsSaving(false);
-    }
+    await runAction(
+      async () => {
+        await updateDataById(
+          "users",
+          user?.id as string,
+          { name: username },
+          { requestKey: `update-name-${user?.id}` }
+        );
+        notifyWarning(t("profile.updateSuccess"));
+        modal.hide();
+      },
+      { setLoading: setIsSaving }
+    );
   };
 
   return (

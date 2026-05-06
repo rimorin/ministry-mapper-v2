@@ -39,6 +39,7 @@ const useAssignments = (mapId: string) => {
   const [normalLinks, setNormalLinks] = useState<Map<string, LinkSession>>(
     new Map()
   );
+  const { runAction } = useNotification();
 
   const retrieveAssignments = async () => {
     if (!mapId) return;
@@ -79,7 +80,7 @@ const useAssignments = (mapId: string) => {
 
   useEffect(() => {
     if (!mapId) return;
-    retrieveAssignments();
+    runAction(retrieveAssignments);
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes retrieveAssignments
   }, [mapId]);
 
@@ -158,6 +159,8 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
         expiryHrs,
         linkObject.publisherName as string
       );
+    } catch (error) {
+      notifyError(error);
     } finally {
       setIsSettingNormalLink(false);
       setIsSettingPersonalLink(false);

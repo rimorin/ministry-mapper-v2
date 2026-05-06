@@ -336,7 +336,7 @@ const MainTable = ({
   const mapName = addressDetails?.name;
   const mapType = addressDetails?.type;
   const { t } = useTranslation();
-  const { notifyError, notifyWarning } = useNotification();
+  const { notifyWarning, runAction } = useNotification();
   const { showModal } = useModalManagement();
   const { confirm } = useConfirm();
   const {
@@ -389,17 +389,12 @@ const MainTable = ({
   }, []);
 
   const deleteAddressFloor = async (floor: number) => {
-    try {
+    await runAction(async () => {
       await callFunction("/map/floor/remove", {
         method: "POST",
-        body: {
-          map: mapId,
-          floor: floor
-        }
+        body: { map: mapId, floor }
       });
-    } catch (error) {
-      notifyError(error);
-    }
+    });
   };
 
   const handleUpdateUnitStatus = (unitDetails?: unitDetails) => {
@@ -446,17 +441,12 @@ const MainTable = ({
   };
 
   const deleteAddressUnit = async (unitNumber: string) => {
-    try {
+    await runAction(async () => {
       await callFunction("/map/code/delete", {
         method: "POST",
-        body: {
-          map: mapId,
-          code: unitNumber
-        }
+        body: { map: mapId, code: unitNumber }
       });
-    } catch (error) {
-      notifyError(error);
-    }
+    });
   };
 
   const handleUnitDelete = async (unitNumber: string) => {
