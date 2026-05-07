@@ -97,6 +97,9 @@ export default defineConfig(() => {
         workbox: {
           globPatterns: ["**/*.{js,css,html}"],
           navigateFallback: "/index.html",
+          // Prevent the SW from intercepting direct file navigations (e.g. .json,
+          // .webmanifest, .ico) and serving index.html in their place.
+          navigateFallbackDenylist: [/\.[a-z]{2,6}$/i],
           inlineWorkboxRuntime: true,
           cleanupOutdatedCaches: true
         },
