@@ -1,3 +1,10 @@
+## [1.36.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.36.2...v1.36.3) (2026-05-07)
+
+
+### Bug Fixes
+
+* show update prompt toast instead of silent auto-reload on SW update ([f78be82](https://github.com/rimorin/ministry-mapper-v2/commit/f78be82a91e624c673ff4e2a77e370442536b017))
+
 ## [1.36.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.36.1...v1.36.2) (2026-05-07)
 
 
