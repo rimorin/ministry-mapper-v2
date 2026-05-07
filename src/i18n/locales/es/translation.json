@@ -483,7 +483,7 @@
   },
   "update": {
     "title": "Actualización disponible",
-    "message": "Hay una nueva versión disponible. Recargue para obtener las actualizaciones más recientes.",
+    "message": "Recargue para obtener las últimas actualizaciones.",
     "reload": "Recargar"
   },
   "releaseNotes": {
@@ -515,7 +515,6 @@
   "smartSync": {
     "discardedOps": "{{count}} edición/es no se pudieron guardar y fueron descartadas.",
     "authExpired": "Tu sesión ha expirado. Por favor, inicia sesión de nuevo — tus ediciones sin conexión están guardadas localmente.",
-
     "idbBlocked": "Actualización pendiente. Por favor, cierra otras pestañas abiertas para continuar."
   }
 }

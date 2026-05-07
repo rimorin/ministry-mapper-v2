@@ -483,7 +483,7 @@
   },
   "update": {
     "title": "有可用更新",
-    "message": "有新版本可用。重新加载以获取最新更新。",
+    "message": "重新加载以获取最新更新。",
     "reload": "重新加载"
   },
   "releaseNotes": {
@@ -511,7 +511,6 @@
   "smartSync": {
     "discardedOps": "{{count}} 个编辑无法保存，已被丢弃。",
     "authExpired": "您的会话已过期。请重新登录 — 您的离线编辑已保存在本地。",
-
     "idbBlocked": "应用更新待处理。请关闭其他打开的标签页以继续。"
   }
 }

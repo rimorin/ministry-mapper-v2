@@ -483,7 +483,7 @@
   },
   "update": {
     "title": "Pembaruan tersedia",
-    "message": "Versi baru tersedia. Muat ulang untuk mendapatkan pembaruan terbaru.",
+    "message": "Muat ulang untuk mendapatkan pembaruan terbaru.",
     "reload": "Muat ulang"
   },
   "releaseNotes": {
@@ -511,7 +511,6 @@
   "smartSync": {
     "discardedOps": "{{count}} pengeditan tidak dapat disimpan dan telah dibuang.",
     "authExpired": "Sesi Anda telah berakhir. Silakan masuk kembali — pengeditan offline Anda tersimpan secara lokal.",
-
     "idbBlocked": "Pembaruan aplikasi tertunda. Tutup tab lain yang terbuka untuk melanjutkan."
   }
 }

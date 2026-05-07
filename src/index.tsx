@@ -7,15 +7,32 @@ import Main from "./pages/index";
 initAnalytics();
 
 // registerSW.js only does a bare registration with no reload logic. This
-// reloads when a new SW takes control so stale JS bundles never run.
-// hadController skips the reload on first install (no prior SW to replace).
+// prompts the user to reload when a new SW takes control so stale JS bundles
+// never run silently. hadController skips the prompt on first install.
 if ("serviceWorker" in navigator) {
   const hadController = Boolean(navigator.serviceWorker.controller);
-  let reloading = false;
+  let prompted = false;
   navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (!hadController || reloading) return;
-    reloading = true;
-    window.location.reload();
+    if (!hadController || prompted) return;
+    prompted = true;
+    window.dispatchEvent(new CustomEvent("mm-sw-update"));
+  });
+  // Trigger an update check when the user returns to the tab so the new SW
+  // starts installing in the background before they notice stale content.
+  // Throttled to 5 minutes to avoid a sw.js network request on every tab switch.
+  // Guards: skip if a SW is already installing, or if the device is offline.
+  let lastUpdateCheck = 0;
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState !== "visible") return;
+    const now = Date.now();
+    if (now - lastUpdateCheck < 5 * 60 * 1000) return;
+    lastUpdateCheck = now;
+    navigator.serviceWorker.ready
+      .then((reg) => {
+        if (reg.installing || !navigator.onLine) return;
+        return reg.update();
+      })
+      .catch(() => {});
   });
 }
 
