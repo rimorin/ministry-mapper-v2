@@ -15,6 +15,7 @@ import "../i18n";
 import { LanguageProvider } from "../i18n/LanguageContext";
 import { ToastProvider } from "../components/middlewares/toast";
 import { ReleaseNotesProvider } from "../components/middlewares/releasenotescontext";
+import SwUpdatePrompt from "../components/middlewares/swupdateprompt";
 
 interface CombinedMiddlewareProps {
   children: ReactNode;
@@ -25,6 +26,7 @@ const CombinedMiddleware: FC<CombinedMiddlewareProps> = ({ children }) => (
     <LanguageProvider>
       <ThemeMiddleware>
         <ToastProvider>
+          <SwUpdatePrompt />
           <MaintenanceMiddleware>
             <PwaMiddleware>
               <NiceModelMiddleware>

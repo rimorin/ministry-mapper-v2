@@ -483,7 +483,7 @@
   },
   "update": {
     "title": "Kemas kini tersedia",
-    "message": "Versi baharu tersedia. Muat semula untuk mendapatkan kemas kini terkini.",
+    "message": "Muat semula untuk mendapatkan kemas kini terkini.",
     "reload": "Muat semula"
   },
   "releaseNotes": {
@@ -511,7 +511,6 @@
   "smartSync": {
     "discardedOps": "{{count}} suntingan tidak dapat disimpan dan telah dibuang.",
     "authExpired": "Sesi anda telah tamat. Sila log masuk semula — suntingan luar talian anda disimpan secara setempat.",
-
     "idbBlocked": "Kemas kini aplikasi tertangguh. Sila tutup tab lain yang terbuka untuk meneruskan."
   }
 }
