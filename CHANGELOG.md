@@ -1,3 +1,10 @@
+## [1.36.2](https://github.com/rimorin/ministry-mapper-v2/compare/v1.36.1...v1.36.2) (2026-05-07)
+
+
+### Bug Fixes
+
+* reload page when service worker updates to prevent stale JS bundles ([bc45d44](https://github.com/rimorin/ministry-mapper-v2/commit/bc45d4448c40db97d49bd69eb40c20ba2396dbfa))
+
 ## [1.36.1](https://github.com/rimorin/ministry-mapper-v2/compare/v1.36.0...v1.36.1) (2026-05-06)
 
 
