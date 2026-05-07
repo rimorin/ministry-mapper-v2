@@ -6,6 +6,19 @@ import Main from "./pages/index";
 
 initAnalytics();
 
+// registerSW.js only does a bare registration with no reload logic. This
+// reloads when a new SW takes control so stale JS bundles never run.
+// hadController skips the reload on first install (no prior SW to replace).
+if ("serviceWorker" in navigator) {
+  const hadController = Boolean(navigator.serviceWorker.controller);
+  let reloading = false;
+  navigator.serviceWorker.addEventListener("controllerchange", () => {
+    if (!hadController || reloading) return;
+    reloading = true;
+    window.location.reload();
+  });
+}
+
 // This automatically reloads when chunks fail to load after a fresh deployment
 window.addEventListener("vite:preloadError", () => {
   window.location.reload();
