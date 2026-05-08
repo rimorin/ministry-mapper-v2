@@ -5,7 +5,7 @@ import { Form, Modal } from "react-bootstrap";
 import ModalFooter from "../form/footer";
 import { FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getList, createBatch, isAbortError } from "../../utils/pocketbase";
+import { getList, callFunction, isAbortError } from "../../utils/pocketbase";
 import "../../css/sortable.css";
 import {
   DndContext,
@@ -116,12 +116,13 @@ const ChangeTerritoryMapSequence = NiceModal.create(
       event.preventDefault();
       await runAction(
         async () => {
-          const batch = createBatch();
-          const maps = batch.collection("maps");
-          mapList.forEach((map, index) => {
-            maps.update(map.id, { sequence: index + 1 });
+          await callFunction("/maps/sequence", {
+            method: "POST",
+            body: {
+              territory_id: territoryId,
+              map_ids: mapList.map((m) => m.id)
+            }
           });
-          await batch.send();
           modal.hide();
         },
         { setLoading: setIsSaving }
