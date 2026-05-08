@@ -467,13 +467,6 @@ const setupRealtimeListener = (
 };
 
 /**
- * Creates a new PocketBase batch instance for atomic multi-record operations.
- * All queued operations are sent in a single transactional HTTP request via batch.send().
- * @returns A BatchService instance for queuing create/update/upsert/delete operations
- */
-const createBatch = () => pb.createBatch();
-
-/**
  * Updates a record by ID in the specified collection
  *
  * @param collectionName - The name of the collection to update
@@ -509,7 +502,6 @@ const updateDataById = async (
 
 export {
   pb,
-  createBatch,
   withRetry,
   getUser,
   requestPasswordReset,
