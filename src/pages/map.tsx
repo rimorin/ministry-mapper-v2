@@ -2,6 +2,7 @@ import { useEffect, useState, use, lazy } from "react";
 import { useTranslation } from "react-i18next";
 
 import { configureHeader, clearHeader } from "../utils/pocketbase";
+import { resolveLocalized } from "../utils/resolveLocalized";
 import { Image, Nav, Navbar } from "react-bootstrap";
 import { getAssetUrl } from "../utils/helpers/assetpath";
 import { handleKeyboardActivation } from "../utils/helpers/keyboard";
@@ -9,6 +10,7 @@ import InvalidPage from "../components/statics/invalidpage";
 import MainTable from "../components/table/map";
 import MapPlaceholder from "../components/statics/placeholder";
 import TopNavbar from "../components/navigation/topnavbar";
+import { mapAddressResponse } from "../utils/interface";
 import {
   TERRITORY_TYPES,
   MESSAGE_TYPES,
@@ -33,7 +35,7 @@ const ThemeSettingsModal = lazy(
 
 const Map = () => {
   const { id } = useParams();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { currentLanguage, changeLanguage, languageOptions } =
     use(LanguageContext);
   const [mapView, setMapView] = useState(false);
@@ -111,6 +113,9 @@ const Map = () => {
   };
 
   const [mapId, setMapId] = useState<string | undefined>();
+  const [preloadedAddresses, setPreloadedAddresses] = useState<
+    mapAddressResponse[] | undefined
+  >();
   const smartSync = useSmartSync(mapId ? { mapId } : undefined);
   const { isOnline, displayPendingCount } = smartSync;
 
@@ -118,12 +123,15 @@ const Map = () => {
     if (!id) return;
     const init = async (linkId: string) => {
       configureHeader(linkId);
-      const resolvedMapId = await getMapData(linkId, readPinnedMessages);
-      setMapId(resolvedMapId);
+      const result = await getMapData(linkId);
+      if (result) {
+        setMapId(result.mapId);
+        setPreloadedAddresses(result.preloadedAddresses);
+      }
     };
     init(id);
     return () => clearHeader();
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes getMapData and readPinnedMessages
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes getMapData
   }, [id]);
 
   useRealtimeSubscription(
@@ -140,8 +148,7 @@ const Map = () => {
             notDone: mapData.aggregates?.notDone,
             notHome: mapData.aggregates?.notHome
           },
-          location: mapData.location,
-          name: mapData.description,
+          name: resolveLocalized(mapData.description, i18n.language),
           coordinates: mapData.coordinates
         };
       });
@@ -196,6 +203,7 @@ const Map = () => {
               addressDetails={mapDetails}
               assignmentId={id}
               territoryId={territoryId}
+              preloadedAddresses={preloadedAddresses}
             />
           </SmartSyncProvider>
         )}

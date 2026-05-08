@@ -70,6 +70,36 @@ export interface mapAddressResponse {
   options: addressOptionResponse[];
 }
 
+export interface LinkMapResponse {
+  expiry_date: string;
+  publisher: string;
+  map: {
+    id: string;
+    description: string | Record<string, string> | null;
+    type: string;
+    coordinates: latlongInterface | null;
+    progress: number;
+    aggregates: { notDone: number; notHome: number } | null;
+    territory: string;
+  };
+  congregation: {
+    id: string;
+    max_tries: number;
+    origin: string;
+    expiry_hours: number;
+    options: Array<{
+      id: string;
+      code: string;
+      description: string;
+      is_countable: boolean;
+      is_default: boolean;
+      sequence: number;
+    }>;
+  };
+  addresses: mapAddressResponse[];
+  has_pinned_messages: boolean;
+}
+
 export interface nothomeProps {
   nhcount?: string;
   classProp?: string;
@@ -241,6 +271,7 @@ export interface territoryTableProps {
   addressDetails: addressDetails;
   assignmentId?: string;
   territoryId: string;
+  preloadedAddresses?: mapAddressResponse[];
   handleUnitStatusUpdate?: (event: React.MouseEvent<HTMLElement>) => void;
   handleUnitNoUpdate?: (event: React.MouseEvent<HTMLElement>) => void;
   handleFloorDelete?: (event: React.MouseEvent<HTMLElement>) => void;

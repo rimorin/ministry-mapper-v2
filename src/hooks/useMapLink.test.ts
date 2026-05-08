@@ -2,12 +2,9 @@ import { renderHook, waitFor, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import useMapLink from "./useMapLink";
 import * as pocketbase from "../utils/pocketbase";
-import {
-  DEFAULT_COORDINATES,
-  MESSAGE_TYPES,
-  PB_FIELDS
-} from "../utils/constants";
-import { RecordModel } from "pocketbase";
+import { DEFAULT_COORDINATES } from "../utils/constants";
+import { saveAssignmentCache } from "../utils/smartsync";
+import type { LinkMapResponse } from "../utils/interface";
 
 vi.mock("../utils/pocketbase");
 vi.mock("./useNotification", () => ({
@@ -15,6 +12,56 @@ vi.mock("./useNotification", () => ({
     notifyError: vi.fn()
   })
 }));
+
+const futureDate = new Date(Date.now() + 1_000_000).toISOString();
+const pastDate = new Date(Date.now() - 1_000_000).toISOString();
+
+const mockResponse: LinkMapResponse = {
+  expiry_date: futureDate,
+  publisher: "Test Publisher",
+  map: {
+    id: "map123",
+    description: "Test Map",
+    type: "single",
+    coordinates: { lat: 1.3521, lng: 103.8198 },
+    progress: 75,
+    aggregates: { notDone: 2, notHome: 1 },
+    territory: "territory123"
+  },
+  congregation: {
+    id: "cong123",
+    max_tries: 3,
+    origin: "sg",
+    expiry_hours: 24,
+    options: [
+      {
+        id: "opt1",
+        code: "NH",
+        description: "Not Home",
+        is_countable: true,
+        is_default: false,
+        sequence: 1
+      }
+    ]
+  },
+  addresses: [
+    {
+      id: "addr1",
+      code: "10",
+      floor: 1,
+      sequence: 1,
+      status: "not_done",
+      notes: "",
+      not_home_tries: 0,
+      dnc_time: "",
+      coordinates: null,
+      updated: "",
+      updated_by: "",
+      options: []
+    }
+  ],
+  has_pinned_messages: false
+};
 
 describe("useMapLink", () => {
   beforeEach(() => {
@@ -35,263 +82,200 @@ describe("useMapLink", () => {
     });
   });
 
-  describe("checkPinnedMessages", () => {
-    it("should not check messages if readPinnedMessages is true", async () => {
-      const getListSpy = vi.spyOn(pocketbase, "getList");
+  describe("getMapData", () => {
+    it("should return early when linkId is undefined", async () => {
+      const callFunctionSpy = vi.spyOn(pocketbase, "callFunction");
       const { result } = renderHook(() => useMapLink());
 
-      await result.current.checkPinnedMessages("map123", "true");
+      const res = await result.current.getMapData(undefined);
 
-      expect(getListSpy).not.toHaveBeenCalled();
+      expect(res).toBeUndefined();
+      expect(callFunctionSpy).not.toHaveBeenCalled();
     });
 
-    it("should check and set hasPinnedMessages when messages exist", async () => {
-      vi.spyOn(pocketbase, "getList").mockResolvedValue([
-        {
-          id: "msg1",
-          collectionId: "messages",
-          collectionName: "messages"
-        } as RecordModel
-      ]);
+    it("should call /link/map with POST and null requestKey", async () => {
+      const spy = vi
+        .spyOn(pocketbase, "callFunction")
+        .mockResolvedValue(mockResponse);
       const { result } = renderHook(() => useMapLink());
 
-      await result.current.checkPinnedMessages("map123", "false");
+      await result.current.getMapData("link123");
 
-      await waitFor(() => {
-        expect(result.current.hasPinnedMessages).toBe(true);
-      });
-
-      expect(pocketbase.getList).toHaveBeenCalledWith("messages", {
-        filter: `map = "map123" && type= "${MESSAGE_TYPES.ADMIN}" && pinned = true`,
-        fields: "id",
+      expect(spy).toHaveBeenCalledWith("/link/map", {
+        method: "POST",
         requestKey: null
       });
     });
 
-    it("should not set hasPinnedMessages when no messages exist", async () => {
-      vi.spyOn(pocketbase, "getList").mockResolvedValue([]);
+    it("should load map data and return mapId and preloadedAddresses", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue(mockResponse);
       const { result } = renderHook(() => useMapLink());
 
-      await result.current.checkPinnedMessages("map123", "false");
-
-      await waitFor(() => {
-        expect(result.current.hasPinnedMessages).toBe(false);
-      });
-    });
-  });
-
-  describe("getMapData", () => {
-    it("should return early if linkId is undefined", async () => {
-      const getDataByIdSpy = vi.spyOn(pocketbase, "getDataById");
-      const { result } = renderHook(() => useMapLink());
-
-      const mapId = await result.current.getMapData(undefined, "false");
-
-      expect(mapId).toBeUndefined();
-      expect(getDataByIdSpy).not.toHaveBeenCalled();
-    });
-
-    it("should set isLinkExpired when assignment not found", async () => {
-      vi.spyOn(pocketbase, "getDataById").mockResolvedValue(null);
-      const { result } = renderHook(() => useMapLink());
-
-      await result.current.getMapData("link123", "false");
-
-      await waitFor(() => {
-        expect(result.current.isLinkExpired).toBe(true);
-        expect(result.current.isLoading).toBe(false);
-      });
-    });
-
-    it("should set isLinkExpired when expiry date has passed", async () => {
-      const pastDate = new Date(Date.now() - 1000000).toISOString();
-      vi.spyOn(pocketbase, "getDataById").mockResolvedValue({
-        id: "assignment123",
-        collectionId: "assignments",
-        collectionName: "assignments",
-        map: "map123",
-        expiry_date: pastDate,
-        expand: {
-          map: {
-            congregation: "cong123",
-            expand: {
-              congregation: { id: "cong123" }
-            }
-          }
-        }
-      } as RecordModel);
-
-      const { result } = renderHook(() => useMapLink());
-
-      await result.current.getMapData("link123", "false");
-
-      await waitFor(() => {
-        expect(result.current.isLinkExpired).toBe(true);
-      });
-    });
-
-    it("should successfully load valid link data", async () => {
-      const futureDate = new Date(Date.now() + 1000000).toISOString();
-      const mockLinkRecord = {
-        id: "assignment123",
-        collectionId: "assignments",
-        collectionName: "assignments",
-        map: "map123",
-        publisher: "pub123",
-        expiry_date: futureDate,
-        expand: {
-          map: {
-            id: "map123",
-            type: "Private",
-            location: "Test Location",
-            progress: 75,
-            description: "Test Map",
-            coordinates: { lat: 1.3521, lng: 103.8198 },
-            congregation: "cong123",
-            expand: {
-              congregation: {
-                id: "cong123",
-                max_tries: 3,
-                origin: "Singapore",
-                expiry_hours: 24
-              }
-            }
-          }
-        }
-      } as RecordModel;
-
-      const mockOptions = [
-        {
-          id: "opt1",
-          collectionId: "options",
-          collectionName: "options",
-          code: "NH",
-          description: "Not Home",
-          is_countable: true,
-          is_default: false,
-          sequence: 1
-        } as RecordModel
-      ];
-
-      const baseExpand = mockLinkRecord.expand!;
-      vi.spyOn(pocketbase, "getDataById").mockResolvedValue({
-        ...mockLinkRecord,
-        expand: {
-          map: {
-            ...baseExpand.map,
-            expand: {
-              congregation: {
-                ...baseExpand.map.expand.congregation,
-                expand: { options_via_congregation: mockOptions }
-              }
-            }
-          }
-        }
-      } as RecordModel);
-
-      const { result } = renderHook(() => useMapLink());
-
-      const mapId = await result.current.getMapData("link123", "false");
+      const res = await result.current.getMapData("link123");
 
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
         expect(result.current.isLinkExpired).toBe(false);
-        expect(result.current.mapDetails).toBeDefined();
         expect(result.current.mapDetails?.id).toBe("map123");
         expect(result.current.mapDetails?.name).toBe("Test Map");
         expect(result.current.coordinates).toEqual({
           lat: 1.3521,
           lng: 103.8198
         });
-        expect(mapId).toBe("map123");
       });
 
-      expect(pocketbase.getDataById).toHaveBeenCalledWith(
-        "assignments",
-        "link123",
-        {
-          requestKey: null,
-          expand:
-            "map, map.congregation, map.congregation.options_via_congregation",
-          fields: PB_FIELDS.ASSIGNMENT_LINKS
-        }
-      );
-
-      expect(pocketbase.getList).not.toHaveBeenCalledWith(
-        "options",
-        expect.anything()
-      );
+      expect(res).toEqual({
+        mapId: "map123",
+        preloadedAddresses: mockResponse.addresses
+      });
     });
 
-    it("should handle errors and call notifyError", async () => {
-      const error = new Error("Network error");
-      vi.spyOn(pocketbase, "getDataById").mockRejectedValue(error);
-
+    it("should set tokenEndTime from expiry date and territoryId from map", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue(mockResponse);
       const { result } = renderHook(() => useMapLink());
 
-      await result.current.getMapData("link123", "false");
+      await result.current.getMapData("link123");
 
       await waitFor(() => {
-        expect(result.current.isLoading).toBe(false);
+        expect(result.current.tokenEndTime).toBe(
+          new Date(mockResponse.expiry_date).getTime()
+        );
+        expect(result.current.territoryId).toBe("territory123");
       });
     });
 
-    it("should check pinned messages when localStorage key is null", async () => {
-      const futureDate = new Date(Date.now() + 1000000).toISOString();
-      const mockLinkRecord = {
-        id: "assignment123",
-        collectionId: "assignments",
-        collectionName: "assignments",
-        map: "map123",
-        publisher: "pub123",
-        expiry_date: futureDate,
-        expand: {
-          map: {
-            id: "map123",
-            progress: 50,
-            description: "Test Map",
-            expand: {
-              congregation: {
-                id: "cong123",
-                max_tries: 3,
-                origin: "Singapore",
-                expiry_hours: 24
-              }
-            }
-          }
-        }
-      } as RecordModel;
-
-      const baseExpand = mockLinkRecord.expand!;
-      vi.spyOn(pocketbase, "getDataById").mockResolvedValue({
-        ...mockLinkRecord,
-        expand: {
-          map: {
-            ...baseExpand.map,
-            expand: {
-              congregation: {
-                ...baseExpand.map.expand.congregation,
-                expand: { options_via_congregation: [] }
-              }
-            }
-          }
-        }
-      } as RecordModel);
-      vi.spyOn(pocketbase, "getList").mockResolvedValueOnce([
-        {
-          id: "msg1",
-          collectionId: "messages",
-          collectionName: "messages"
-        } as RecordModel
-      ]); // pinned messages
-
+    it("should fall back to DEFAULT_COORDINATES when map has no coordinates", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue({
+        ...mockResponse,
+        map: { ...mockResponse.map, coordinates: null }
+      });
       const { result } = renderHook(() => useMapLink());
 
-      await result.current.getMapData("link123", "false");
+      await result.current.getMapData("link123");
+
+      await waitFor(() => {
+        expect(result.current.coordinates).toEqual(
+          DEFAULT_COORDINATES.Singapore
+        );
+      });
+    });
+
+    it("should resolve a localized JSON description to a plain string", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue({
+        ...mockResponse,
+        map: {
+          ...mockResponse.map,
+          description: { en: "English Map", zh: "中文地图" }
+        }
+      });
+      const { result } = renderHook(() => useMapLink());
+
+      await result.current.getMapData("link123");
+
+      await waitFor(() => {
+        expect(result.current.mapDetails?.name).toBe("English Map");
+      });
+    });
+
+    it("should set isLinkExpired when expiry date has passed", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue({
+        ...mockResponse,
+        expiry_date: pastDate
+      });
+      const { result } = renderHook(() => useMapLink());
+
+      const res = await result.current.getMapData("link123");
+
+      await waitFor(() => {
+        expect(result.current.isLinkExpired).toBe(true);
+        expect(result.current.isLoading).toBe(false);
+      });
+      expect(res).toBeUndefined();
+    });
+
+    it("should return undefined when response has no map id (stale format)", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue({
+        some: "garbage"
+      });
+      const { result } = renderHook(() => useMapLink());
+
+      const res = await result.current.getMapData("link123");
+
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(res).toBeUndefined();
+    });
+
+    it("should set hasPinnedMessages from response", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue({
+        ...mockResponse,
+        has_pinned_messages: true
+      });
+      const { result } = renderHook(() => useMapLink());
+
+      await result.current.getMapData("link123");
 
       await waitFor(() => {
         expect(result.current.hasPinnedMessages).toBe(true);
       });
+    });
+
+    it("should save response to cache (excluding addresses)", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue(mockResponse);
+      const { result } = renderHook(() => useMapLink());
+
+      await result.current.getMapData("link123");
+
+      const raw = localStorage.getItem("mm-assignment-link123");
+      expect(raw).not.toBeNull();
+      const cached = JSON.parse(raw!);
+      expect(cached.data.map.id).toBe("map123");
+      expect(cached.data.addresses).toBeUndefined();
+    });
+
+    it("should fall back to cache on fetch error and return empty preloadedAddresses", async () => {
+      const { addresses, ...cachedData } = mockResponse;
+      saveAssignmentCache("link123", cachedData);
+      vi.spyOn(pocketbase, "callFunction").mockRejectedValue(
+        new Error("Network error")
+      );
+      const { result } = renderHook(() => useMapLink());
+
+      const res = await result.current.getMapData("link123");
+
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(res).toEqual({ mapId: "map123", preloadedAddresses: [] });
+      expect(result.current.mapDetails?.id).toBe("map123");
+    });
+
+    it("should not write to cache when using a preloaded record", async () => {
+      const { addresses, ...cachedData } = mockResponse;
+      saveAssignmentCache("link123", cachedData);
+      vi.spyOn(pocketbase, "callFunction").mockRejectedValue(
+        new Error("Network error")
+      );
+      const { result } = renderHook(() => useMapLink());
+
+      await result.current.getMapData("link123");
+
+      // cachedAt should not have been updated (cache write is skipped for preloaded records)
+      const raw = localStorage.getItem("mm-assignment-link123");
+      const entry = JSON.parse(raw!);
+      expect(entry.data.addresses).toBeUndefined();
+      // Verify it's the same entry we saved, not a new one written by the hook
+      expect(entry.cachedAt).toBeLessThanOrEqual(Date.now());
+    });
+
+    it("should return undefined and finish loading when fetch fails and no cache exists", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockRejectedValue(
+        new Error("Network error")
+      );
+      const { result } = renderHook(() => useMapLink());
+
+      const res = await result.current.getMapData("link123");
+
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+      expect(res).toBeUndefined();
+      expect(result.current.mapDetails).toBeUndefined();
     });
   });
 
@@ -301,8 +285,7 @@ describe("useMapLink", () => {
       const newMapDetails = {
         id: "map456",
         name: "Updated Map",
-        type: "Private",
-        location: "New Location",
+        type: "single",
         aggregates: { display: "80%", value: 80, notHome: 0, notDone: 0 },
         coordinates: { lat: 1.3521, lng: 103.8198 },
         assigneeDetailsList: [],
@@ -315,12 +298,8 @@ describe("useMapLink", () => {
         result.current.setMapDetails(newMapDetails);
       });
 
-      expect(result.current.mapDetails).toMatchObject({
-        id: "map456",
-        name: "Updated Map",
-        type: "Private",
-        location: "New Location"
-      });
+      expect(result.current.mapDetails?.id).toBe("map456");
+      expect(result.current.mapDetails?.name).toBe("Updated Map");
     });
 
     it("should allow updating hasPinnedMessages", () => {

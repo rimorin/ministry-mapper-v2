@@ -105,7 +105,8 @@ const useAddresses = (
   mapId: string,
   options: Map<string, HHOptionProps>,
   assignmentId?: string,
-  pendingAddressIds: Set<string> = new Set()
+  pendingAddressIds: Set<string> = new Set(),
+  preloadedAddresses?: mapAddressResponse[]
 ) => {
   const [addresses, setAddresses] = useState<Map<string, unitDetails>>(
     new Map()
@@ -122,6 +123,36 @@ const useAddresses = (
     [...options.entries()].map(([id, o]) => [id, o.code])
   );
 
+  const processAddressResponse = async (response: mapAddressResponse[]) => {
+    const addressMap = new Map<string, unitDetails>();
+    for (const addr of response) {
+      addressMap.set(addr.id, {
+        id: addr.id,
+        coordinates: addr.coordinates ?? undefined,
+        number: addr.code,
+        note: addr.notes,
+        type: addr.options.map((ao) => ({
+          id: ao.id,
+          code: options.get(ao.id)?.code ?? "",
+          aoId: ao.aoId
+        })),
+        status: addr.status,
+        nhcount: String(addr.not_home_tries ?? NOT_HOME_STATUS_CODES.DEFAULT),
+        dnctime: addr.dnc_time ? Date.parse(addr.dnc_time) : 0,
+        sequence: addr.sequence,
+        floor: addr.floor,
+        updated: addr.updated ? Date.parse(addr.updated) : undefined,
+        updatedBy: addr.updated_by
+      });
+    }
+    // Overlay pending smart sync writes on top of the server snapshot.
+    // Firestore-style: local writes always take precedence until confirmed.
+    // Ops are keyed by `mapId:addressId` so there is at most one op per address.
+    const pendingOps = await getQueue(mapId);
+    applyPendingOpsToAddressMap(addressMap, pendingOps, optionCodeMap);
+    setAddresses(addressMap);
+  };
+
   const fetchAddressData = ignoreAbort(async () => {
     if (!mapId) return;
     try {
@@ -131,35 +162,7 @@ const useAddresses = (
         requestKey: `map-addresses-${mapId}`
       })) as mapAddressResponse[];
 
-      const addressMap = new Map<string, unitDetails>();
-      for (const addr of response) {
-        addressMap.set(addr.id, {
-          id: addr.id,
-          coordinates: addr.coordinates ?? undefined,
-          number: addr.code,
-          note: addr.notes,
-          type: addr.options.map((ao) => ({
-            id: ao.id,
-            code: options.get(ao.id)?.code ?? "",
-            aoId: ao.aoId
-          })),
-          status: addr.status,
-          nhcount: String(addr.not_home_tries ?? NOT_HOME_STATUS_CODES.DEFAULT),
-          dnctime: addr.dnc_time ? Date.parse(addr.dnc_time) : 0,
-          sequence: addr.sequence,
-          floor: addr.floor,
-          updated: addr.updated ? Date.parse(addr.updated) : undefined,
-          updatedBy: addr.updated_by
-        });
-      }
-
-      // Overlay pending smart sync writes on top of the server snapshot.
-      // Firestore-style: local writes always take precedence until confirmed.
-      // Ops are keyed by `mapId:addressId` so there is at most one op per address.
-      const pendingOps = await getQueue(mapId);
-      applyPendingOpsToAddressMap(addressMap, pendingOps, optionCodeMap);
-
-      setAddresses(addressMap);
+      await processAddressResponse(response);
       // Cache persistence is centralized in the effect below.
     } catch (error) {
       // Rethrow AbortErrors so the ignoreAbort wrapper can handle them
@@ -242,7 +245,11 @@ const useAddresses = (
   });
 
   useEffect(() => {
-    fetchAddressData();
+    if (preloadedAddresses !== undefined) {
+      void processAddressResponse(preloadedAddresses);
+    } else {
+      fetchAddressData();
+    }
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- React Compiler memoizes fetchAddressData
   }, [mapId]);
 
@@ -330,7 +337,8 @@ const MainTable = ({
   addressDetails,
   mapView = false,
   assignmentId,
-  territoryId
+  territoryId,
+  preloadedAddresses
 }: territoryTableProps) => {
   const mapId = addressDetails?.id;
   const mapName = addressDetails?.name;
@@ -346,7 +354,13 @@ const MainTable = ({
     writeCreate
   } = useSmartSyncContext();
   const { addresses, updateAddressOptimistically, addAddressOptimistically } =
-    useAddresses(mapId, policy.getOptionMap(), assignmentId, pendingAddressIds);
+    useAddresses(
+      mapId,
+      policy.getOptionMap(),
+      assignmentId,
+      pendingAddressIds,
+      preloadedAddresses
+    );
 
   const onOpDiscarded = useEffectEvent((e: Event) => {
     const count = (e as CustomEvent<{ count: number }>).detail.count;
