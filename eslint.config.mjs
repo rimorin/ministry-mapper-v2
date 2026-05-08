@@ -18,6 +18,10 @@ export default defineConfig(
       sourceType: "module"
     },
     rules: {
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        { ignoreRestSiblings: true }
+      ],
       // Advisory/style rules from @eslint-react recommended — not enforced yet
       "@eslint-react/jsx-no-children-prop": "off",
       "@eslint-react/set-state-in-effect": "off",
