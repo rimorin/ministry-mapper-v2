@@ -240,7 +240,7 @@ const useAddresses = (
   const onFlushComplete = useEffectEvent(() => {
     // Re-fetch after smart sync queue is flushed so the cache reflects the
     // post-write server state. PB_CONNECT may have cached stale data if it
-    // fired before batch.send() committed (race condition on reconnect).
+    // fired before a write committed (race condition on reconnect).
     fetchAddressData();
   });
 
