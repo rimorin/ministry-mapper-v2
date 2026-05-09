@@ -58,7 +58,8 @@ const Map = () => {
     territoryId,
     hasPinnedMessages,
     setHasPinnedMessages,
-    getMapData
+    getMapData,
+    markLinkExpired
   } = useMapLink();
 
   const toggleLanguageSelector = () => {
@@ -193,6 +194,7 @@ const Map = () => {
           title={mapDetails?.name || ""}
           tokenEndTime={tokenEndTime}
           pendingCount={displayPendingCount}
+          onTokenExpired={markLinkExpired}
         />
         {mapDetails && (
           <SmartSyncProvider value={smartSync}>

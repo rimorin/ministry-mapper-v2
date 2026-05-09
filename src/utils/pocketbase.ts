@@ -1,5 +1,6 @@
 import PocketBase, {
   AuthRecord,
+  ClientResponseError,
   RecordListOptions,
   RecordModel,
   RecordOptions,
@@ -76,6 +77,9 @@ const withRetry = async <T>(
  */
 const isAbortError = (error: unknown): boolean =>
   (error as { isAbort?: boolean })?.isAbort === true;
+
+const isUnauthorizedError = (error: unknown): boolean =>
+  error instanceof ClientResponseError && error.status === 401;
 
 /**
  * Wraps an async function so that PocketBase auto-cancellation AbortErrors are
@@ -526,5 +530,6 @@ export {
   authenticateEmailAndPassword,
   confirmPasswordReset,
   isAbortError,
+  isUnauthorizedError,
   ignoreAbort
 };

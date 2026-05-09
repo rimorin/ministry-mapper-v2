@@ -5,8 +5,12 @@ import * as pocketbase from "../utils/pocketbase";
 import { DEFAULT_COORDINATES } from "../utils/constants";
 import { saveAssignmentCache } from "../utils/smartsync";
 import type { LinkMapResponse } from "../utils/interface";
+import { ClientResponseError } from "pocketbase";
 
-vi.mock("../utils/pocketbase");
+vi.mock("../utils/pocketbase", async () => {
+  const actual = await vi.importActual("../utils/pocketbase");
+  return { ...(actual as object), callFunction: vi.fn() };
+});
 vi.mock("./useNotification", () => ({
   default: () => ({
     notifyError: vi.fn()
@@ -265,6 +269,24 @@ describe("useMapLink", () => {
       expect(entry.cachedAt).toBeLessThanOrEqual(Date.now());
     });
 
+    it("should set isLinkExpired and not fall back to cache on 401", async () => {
+      const { addresses, ...cachedData } = mockResponse;
+      saveAssignmentCache("link123", cachedData);
+      const authError = new ClientResponseError({ status: 401, response: {} });
+      vi.spyOn(pocketbase, "callFunction").mockRejectedValue(authError);
+      const { result } = renderHook(() => useMapLink());
+
+      const res = await result.current.getMapData("link123");
+
+      await waitFor(() => {
+        expect(result.current.isLinkExpired).toBe(true);
+        expect(result.current.isLoading).toBe(false);
+      });
+      expect(res).toBeUndefined();
+      expect(result.current.mapDetails).toBeUndefined();
+      expect(localStorage.getItem("mm-assignment-link123")).toBeNull();
+    });
+
     it("should return undefined and finish loading when fetch fails and no cache exists", async () => {
       vi.spyOn(pocketbase, "callFunction").mockRejectedValue(
         new Error("Network error")
@@ -276,6 +298,38 @@ describe("useMapLink", () => {
       await waitFor(() => expect(result.current.isLoading).toBe(false));
       expect(res).toBeUndefined();
       expect(result.current.mapDetails).toBeUndefined();
+    });
+  });
+
+  describe("mid-session expiry", () => {
+    it("should set isLinkExpired and clear cache on mm-auth-expired event", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue(mockResponse);
+      const { result } = renderHook(() => useMapLink());
+
+      await result.current.getMapData("link123");
+      expect(localStorage.getItem("mm-assignment-link123")).not.toBeNull();
+
+      act(() => {
+        window.dispatchEvent(new CustomEvent("mm-auth-expired"));
+      });
+
+      await waitFor(() => expect(result.current.isLinkExpired).toBe(true));
+      expect(localStorage.getItem("mm-assignment-link123")).toBeNull();
+    });
+
+    it("should set isLinkExpired and clear cache when markLinkExpired is called", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue(mockResponse);
+      const { result } = renderHook(() => useMapLink());
+
+      await result.current.getMapData("link123");
+      expect(localStorage.getItem("mm-assignment-link123")).not.toBeNull();
+
+      act(() => {
+        result.current.markLinkExpired();
+      });
+
+      await waitFor(() => expect(result.current.isLinkExpired).toBe(true));
+      expect(localStorage.getItem("mm-assignment-link123")).toBeNull();
     });
   });
 

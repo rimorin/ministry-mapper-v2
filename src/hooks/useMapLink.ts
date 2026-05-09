@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { callFunction } from "../utils/pocketbase";
+import { callFunction, isUnauthorizedError } from "../utils/pocketbase";
 import { resolveLocalized } from "../utils/resolveLocalized";
 import {
   addressDetails,
@@ -15,7 +15,11 @@ import {
   USER_ACCESS_LEVELS
 } from "../utils/constants";
 import useNotification from "./useNotification";
-import { loadAssignmentCache, saveAssignmentCache } from "../utils/smartsync";
+import {
+  loadAssignmentCache,
+  saveAssignmentCache,
+  deleteAssignmentCache
+} from "../utils/smartsync";
 
 type CachedLinkMap = Omit<LinkMapResponse, "addresses">;
 
@@ -37,6 +41,17 @@ export default function useMapLink() {
   const [mapDetails, setMapDetails] = useState<addressDetails>();
   const [territoryId, setTerritoryId] = useState("");
   const [hasPinnedMessages, setHasPinnedMessages] = useState(false);
+  const linkIdRef = useRef<string | undefined>();
+
+  const markLinkExpired = () => {
+    if (linkIdRef.current) deleteAssignmentCache(linkIdRef.current);
+    setIsLinkExpired(true);
+  };
+
+  useEffect(() => {
+    window.addEventListener("mm-auth-expired", markLinkExpired);
+    return () => window.removeEventListener("mm-auth-expired", markLinkExpired);
+  }, []);
 
   const retrieveLinkData = async (
     id: string,
@@ -113,11 +128,16 @@ export default function useMapLink() {
     linkId: string | undefined
   ): Promise<GetMapDataResult | undefined> => {
     if (!linkId) return;
+    linkIdRef.current = linkId;
     try {
       const result = await retrieveLinkData(linkId);
       if (!result) return;
       return { mapId: result.details.id, preloadedAddresses: result.addresses };
     } catch (error) {
+      if (isUnauthorizedError(error)) {
+        markLinkExpired();
+        return;
+      }
       const cached = loadAssignmentCache<CachedLinkMap>(linkId);
       if (cached) {
         const cachedResult = await retrieveLinkData(linkId, cached);
@@ -143,6 +163,7 @@ export default function useMapLink() {
     territoryId,
     hasPinnedMessages,
     setHasPinnedMessages,
-    getMapData
+    getMapData,
+    markLinkExpired
   };
 }

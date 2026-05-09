@@ -1,5 +1,5 @@
 import { defineConfig } from "vite";
-import react from "@vitejs/plugin-react";
+import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
 import { visualizer } from "rollup-plugin-visualizer";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
@@ -62,10 +62,8 @@ export default defineConfig(() => {
       port: 3000
     },
     plugins: [
+      babel({ presets: [reactCompilerPreset()] }),
       react(),
-      babel({
-        plugins: ["babel-plugin-react-compiler"]
-      }),
       isAnalyze && visualizer(),
       isProduction &&
         sentryVitePlugin({

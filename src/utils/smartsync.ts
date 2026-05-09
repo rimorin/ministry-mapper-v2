@@ -250,6 +250,14 @@ export function saveAssignmentCache(linkId: string, data: unknown): void {
   }
 }
 
+export function deleteAssignmentCache(linkId: string): void {
+  try {
+    localStorage.removeItem(ASSIGNMENT_KEY_PREFIX + linkId);
+  } catch {
+    // localStorage may be unavailable (private browsing)
+  }
+}
+
 export function loadAssignmentCache<T>(linkId: string): T | null {
   try {
     const raw = localStorage.getItem(ASSIGNMENT_KEY_PREFIX + linkId);

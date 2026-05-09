@@ -8,12 +8,14 @@ interface TopNavbarProps {
   title: string;
   tokenEndTime?: number;
   pendingCount?: number;
+  onTokenExpired?: () => void;
 }
 
 const TopNavbar = ({
   title,
   tokenEndTime = 0,
-  pendingCount = 0
+  pendingCount = 0,
+  onTokenExpired
 }: TopNavbarProps) => {
   return (
     <Navbar expand="sm">
@@ -43,7 +45,7 @@ const TopNavbar = ({
           )}
           {tokenEndTime > 0 && (
             <div style={{ flex: 0, marginLeft: 10 }}>
-              <ExpiryBadge endtime={tokenEndTime} />
+              <ExpiryBadge endtime={tokenEndTime} onExpired={onTokenExpired} />
             </div>
           )}
         </Navbar.Brand>
