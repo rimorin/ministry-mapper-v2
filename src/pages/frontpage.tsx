@@ -46,7 +46,7 @@ const FrontPage = () => {
   };
 
   useEffect(() => {
-    authListener((model: AuthModel) => {
+    return authListener((model: AuthModel) => {
       setLoginUser(model);
     });
   }, []);

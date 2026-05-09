@@ -147,6 +147,20 @@ describe("useAdminData", () => {
       });
     });
 
+    it("should reset isLoading to false when getList throws a network error", async () => {
+      vi.mocked(getList).mockRejectedValueOnce(new Error("Network error"));
+
+      const { result } = renderHook(() => useAdminData(defaultProps));
+
+      expect(result.current.isLoading).toBe(true);
+
+      await expect(result.current.fetchData()).rejects.toThrow("Network error");
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+    });
+
     it("should use cached congregation code if valid", async () => {
       const mockRoles = [
         {
@@ -385,6 +399,26 @@ describe("useAdminData", () => {
 
     it("should set loading state correctly during process", async () => {
       const { result } = renderHook(() => useAdminData(defaultProps));
+
+      await act(async () => {
+        await result.current.loadAllCongregationData("cong-1");
+      });
+
+      await waitFor(() => {
+        expect(result.current.isLoading).toBe(false);
+      });
+    });
+
+    it("should reset isLoading to false even when checkForMaps throws", async () => {
+      vi.mocked(getPaginatedList).mockRejectedValueOnce(
+        new Error("Server error")
+      );
+
+      const { result } = renderHook(() => useAdminData(defaultProps));
+
+      act(() => {
+        result.current.setIsLoading(true);
+      });
 
       await act(async () => {
         await result.current.loadAllCongregationData("cong-1");

@@ -79,13 +79,19 @@ export default function useAdminData({
   const congregationOptionsRef = useRef<Record<string, RecordModel[]>>({});
   const congregationTerritoriesRef = useRef<Record<string, RecordModel[]>>({});
   const fetchData = ignoreAbort(async () => {
-    const userRoles = await getList("roles", {
-      filter: `user="${userId}"`,
-      expand:
-        "congregation, congregation.options_via_congregation, congregation.territories_via_congregation",
-      fields: PB_FIELDS.ROLES,
-      requestKey: `user-roles-${userId}`
-    });
+    let userRoles;
+    try {
+      userRoles = await getList("roles", {
+        filter: `user="${userId}"`,
+        expand:
+          "congregation, congregation.options_via_congregation, congregation.territories_via_congregation",
+        fields: PB_FIELDS.ROLES,
+        requestKey: `user-roles-${userId}`
+      });
+    } catch (err) {
+      setIsLoading(false);
+      throw err;
+    }
     if (userRoles.length === 0) {
       setIsLoading(false);
       setIsUnauthorised(true);
@@ -212,12 +218,14 @@ export default function useAdminData({
     setIsLoading(true);
     setUserAccessLevel(congregationAccessRef.current[congregationCode]);
 
-    await Promise.all([
-      fetchCongregationData(congregationCode),
-      checkForMaps(congregationCode)
-    ]);
-
-    setIsLoading(false);
+    try {
+      await Promise.all([
+        fetchCongregationData(congregationCode),
+        checkForMaps(congregationCode)
+      ]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
