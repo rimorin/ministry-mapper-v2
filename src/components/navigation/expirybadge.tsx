@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
@@ -47,11 +47,16 @@ const formatDisplay = ({
 
 interface ExpiryBadgeProps {
   endtime: number;
+  onExpired?: () => void;
 }
 
-const ExpiryBadge = ({ endtime }: ExpiryBadgeProps) => {
+const ExpiryBadge = ({ endtime, onExpired }: ExpiryBadgeProps) => {
   const { t } = useTranslation();
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(endtime));
+  const onExpiredRef = useRef(onExpired);
+  useEffect(() => {
+    onExpiredRef.current = onExpired;
+  });
 
   useEffect(() => {
     if (!endtime) return;
@@ -73,6 +78,7 @@ const ExpiryBadge = ({ endtime }: ExpiryBadgeProps) => {
         const remaining = tick();
         if (remaining <= 0) {
           clearInterval(id);
+          onExpiredRef.current?.();
           return;
         }
         // Switch interval granularity when crossing the critical threshold
