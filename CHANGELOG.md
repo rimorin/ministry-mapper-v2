@@ -1,3 +1,17 @@
+# [1.37.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.36.3...v1.37.0) (2026-05-10)
+
+
+### Bug Fixes
+
+* enforce expired link access control across all entry points ([cd595a2](https://github.com/rimorin/ministry-mapper-v2/commit/cd595a268e5266b06b63374065fc3cf9c69b2caa))
+* reset isLoading on fetchData error to prevent stuck loading spinner ([199746e](https://github.com/rimorin/ministry-mapper-v2/commit/199746efe2d4a1e338386346ba52d9c0e39d376b))
+
+
+### Features
+
+* reduce RTT by fetching map link data via single /link/map endpoint ([0b61187](https://github.com/rimorin/ministry-mapper-v2/commit/0b6118724acec4a8b88a80891030a5a85f4dc676))
+* update map sequence handling to use callFunction for batch updates ([a7c084e](https://github.com/rimorin/ministry-mapper-v2/commit/a7c084e47261fa745896af42fbcffb340c45ca64))
+
 ## [1.36.3](https://github.com/rimorin/ministry-mapper-v2/compare/v1.36.2...v1.36.3) (2026-05-07)
 
 
