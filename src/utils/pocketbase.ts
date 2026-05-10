@@ -17,6 +17,20 @@ const { VITE_POCKETBASE_URL } = import.meta.env;
  */
 const pb = new PocketBase(VITE_POCKETBASE_URL);
 
+// Auto-logout when the admin JWT expires mid-session.
+// Checks the outgoing request headers directly: if PB_SECURITY_HEADER_KEY is present,
+// this is a publisher map request — a 401 there means the link expired, not the admin
+// session, so we leave the admin auth store untouched.
+pb.afterSend = (response, data, options?: SendOptions) => {
+  const isPublisherRequest = !!(options?.headers as Record<string, string>)?.[
+    PB_SECURITY_HEADER_KEY
+  ];
+  if (response.status === 401 && pb.authStore.record && !isPublisherRequest) {
+    pb.authStore.clear();
+  }
+  return data;
+};
+
 // Statuses that indicate a transient failure safe to retry.
 // Defined at module level to avoid re-allocating the Set on every withRetry call.
 const RETRYABLE_STATUSES = new Set([0, 408, 429]);
@@ -158,6 +172,15 @@ const requestPasswordReset = async (email?: string) => {
  */
 const cleanupSession = () => {
   pb.authStore.clear();
+};
+
+/**
+ * Refreshes the current auth token, extending the session by another token duration.
+ * Call this on admin page load so returning users get a rolling session window
+ * instead of a fixed one from their last login.
+ */
+const refreshAuth = () => {
+  return pb.collection("users").authRefresh();
 };
 
 /**
@@ -378,15 +401,6 @@ const getDataById = async (
 };
 
 /**
- * Fetches the first item in a collection that matches a query.
- *
- * @param collectionName - The name of the collection to query
- * @param query - The filter query to apply
- * @param options - Optional parameters for the list operation
- * @returns The first item that matches the query
- * @throws Will throw any errors that occur
- */
-/**
  * Retrieves the first item from a collection that matches the specified query.
  *
  * @param collectionName - The name of the collection to query
@@ -510,6 +524,7 @@ export {
   getUser,
   requestPasswordReset,
   cleanupSession,
+  refreshAuth,
   verifyEmail,
   requestOTP,
   confirmVerification,

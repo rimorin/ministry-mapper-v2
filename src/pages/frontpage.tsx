@@ -1,10 +1,10 @@
-import { use, useEffect, useState, lazy } from "react";
+import { use, useEffect, useRef, useState, lazy } from "react";
 import { Container, Navbar } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 
 import NavBarBranding from "../components/navigation/branding";
 import { StateContext } from "../components/utils/context";
-import { authListener, getUser } from "../utils/pocketbase";
+import { authListener, getUser, refreshAuth } from "../utils/pocketbase";
 
 import VerificationPage from "../components/navigation/verification";
 import { AuthModel } from "pocketbase";
@@ -16,8 +16,8 @@ import ThemeToggle from "../components/navigation/themetoggle";
 import ReleaseHistoryBtn from "../components/navigation/releasehistorybtn";
 import LanguageBtn from "../components/navigation/languagebtn";
 import SuspenseComponent from "../components/utils/suspense";
-const { VITE_ABOUT_URL } = import.meta.env;
 
+const { VITE_ABOUT_URL } = import.meta.env;
 const AboutURL = (VITE_ABOUT_URL ||
   "https://doc.ministry-mapper.com/user-guide") as string;
 
@@ -26,29 +26,28 @@ const LoginComponent = lazy(() => import("./signin"));
 const ForgotComponent = lazy(() => import("./forgot"));
 const Admin = SuspenseComponent(lazy(() => import("./admin/index")));
 
+const authForms: Partial<Record<string, React.ReactNode>> = {
+  forgot: <ForgotComponent />,
+  signup: <SignupComponent />
+};
+
 const FrontPage = () => {
   const { t } = useTranslation();
-  const context = use(StateContext);
+  const { frontPageMode } = use(StateContext);
   const { currentLanguage, changeLanguage, languageOptions } =
     use(LanguageContext);
-
   const { showLanguageSelector, toggleLanguageSelector } = useUIState();
   const [loginUser, setLoginUser] = useState<AuthModel>(getUser() as AuthModel);
-  const { frontPageMode } = context;
+  const loginUserRef = useRef(loginUser);
 
   const handleLanguageSelect = (language: string) => {
     changeLanguage(language);
     toggleLanguageSelector();
   };
 
-  const handleOpenAbout = () => {
-    window.open(AboutURL);
-  };
-
   useEffect(() => {
-    return authListener((model: AuthModel) => {
-      setLoginUser(model);
-    });
+    if (loginUserRef.current) refreshAuth().catch(() => {});
+    return authListener((model: AuthModel) => setLoginUser(model));
   }, []);
 
   if (loginUser && !loginUser.verified) {
@@ -57,18 +56,6 @@ const FrontPage = () => {
 
   if (loginUser) {
     return <Admin user={loginUser} />;
-  }
-
-  let componentToRender;
-  switch (frontPageMode) {
-    case "forgot":
-      componentToRender = <ForgotComponent />;
-      break;
-    case "signup":
-      componentToRender = <SignupComponent />;
-      break;
-    default:
-      componentToRender = <LoginComponent />;
   }
 
   return (
@@ -88,7 +75,7 @@ const FrontPage = () => {
               className="m-1"
               size="sm"
               variant="outline-primary"
-              onClick={handleOpenAbout}
+              onClick={() => window.open(AboutURL)}
               label={t("navigation.about", "About")}
             />
             <ReleaseHistoryBtn className="m-1" />
@@ -102,7 +89,7 @@ const FrontPage = () => {
         className="d-flex align-items-center justify-content-center flex-grow-1"
         style={{ overflow: "auto" }}
       >
-        {componentToRender}
+        {authForms[frontPageMode] ?? <LoginComponent />}
       </Container>
     </div>
   );
