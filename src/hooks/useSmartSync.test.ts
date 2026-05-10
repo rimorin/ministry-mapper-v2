@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
+import { ClientResponseError } from "pocketbase";
 import { useSmartSync, isPermanentError } from "./useSmartSync";
 import type { QueuedOp } from "../utils/interface";
 
@@ -29,7 +30,9 @@ vi.mock("../utils/addressUpdate", () => ({
 const mockGetOne = vi.hoisted(() => vi.fn());
 
 vi.mock("../utils/pocketbase", () => ({
-  pb: { collection: () => ({ getOne: mockGetOne }) }
+  pb: { collection: () => ({ getOne: mockGetOne }) },
+  isUnauthorizedError: (error: unknown) =>
+    error instanceof ClientResponseError && error.status === 401
 }));
 
 import { useNetworkStatusContext } from "../components/middlewares/networkstatuscontext";
@@ -566,7 +569,9 @@ describe("useSmartSync", () => {
   describe("flush — 401 auth expired", () => {
     it("keeps the op in queue (does not call removeFromQueue) on 401", async () => {
       vi.mocked(getQueue).mockResolvedValue([makeOp()]);
-      vi.mocked(batchUpdateAddress).mockRejectedValueOnce({ status: 401 });
+      vi.mocked(batchUpdateAddress).mockRejectedValueOnce(
+        new ClientResponseError({ status: 401, response: {} })
+      );
       renderHook(() => useSmartSync({ mapId: "map-1" }));
       await runAllTimers();
       expect(incrementFailCount).not.toHaveBeenCalled();
@@ -581,7 +586,9 @@ describe("useSmartSync", () => {
         makeOp({ addressId: "a2", opKey: "map-1:a2" })
       ]);
       // Both ops would fail with 401, but we break after the first
-      vi.mocked(batchUpdateAddress).mockRejectedValue({ status: 401 });
+      vi.mocked(batchUpdateAddress).mockRejectedValue(
+        new ClientResponseError({ status: 401, response: {} })
+      );
       renderHook(() => useSmartSync({ mapId: "map-1" }));
       await runAllTimers();
       expect(listener).toHaveBeenCalledTimes(1);
@@ -592,7 +599,9 @@ describe("useSmartSync", () => {
 
     it("does not schedule a retry on 401", async () => {
       vi.mocked(getQueue).mockResolvedValue([makeOp()]);
-      vi.mocked(batchUpdateAddress).mockRejectedValueOnce({ status: 401 });
+      vi.mocked(batchUpdateAddress).mockRejectedValueOnce(
+        new ClientResponseError({ status: 401, response: {} })
+      );
       renderHook(() => useSmartSync({ mapId: "map-1" }));
       await runAllTimers();
       // batchUpdateAddress is called only once — no retry attempt
@@ -1016,7 +1025,9 @@ describe("useSmartSync", () => {
 
     it("clears in-flight marker when a server write fails with 401", async () => {
       vi.mocked(getQueue).mockResolvedValue([makeOp()]);
-      vi.mocked(batchUpdateAddress).mockRejectedValueOnce({ status: 401 });
+      vi.mocked(batchUpdateAddress).mockRejectedValueOnce(
+        new ClientResponseError({ status: 401, response: {} })
+      );
       renderHook(() => useSmartSync({ mapId: "map-1" }));
       await runAllTimers();
       expect(clearInFlight).toHaveBeenCalledWith("map-1:addr-1");

@@ -25,7 +25,7 @@ import {
   batchUpdateAddress,
   batchCreateAddress
 } from "../utils/addressUpdate";
-import { pb } from "../utils/pocketbase";
+import { pb, isUnauthorizedError } from "../utils/pocketbase";
 import type {
   QueuedOp,
   WriteUpdateParams,
@@ -62,10 +62,6 @@ function getErrorStatus(error: unknown): number | undefined {
 export function isPermanentError(error: unknown): boolean {
   const s = getErrorStatus(error);
   return s === 403 || s === 404 || s === 422;
-}
-
-function is401Error(error: unknown): boolean {
-  return getErrorStatus(error) === 401;
 }
 
 /**
@@ -323,7 +319,7 @@ export function useSmartSync(scope?: SmartSyncScope): UseSmartSyncResult {
             } catch {
               // IDB unavailable — op stays queued; retry on next flush.
             }
-            if (is401Error(error)) {
+            if (isUnauthorizedError(error)) {
               // Auth expired — stop processing and leave all remaining ops queued.
               authExpired = true;
             } else if (op.kind === "create" && getErrorStatus(error) === 400) {

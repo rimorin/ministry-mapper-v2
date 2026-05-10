@@ -41,7 +41,7 @@ export default function useMapLink() {
   const [mapDetails, setMapDetails] = useState<addressDetails>();
   const [territoryId, setTerritoryId] = useState("");
   const [hasPinnedMessages, setHasPinnedMessages] = useState(false);
-  const linkIdRef = useRef<string | undefined>();
+  const linkIdRef = useRef<string | undefined>(undefined);
 
   const markLinkExpired = () => {
     if (linkIdRef.current) deleteAssignmentCache(linkIdRef.current);

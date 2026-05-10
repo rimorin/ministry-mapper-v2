@@ -20,7 +20,7 @@ vi.mock("pocketbase", () => {
   return { default: PocketBaseMock };
 });
 
-import { withRetry } from "./pocketbase";
+import { withRetry, pb } from "./pocketbase";
 
 describe("withRetry", () => {
   beforeEach(() => {
@@ -209,5 +209,60 @@ describe("withRetry", () => {
       // retries=3 → 3 attempts → 2 inter-attempt delays, NOT 3
       expect(delays).toHaveLength(2);
     });
+  });
+});
+
+describe("afterSend interceptor", () => {
+  beforeEach(() => {
+    vi.mocked(pb.authStore.clear).mockClear();
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (pb.authStore as any).record = null;
+  });
+
+  const fakeResponse = (status: number) => ({ status }) as Response;
+  const adminOptions = { headers: {} };
+  const publisherOptions = { headers: { "link-id": "abc123" } };
+
+  it("clears authStore on 401 when admin is logged in", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (pb.authStore as any).record = { id: "admin123" };
+
+    pb.afterSend!(fakeResponse(401), {}, adminOptions);
+
+    expect(pb.authStore.clear).toHaveBeenCalledOnce();
+  });
+
+  it("does not clear authStore on 401 when no admin is logged in", () => {
+    pb.afterSend!(fakeResponse(401), {}, adminOptions);
+
+    expect(pb.authStore.clear).not.toHaveBeenCalled();
+  });
+
+  it("does not clear authStore on 401 when the request carries the publisher security header", () => {
+    // Simulates: admin logged in on another tab → their JWT is in localStorage →
+    // map page reads it → publisher link returns 401 → must NOT log out the admin
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (pb.authStore as any).record = { id: "admin123" };
+
+    pb.afterSend!(fakeResponse(401), {}, publisherOptions);
+
+    expect(pb.authStore.clear).not.toHaveBeenCalled();
+  });
+
+  it("does not clear authStore for non-401 responses even when admin is logged in", () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (pb.authStore as any).record = { id: "admin123" };
+
+    pb.afterSend!(fakeResponse(200), {}, adminOptions);
+    pb.afterSend!(fakeResponse(403), {}, adminOptions);
+    pb.afterSend!(fakeResponse(500), {}, adminOptions);
+
+    expect(pb.authStore.clear).not.toHaveBeenCalled();
+  });
+
+  it("returns data unchanged", () => {
+    const data = { items: [1, 2, 3] };
+    const result = pb.afterSend!(fakeResponse(200), data, adminOptions);
+    expect(result).toBe(data);
   });
 });
