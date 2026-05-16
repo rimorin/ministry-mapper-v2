@@ -1,21 +1,14 @@
-import { use, useId } from "react";
-import { Form } from "react-bootstrap";
-import CreatableSelect from "react-select/creatable";
+import { useId } from "react";
 import { useTranslation } from "react-i18next";
-import { ThemeContext } from "../utils/context";
-import { getReactSelectStyles } from "../../utils/helpers/reactSelectStyles";
+import { Label } from "@/components/ui/label";
+import { TagInput } from "@/components/ui/tag-input";
 import useNotification from "../../hooks/useNotification";
 import { PROPERTY_CODE_PATTERN } from "../../utils/helpers/processpropertyno";
 
-interface TagOption {
-  value: string;
-  label: string;
-}
-
 interface TagFieldProps {
   label: string;
-  value: TagOption[];
-  onChange: (newValue: readonly TagOption[] | null) => void;
+  value: string[];
+  onChange: (tags: string[]) => void;
   placeholder?: string;
   noOptionsMessage?: string;
   formatCreateLabel?: (inputValue: string) => string;
@@ -28,97 +21,53 @@ const TagField = ({
   value,
   onChange,
   placeholder,
-  noOptionsMessage,
-  formatCreateLabel,
   allowedPattern = PROPERTY_CODE_PATTERN,
   helpText
 }: TagFieldProps) => {
-  const { actualTheme } = use(ThemeContext);
   const { notifyInfo } = useNotification();
   const { t } = useTranslation();
   const id = useId();
   const labelId = `tagfield-label-${id}`;
+  const inputId = `tagfield-input-${id}`;
   const helpTextId = `tagfield-help-${id}`;
 
-  const customStyles = getReactSelectStyles<TagOption, true>({
-    isDark: actualTheme === "dark"
-  });
+  const handleAttemptAdd = (raw: string): string | null => {
+    const cleaned = raw.trim().replace(allowedPattern, "");
 
-  const handleChange = (newValue: readonly TagOption[] | null) => {
-    if (!newValue) {
-      onChange(null);
-      return;
+    if (cleaned.length === 0) {
+      if (raw.trim().length > 0) notifyInfo(t("tagfield.invalidCharacters"));
+      return null;
     }
-
-    const lastTag = newValue[newValue.length - 1];
-    const originalValue = lastTag?.value || "";
-    const cleanValue = originalValue.trim().replace(allowedPattern, "");
-
-    // Check if the new tag was modified during sanitization
-    if (
-      newValue.length > value.length &&
-      originalValue !== cleanValue &&
-      originalValue.length > 0
-    ) {
-      if (cleanValue.length === 0) {
-        notifyInfo(t("tagfield.invalidCharacters"));
-        return;
-      }
-      if (originalValue !== cleanValue) {
-        notifyInfo(t("tagfield.charactersSanitized", { value: cleanValue }));
-      }
+    if (raw !== cleaned) {
+      notifyInfo(t("tagfield.charactersSanitized", { value: cleaned }));
     }
-
-    const processedTags = newValue
-      .map((tag) => {
-        const processed = tag.value.trim().replace(allowedPattern, "");
-        return { value: processed, label: processed };
-      })
-      .filter((tag) => tag.value);
-
-    // Check for duplicates
-    const uniqueTags = processedTags.filter(
-      (tag, index, self) =>
-        index === self.findIndex((t) => t.value === tag.value)
-    );
-
-    if (uniqueTags.length < processedTags.length) {
+    if (value.includes(cleaned)) {
       notifyInfo(t("tagfield.duplicatesRemoved"));
+      return null;
     }
-
-    onChange(uniqueTags);
-  };
-
-  const handleKeyDown = (event: React.KeyboardEvent) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-    }
+    return cleaned;
   };
 
   return (
-    <Form.Group className="mb-3" onKeyDown={handleKeyDown}>
-      <Form.Label id={labelId}>{label}</Form.Label>
-      <CreatableSelect<TagOption, true>
-        isMulti
-        isClearable
+    <div className="flex flex-col gap-1.5">
+      <Label id={labelId} htmlFor={inputId}>
+        {label}
+      </Label>
+      <TagInput
+        id={inputId}
         value={value}
-        onChange={handleChange}
+        onChange={onChange}
+        onAttemptAdd={handleAttemptAdd}
         placeholder={placeholder}
-        noOptionsMessage={() => noOptionsMessage || ""}
-        formatCreateLabel={formatCreateLabel}
-        components={{
-          DropdownIndicator: null
-        }}
-        styles={customStyles}
         aria-labelledby={labelId}
         aria-describedby={helpText ? helpTextId : undefined}
       />
       {helpText && (
-        <Form.Text id={helpTextId} className="text-muted">
+        <p id={helpTextId} className="text-xs text-muted-foreground">
           {helpText}
-        </Form.Text>
+        </p>
       )}
-    </Form.Group>
+    </div>
   );
 };
 

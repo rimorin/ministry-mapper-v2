@@ -1,6 +1,5 @@
 const addHours = (numOfHours: number, date = new Date()) => {
-  date.setTime(date.getTime() + numOfHours * 60 * 60 * 1000);
-  return date.toISOString();
+  return new Date(date.getTime() + numOfHours * 60 * 60 * 1000).toISOString();
 };
 
 export default addHours;

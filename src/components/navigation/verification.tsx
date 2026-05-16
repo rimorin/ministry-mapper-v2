@@ -1,4 +1,5 @@
-import { Container, Card, Spinner } from "react-bootstrap";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
+import { Spinner } from "@/components/ui/spinner";
 import { userInterface } from "../../utils/interface";
 import UseAnotherButton from "./useanother";
 import { useState } from "react";
@@ -34,31 +35,31 @@ const VerificationPage = ({ user }: userInterface) => {
   const handleClick = () => cleanupSession();
 
   return (
-    <Container className="container-main">
-      <Card className="card-main">
-        <Card.Body className="text-center">
-          <Card.Img
+    <div className="flex h-[85dvh] items-center justify-center">
+      <Card className="card-main gap-0 py-0">
+        <CardContent className="pt-6 text-center">
+          <img
             alt={t("branding.logo", "Ministry Mapper logo")}
-            className="mm-logo mx-auto d-block"
+            className="mx-auto block w-[30%]"
             src={getAssetUrl("android-chrome-192x192.png")}
           />
-        </Card.Body>
-        <Card.Body>
-          <Card.Title className="text-center">
+        </CardContent>
+        <CardContent className="text-center">
+          <CardTitle>
             {t(
               "auth.verifyEmailMessage",
               "Please verify your email address to continue."
             )}
-          </Card.Title>
-          <Card.Text className="text-center mb-4">
+          </CardTitle>
+          <p className="mb-4 mt-2 text-center text-sm text-muted-foreground">
             {t("auth.didNotReceiveEmail", "Didn't receive verification email?")}
-          </Card.Text>
+          </p>
           <div className="text-center">
             {isSending ? (
-              <Spinner size="sm" />
+              <Spinner aria-hidden="true" />
             ) : (
               <span
-                className="resend-text"
+                className="mb-6 inline-block cursor-pointer rounded-lg px-3 py-1.5 text-primary transition-[background-color,color] duration-200 ease-in hover:bg-primary/10 hover:text-primary/80 hover:underline"
                 onClick={handleResendMail}
                 role="button"
                 tabIndex={0}
@@ -73,10 +74,10 @@ const VerificationPage = ({ user }: userInterface) => {
               </span>
             )}
           </div>
-        </Card.Body>
+        </CardContent>
         <UseAnotherButton handleClick={handleClick} />
       </Card>
-    </Container>
+    </div>
   );
 };
 

@@ -1,11 +1,19 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "../../utils/test";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import ModalUnitTitle from "./title";
+
+const renderInDialog = (ui: React.ReactElement) =>
+  render(
+    <Dialog open>
+      <DialogContent>{ui}</DialogContent>
+    </Dialog>
+  );
 
 describe("ModalUnitTitle", () => {
   describe("single story territory", () => {
     it("should display unit and name for single type", () => {
-      render(
+      renderInDialog(
         <ModalUnitTitle
           unit="12A"
           floor={1}
@@ -18,7 +26,7 @@ describe("ModalUnitTitle", () => {
     });
 
     it("should display unit and name for other types", () => {
-      render(
+      renderInDialog(
         <ModalUnitTitle unit="456" floor={1} name="Main Street" type="other" />
       );
 
@@ -28,56 +36,55 @@ describe("ModalUnitTitle", () => {
 
   describe("multiple stories territory", () => {
     it("should display name and floor-unit for multi type", () => {
-      render(
+      renderInDialog(
         <ModalUnitTitle unit="123" floor={5} name="Block 123" type="multi" />
       );
 
-      expect(screen.getByText("Block 123")).toBeInTheDocument();
-      expect(screen.getByText("# 05 - 123")).toBeInTheDocument();
+      expect(screen.getByText("Block 123 — # 05 - 123")).toBeInTheDocument();
     });
 
     it("should pad floor number correctly", () => {
-      render(
+      renderInDialog(
         <ModalUnitTitle unit="456" floor={3} name="Tower A" type="multi" />
       );
 
-      expect(screen.getByText("Tower A")).toBeInTheDocument();
-      expect(screen.getByText("# 03 - 456")).toBeInTheDocument();
+      expect(screen.getByText("Tower A — # 03 - 456")).toBeInTheDocument();
     });
 
     it("should handle double-digit floors", () => {
-      render(
+      renderInDialog(
         <ModalUnitTitle unit="789" floor={12} name="High Rise" type="multi" />
       );
 
-      expect(screen.getByText("High Rise")).toBeInTheDocument();
-      expect(screen.getByText("# 12 - 789")).toBeInTheDocument();
+      expect(screen.getByText("High Rise — # 12 - 789")).toBeInTheDocument();
     });
   });
 
-  describe("modal header", () => {
-    it("should render within Modal.Header", () => {
-      const { container } = render(
+  describe("dialog structure", () => {
+    it("should render within DialogHeader", () => {
+      renderInDialog(
         <ModalUnitTitle unit="1A" floor={1} name="Test" type="single" />
       );
 
-      const header = container.querySelector(".modal-header");
-      expect(header).toBeInTheDocument();
+      expect(
+        document.body.querySelector('[data-slot="dialog-header"]')
+      ).toHaveClass("text-left");
     });
 
-    it("should have space-between justification", () => {
-      const { container } = render(
+    it("should render a separator after the title", () => {
+      renderInDialog(
         <ModalUnitTitle unit="1A" floor={1} name="Test" type="single" />
       );
 
-      const header = container.querySelector('[style*="space-between"]');
-      expect(header).toBeInTheDocument();
+      expect(
+        document.body.querySelector('[data-slot="separator"]')
+      ).toBeInTheDocument();
     });
   });
 
-  describe("Modal.Title", () => {
+  describe("DialogTitle", () => {
     it("should contain the title content", () => {
-      const { container } = render(
+      renderInDialog(
         <ModalUnitTitle
           unit="9C"
           floor={1}
@@ -86,9 +93,10 @@ describe("ModalUnitTitle", () => {
         />
       );
 
-      const title = container.querySelector(".modal-title");
+      const title = document.body.querySelector('[data-slot="dialog-title"]');
       expect(title).toBeInTheDocument();
       expect(title).toHaveTextContent("9C, Garden Estate");
+      expect(title).toHaveClass("truncate", "leading-snug");
     });
   });
 });

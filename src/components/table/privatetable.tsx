@@ -1,8 +1,12 @@
+import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { territorySingleProps } from "../../utils/interface";
 import { DEFAULT_AGGREGATES, USER_ACCESS_LEVELS } from "../../utils/constants";
-import { Row, Col, Card } from "react-bootstrap";
 import AddressStatus, { PendingSyncDot } from "./address";
 import ComponentAuthorizer from "../navigation/authorizer";
+import * as m from "motion/react-m";
+import { diagonalCell } from "@/lib/motion";
+
 const PrivateTerritoryTable = ({
   houses,
   policy,
@@ -11,24 +15,28 @@ const PrivateTerritoryTable = ({
   handleAddMoreClick,
   pendingAddressIds
 }: territorySingleProps) => {
-  const mapId = addressDetails?.id;
   const aggregates = addressDetails?.aggregates;
   return (
     <div
-      key={`territory-table-${mapId}`}
-      className={`${policy.isFromAdmin() ? "map-body-admin" : "map-body"} p-2`}
+      className={cn(
+        policy.isFromAdmin() ? "map-body-admin" : "h-full overflow-auto",
+        "p-2"
+      )}
     >
-      <Row xs={4} className="g-1">
+      <div className="grid grid-cols-4 gap-1">
         {houses &&
-          houses.units.map((element) => (
-            <Col key={`house-column-${element.id}`}>
-              <Card>
-                <Card.Body
-                  style={{
-                    padding: "0",
-                    textAlign: "center",
-                    position: "relative"
-                  }}
+          houses.units.map((element, index) => (
+            <m.div
+              key={`house-column-${element.id}`}
+              className="min-w-0"
+              custom={{ row: Math.floor(index / 4), col: index % 4 }}
+              variants={diagonalCell}
+              initial="hidden"
+              animate="show"
+            >
+              <Card className="overflow-visible gap-0 py-0">
+                <CardContent
+                  className="relative p-0 text-center transition-colors duration-200"
                   onClick={handleHouseUpdate}
                   data-id={element.id}
                   data-unitno={element.number}
@@ -41,25 +49,23 @@ const PrivateTerritoryTable = ({
                   data-sequence={element.sequence}
                 >
                   {pendingAddressIds?.has(element.id) && <PendingSyncDot />}
-                  <Card.Header
-                    style={{
-                      padding: "0.10rem",
-                      overflow: "hidden",
-                      whiteSpace: "nowrap",
-                      textOverflow: "ellipsis"
-                    }}
+                  <div
+                    className="overflow-hidden px-[0.10rem] py-[0.10rem] text-ellipsis whitespace-nowrap leading-tight font-bold fluid-text"
                     title={element.number}
-                    className="fluid-bolding fluid-text"
                   >
                     {element.number}
-                  </Card.Header>
+                  </div>
                   <div
-                    className={`landed-unit fluid-bolding fluid-text ${policy?.getUnitColor(
-                      element,
-                      aggregates?.value || DEFAULT_AGGREGATES.value
-                    )}`}
+                    className={cn(
+                      "flex h-12 flex-wrap items-center justify-center gap-[0.15rem] overflow-hidden p-[0.2rem] font-bold fluid-text transition-colors duration-200 border-t border-border",
+                      policy?.getUnitColor(
+                        element,
+                        aggregates?.value || DEFAULT_AGGREGATES.value
+                      )
+                    )}
                   >
                     <AddressStatus
+                      key={`${element.status}-${element.nhcount}`}
                       type={element.type}
                       note={element.note}
                       status={element.status}
@@ -67,41 +73,28 @@ const PrivateTerritoryTable = ({
                       defaultOption={policy?.defaultType}
                     />
                   </div>
-                </Card.Body>
+                </CardContent>
               </Card>
-            </Col>
+            </m.div>
           ))}
         <ComponentAuthorizer
           requiredPermission={USER_ACCESS_LEVELS.PUBLISHER.CODE}
           userPermission={policy.userRole}
         >
-          <Col key="add-more-cell">
+          <div className="min-w-0">
             <Card
               onClick={() => handleAddMoreClick?.()}
-              style={{ minHeight: "100%" }}
-              className="add-more-card"
+              className="min-h-full cursor-pointer overflow-visible gap-0 py-0 opacity-60 transition-[opacity,transform] duration-150 ease-in-out hover:opacity-100 active:scale-[0.97]"
             >
-              <Card.Body
-                style={{
-                  padding: "0",
-                  textAlign: "center",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  minHeight: "3.5rem"
-                }}
-              >
-                <span
-                  className="text-muted fluid-text"
-                  style={{ lineHeight: 1 }}
-                >
+              <CardContent className="flex min-h-[3.5rem] items-center justify-center p-0 text-center">
+                <span className="text-muted-foreground fluid-text leading-none">
                   +
                 </span>
-              </Card.Body>
+              </CardContent>
             </Card>
-          </Col>
+          </div>
         </ComponentAuthorizer>
-      </Row>
+      </div>
     </div>
   );
 };

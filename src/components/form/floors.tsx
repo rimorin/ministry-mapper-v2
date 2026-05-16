@@ -1,6 +1,7 @@
-import { Form } from "react-bootstrap";
+import type { ChangeEvent } from "react";
+import { Label } from "@/components/ui/label";
 import { MIN_START_FLOOR, MAX_TOP_FLOOR } from "../../utils/constants";
-import { FloorProps } from "../../utils/interface";
+import type { FloorProps } from "../../utils/interface";
 import { useTranslation } from "react-i18next";
 
 const suffixes = ["th", "st", "nd", "rd"];
@@ -12,27 +13,30 @@ const FloorField = ({ handleChange, changeValue }: FloorProps) => {
     const v = n % 100;
     return n + (suffixes[(v - 20) % 10] || suffixes[v] || suffixes[0]);
   };
+
   return (
-    <Form.Group className="mb-3" controlId="formBasicFloorRange">
-      <Form.Label>{t("floors.numberOfFloors", "No. of floors")}</Form.Label>
-      <div className="d-flex align-items-center gap-3">
-        <Form.Range
+    <div className="flex flex-col gap-2">
+      <Label htmlFor="formBasicFloorRange">
+        {t("floors.numberOfFloors", "No. of floors")}
+      </Label>
+      <div className="flex items-center gap-3">
+        <input
+          id="formBasicFloorRange"
+          type="range"
           min={MIN_START_FLOOR}
           max={MAX_TOP_FLOOR}
           value={changeValue}
-          onChange={handleChange}
+          onChange={(e) =>
+            handleChange?.(e as unknown as ChangeEvent<HTMLElement>)
+          }
+          className="flex-1 h-1.5 cursor-pointer accent-primary"
+          aria-label={t("floors.numberOfFloors", "No. of floors")}
         />
-        <Form.Text
-          className="text-muted d-flex align-items-center fluid-text"
-          style={{
-            minWidth: "50px",
-            paddingBottom: "0.25rem"
-          }}
-        >
+        <span className="min-w-[3rem] text-right text-sm tabular-nums text-muted-foreground">
           {getOrdinalNumber(changeValue)}
-        </Form.Text>
+        </span>
       </div>
-    </Form.Group>
+    </div>
   );
 };
 

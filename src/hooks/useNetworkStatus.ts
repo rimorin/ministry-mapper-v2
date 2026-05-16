@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { isAbortError } from "../utils/pocketbase";
 
 interface NetworkStatus {
   isOnline: boolean;
@@ -122,8 +123,6 @@ export function useNetworkStatus() {
       retryDelayRef.current = effectiveIntervalSlow;
     };
 
-    // Updates slow-detection counters, derives the new isSlow state, and sets
-    // the adaptive polling interval. Returns the new isSlow value.
     // Relies on FAST_CONFIRM_COUNT === 1: any single fast response exits slow mode.
     // Update this function if FAST_CONFIRM_COUNT ever increases.
     const recordSample = (
@@ -205,11 +204,11 @@ export function useNetworkStatus() {
         return true;
       } catch (error) {
         clearTimeout(timeoutId);
-        if ((error as Error).name === "AbortError" && timedOut) {
+        if (isAbortError(error) && timedOut) {
           // 5 s timeout: request is definitely slow — count as a slow sample.
           // Keep isOnline: true since timeout ≠ unreachable.
           recordSample(true, true);
-        } else if ((error as Error).name !== "AbortError") {
+        } else if (!isAbortError(error)) {
           if (inWakeGraceRef.current) {
             // First TCP-level failure after system wake: the OS network stack
             // may not be ready for new connections yet. Suppress goOffline()

@@ -1,38 +1,34 @@
-import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { describe, it, expect } from "vitest";
+import { render, screen } from "../../utils/test";
 import ModeToggle from "./maptoggle";
-
-vi.mock("../../utils/helpers/assetpath", () => ({
-  getAssetUrl: vi.fn((path: string) => `/assets/${path}`)
-}));
 
 describe("ModeToggle", () => {
   it("should render list icon when in map view", () => {
     render(<ModeToggle isMapView={true} />);
-    const icon = screen.getByRole("img", { name: /list view/i });
+    const icon = screen.getByLabelText(/list view/i);
     expect(icon).toBeInTheDocument();
-    expect(icon).toHaveAttribute("src", "/assets/list.svg");
+    expect(icon).toHaveClass("lucide-list");
   });
 
   it("should render map icon when in list view", () => {
     render(<ModeToggle isMapView={false} />);
-    const icon = screen.getByRole("img", { name: /map view/i });
+    const icon = screen.getByLabelText(/map view/i);
     expect(icon).toBeInTheDocument();
-    expect(icon).toHaveAttribute("src", "/assets/maplocation.svg");
+    expect(icon).toHaveClass("lucide-navigation");
   });
 
   it("should have correct dimensions", () => {
     render(<ModeToggle isMapView={true} />);
-    const icon = screen.getByRole("img");
+    const icon = screen.getByLabelText(/list view/i);
     expect(icon).toHaveAttribute("width", "24");
     expect(icon).toHaveAttribute("height", "24");
   });
 
   it("should toggle between icons based on isMapView prop", () => {
     const { rerender } = render(<ModeToggle isMapView={true} />);
-    expect(screen.getByRole("img", { name: /list view/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/list view/i)).toBeInTheDocument();
 
     rerender(<ModeToggle isMapView={false} />);
-    expect(screen.getByRole("img", { name: /map view/i })).toBeInTheDocument();
+    expect(screen.getByLabelText(/map view/i)).toBeInTheDocument();
   });
 });

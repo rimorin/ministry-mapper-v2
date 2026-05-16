@@ -1,4 +1,7 @@
 import { lazy } from "react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
+import { fadeSlideUp, exitUp } from "@/lib/motion";
 import TerritoryHeader from "../../../components/navigation/territoryheader";
 import SuspenseComponent from "../../../components/utils/suspense";
 import Welcome from "../../../components/statics/welcome";
@@ -18,21 +21,6 @@ const MapListing = SuspenseComponent(
   lazy(() => import("../../../components/navigation/maplist"))
 );
 
-/**
- * TerritoryContent Component
- *
- * Renders different views based on congregation setup state:
- *
- * PREREQUISITE: Parent (Admin) ensures all data is loaded before rendering this component
- * - congregation details, territories, options, policy are all loaded
- * - isLoading=false in parent before this component renders
- *
- * RENDERING FLOW:
- * 1. Setup incomplete (missing options/territories/maps) → GettingStarted guide
- * 2. Setup complete + no territory selected → Welcome message
- * 3. Setup complete + territory selected → Territory content (maps)
- */
-
 interface TerritoryContentProps {
   selectedTerritory: {
     id: string;
@@ -41,8 +29,11 @@ interface TerritoryContentProps {
   };
   userName: string;
   isMapView: boolean;
+  isAssignmentLoading: boolean;
+  onToggleMapView: () => void;
+  onGenerateLink: () => void;
   sortedAddressList: Array<addressDetails>;
-  accordingKeys: Array<string>;
+  accordionKeys: Array<string>;
   setAccordionKeys: React.Dispatch<React.SetStateAction<Array<string>>>;
   mapViews: Map<string, boolean>;
   setMapViews: React.Dispatch<React.SetStateAction<Map<string, boolean>>>;
@@ -65,14 +56,18 @@ interface TerritoryContentProps {
   onCreateOptions: () => void;
   onCreateTerritory: () => void;
   hasAnyMaps: boolean;
+  onCreateMap: () => void;
 }
 
 export default function TerritoryContent({
   selectedTerritory,
   userName,
   isMapView,
+  isAssignmentLoading,
+  onToggleMapView,
+  onGenerateLink,
   sortedAddressList,
-  accordingKeys,
+  accordionKeys,
   setAccordionKeys,
   mapViews,
   setMapViews,
@@ -90,71 +85,96 @@ export default function TerritoryContent({
   territories,
   onCreateOptions,
   onCreateTerritory,
-  hasAnyMaps
+  hasAnyMaps,
+  onCreateMap
 }: TerritoryContentProps) {
-  // === DERIVE STATE FROM LOADED DATA ===
-  // At this point, all data has been loaded (checked by parent's isLoading)
   const hasOptions = congregationOptions.length > 0;
   const hasTerritories = territories.size > 0;
   const hasSelectedTerritory = !!selectedTerritory.code;
   const isSetupComplete = hasOptions && hasTerritories && hasAnyMaps;
 
-  // === RENDERING LOGIC ===
-  // Render appropriate component based on congregation setup state
-
-  // Case 1: Setup incomplete → Show Getting Started Guide
-  // For new congregations or those missing options/territories/maps
-  if (!isSetupComplete) {
-    return (
-      <GettingStarted
-        onCreateOptions={onCreateOptions}
-        onCreateTerritory={onCreateTerritory}
-        hasOptions={hasOptions}
-        hasTerritories={hasTerritories}
-        hasAnyMaps={hasAnyMaps}
-        selectedTerritory={selectedTerritory}
-      />
-    );
-  }
-
-  // Case 2: Setup complete, no territory selected → Show Welcome
-  // For existing congregations where user hasn't selected a territory yet
-  if (!hasSelectedTerritory) {
-    return <Welcome name={userName} />;
-  }
-
-  // Case 3: Setup complete, territory selected → Show Territory Content
-  // Normal operation - user working with a specific territory
   return (
-    <div className="territory-content">
-      <TerritoryHeader name={selectedTerritory.name} />
-      {isMapView ? (
-        <MapView
-          key={`mapview-${selectedTerritory.id}`}
-          sortedAddressList={sortedAddressList}
-          policy={policy}
-        />
+    <AnimatePresence mode="wait">
+      {!isSetupComplete ? (
+        <m.div
+          key="getting-started"
+          variants={fadeSlideUp}
+          initial="hidden"
+          animate="show"
+          exit={exitUp}
+        >
+          <GettingStarted
+            onCreateOptions={onCreateOptions}
+            onCreateTerritory={onCreateTerritory}
+            onCreateMap={onCreateMap}
+            hasOptions={hasOptions}
+            hasTerritories={hasTerritories}
+            hasAnyMaps={hasAnyMaps}
+            selectedTerritory={selectedTerritory}
+          />
+        </m.div>
+      ) : !hasSelectedTerritory ? (
+        <m.div
+          key="welcome"
+          variants={fadeSlideUp}
+          initial="hidden"
+          animate="show"
+          exit={exitUp}
+        >
+          <Welcome name={userName} />
+        </m.div>
       ) : (
-        <MapListing
-          key={`maplist-${selectedTerritory.id}`}
-          sortedAddressList={sortedAddressList}
-          accordingKeys={accordingKeys}
-          setAccordionKeys={setAccordionKeys}
-          mapViews={mapViews}
-          setMapViews={setMapViews}
-          policy={policy}
-          values={values}
-          setValues={setValues}
-          userAccessLevel={userAccessLevel || USER_ACCESS_LEVELS.NO_ACCESS.CODE}
-          isReadonly={isReadonly}
-          deleteMap={deleteMap}
-          addFloorToMap={addFloorToMap}
-          resetMap={resetMap}
-          processingMap={processingMap}
-          toggleAddressTerritoryListing={toggleAddressTerritoryListing}
-          territoryId={selectedTerritory.id}
-        />
+        <m.div
+          key={selectedTerritory.id}
+          className="territory-content"
+          variants={fadeSlideUp}
+          initial="hidden"
+          animate="show"
+          exit={exitUp}
+        >
+          <TerritoryHeader
+            name={selectedTerritory.name}
+            isMapView={isMapView}
+            isAssignmentLoading={isAssignmentLoading}
+            hasSelectedTerritory={
+              !!(selectedTerritory.id || selectedTerritory.code)
+            }
+            userAccessLevel={userAccessLevel}
+            onToggleView={onToggleMapView}
+            onGenerateLink={onGenerateLink}
+            onCreateMap={onCreateMap}
+          />
+          {isMapView ? (
+            <MapView
+              key={`mapview-${selectedTerritory.id}`}
+              sortedAddressList={sortedAddressList}
+              policy={policy}
+            />
+          ) : (
+            <MapListing
+              key={`maplist-${selectedTerritory.id}`}
+              sortedAddressList={sortedAddressList}
+              accordionKeys={accordionKeys}
+              setAccordionKeys={setAccordionKeys}
+              mapViews={mapViews}
+              setMapViews={setMapViews}
+              policy={policy}
+              values={values}
+              setValues={setValues}
+              userAccessLevel={
+                userAccessLevel || USER_ACCESS_LEVELS.NO_ACCESS.CODE
+              }
+              isReadonly={isReadonly}
+              deleteMap={deleteMap}
+              addFloorToMap={addFloorToMap}
+              resetMap={resetMap}
+              processingMap={processingMap}
+              toggleAddressTerritoryListing={toggleAddressTerritoryListing}
+              territoryId={selectedTerritory.id}
+            />
+          )}
+        </m.div>
       )}
-    </div>
+    </AnimatePresence>
   );
 }

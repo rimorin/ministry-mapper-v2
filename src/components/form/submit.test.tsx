@@ -18,8 +18,10 @@ describe("ModalSubmitButton", () => {
 
     it("should show spinner when isSaving is true", () => {
       const { container } = render(<ModalSubmitButton isSaving={true} />);
+      const button = screen.getByRole("button");
 
-      const spinner = container.querySelector(".spinner-border");
+      const spinner = container.querySelector("svg[data-icon='inline-start']");
+      expect(button).toBeDisabled();
       expect(spinner).toBeInTheDocument();
     });
   });
@@ -63,35 +65,29 @@ describe("ModalSubmitButton", () => {
     });
   });
 
-  describe("styling", () => {
-    it("should use primary variant", () => {
-      render(<ModalSubmitButton isSaving={false} />);
-
-      const button = screen.getByRole("button");
-      expect(button).toHaveClass("btn-primary");
-    });
-  });
-
   describe("spinner display", () => {
     it("should show spinner when saving", () => {
       const { container } = render(<ModalSubmitButton isSaving={true} />);
+      const button = screen.getByRole("button");
 
-      const spinner = container.querySelector(".spinner-border");
+      const spinner = container.querySelector("svg[data-icon='inline-start']");
+      expect(button).toBeDisabled();
       expect(spinner).toBeInTheDocument();
-      expect(spinner).toHaveClass("spinner-border-sm");
     });
 
     it("should not show spinner when not saving", () => {
       const { container } = render(<ModalSubmitButton isSaving={false} />);
 
-      const spinner = container.querySelector(".spinner-border");
+      const spinner = container.querySelector("svg[data-icon='inline-start']");
       expect(spinner).not.toBeInTheDocument();
     });
 
     it("should have proper spinner attributes when saving", () => {
       const { container } = render(<ModalSubmitButton isSaving={true} />);
 
-      const spinner = container.querySelector('[aria-hidden="true"]');
+      const spinner = container.querySelector(
+        "svg[aria-hidden='true'][data-icon='inline-start']"
+      );
       expect(spinner).toBeInTheDocument();
     });
   });

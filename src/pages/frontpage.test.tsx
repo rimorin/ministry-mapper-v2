@@ -38,6 +38,9 @@ vi.mock("./signup", () => ({ default: () => null }));
 vi.mock("./signin", () => ({ default: () => null }));
 vi.mock("./forgot", () => ({ default: () => null }));
 vi.mock("./admin/index", () => ({ default: () => null }));
+vi.mock("../components/statics/releasenotifier", () => ({
+  ReleaseNotifier: () => null
+}));
 
 const mockUser = { id: "user123", verified: true } as unknown as ReturnType<
   typeof pocketbase.getUser

@@ -1,16 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { render } from "@testing-library/react";
 import { MapContainer } from "react-leaflet";
 import { SearchControl } from "./searchcontrol";
-
-// Mock leaflet-geosearch
-vi.mock("leaflet-geosearch", () => ({
-  GeoSearchControl: vi.fn(() => ({
-    addTo: vi.fn(),
-    remove: vi.fn()
-  })),
-  LocationIQProvider: vi.fn()
-}));
 
 describe("SearchControl", () => {
   const mockOnLocationSelect = vi.fn();

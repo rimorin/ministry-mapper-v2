@@ -5,10 +5,10 @@ interface DividerProps {
 }
 
 const Divider: FC<DividerProps> = ({ text }) => (
-  <div className="my-3 d-flex align-items-center">
-    <hr className="flex-grow-1" />
-    <span className="px-3 text-muted small">{text}</span>
-    <hr className="flex-grow-1" />
+  <div className="flex items-center gap-3 my-2">
+    <div className="flex-1 h-px bg-border" />
+    <span className="text-xs text-muted-foreground">{text}</span>
+    <div className="flex-1 h-px bg-border" />
   </div>
 );
 

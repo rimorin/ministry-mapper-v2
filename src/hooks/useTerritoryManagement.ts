@@ -1,5 +1,9 @@
 import { useState } from "react";
-import { territoryDetails } from "../utils/interface";
+import { RecordModel } from "pocketbase";
+import {
+  territoryDetails,
+  type TerritoryPolygonCoordinate
+} from "../utils/interface";
 import { callFunction } from "../utils/pocketbase";
 import useNotification from "./useNotification";
 import useLocalStorage from "./useLocalStorage";
@@ -64,24 +68,20 @@ export default function useTerritoryManagement() {
   };
 
   const processCongregationTerritories = (
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    congregationTerritories: any
+    territories: RecordModel[] | null | undefined
   ) => {
     const territoryList = new Map<string, territoryDetails>();
+    if (!territories) return territoryList;
     try {
-      if (!congregationTerritories) return territoryList;
-      for (const territory in congregationTerritories) {
-        const name = congregationTerritories[territory]["description"];
-        const id = congregationTerritories[territory]["id"];
-        const code = congregationTerritories[territory]["code"];
-        const progress = congregationTerritories[territory]["progress"];
-        const coordinates = congregationTerritories[territory]["coordinates"];
-        territoryList.set(id, {
-          id: id,
-          code: code,
-          name: name,
-          aggregates: progress,
-          coordinates: coordinates
+      for (const territory of territories) {
+        territoryList.set(territory.id, {
+          id: territory.id,
+          code: territory["code"],
+          name: territory["description"],
+          aggregates: territory["progress"],
+          coordinates: territory["coordinates"] as
+            | TerritoryPolygonCoordinate
+            | undefined
         });
       }
     } catch (error) {
@@ -121,7 +121,7 @@ export default function useTerritoryManagement() {
       new Map<string, territoryDetails>(
         Array.from(territories).map(([key, value]) => {
           if (key === territoryId) {
-            value.name = updatedName;
+            return [key, { ...value, name: updatedName }];
           }
           return [key, value];
         })

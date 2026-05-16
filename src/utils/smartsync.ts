@@ -46,8 +46,8 @@ function openSmartSyncDB(): ReturnType<typeof openDB<SmartSyncDB>> {
       },
       // We are blocking another tab's upgrade. Close our connection and reload
       // so the waiting tab can proceed.
-      blocking(db) {
-        db.close();
+      blocking() {
+        void dbPromise?.then((db) => db.close());
         dbPromise = null;
         window.location.reload();
       },

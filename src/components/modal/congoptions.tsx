@@ -1,35 +1,38 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal from "@ebay/nice-modal-react";
+import "../../css/sortable.css";
+import { Info, GripVertical, Trash2, Plus, ListPlus } from "lucide-react";
 
-import { useState, FormEvent, useEffect, ChangeEvent, useRef } from "react";
-import {
-  Form,
-  Modal,
-  Badge,
-  OverlayTrigger,
-  Tooltip,
-  Card,
-  Container,
-  Image,
-  Row,
-  Col,
-  Stack
-} from "react-bootstrap";
+import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/ui/tooltip";
 import { PB_FIELDS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import useConfirm from "../../hooks/useConfirm";
 import {
   HHOptionProps,
-  OptionTooltipProps,
   UpdateCongregationOptionsModalProps
 } from "../../utils/interface";
-import GenericInputField from "../form/input";
 import ModalSubmitButton from "../form/submit";
 import { callFunction, getList, ignoreAbort } from "../../utils/pocketbase";
-import GenericButton from "../navigation/button";
-import { getAssetUrl } from "../../utils/helpers/assetpath";
-import "../../css/sortable.css";
-import "../../css/congoptions.css";
 import {
   DndContext,
   closestCenter,
@@ -42,6 +45,10 @@ import {
   DragStartEvent
 } from "@dnd-kit/core";
 import {
+  restrictToVerticalAxis,
+  restrictToParentElement
+} from "@dnd-kit/modifiers";
+import {
   arrayMove,
   SortableContext,
   sortableKeyboardCoordinates,
@@ -49,16 +56,32 @@ import {
   verticalListSortingStrategy
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import type { RecordModel } from "pocketbase";
 
-const OptionTooltip = ({ id, children, title }: OptionTooltipProps) => (
-  <OverlayTrigger
-    overlay={<Tooltip id={id}>{title}</Tooltip>}
-    placement="bottom"
-  >
-    <span style={{ display: "inline-flex", alignItems: "center" }}>
-      {children}
-    </span>
-  </OverlayTrigger>
+const toHHOption = (option: RecordModel): HHOptionProps => ({
+  id: option.id,
+  code: option.code,
+  description: option.description,
+  isCountable: option.is_countable,
+  isDefault: option.is_default,
+  sequence: option.sequence
+});
+
+const FieldTooltip = ({
+  title,
+  disabled
+}: {
+  title: string;
+  disabled?: boolean;
+}) => (
+  <TooltipProvider>
+    <Tooltip disabled={disabled}>
+      <TooltipTrigger render={<span className="inline-flex items-center" />}>
+        <Info className="size-3 text-primary/70 hover:text-primary cursor-help transition-colors" />
+      </TooltipTrigger>
+      <TooltipContent side="bottom">{title}</TooltipContent>
+    </Tooltip>
+  </TooltipProvider>
 );
 
 interface SortableOptionRowProps {
@@ -66,6 +89,7 @@ interface SortableOptionRowProps {
   option: HHOptionProps;
   index: number;
   sequence: number;
+  isAnyDragging?: boolean;
   onCodeChange: (index: number, value: string) => void;
   onDescriptionChange: (index: number, value: string) => void;
   onCountableChange: (index: number, checked: boolean) => void;
@@ -78,6 +102,7 @@ const SortableOptionRow = ({
   option,
   index,
   sequence,
+  isAnyDragging = false,
   onCodeChange,
   onDescriptionChange,
   onCountableChange,
@@ -97,157 +122,153 @@ const SortableOptionRow = ({
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.4 : 1
-  };
-
-  const handleCodeChange = (event: ChangeEvent<HTMLElement>) => {
-    const { value } = event.target as HTMLInputElement;
-    onCodeChange(index, value);
-  };
-
-  const handleDescriptionChange = (event: ChangeEvent<HTMLElement>) => {
-    const { value } = event.target as HTMLInputElement;
-    onDescriptionChange(index, value);
+    opacity: isDragging ? 0.4 : 1,
+    pointerEvents: (isAnyDragging && !isDragging ? "none" : undefined) as
+      | "none"
+      | undefined
   };
 
   return (
-    <Card ref={setNodeRef} style={style} className="option-card">
-      <Card.Header className="option-header">
-        <Stack direction="horizontal" gap={2}>
-          <OverlayTrigger
-            overlay={
-              <Tooltip>
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="rounded-lg border bg-card shadow-xs transition-[border-color,box-shadow] hover:border-primary/50 hover:shadow-sm"
+    >
+      {/* Header */}
+      <div className="flex items-center justify-between gap-2 px-3 py-2 bg-muted/40 border-b rounded-t-lg">
+        <div className="flex items-center gap-2">
+          <TooltipProvider>
+            <Tooltip disabled={isAnyDragging}>
+              <TooltipTrigger
+                render={
+                  <span
+                    className="touch-none select-none cursor-grab active:cursor-grabbing p-1 rounded text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    {...attributes}
+                    {...listeners}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={t(
+                      "congregation.dragToReorder",
+                      "Drag to reorder"
+                    )}
+                  />
+                }
+              >
+                <GripVertical className="size-4" />
+              </TooltipTrigger>
+              <TooltipContent side="top">
                 {t("congregation.dragToReorder", "Drag to reorder")}
-              </Tooltip>
-            }
-            placement="top"
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+          <Badge
+            variant="secondary"
+            className="size-6 rounded-full p-0 flex items-center justify-center text-xs font-medium"
           >
-            <span
-              className="drag-handle"
-              {...attributes}
-              {...listeners}
-              role="button"
-              tabIndex={0}
-              aria-label={t("congregation.dragToReorder", "Drag to reorder")}
-            >
-              ⋮⋮
-            </span>
-          </OverlayTrigger>
-          <Badge bg="secondary" pill>
             {sequence}
           </Badge>
-        </Stack>
-        <GenericButton
-          size="sm"
-          variant="outline-danger"
-          label="🗑️"
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          className="text-destructive hover:text-destructive hover:bg-destructive/10"
           onClick={() => onDelete(index)}
           aria-label={t("common.delete", "Delete")}
-        />
-      </Card.Header>
+        >
+          <Trash2 className="size-4" />
+        </Button>
+      </div>
 
-      <Card.Body className="option-body">
-        <Row className="g-3">
-          <Col xs={12} sm={4}>
-            <Form.Group>
-              <Form.Label className="small text-uppercase fw-semibold text-muted">
-                <OptionTooltip
-                  id={`code-${index}`}
-                  title={t(
-                    "congregation.optionCodeTooltip",
-                    "Appears in territory house boxes"
-                  )}
-                >
-                  <span className="info-icon">ⓘ</span>
-                </OptionTooltip>
-                {t("common.code", "Code")}
-              </Form.Label>
-              <GenericInputField
-                name={`code-${index}`}
-                required
-                placeholder="xx"
-                changeValue={option.code}
-                handleChange={handleCodeChange}
+      {/* Body */}
+      <div className="p-3 space-y-3">
+        {/* Code + Description */}
+        <div className="flex gap-3">
+          <div className="w-24 shrink-0 space-y-1">
+            <Label
+              htmlFor={`code-${index}`}
+              className="text-xs text-muted-foreground flex items-center gap-1"
+            >
+              {t("common.code", "Code")}
+              <FieldTooltip
+                title={t(
+                  "congregation.optionCodeTooltip",
+                  "Appears in territory house boxes"
+                )}
+                disabled={isAnyDragging}
               />
-            </Form.Group>
-          </Col>
+            </Label>
+            <Input
+              id={`code-${index}`}
+              required
+              placeholder="xx"
+              value={option.code}
+              onChange={(e) => onCodeChange(index, e.target.value)}
+              className="h-8 text-sm"
+            />
+          </div>
+          <div className="flex-1 min-w-0 space-y-1">
+            <Label
+              htmlFor={`desc-${index}`}
+              className="text-xs text-muted-foreground flex items-center gap-1"
+            >
+              {t("common.description", "Description")}
+              <FieldTooltip
+                title={t(
+                  "congregation.optionDescTooltip",
+                  "Appears in dropdown list"
+                )}
+                disabled={isAnyDragging}
+              />
+            </Label>
+            <Input
+              id={`desc-${index}`}
+              required
+              value={option.description}
+              onChange={(e) => onDescriptionChange(index, e.target.value)}
+              className="h-8 text-sm"
+            />
+          </div>
+        </div>
 
-          <Col xs={12} sm={8}>
-            <Form.Group>
-              <Form.Label className="small text-uppercase fw-semibold text-muted">
-                <OptionTooltip
-                  id={`description-${index}`}
-                  title={t(
-                    "congregation.optionDescTooltip",
-                    "Appears in dropdown list"
-                  )}
-                >
-                  <span className="info-icon">ⓘ</span>
-                </OptionTooltip>
-                {t("common.description", "Description")}
-              </Form.Label>
-              <GenericInputField
-                name={`description-${index}`}
-                required
-                changeValue={option.description}
-                handleChange={handleDescriptionChange}
+        {/* Countable + Default settings */}
+        <div className="rounded-md border divide-y overflow-hidden">
+          <label className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-muted/50 transition-colors">
+            <Checkbox
+              checked={option.isCountable}
+              onCheckedChange={(checked) => onCountableChange(index, !!checked)}
+            />
+            <span className="flex items-center gap-1.5 text-sm flex-1">
+              {t("congregation.countable", "Countable")}
+              <FieldTooltip
+                title={t(
+                  "congregation.optionCountableTooltip",
+                  "Counts in completion %"
+                )}
+                disabled={isAnyDragging}
               />
-            </Form.Group>
-          </Col>
-        </Row>
-
-        <Row className="g-3 mt-1">
-          <Col xs={6} sm={4}>
-            <Form.Group>
-              <Form.Label className="small text-uppercase fw-semibold text-muted">
-                <OptionTooltip
-                  id={`countable-${index}`}
-                  title={t(
-                    "congregation.optionCountableTooltip",
-                    "Counts in completion %"
-                  )}
-                >
-                  <span className="info-icon">ⓘ</span>
-                </OptionTooltip>
-                {t("congregation.countable", "Countable")}
-              </Form.Label>
-              <Form.Check
-                type="checkbox"
-                id={`countable-${index}`}
-                checked={option.isCountable}
-                onChange={(e) => onCountableChange(index, e.target.checked)}
-                className="mt-2"
+            </span>
+          </label>
+          <label className="flex items-center gap-3 px-3 py-2 cursor-pointer hover:bg-muted/50 transition-colors">
+            <Switch
+              size="sm"
+              checked={option.isDefault}
+              onCheckedChange={(checked) => onDefaultChange(index, checked)}
+            />
+            <span className="flex items-center gap-1.5 text-sm flex-1">
+              {t("congregation.default", "Default")}
+              <FieldTooltip
+                title={t(
+                  "congregation.optionDefaultTooltip",
+                  "Default household type"
+                )}
+                disabled={isAnyDragging}
               />
-            </Form.Group>
-          </Col>
-
-          <Col xs={6} sm={4}>
-            <Form.Group>
-              <Form.Label className="small text-uppercase fw-semibold text-muted">
-                <OptionTooltip
-                  id={`default-${index}`}
-                  title={t(
-                    "congregation.optionDefaultTooltip",
-                    "Default household type"
-                  )}
-                >
-                  <span className="info-icon">ⓘ</span>
-                </OptionTooltip>
-                {t("congregation.default", "Default")}
-              </Form.Label>
-              <Form.Check
-                type="radio"
-                id={`default-${index}`}
-                name="defaultOption"
-                checked={option.isDefault}
-                onChange={(e) => onDefaultChange(index, e.target.checked)}
-                className="mt-2"
-              />
-            </Form.Group>
-          </Col>
-        </Row>
-      </Card.Body>
-    </Card>
+            </span>
+          </label>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -255,7 +276,9 @@ const UpdateCongregationOptions = NiceModal.create(
   ({ currentCongregation }: UpdateCongregationOptionsModalProps) => {
     const { t } = useTranslation();
     const { notifyWarning, runAction } = useNotification();
-    const modal = useModal();
+    const { modal, dialogProps, contentProps } = useBaseUiDialog({
+      size: "lg"
+    });
     const { confirm } = useConfirm();
 
     const [isSaving, setIsSaving] = useState<boolean>(false);
@@ -273,6 +296,7 @@ const UpdateCongregationOptions = NiceModal.create(
 
     const handleDragStart = (event: DragStartEvent) => {
       setActiveId(event.active.id as string);
+      (document.activeElement as HTMLElement)?.blur();
     };
 
     const handleDragEnd = (event: DragEndEvent) => {
@@ -292,11 +316,7 @@ const UpdateCongregationOptions = NiceModal.create(
       }
     };
 
-    const handleSubmitCongOptions = async (
-      event: FormEvent<HTMLFormElement>
-    ) => {
-      event.preventDefault();
-
+    const handleSubmitCongOptions = async () => {
       const activeOptions = options.filter((option) => !option.isDeleted);
       const codes = activeOptions.map((option) => option.code);
 
@@ -365,7 +385,14 @@ const UpdateCongregationOptions = NiceModal.create(
               "Congregation household options updated."
             )
           );
-          window.location.reload();
+          const refreshed = await getList("options", {
+            filter: `congregation="${currentCongregation}"`,
+            requestKey: `refresh-options-${currentCongregation}`,
+            sort: "sequence",
+            fields: PB_FIELDS.CONGREGATION_OPTIONS
+          });
+          modal.resolve(refreshed.map(toHHOption));
+          modal.hide();
         },
         { setLoading: setIsSaving }
       );
@@ -380,15 +407,7 @@ const UpdateCongregationOptions = NiceModal.create(
           fields: PB_FIELDS.CONGREGATION_OPTIONS
         });
 
-        const householdTypes = data.map((option) => ({
-          id: option.id,
-          code: option.code,
-          description: option.description,
-          isCountable: option.is_countable,
-          isDefault: option.is_default,
-          sequence: option.sequence
-        }));
-        setOptions(householdTypes);
+        setOptions(data.map(toHHOption));
       };
       ignoreAbort(getHHOptions)();
     }, [currentCongregation]);
@@ -401,6 +420,26 @@ const UpdateCongregationOptions = NiceModal.create(
         });
       }
     }, [options]);
+
+    const addNewOption = () => {
+      const nextSequence =
+        options.length > 0
+          ? Math.max(...options.map((opt) => opt.sequence)) + 1
+          : 1;
+      setOptions([
+        ...options,
+        {
+          id: `new-${Date.now()}`,
+          code: "",
+          description: "",
+          isCountable: true,
+          isDefault: false,
+          sequence: nextSequence,
+          isNew: true,
+          isDeleted: false
+        }
+      ]);
+    };
 
     const visibleOptions = options.filter((opt) => !opt.isDeleted);
     const visibleIndexMap = new Map(
@@ -416,170 +455,181 @@ const UpdateCongregationOptions = NiceModal.create(
       : -1;
 
     return (
-      <Modal
-        {...bootstrapDialog(modal)}
-        dialogClassName="modal-xl"
-        onHide={() => modal.remove()}
-      >
-        <Form onSubmit={handleSubmitCongOptions}>
-          <Modal.Header>
-            <Modal.Title>
+      <Dialog {...dialogProps}>
+        <DialogContent {...contentProps}>
+          <DialogHeader>
+            <DialogTitle>
               {t("congregation.householdOptions", "Household Options")}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="sortable-modal-body">
-            <Container fluid>
-              <Stack
-                direction="horizontal"
-                gap={2}
-                className="sortable-instructions"
-              >
-                <Image
-                  src={getAssetUrl("information.svg")}
-                  alt="Information"
-                  width={18}
-                  height={18}
-                />
-                <span>
-                  {t(
-                    "congregation.dragEditHint",
-                    "Drag rows or use arrow buttons to reorder. Click fields to edit."
-                  )}
-                </span>
-              </Stack>
-
-              <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-              >
-                <SortableContext
-                  items={visibleOptions.map(
-                    (opt) => opt.id || `new-${opt.code}`
-                  )}
-                  strategy={verticalListSortingStrategy}
-                >
-                  <Stack gap={3} className="sortable-cards-list">
-                    {options.map(
-                      (option, index) =>
-                        !option.isDeleted && (
-                          <SortableOptionRow
-                            key={option.id || `new-${option.code}`}
-                            id={option.id || `new-${option.code}`}
-                            option={option}
-                            index={index}
-                            sequence={
-                              (visibleIndexMap.get(
-                                option.id || `new-${option.code}`
-                              ) ?? 0) + 1
-                            }
-                            onCodeChange={(idx, value) => {
-                              const newOptions = [...options];
-                              newOptions[idx].code = value
-                                .toLowerCase()
-                                .replace(/[^a-z]/g, "")
-                                .substring(0, 2);
-                              setOptions(newOptions);
-                            }}
-                            onDescriptionChange={(idx, value) => {
-                              const newOptions = [...options];
-                              newOptions[idx].description = value;
-                              setOptions(newOptions);
-                            }}
-                            onCountableChange={(idx, checked) => {
-                              const newOptions = [...options];
-                              newOptions[idx].isCountable = checked;
-                              setOptions(newOptions);
-                            }}
-                            onDefaultChange={(idx, checked) => {
-                              const newOptions = options.map((opt, i) => ({
-                                ...opt,
-                                isDefault: i === idx && checked
-                              }));
-                              setOptions(newOptions);
-                            }}
-                            onDelete={(idx) => {
-                              if (visibleOptions.length === 1) {
-                                notifyWarning(
-                                  t(
-                                    "congregation.minimumOneOption",
-                                    "There must be at least one option in the dropdown list."
-                                  )
-                                );
-                                return;
-                              }
-                              const newOptions = [...options];
-                              if (option.isNew) {
-                                newOptions.splice(idx, 1);
-                              } else {
-                                setDeletedOptions([
-                                  ...deletedOptions,
-                                  option.code
-                                ]);
-                                newOptions[idx].isDeleted = true;
-                              }
-                              setOptions(newOptions);
-                            }}
-                          />
+            </DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void handleSubmitCongOptions();
+            }}
+            className="space-y-4"
+          >
+            <div className="sortable-modal-body max-h-[70dvh] space-y-3 overflow-y-auto">
+              <div className="space-y-3">
+                {visibleOptions.length > 0 && (
+                  <p className="flex items-center gap-1.5 text-xs text-muted-foreground px-1">
+                    <Info className="size-3 shrink-0" />
+                    {visibleOptions.length >= 2
+                      ? t(
+                          "congregation.dragEditHint",
+                          "Drag rows to reorder. Click fields to edit."
                         )
-                    )}
-                    <div ref={listEndRef} />
-                  </Stack>
-                </SortableContext>
-                <DragOverlay>
-                  {activeId && activeOption ? (
-                    <Card className="option-card option-card-dragging">
-                      <Card.Header className="option-header">
-                        <Stack direction="horizontal" gap={2}>
-                          <span className="drag-handle">⋮⋮</span>
-                          <Badge bg="primary" pill>
-                            {activeIndex + 1}
-                          </Badge>
-                        </Stack>
-                      </Card.Header>
-                      <Card.Body>
-                        <strong>{activeOption.description}</strong>
-                      </Card.Body>
-                    </Card>
-                  ) : null}
-                </DragOverlay>
-              </DndContext>
-            </Container>
-          </Modal.Body>
-          <Modal.Footer className="justify-content-around">
-            <GenericButton
-              variant="secondary"
-              onClick={() => modal.hide()}
-              label={t("common.close", "Close")}
-            />
-            <GenericButton
-              variant="outline-primary"
-              onClick={() => {
-                const nextSequence =
-                  options.length > 0
-                    ? Math.max(...options.map((opt) => opt.sequence)) + 1
-                    : 1;
-                setOptions([
-                  ...options,
-                  {
-                    id: `new-${Date.now()}`,
-                    code: "",
-                    description: "",
-                    isCountable: true,
-                    isDefault: false,
-                    sequence: nextSequence,
-                    isNew: true,
-                    isDeleted: false
-                  }
-                ]);
-              }}
-              label={`+ ${t("congregation.newOption", "New Option")}`}
-            />
-            <ModalSubmitButton isSaving={isSaving} />
-          </Modal.Footer>
-        </Form>
-      </Modal>
+                      : t("common.clickToEdit", "Click fields to edit.")}
+                  </p>
+                )}
+
+                {visibleOptions.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center gap-4 py-10 text-center">
+                    <div className="flex size-14 items-center justify-center rounded-full bg-muted">
+                      <ListPlus className="size-7 text-muted-foreground" />
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-sm font-medium">
+                        {t(
+                          "congregation.noOptionsYet",
+                          "No household options yet"
+                        )}
+                      </p>
+                      <p className="text-xs text-muted-foreground max-w-65">
+                        {t(
+                          "congregation.noOptionsHint",
+                          "Add options for publishers to identify and categorize addresses (e.g. English, Chinese)."
+                        )}
+                      </p>
+                    </div>
+                    <Button type="button" onClick={addNewOption}>
+                      <Plus className="size-4" />
+                      {t("congregation.addFirstOption", "Add First Option")}
+                    </Button>
+                  </div>
+                ) : (
+                  <DndContext
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    modifiers={[
+                      restrictToVerticalAxis,
+                      restrictToParentElement
+                    ]}
+                    onDragStart={handleDragStart}
+                    onDragEnd={handleDragEnd}
+                  >
+                    <SortableContext
+                      items={visibleOptions.map(
+                        (opt) => opt.id || `new-${opt.code}`
+                      )}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="flex flex-col gap-3 p-2">
+                        {options.map(
+                          (option, index) =>
+                            !option.isDeleted && (
+                              <SortableOptionRow
+                                key={option.id || `new-${option.code}`}
+                                id={option.id || `new-${option.code}`}
+                                option={option}
+                                index={index}
+                                isAnyDragging={!!activeId}
+                                sequence={
+                                  (visibleIndexMap.get(
+                                    option.id || `new-${option.code}`
+                                  ) ?? 0) + 1
+                                }
+                                onCodeChange={(idx, value) => {
+                                  const newOptions = [...options];
+                                  newOptions[idx].code = value
+                                    .toLowerCase()
+                                    .replace(/[^a-z]/g, "")
+                                    .substring(0, 2);
+                                  setOptions(newOptions);
+                                }}
+                                onDescriptionChange={(idx, value) => {
+                                  const newOptions = [...options];
+                                  newOptions[idx].description = value;
+                                  setOptions(newOptions);
+                                }}
+                                onCountableChange={(idx, checked) => {
+                                  const newOptions = [...options];
+                                  newOptions[idx].isCountable = checked;
+                                  setOptions(newOptions);
+                                }}
+                                onDefaultChange={(idx, checked) => {
+                                  const newOptions = options.map((opt, i) => ({
+                                    ...opt,
+                                    isDefault: i === idx && checked
+                                  }));
+                                  setOptions(newOptions);
+                                }}
+                                onDelete={(idx) => {
+                                  if (visibleOptions.length === 1) {
+                                    notifyWarning(
+                                      t(
+                                        "congregation.minimumOneOption",
+                                        "There must be at least one option in the dropdown list."
+                                      )
+                                    );
+                                    return;
+                                  }
+                                  const newOptions = [...options];
+                                  if (option.isNew) {
+                                    newOptions.splice(idx, 1);
+                                  } else {
+                                    setDeletedOptions([
+                                      ...deletedOptions,
+                                      option.code
+                                    ]);
+                                    newOptions[idx].isDeleted = true;
+                                  }
+                                  setOptions(newOptions);
+                                }}
+                              />
+                            )
+                        )}
+                        <div ref={listEndRef} />
+                      </div>
+                    </SortableContext>
+                    <DragOverlay>
+                      {activeId && activeOption ? (
+                        <div className="rounded-lg border bg-card shadow-lg rotate-2 scale-105 border-primary">
+                          <div className="flex items-center gap-2 px-3 py-2 bg-muted/40 border-b rounded-t-lg">
+                            <GripVertical className="size-4 text-muted-foreground" />
+                            <Badge className="size-6 rounded-full p-0 flex items-center justify-center text-xs">
+                              {activeIndex + 1}
+                            </Badge>
+                          </div>
+                          <div className="p-3 text-sm font-medium">
+                            {activeOption.description || activeOption.code}
+                          </div>
+                        </div>
+                      ) : null}
+                    </DragOverlay>
+                  </DndContext>
+                )}
+              </div>
+            </div>
+            <DialogFooter className="gap-2 sm:justify-between">
+              <Button variant="outline" type="button" onClick={addNewOption}>
+                <Plus className="size-4" />
+                {t("congregation.newOption", "New Option")}
+              </Button>
+              <div className="flex flex-col-reverse gap-2 sm:flex-row">
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => modal.hide()}
+                >
+                  {t("common.cancel", "Cancel")}
+                </Button>
+                <ModalSubmitButton isSaving={isSaving} />
+              </div>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     );
   }
 );

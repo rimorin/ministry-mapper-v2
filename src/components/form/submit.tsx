@@ -1,7 +1,7 @@
-import { Spinner } from "react-bootstrap";
-import { SubmitBtnProps } from "../../utils/interface";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { useTranslation } from "react-i18next";
-import GenericButton from "../navigation/button";
+import { SubmitBtnProps } from "../../utils/interface";
 
 const ModalSubmitButton = ({
   isSaving = false,
@@ -9,25 +9,12 @@ const ModalSubmitButton = ({
   disabled = false
 }: SubmitBtnProps) => {
   const { t } = useTranslation();
+
   return (
-    <GenericButton
-      type="submit"
-      variant="primary"
-      disabled={isSaving || disabled}
-      label={
-        <>
-          {isSaving && (
-            <Spinner
-              as="span"
-              animation="border"
-              size="sm"
-              aria-hidden="true"
-            />
-          )}{" "}
-          {btnLabel ? btnLabel : t("common.save")}
-        </>
-      }
-    />
+    <Button type="submit" disabled={isSaving || disabled}>
+      {isSaving && <Spinner data-icon="inline-start" aria-hidden="true" />}
+      {btnLabel ?? t("common.save")}
+    </Button>
   );
 };
 

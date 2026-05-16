@@ -1,4 +1,4 @@
-import { createContext, FC, ReactNode, useContext } from "react";
+import { createContext, FC, ReactNode, useContext, useMemo } from "react";
 import { useNetworkStatus } from "../../hooks/useNetworkStatus";
 
 interface NetworkStatusContextValue {
@@ -18,8 +18,12 @@ export const NetworkStatusProvider: FC<{ children: ReactNode }> = ({
   children
 }) => {
   const { isOnline, isSlow, lastHealthyAt } = useNetworkStatus();
+  const contextValue = useMemo(
+    () => ({ isOnline, isSlow, lastHealthyAt }),
+    [isOnline, isSlow, lastHealthyAt]
+  );
   return (
-    <NetworkStatusContext.Provider value={{ isOnline, isSlow, lastHealthyAt }}>
+    <NetworkStatusContext.Provider value={contextValue}>
       {children}
     </NetworkStatusContext.Provider>
   );

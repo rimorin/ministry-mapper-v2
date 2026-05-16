@@ -7,11 +7,17 @@ import { useModalManagement } from "../../hooks/useModalManagement";
 import type { ThemeMode } from "../../utils/interface";
 
 vi.mock("../../hooks/useModalManagement");
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({
+    t: (_key: string, defaultValue: string) => defaultValue
+  })
+}));
 
 describe("ThemeToggle", () => {
   const mockShowModal = vi.fn();
 
   beforeEach(() => {
+    mockShowModal.mockClear();
     vi.mocked(useModalManagement).mockReturnValue({
       showModal: mockShowModal,
       hideModal: vi.fn()
@@ -35,16 +41,20 @@ describe("ThemeToggle", () => {
     expect(button).toBeInTheDocument();
   });
 
-  it("applies dark theme filter when theme is dark", () => {
+  it("renders the palette icon when theme is dark", () => {
     const { container } = renderWithTheme("dark", "dark");
-    const image = container.querySelector("img");
-    expect(image).toHaveStyle({ filter: "brightness(0) invert(1)" });
+    const icon = container.querySelector("svg.lucide-palette");
+    expect(icon).toBeInTheDocument();
+    expect(icon).toHaveAttribute("aria-hidden", "true");
+    expect(icon).toHaveStyle({ width: "1.25em", height: "1.25em" });
   });
 
-  it("applies no filter when theme is light", () => {
+  it("renders the palette icon when theme is light", () => {
     const { container } = renderWithTheme("light", "light");
-    const image = container.querySelector("img");
-    expect(image).toHaveStyle({ filter: "none" });
+    const icon = container.querySelector("svg.lucide-palette");
+    expect(icon).toBeInTheDocument();
+    expect(icon).toHaveAttribute("aria-hidden", "true");
+    expect(icon).toHaveStyle({ width: "1.25em", height: "1.25em" });
   });
 
   it("opens theme settings modal on click", async () => {

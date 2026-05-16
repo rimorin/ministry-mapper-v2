@@ -1,54 +1,55 @@
-import { InputGroup, ToggleButtonGroup, ToggleButton } from "react-bootstrap";
 import { NOT_HOME_STATUS_CODES } from "../../utils/constants";
 import { FormProps } from "../../utils/interface";
 import { useTranslation } from "react-i18next";
+import { Label } from "@/components/ui/label";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 
 const HHNotHomeField = ({ handleGroupChange, changeValue }: FormProps) => {
   const { t } = useTranslation();
+  const options = [
+    {
+      value: NOT_HOME_STATUS_CODES.DEFAULT,
+      label: t("household.firstTry", "1st")
+    },
+    {
+      value: NOT_HOME_STATUS_CODES.SECOND_TRY,
+      label: t("household.secondTry", "2nd")
+    },
+    {
+      value: NOT_HOME_STATUS_CODES.THIRD_TRY,
+      label: t("household.thirdTry", "3rd")
+    },
+    {
+      value: NOT_HOME_STATUS_CODES.FOURTH_TRY,
+      label: t("household.fourthTry", "4th")
+    }
+  ];
 
   return (
-    <div className="mb-1">
-      <div className="mb-2 inline-block">
-        {t("household.numberOfTries", "Number of tries")}
-      </div>
-      <InputGroup className="justify-content-center">
-        <ToggleButtonGroup
-          name="nhcount"
-          type="radio"
-          value={changeValue}
-          className="mb-3 group-wrap"
-          onChange={handleGroupChange}
-        >
-          <ToggleButton
-            id="nh-status-tb-0"
-            variant="outline-secondary"
-            value={NOT_HOME_STATUS_CODES.DEFAULT}
+    <div className="flex flex-col gap-1.5">
+      <Label>{t("household.numberOfTries", "Number of tries")}</Label>
+      <ToggleGroup
+        aria-label="Not home reason"
+        variant="outline"
+        value={changeValue ? [changeValue] : []}
+        onValueChange={(values) => {
+          const value = values[values.length - 1];
+          if (value) {
+            handleGroupChange?.(value);
+          }
+        }}
+        className="flex w-full"
+      >
+        {options.map((option) => (
+          <ToggleGroupItem
+            key={option.value}
+            value={option.value}
+            className="flex-1"
           >
-            {t("household.firstTry", "1st")}
-          </ToggleButton>
-          <ToggleButton
-            id="nh-status-tb-1"
-            variant="outline-secondary"
-            value={NOT_HOME_STATUS_CODES.SECOND_TRY}
-          >
-            {t("household.secondTry", "2nd")}
-          </ToggleButton>
-          <ToggleButton
-            id="nh-status-tb-2"
-            variant="outline-secondary"
-            value={NOT_HOME_STATUS_CODES.THIRD_TRY}
-          >
-            {t("household.thirdTry", "3rd")}
-          </ToggleButton>
-          <ToggleButton
-            id="nh-status-tb-3"
-            variant="outline-secondary"
-            value={NOT_HOME_STATUS_CODES.FOURTH_TRY}
-          >
-            {t("household.fourthTry", "4th")}
-          </ToggleButton>
-        </ToggleButtonGroup>
-      </InputGroup>
+            {option.label}
+          </ToggleGroupItem>
+        ))}
+      </ToggleGroup>
     </div>
   );
 };

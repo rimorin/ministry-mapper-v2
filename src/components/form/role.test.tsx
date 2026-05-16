@@ -9,180 +9,85 @@ describe("UserRoleField", () => {
     role: USER_ACCESS_LEVELS.CONDUCTOR.CODE
   };
 
-  describe("rendering - update mode", () => {
-    it("should render all role buttons in update mode", () => {
-      render(<UserRoleField {...defaultProps} isUpdate={true} />);
+  it("renders all role buttons in update mode", () => {
+    render(<UserRoleField {...defaultProps} isUpdate={true} />);
 
-      expect(screen.getByText("No Access")).toBeInTheDocument();
-      expect(screen.getByText("Read-only")).toBeInTheDocument();
-      expect(screen.getByText("Conductor")).toBeInTheDocument();
-      expect(screen.getByText("Administrator")).toBeInTheDocument();
-    });
-
-    it("should render No Access button in update mode", () => {
-      render(<UserRoleField {...defaultProps} isUpdate={true} />);
-
-      const noAccessButton = screen.getByText("No Access");
-      expect(noAccessButton).toBeInTheDocument();
-    });
+    expect(
+      screen.getByRole("button", { name: "No Access" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Read-only" })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "Conductor" })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Admin" })).toBeInTheDocument();
   });
 
-  describe("rendering - create mode", () => {
-    it("should not render No Access button in create mode", () => {
-      render(<UserRoleField {...defaultProps} isUpdate={false} />);
+  it("omits No Access in create mode", () => {
+    render(<UserRoleField {...defaultProps} isUpdate={false} />);
 
-      expect(screen.queryByText("No Access")).not.toBeInTheDocument();
-    });
-
-    it("should render other role buttons in create mode", () => {
-      render(<UserRoleField {...defaultProps} isUpdate={false} />);
-
-      expect(screen.getByText("Read-only")).toBeInTheDocument();
-      expect(screen.getByText("Conductor")).toBeInTheDocument();
-      expect(screen.getByText("Administrator")).toBeInTheDocument();
-    });
+    expect(
+      screen.queryByRole("button", { name: "No Access" })
+    ).not.toBeInTheDocument();
   });
 
-  describe("button states", () => {
-    it("should select conductor role by default", () => {
-      render(
-        <UserRoleField
-          {...defaultProps}
-          role={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
-        />
-      );
+  it("marks the active role as pressed", () => {
+    render(
+      <UserRoleField
+        {...defaultProps}
+        role={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
+      />
+    );
 
-      const conductorButton = screen.getByLabelText("Conductor");
-      expect(conductorButton).toBeChecked();
-    });
-
-    it("should select read-only role", () => {
-      render(
-        <UserRoleField
-          {...defaultProps}
-          role={USER_ACCESS_LEVELS.READ_ONLY.CODE}
-        />
-      );
-
-      const readOnlyButton = screen.getByLabelText("Read-only");
-      expect(readOnlyButton).toBeChecked();
-    });
-
-    it("should select administrator role", () => {
-      render(
-        <UserRoleField
-          {...defaultProps}
-          role={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
-        />
-      );
-
-      const adminButton = screen.getByLabelText("Administrator");
-      expect(adminButton).toBeChecked();
-    });
-
-    it("should select no access role in update mode", () => {
-      render(
-        <UserRoleField
-          {...defaultProps}
-          role={USER_ACCESS_LEVELS.NO_ACCESS.CODE}
-          isUpdate={true}
-        />
-      );
-
-      const noAccessButton = screen.getByLabelText("No Access");
-      expect(noAccessButton).toBeChecked();
-    });
+    expect(screen.getByRole("button", { name: "Admin" })).toHaveAttribute(
+      "aria-pressed",
+      "true"
+    );
+    expect(screen.getByRole("button", { name: "Conductor" })).toHaveAttribute(
+      "aria-pressed",
+      "false"
+    );
   });
 
-  describe("user interaction", () => {
-    it("should call handleRoleChange when button is clicked", async () => {
-      const handleRoleChange = vi.fn();
-      const user = userEvent.setup();
+  it("calls handleRoleChange with the selected role", async () => {
+    const handleRoleChange = vi.fn();
+    const user = userEvent.setup();
 
-      render(
-        <UserRoleField {...defaultProps} handleRoleChange={handleRoleChange} />
-      );
+    render(
+      <UserRoleField {...defaultProps} handleRoleChange={handleRoleChange} />
+    );
 
-      const readOnlyButton = screen.getByText("Read-only");
-      await user.click(readOnlyButton);
+    await user.click(screen.getByRole("button", { name: "Read-only" }));
 
-      expect(handleRoleChange).toHaveBeenCalled();
-    });
+    expect(handleRoleChange).toHaveBeenCalledWith(
+      USER_ACCESS_LEVELS.READ_ONLY.CODE
+    );
   });
 
-  describe("button variants", () => {
-    it("should have correct variant classes", () => {
-      const { container } = render(
-        <UserRoleField {...defaultProps} isUpdate={true} />
-      );
+  it("keeps the Tailwind toggle layout", () => {
+    const { container } = render(<UserRoleField {...defaultProps} />);
 
-      const buttons = container.querySelectorAll(
-        ".btn-outline-danger, .btn-outline-secondary, .btn-outline-success, .btn-outline-primary"
-      );
-      expect(buttons.length).toBe(4);
-    });
+    expect(container.querySelector('[data-slot="toggle-group"]')).toHaveClass(
+      "flex",
+      "flex-nowrap",
+      "gap-0",
+      "justify-center",
+      "w-full"
+    );
+    expect(screen.getAllByRole("button")).toHaveLength(4);
   });
 
-  describe("styling", () => {
-    it("should have fluid-button class on all buttons", () => {
-      const { container } = render(
-        <UserRoleField {...defaultProps} isUpdate={true} />
-      );
+  it("uses update mode by default", () => {
+    render(
+      <UserRoleField
+        handleRoleChange={defaultProps.handleRoleChange}
+        role={defaultProps.role}
+      />
+    );
 
-      const fluidButtons = container.querySelectorAll(".fluid-button");
-      expect(fluidButtons.length).toBe(4);
-    });
-
-    it("should have centered text", () => {
-      const { container } = render(<UserRoleField {...defaultProps} />);
-
-      const centered = container.querySelector(".text-center");
-      expect(centered).toBeInTheDocument();
-    });
-  });
-
-  describe("form group", () => {
-    it("should be part of form group", () => {
-      const { container } = render(<UserRoleField {...defaultProps} />);
-
-      const formGroup = container.querySelector(".mb-1");
-      expect(formGroup).toBeInTheDocument();
-    });
-
-    it("should have radio type toggle buttons", () => {
-      const { container } = render(<UserRoleField {...defaultProps} />);
-
-      const toggleGroup = container.querySelector('[name="status"]');
-      expect(toggleGroup).toBeInTheDocument();
-    });
-  });
-
-  describe("accessibility", () => {
-    it("should have proper button labels", () => {
-      render(<UserRoleField {...defaultProps} isUpdate={false} />);
-
-      const buttons = screen.getAllByRole("radio");
-      expect(buttons).toHaveLength(3);
-    });
-
-    it("should have unique IDs for each button", () => {
-      const { container } = render(
-        <UserRoleField {...defaultProps} isUpdate={true} />
-      );
-
-      expect(container.querySelector("#status-tb-0")).toBeInTheDocument();
-      expect(container.querySelector("#status-tb-1")).toBeInTheDocument();
-      expect(container.querySelector("#status-tb-2")).toBeInTheDocument();
-      expect(container.querySelector("#status-tb-4")).toBeInTheDocument();
-    });
-  });
-
-  describe("default prop values", () => {
-    it("should use isUpdate=true by default", () => {
-      const { handleRoleChange, role } = defaultProps;
-      render(<UserRoleField handleRoleChange={handleRoleChange} role={role} />);
-
-      expect(screen.getByText("No Access")).toBeInTheDocument();
-    });
+    expect(
+      screen.getByRole("button", { name: "No Access" })
+    ).toBeInTheDocument();
   });
 });

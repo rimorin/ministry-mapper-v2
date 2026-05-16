@@ -1,8 +1,5 @@
-import { AuthModel } from "pocketbase";
-import { LinkSession, Policy } from "./policies";
-import { MultiValue } from "react-select";
-import { FallbackProps } from "react-error-boundary";
-import { Value } from "react-calendar/dist/shared/types.js";
+import type { AuthModel } from "pocketbase";
+import type { LinkSession, Policy } from "./policies";
 export interface userInterface {
   user: AuthModel;
 }
@@ -50,7 +47,7 @@ export interface unitDetails {
   totalunits?: number;
 }
 
-export interface addressOptionResponse {
+interface addressOptionResponse {
   id: string;
   aoId: string;
 }
@@ -172,25 +169,23 @@ export interface addressDetails extends nameInterface, coordinatesInterface {
 export interface FormProps {
   handleChange?: (event: React.ChangeEvent<HTMLElement>) => void;
   handleClick?: (event: React.MouseEvent<HTMLElement>) => void;
-  handleGroupChange?: (
-    value: string,
-    event: React.ChangeEvent<HTMLElement>
-  ) => void;
+  handleGroupChange?: (value: string) => void;
   handleChangeValues?: (values: string[]) => void;
-  handleDateChange?: (date: Value) => void;
+  handleDateChange?: (date: Date) => void;
   changeDate?: number;
   changeValue?: string;
   changeValues?: string[];
   name?: string;
   label?: string;
   placeholder?: string;
-  rows?: number;
   required?: boolean;
   information?: string;
   inputType?: string;
   readOnly?: boolean;
   focus?: boolean;
   autoComplete?: string;
+  onClear?: () => void;
+  textareaClassName?: string;
 }
 
 export interface FloorProps {
@@ -205,16 +200,7 @@ export interface TitleProps extends nameInterface, floorInterface {
 
 export interface BrandingProps {
   naming?: string;
-}
-
-export interface FooterProps {
-  isSaving?: boolean;
-  disableSubmitBtn?: boolean;
-  userAccessLevel?: string;
-  requiredAcLForSave?: string;
-  submitLabel?: string;
-  handleClick?: (event: React.MouseEvent<HTMLElement>) => void;
-  children?: React.ReactNode;
+  hideNameOnMobile?: boolean;
 }
 
 export interface SubmitBtnProps {
@@ -246,6 +232,8 @@ export interface AuthorizerProp {
 export interface aggregateBadgeProp {
   aggregate?: number;
   width?: string;
+  className?: string;
+  size?: "sm" | "md";
 }
 
 export interface floorHeaderProp extends floorInterface {
@@ -259,10 +247,18 @@ export interface tableHeaderProp {
 
 export interface territoryHeaderProp {
   name: string | undefined;
+  isMapView?: boolean;
+  isAssignmentLoading?: boolean;
+  hasSelectedTerritory?: boolean;
+  userAccessLevel?: string;
+  onToggleView?: () => void;
+  onGenerateLink?: () => void;
+  onCreateMap?: () => void;
 }
 
 export interface backToTopProp {
   showButton: boolean;
+  onScrollToTop?: () => void;
 }
 
 export interface territoryTableProps {
@@ -336,10 +332,7 @@ export interface UserListingProps {
 }
 
 export interface UserRoleProps {
-  handleRoleChange?: (
-    value: string,
-    event: React.ChangeEvent<HTMLElement>
-  ) => void;
+  handleRoleChange?: (value: string) => void;
   role?: string;
   isUpdate?: boolean;
 }
@@ -356,13 +349,8 @@ export interface SelectProps {
   label: string;
 }
 
-export interface OptionProps {
-  code: string;
-  description: string;
-}
-
 export interface HouseholdProps {
-  handleChange?: (option: MultiValue<SelectProps>) => void;
+  handleChange?: (option: SelectProps[]) => void;
   changeValue?: typeInterface[];
   options: Array<SelectProps>;
 }
@@ -401,11 +389,11 @@ export interface latlongInterface {
   lng: number;
 }
 
-export interface coordinatesInterface {
+interface coordinatesInterface {
   coordinates: latlongInterface;
 }
 
-export interface originInterface {
+interface originInterface {
   origin: string;
 }
 
@@ -423,16 +411,11 @@ export interface ConfigureAddressCoordinatesModalProps
 export interface GetMapGeolocationModalProps
   extends coordinatesInterface, originInterface, nameInterface {}
 
-export interface ChangeTerritoryCodeModalProps
+export interface ChangeTerritoryDetailsModalProps
   extends congregationInterface, footerInterface {
   territoryCode: string;
   territoryId: string;
-}
-
-export interface ChangeTerritoryNameModalProps
-  extends congregationInterface, footerInterface {
   name: string | undefined;
-  territoryCode: string;
 }
 
 export interface UpdateCongregationOptionsModalProps {
@@ -452,8 +435,6 @@ export interface NewPrivateAddressModalProps
   territoryCode: string;
   defaultType: string;
 }
-
-export type NewPublicAddressModalProps = NewPrivateAddressModalProps;
 
 export interface NewTerritoryCodeModalProps
   extends congregationInterface, footerInterface, originInterface {}
@@ -497,7 +478,6 @@ export interface QueuedOp {
     not_home_tries: number;
     dnc_time: string;
     coordinates: string | null;
-    updated_by: string;
   };
   /** Option IDs the user saw when opening the modal — used for 3-way merge at flush time. */
   initialOptionIds: string[];
@@ -520,7 +500,6 @@ export interface QueuedOp {
     floor: number;
     sequence: number;
     congregation: string;
-    created_by: string;
     source: string;
   };
 }
@@ -566,7 +545,7 @@ export interface CreateAddressModalProps {
   onOptimisticCreate?: (newUnit: unitDetails) => void;
 }
 
-export interface AggregatesProps {
+interface AggregatesProps {
   value: number;
   display: string;
   notHome: number;
@@ -583,44 +562,6 @@ export interface Message {
   type: string;
 }
 
-export interface GeneratedMapModalProps {
-  territoryId: string;
-  linkId?: string;
-  mapName?: string;
-  progress?: number;
-  notDone?: number;
-  notHome?: number;
-  assignees?: string[];
-  coordinates?: latlongInterface;
-  origin?: latlongInterface;
-}
-
-export interface SpeedDialAction {
-  icon: React.ReactNode;
-  label: string;
-  onClick: () => void;
-  disabled?: boolean;
-  variant?: string;
-  keepOpen?: boolean;
-}
-
-export interface SpeedDialProps {
-  icon?: React.ReactNode;
-  actions: SpeedDialAction[];
-  direction?: "up" | "down" | "left" | "right";
-  className?: string;
-  size?: "sm" | "lg";
-  variant?: string;
-  keepOpenOnAction?: boolean;
-  position?: {
-    bottom?: string;
-    right?: string;
-    top?: string;
-    left?: string;
-  };
-}
-
-// Map listing component interfaces
 export interface MapListingProps {
   sortedAddressList: addressDetails[];
   mapViews: Map<string, boolean>;
@@ -634,7 +575,7 @@ export interface MapListingProps {
   resetMap: (mapId: string) => Promise<void>;
   deleteMap: (mapId: string, name: string, showAlert: boolean) => Promise<void>;
   values: object;
-  accordingKeys: string[];
+  accordionKeys: string[];
   setAccordionKeys: React.Dispatch<React.SetStateAction<string[]>>;
   isReadonly: boolean;
   territoryId: string;
@@ -646,7 +587,7 @@ export interface MapRowProps {
   processingMap: { isProcessing: boolean; mapId: string | null };
   policy: Policy;
   userAccessLevel: string;
-  accordingKeys: string[];
+  accordionKeys: string[];
   isReadonly: boolean;
   dropDirections: DropDirections;
   territoryId: string;
@@ -672,11 +613,8 @@ export interface MapRowProps {
     handleToggleMapExpansion: (mapId: string) => void;
     handleSequenceUpdate: (mapId: string) => void;
   };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  t: any;
+  t: import("i18next").TFunction;
 }
-
-// Component-specific interfaces
 
 export interface GenericDropdownButtonProps {
   label: React.ReactNode;
@@ -699,6 +637,8 @@ export interface GenericDropdownButtonProps {
 export interface GenericDropdownItemProps {
   onClick?: () => void;
   children: React.ReactNode;
+  icon?: React.ReactNode;
+  variant?: "default" | "destructive";
 }
 
 export interface GenericButtonProps {
@@ -710,6 +650,8 @@ export interface GenericButtonProps {
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   dataAttributes?: Record<string, string>;
+  "aria-label"?: string;
+  title?: string;
 }
 
 export interface MapViewProps {
@@ -745,39 +687,10 @@ export interface CircularProgressProps {
   children?: React.ReactNode;
 }
 
-export interface PersonalButtonGroupProps {
-  addressElement: addressDetails;
-  policy: Policy;
-  userId: string;
-}
-
-export interface StateMiddlewareProps {
-  children: React.ReactElement;
-}
-
-export interface MaintenanceMiddlewareProps {
-  underMaintenance: boolean;
-  children: React.ReactElement;
-}
-
 export interface AssignmentStatus {
   hasAssignments: boolean;
   hasPersonal: boolean;
 }
-
-export interface MapsMiddlewareProps {
-  children: React.ReactElement;
-}
-
-export interface MainMiddlewareProps {
-  children: React.ReactElement;
-}
-
-export interface CombinedMiddlewareProps {
-  children: React.ReactElement;
-}
-
-// Language-related interfaces
 
 export type LanguageContextType = {
   currentLanguage: string;
@@ -797,19 +710,8 @@ export interface LanguageListingProps {
   languageOptions: Array<{ label: string; value: string }>;
 }
 
-// Hook interfaces
-
 export interface CongregationManagementOptions {
   userId: string;
-}
-
-// State management interfaces
-
-export interface StateType {
-  frontPageMode: "login" | "signup" | "forgot";
-  setFrontPageMode: React.Dispatch<
-    React.SetStateAction<"login" | "signup" | "forgot">
-  >;
 }
 
 export type ThemeMode = "light" | "dark" | "system";
@@ -827,12 +729,6 @@ export interface TerritoryMapSequenceModalProps extends footerInterface {
   territoryId: string;
 }
 
-export interface OptionTooltipProps {
-  id: string;
-  children: React.ReactNode;
-  title: string;
-}
-
 export interface ConfirmDialogProps {
   title: string;
   message: string;
@@ -840,15 +736,4 @@ export interface ConfirmDialogProps {
   cancelText?: string;
   variant?: "danger" | "warning" | "primary" | "secondary";
   focusConfirm?: boolean;
-}
-
-// Error Boundary Interfaces
-
-export interface ErrorBoundaryFallbackProps extends FallbackProps {
-  componentName?: string;
-}
-
-export interface ErrorHandlerOptions {
-  context?: string;
-  silent?: boolean;
 }

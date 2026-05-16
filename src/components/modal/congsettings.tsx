@@ -1,17 +1,36 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-
-import { useState, FormEvent } from "react";
-import { Form, Row, Col, Modal } from "react-bootstrap";
+import NiceModal from "@ebay/nice-modal-react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Slider } from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import {
   DEFAULT_CONGREGATION_MAX_TRIES,
-  DEFAULT_SELF_DESTRUCT_HOURS,
-  USER_ACCESS_LEVELS
+  DEFAULT_SELF_DESTRUCT_HOURS
 } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
-import ModalFooter from "../form/footer";
 import { UpdateCongregationSettingsModalProps } from "../../utils/interface";
 import { updateDataById } from "../../utils/pocketbase";
-import { useTranslation } from "react-i18next";
+
+type FormValues = { name: string; maxTries: number; defaultExpiryHrs: number };
 
 const UpdateCongregationSettings = NiceModal.create(
   ({
@@ -20,135 +39,178 @@ const UpdateCongregationSettings = NiceModal.create(
     currentMaxTries = DEFAULT_CONGREGATION_MAX_TRIES,
     currentDefaultExpiryHrs = DEFAULT_SELF_DESTRUCT_HOURS
   }: UpdateCongregationSettingsModalProps) => {
-    const modal = useModal();
     const { t } = useTranslation();
-    const { notifyWarning, runAction } = useNotification();
+    const { notifySuccess, runAction } = useNotification();
+    const {
+      modal,
+      dialogProps: baseDialogProps,
+      contentProps
+    } = useBaseUiDialog();
+    const form = useForm<FormValues>({
+      values: {
+        name: currentName,
+        maxTries: currentMaxTries,
+        defaultExpiryHrs: currentDefaultExpiryHrs
+      }
+    });
 
-    const [maxTries, setMaxTries] = useState(currentMaxTries);
-    const [defaultExpiryHrs, setDefaultExpiryHrs] = useState(
-      currentDefaultExpiryHrs
-    );
-    const [name, setName] = useState(currentName);
-    const [isSaving, setIsSaving] = useState(false);
+    const dialogProps = {
+      ...baseDialogProps,
+      onOpenChange: (open: boolean) => {
+        if (!open) {
+          form.reset();
+        }
+        baseDialogProps.onOpenChange(open);
+      }
+    };
 
-    const handleSubmitCongSettings = async (event: FormEvent<HTMLElement>) => {
-      event.preventDefault();
-      await runAction(
-        async () => {
-          await updateDataById(
-            "congregations",
-            currentCongregation,
-            {
-              name: name,
-              expiry_hours: defaultExpiryHrs,
-              max_tries: maxTries
-            },
-            {
-              requestKey: `congregations-details-${currentCongregation}`
-            }
-          );
-          notifyWarning(
-            t("congregation.settingsUpdated", "Congregation settings updated.")
-          );
-          window.location.reload();
-        },
-        { setLoading: setIsSaving }
-      );
+    const onSubmit = async (values: FormValues) => {
+      await runAction(async () => {
+        await updateDataById(
+          "congregations",
+          currentCongregation,
+          {
+            name: values.name,
+            expiry_hours: values.defaultExpiryHrs,
+            max_tries: values.maxTries
+          },
+          {
+            requestKey: `congregations-details-${currentCongregation}`
+          }
+        );
+        notifySuccess(
+          t("congregation.settingsUpdated", "Congregation settings updated.")
+        );
+        modal.resolve({
+          name: values.name,
+          maxTries: values.maxTries,
+          defaultExpiryHrs: values.defaultExpiryHrs
+        });
+        modal.hide();
+      });
     };
 
     return (
-      <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
-        <Form onSubmit={handleSubmitCongSettings}>
-          <Modal.Header>
-            <Modal.Title>
+      <Dialog {...dialogProps}>
+        <DialogContent {...contentProps}>
+          <DialogHeader>
+            <DialogTitle>
               {t("congregation.settings", "Congregation Settings")}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Form.Group className="mb-3" controlId="formBasicCongName">
-              <Form.Label>{t("common.name", "Name")}</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder={t(
-                  "congregation.enterName",
-                  "Enter congregation name"
+            </DialogTitle>
+            <DialogDescription className="sr-only">
+              Congregation settings
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("common.name", "Name")}</FormLabel>
+                    <FormControl>
+                      <Input
+                        {...field}
+                        aria-required="true"
+                        placeholder={t(
+                          "congregation.enterName",
+                          "Enter congregation name"
+                        )}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-                onChange={(event) => {
-                  const { value } = event.target as HTMLInputElement;
-                  setName(value);
-                }}
-                value={name}
               />
-            </Form.Group>
-            <Form.Group
-              className="mb-3"
-              controlId="formBasicTriesRange"
-              as={Row}
-            >
-              <Form.Label>
-                {t("congregation.numberOfTries", "No. of Tries")}
-              </Form.Label>
-              <Col xs="9">
-                <Form.Range
-                  min={1}
-                  max={4}
-                  value={maxTries}
-                  onChange={(event) => {
-                    const { value } = event.target as HTMLInputElement;
-                    setMaxTries(parseInt(value));
+              <FormField
+                control={form.control}
+                name="maxTries"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t("congregation.numberOfTries", "No. of Tries")}
+                    </FormLabel>
+                    <div className="flex items-center gap-4">
+                      <Slider
+                        min={1}
+                        max={4}
+                        step={1}
+                        value={[field.value]}
+                        onValueChange={(val) => field.onChange(val)}
+                        className="flex-1"
+                      />
+                      <span className="w-8 text-center text-sm tabular-nums">
+                        {field.value}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {t(
+                        "congregation.triesDescription",
+                        "The number of times to try not at homes before considering it done"
+                      )}
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="defaultExpiryHrs"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>
+                      {t(
+                        "congregation.defaultSlipExpiry",
+                        "Default Slip Expiry Hours"
+                      )}
+                    </FormLabel>
+                    <div className="flex items-center gap-4">
+                      <Slider
+                        min={1}
+                        max={24}
+                        step={1}
+                        value={[field.value]}
+                        onValueChange={(val) => field.onChange(val)}
+                        className="flex-1"
+                      />
+                      <span className="w-8 text-center text-sm tabular-nums">
+                        {field.value}
+                      </span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      {t(
+                        "congregation.expiryDescription",
+                        "The duration of the territory slip link before it expires"
+                      )}
+                    </p>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => {
+                    form.reset();
+                    modal.hide();
                   }}
-                />
-              </Col>
-              <Col xs="3">
-                <Form.Control value={maxTries} disabled />
-              </Col>
-              <Form.Text muted>
-                {t(
-                  "congregation.triesDescription",
-                  "The number of times to try not at homes before considering it done"
-                )}
-              </Form.Text>
-            </Form.Group>
-            <Form.Group
-              className="mb-3"
-              controlId="formBasicExpiryHoursRange"
-              as={Row}
-            >
-              <Form.Label>
-                {t(
-                  "congregation.defaultSlipExpiry",
-                  "Default Slip Expiry Hours"
-                )}
-              </Form.Label>
-              <Col xs="9">
-                <Form.Range
-                  min={1}
-                  max={24}
-                  value={defaultExpiryHrs}
-                  onChange={(event) => {
-                    const { value } = event.target as HTMLInputElement;
-                    setDefaultExpiryHrs(parseInt(value));
-                  }}
-                />
-              </Col>
-              <Col xs="3">
-                <Form.Control value={defaultExpiryHrs} disabled />
-              </Col>
-              <Form.Text muted>
-                {t(
-                  "congregation.expiryDescription",
-                  "The duration of the territory slip link before it expires"
-                )}
-              </Form.Text>
-            </Form.Group>
-          </Modal.Body>
-          <ModalFooter
-            handleClick={modal.hide}
-            isSaving={isSaving}
-            userAccessLevel={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
-          />
-        </Form>
-      </Modal>
+                >
+                  {t("common.cancel")}
+                </Button>
+                <Button type="submit" disabled={form.formState.isSubmitting}>
+                  {form.formState.isSubmitting && (
+                    <Spinner data-icon="inline-start" aria-hidden="true" />
+                  )}
+                  {t("common.save")}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     );
   }
 );

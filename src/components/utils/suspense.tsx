@@ -1,18 +1,17 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ReactNode, Suspense } from "react";
 import Loader from "../statics/loader";
 
-const SuspenseComponent = (
-  Component: React.LazyExoticComponent<any>,
+const SuspenseComponent = <P extends object>(
+  Component: React.ComponentType<P>,
   fallback: ReactNode = <Loader />
 ) => {
-  return (props: any) => {
-    return (
-      <Suspense fallback={fallback}>
-        <Component {...props} />
-      </Suspense>
-    );
-  };
+  const WrappedComponent = (props: P) => (
+    <Suspense fallback={fallback}>
+      <Component {...props} />
+    </Suspense>
+  );
+
+  return WrappedComponent;
 };
 
 export default SuspenseComponent;

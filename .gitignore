@@ -35,3 +35,5 @@ git_shell.sh
 
 .vite
 .nvmrc
+# Copilot CLI session database
+session.db

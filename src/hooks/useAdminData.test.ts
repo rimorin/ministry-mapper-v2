@@ -161,6 +161,21 @@ describe("useAdminData", () => {
       });
     });
 
+    it("should keep isLoading true when getList is aborted (prevents flash of GettingStarted)", async () => {
+      const abortError = { isAbort: true, message: "Aborted" };
+      vi.mocked(getList).mockRejectedValueOnce(abortError);
+
+      const { result } = renderHook(() => useAdminData(defaultProps));
+
+      expect(result.current.isLoading).toBe(true);
+
+      // ignoreAbort swallows the rethrown abort so fetchData itself doesn't reject
+      await result.current.fetchData();
+
+      // isLoading must stay true — replacement fetch is in flight
+      expect(result.current.isLoading).toBe(true);
+    });
+
     it("should use cached congregation code if valid", async () => {
       const mockRoles = [
         {
@@ -335,6 +350,17 @@ describe("useAdminData", () => {
         expect(result.current.hasAnyMaps).toBe(false);
       });
     });
+
+    it("should rethrow abort errors so loadAllCongregationData keeps isLoading true", async () => {
+      const abortError = { isAbort: true, message: "Aborted" };
+      vi.mocked(getPaginatedList).mockRejectedValueOnce(abortError);
+
+      const { result } = renderHook(() => useAdminData(defaultProps));
+
+      await expect(result.current.checkForMaps("cong-1")).rejects.toEqual(
+        abortError
+      );
+    });
   });
 
   describe("loadAllCongregationData", () => {
@@ -427,6 +453,20 @@ describe("useAdminData", () => {
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
+    });
+
+    it("should keep isLoading true when checkForMaps is aborted (prevents GettingStarted flash)", async () => {
+      const abortError = { isAbort: true, message: "Aborted" };
+      vi.mocked(getPaginatedList).mockRejectedValueOnce(abortError);
+
+      const { result } = renderHook(() => useAdminData(defaultProps));
+
+      await act(async () => {
+        await result.current.loadAllCongregationData("cong-1");
+      });
+
+      // isLoading must stay true — replacement fetch is in flight
+      expect(result.current.isLoading).toBe(true);
     });
   });
 

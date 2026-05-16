@@ -6,21 +6,21 @@ describe("MaintenanceMode", () => {
   it("should render the maintenance mode component", () => {
     const { container } = render(<MaintenanceMode />);
 
-    const title = container.querySelector(".card-title");
+    const title = container.querySelector('[data-slot="card-title"]');
     expect(title).toBeInTheDocument();
   });
 
   it("should display maintenance message", () => {
     const { container } = render(<MaintenanceMode />);
 
-    const cardText = container.querySelector(".card-text");
+    const cardText = container.querySelector(".text-justify");
     expect(cardText).toBeInTheDocument();
   });
 
   it("should render maintenance text with correct styling", () => {
     const { container } = render(<MaintenanceMode />);
 
-    const cardText = container.querySelector(".card-text");
+    const cardText = container.querySelector(".text-justify");
     expect(cardText).toBeInTheDocument();
     expect(cardText).toHaveClass("text-justify");
   });

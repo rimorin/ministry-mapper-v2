@@ -1,43 +1,37 @@
-import { use } from "react";
-import Select from "react-select";
 import { useTranslation } from "react-i18next";
-import { ThemeContext } from "../utils/context";
-import { HouseholdProps, SelectProps } from "../../utils/interface";
-import { getReactSelectStyles } from "../../utils/helpers/reactSelectStyles";
+import { Label } from "@/components/ui/label";
+import { MultiSelect } from "@/components/ui/multi-select";
+import type { HouseholdProps, SelectProps } from "../../utils/interface";
 
 const HouseholdField = ({
   handleChange,
   changeValue,
-  options
-}: HouseholdProps) => {
+  options,
+  error
+}: HouseholdProps & { error?: string }) => {
   const { t } = useTranslation();
-  const { actualTheme } = use(ThemeContext);
 
-  const customStyles = getReactSelectStyles<SelectProps, true>({
-    isDark: actualTheme === "dark"
-  });
+  const selectedIds = changeValue?.map((v) => v.id) ?? [];
 
-  const defaultValue = changeValue
-    ?.map((value) => options.find((option) => option.value === value.id))
-    .filter((option): option is SelectProps => option !== undefined);
+  const onValueChange = (values: string[]) => {
+    const selected = values
+      .map((id) => options.find((o) => o.value === id))
+      .filter((o): o is SelectProps => o !== undefined);
+    handleChange?.(selected);
+  };
 
   return (
-    <div className="mb-3">
-      <div className="mb-2 inline-block">
-        {t("household.household", "Household")}
-      </div>
-      <Select<SelectProps, true>
+    <div className="flex flex-col gap-1.5">
+      <Label>{t("household.household", "Household")}</Label>
+      <MultiSelect
         options={options}
-        onChange={handleChange}
-        defaultValue={defaultValue}
-        isMulti
-        required
+        value={selectedIds}
+        onChange={onValueChange}
         placeholder={t("household.select", "Select household type...")}
-        noOptionsMessage={() =>
-          t("household.noOptions", "No options available")
-        }
-        styles={customStyles}
+        noOptionsMessage={t("household.noOptions", "No options available")}
+        label={t("household.household", "Household")}
       />
+      {error && <p className="text-xs text-destructive">{error}</p>}
     </div>
   );
 };

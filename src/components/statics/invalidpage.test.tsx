@@ -16,10 +16,9 @@ describe("InvalidPage", () => {
   });
 
   it("should render StaticPageCard with correct title", () => {
-    const { container } = render(<InvalidPage />);
+    render(<InvalidPage />);
 
-    const title = container.querySelector(".card-title");
-    expect(title).toBeInTheDocument();
-    expect(title?.textContent).toMatch(/This link has expired/i);
+    const title = screen.getByText(/This link has expired/i);
+    expect(title).toHaveAttribute("data-slot", "card-title");
   });
 });

@@ -2,11 +2,6 @@ import { useEffect, useRef } from "react";
 import { useMap, useMapEvents } from "react-leaflet";
 import { latlongInterface } from "../../utils/interface";
 
-/**
- * MapController manages map position and handles user interactions
- * Uses flag to prevent infinite loops from programmatic vs user-initiated moves
- * Only applies initial zoom once, preserving user's manual zoom adjustments
- */
 export const MapController: React.FC<{
   center?: latlongInterface | null;
   onCenterChange?: (center: latlongInterface) => void;
@@ -27,13 +22,16 @@ export const MapController: React.FC<{
       } else {
         map.panTo([center.lat, center.lng]);
       }
-      setTimeout(() => (isProgrammaticMove.current = false), 100);
     }
   }, [center, map, trigger, zoomLevel]);
 
   useMapEvents({
     moveend: () => {
-      if (onCenterChange && !isProgrammaticMove.current) {
+      if (isProgrammaticMove.current) {
+        isProgrammaticMove.current = false;
+        return;
+      }
+      if (onCenterChange) {
         const { lat, lng } = map.getCenter();
         onCenterChange({ lat, lng });
       }

@@ -1,7 +1,7 @@
 import { FC, lazy, use } from "react";
-import { Button, Image } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import NiceModal from "@ebay/nice-modal-react";
+import { Button } from "@/components/ui/button";
 import { useReleaseNotesContext } from "../middlewares/releasenotescontext";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 import { ThemeContext } from "../utils/context";
@@ -23,7 +23,7 @@ const ReleaseHistoryBtn: FC<ReleaseHistoryBtnProps> = ({ className = "" }) => {
 
   return (
     <Button
-      variant="outline-primary"
+      variant="outline"
       size="sm"
       onClick={handleClick}
       disabled={isLoading || allReleases.length === 0}
@@ -31,7 +31,7 @@ const ReleaseHistoryBtn: FC<ReleaseHistoryBtnProps> = ({ className = "" }) => {
       aria-label={t("releaseNotes.history", "Release History")}
       title={t("releaseNotes.history", "Release History")}
     >
-      <Image
+      <img
         src={getAssetUrl("changelog.svg")}
         alt=""
         aria-hidden="true"

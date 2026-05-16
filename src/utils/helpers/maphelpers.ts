@@ -4,9 +4,6 @@ import { DEFAULT_COORDINATES } from "../constants";
 export const getNextSequence = (sequences: number[]): number =>
   Math.max(0, ...sequences) + 1;
 
-/**
- * Validate if a coordinate has valid lat/lng numbers
- */
 export const isValidCoordinate = (
   coord: unknown
 ): coord is latlongInterface => {
@@ -32,10 +29,6 @@ export const getPolygonCenter = (
   return [latSum / coordinates.length, lngSum / coordinates.length];
 };
 
-/**
- * Calculate the centroid of a polygon from its coordinates
- * @returns Object {lat, lng} for use with map center or other purposes
- */
 export const getPolygonCenterAsObject = (
   coordinates: latlongInterface[]
 ): latlongInterface => {
@@ -43,15 +36,9 @@ export const getPolygonCenterAsObject = (
   return { lat, lng };
 };
 
-/**
- * Get default map center from coordinates
- * @param coordinates - Optional polygon coordinates array or single coordinate
- * @returns Default center coordinates
- */
 export const getDefaultMapCenter = (
   coordinates?: latlongInterface[] | latlongInterface
 ): latlongInterface => {
-  // Handle array of coordinates (polygon)
   if (Array.isArray(coordinates) && coordinates.length >= 3) {
     const validCoords = coordinates.filter(isValidCoordinate);
     if (validCoords.length >= 3) {
@@ -59,7 +46,6 @@ export const getDefaultMapCenter = (
     }
   }
 
-  // Handle single coordinate object
   if (
     coordinates &&
     !Array.isArray(coordinates) &&
@@ -68,6 +54,18 @@ export const getDefaultMapCenter = (
     return coordinates;
   }
 
-  // Ultimate fallback
   return DEFAULT_COORDINATES.Singapore;
+};
+
+export const formatDistance = (meters: number): string =>
+  meters >= 1000
+    ? `${(meters / 1000).toFixed(1)} km`
+    : `${Math.round(meters)} m`;
+
+export const formatDuration = (seconds: number): string => {
+  const mins = Math.round(seconds / 60);
+  if (mins < 60) return `${mins} min`;
+  const hrs = Math.floor(mins / 60);
+  const rem = mins % 60;
+  return rem > 0 ? `${hrs} h ${rem} min` : `${hrs} h`;
 };

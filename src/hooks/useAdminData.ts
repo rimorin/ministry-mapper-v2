@@ -44,7 +44,7 @@ interface UseAdminDataProps {
   notifyError: (message: string, silent?: boolean) => void;
   notifyWarning: (message: string) => void;
   processCongregationTerritories: (
-    territories: RecordModel[]
+    territories: RecordModel[] | null | undefined
   ) => Map<string, territoryDetails>;
   territoryCodeCache: string;
   userEmail: string;
@@ -89,7 +89,8 @@ export default function useAdminData({
         requestKey: `user-roles-${userId}`
       });
     } catch (err) {
-      setIsLoading(false);
+      // Don't clear loading on abort — a replacement fetch is already in flight
+      if (!isAbortError(err)) setIsLoading(false);
       throw err;
     }
     if (userRoles.length === 0) {
@@ -209,7 +210,8 @@ export default function useAdminData({
       });
       setHasAnyMaps(maps.items.length > 0);
     } catch (error: unknown) {
-      if (!isAbortError(error)) setHasAnyMaps(false);
+      if (isAbortError(error)) throw error; // propagate aborts to loadAllCongregationData
+      setHasAnyMaps(false);
     }
   };
 
@@ -223,8 +225,13 @@ export default function useAdminData({
         fetchCongregationData(congregationCode),
         checkForMaps(congregationCode)
       ]);
-    } finally {
       setIsLoading(false);
+    } catch (error) {
+      if (!isAbortError(error)) {
+        setIsLoading(false);
+        throw error;
+      }
+      // Abort: a replacement fetch is already in flight — keep isLoading=true
     }
   };
 

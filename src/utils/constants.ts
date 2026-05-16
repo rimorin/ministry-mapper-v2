@@ -1,5 +1,3 @@
-import { getAssetUrl } from "./helpers/assetpath";
-
 const DESTINATION_PROXIMITY_THRESHOLD_METERS = 50;
 
 const DEFAULT_REPORT_ROLLING_DAYS = 30;
@@ -49,8 +47,6 @@ const ACCESS_LEVEL_MAPPING = {
   [USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE]: 3
 };
 
-const MUTABLE_CODES = [STATUS_CODES.DONE, STATUS_CODES.NOT_HOME];
-
 const LINK_TYPES = {
   VIEW: 0,
   ASSIGNMENT: "normal",
@@ -59,16 +55,13 @@ const LINK_TYPES = {
 
 const DEFAULT_UNIT_PADDING = 2;
 const DEFAULT_FLOOR_PADDING = 2;
-// 24 hours
 const DEFAULT_SELF_DESTRUCT_HOURS = 24;
-const MIN_PERCENTAGE_DISPLAY = 10;
-// 3 secs
-const FIREBASE_FUNCTION_TIMEOUT = 3000;
 
 const DEFAULT_CONGREGATION_MAX_TRIES = 1;
 
-const DEFAULT_CONGREGATION_OPTION_IS_MULTIPLE = false;
-const DEFAULT_MULTPLE_OPTION_DELIMITER = ", ";
+// Progress percentage at which a map enters its "endgame": remaining address
+// cells are highlighted and the map progress breakdown is surfaced.
+const ENDGAME_PROGRESS_THRESHOLD = 90;
 
 const COUNTABLE_HOUSEHOLD_STATUS = [
   STATUS_CODES.DONE,
@@ -80,24 +73,11 @@ const MIN_START_FLOOR = 1;
 const MAX_TOP_FLOOR = 50;
 const ADDRESS_CREATE_SOURCE = "app";
 
-const TERRITORY_SELECTOR_VIEWPORT_HEIGHT = "85vh";
-const LINK_SELECTOR_VIEWPORT_HEIGHT = "40vh";
-
-const TERRITORY_VIEW_WINDOW_WELCOME_TEXT =
-  "<!DOCTYPE html><html><head><title>Loading Territory...</title></<head><body><style> body {display: flex; justify-content: center;align-items: center;}</style><h1>Loading Territory...</h1></body></html>";
-
 const UNSUPPORTED_BROWSER_MSG = "Browser doesn't support this feature.";
-const PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY = 600;
-const DEFAULT_UNIT_DNC_MS_TIME = 0;
 
 const TERRITORY_TYPES = {
   SINGLE_STORY: "single",
   MULTIPLE_STORIES: "multi"
-};
-
-const NOTIFICATION_TYPES = {
-  FEEDBACK: 1,
-  INSTRUCTIONS: 2
 };
 
 const DEFAULT_AGGREGATES = {
@@ -112,9 +92,6 @@ const ALPHANUMERIC_HYPHEN = /^[a-zA-Z0-9-]+$/;
 const MINIMUM_PASSWORD_LENGTH = 6;
 
 const DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION = "sg";
-// create a map of coordinates for each congregation
-// key is the congregation name
-// value is the coordinates
 const DEFAULT_COORDINATES = {
   Singapore: {
     lat: 1.2814921633413734,
@@ -126,12 +103,6 @@ const DEFAULT_COORDINATES = {
   }
 };
 
-const CLOUD_FUNCTIONS_CALLS = {
-  UPDATE_USER_ACCESS: "updateUserAccess",
-  GET_CONGREGATION_USERS: "getCongregationUsers",
-  GET_USER_BY_EMAIL: "getUserByEmail"
-};
-
 const PB_SECURITY_HEADER_KEY = "link-id";
 
 const PB_FIELDS = {
@@ -139,7 +110,7 @@ const PB_FIELDS = {
     "id, code, description, is_countable, is_default, sequence",
   MESSAGES: "id, message, created_by, read, pinned, created, type",
   ASSIGNMENTS:
-    "id, user, type, expiry_date, publisher, created, expand.map.description",
+    "id, user, type, expiry_date, publisher, created, expand.map.description, expand.user.name",
   ADDRESSES_SUBSCRIPTION:
     "id, code, coordinates, notes, status, not_home_tries, dnc_time, sequence, floor, updated, updated_by",
   ADDRESS_OPTIONS: "id,address,option",
@@ -153,112 +124,38 @@ const PB_FIELDS = {
   USERS: "id, name, email"
 };
 
-const SPEED_DIAL = {
-  DIMENSIONS: {
-    FAB_SIZE: {
-      WIDTH: "52px",
-      HEIGHT: "52px"
-    },
-    ACTION_SIZE: {
-      WIDTH: "48px",
-      HEIGHT: "48px"
-    },
-    MOBILE_FAB_SIZE: {
-      WIDTH: "48px",
-      HEIGHT: "48px"
-    },
-    MOBILE_ACTION_SIZE: {
-      WIDTH: "40px",
-      HEIGHT: "40px"
-    }
-  },
-  SPACING: {
-    ACTION_DISTANCE: 70,
-    CENTER_OFFSET: 4 // (56 - 48) / 2
-  },
-  STYLES: {
-    Z_INDEX: 1050,
-    OPACITY: 0.9,
-    BACKDROP_OPACITY: 0.1,
-    BOX_SHADOW: {
-      FAB: "0 4px 12px rgba(0,0,0,0.15)",
-      ACTION: "0 2px 8px rgba(0,0,0,0.15)",
-      HOVER_FAB: "0 6px 16px rgba(0, 0, 0, 0.2)",
-      HOVER_ACTION: "0 4px 12px rgba(0, 0, 0, 0.2)"
-    }
-  },
-  TRANSITIONS: {
-    DURATION: "0.2s",
-    EASING: "ease-in-out",
-    STAGGER_DELAY: 0.05
-  },
-  TRANSFORM: {
-    SCALE: {
-      NORMAL: 1,
-      HOVER: 1.1,
-      ACTIVE_FAB: 0.95,
-      ACTIVE_ACTION: 0.9,
-      CLOSED: 0
-    },
-    ROTATION: {
-      CLOSED: "0deg",
-      OPEN: "45deg"
-    }
-  },
-  DEFAULTS: {
-    DIRECTION: "up" as const,
-    VARIANT: "primary",
-    POSITION: {
-      bottom: "30px",
-      left: "25px"
-    },
-    ICON_URL: getAssetUrl("plus.svg"),
-    ICON_SIZE: 24
-  },
-  MOBILE_BREAKPOINT: 768
-};
-
 const REALTIME_DEBOUNCE_MS = 100;
+
+const PREFERRED_TRAVEL_MODE_KEY = "preferredTravelMode";
 
 export {
   UNSUPPORTED_BROWSER_MSG,
   STATUS_CODES,
-  MUTABLE_CODES,
   DEFAULT_FLOOR_PADDING,
   DEFAULT_SELF_DESTRUCT_HOURS,
-  TERRITORY_VIEW_WINDOW_WELCOME_TEXT,
   NOT_HOME_STATUS_CODES,
   MIN_START_FLOOR,
   MAX_TOP_FLOOR,
   COUNTABLE_HOUSEHOLD_STATUS,
   USER_ACCESS_LEVELS,
   LINK_TYPES,
-  TERRITORY_SELECTOR_VIEWPORT_HEIGHT,
-  FIREBASE_FUNCTION_TIMEOUT,
-  MIN_PERCENTAGE_DISPLAY,
-  PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY,
-  DEFAULT_UNIT_DNC_MS_TIME,
   TERRITORY_TYPES,
   SPECIAL_CHARACTERS,
   MINIMUM_PASSWORD_LENGTH,
   DEFAULT_CONGREGATION_MAX_TRIES,
+  ENDGAME_PROGRESS_THRESHOLD,
   ALPHANUMERIC_HYPHEN,
-  LINK_SELECTOR_VIEWPORT_HEIGHT,
-  NOTIFICATION_TYPES,
   DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
-  DEFAULT_CONGREGATION_OPTION_IS_MULTIPLE,
-  DEFAULT_MULTPLE_OPTION_DELIMITER,
   DEFAULT_COORDINATES,
-  CLOUD_FUNCTIONS_CALLS,
   DEFAULT_AGGREGATES,
   ACCESS_LEVEL_MAPPING,
   DEFAULT_UNIT_PADDING,
   MESSAGE_TYPES,
   PB_SECURITY_HEADER_KEY,
   PB_FIELDS,
-  SPEED_DIAL,
   DESTINATION_PROXIMITY_THRESHOLD_METERS,
   DEFAULT_REPORT_ROLLING_DAYS,
   ADDRESS_CREATE_SOURCE,
-  REALTIME_DEBOUNCE_MS
+  REALTIME_DEBOUNCE_MS,
+  PREFERRED_TRAVEL_MODE_KEY
 };

@@ -25,7 +25,7 @@
 }
 
 .virtual-map-container .map-item {
-  border: 1px solid var(--mm-overlay-black-12);
+  border: 1px solid rgba(0, 0, 0, 0.125);
   border-top: 0;
   overflow: visible;
   box-sizing: border-box;
@@ -33,12 +33,12 @@
   width: 100%;
   border-radius: 0.5rem;
   margin-bottom: 0.5rem;
-  box-shadow: 0 2px 6px var(--mm-shadow-md);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   will-change: transform;
 }
 
 .virtual-map-container .map-item:first-child {
-  border-top: 1px solid var(--mm-overlay-black-12);
+  border-top: 1px solid rgba(0, 0, 0, 0.125);
 }
 
 .virtual-map-container .map-header {
@@ -49,9 +49,9 @@
   display: flex;
   align-items: center;
   border-radius: 0.5rem 0.5rem 0 0;
-  background: var(--mm-gradient-blue-light);
-  border-bottom: 1px solid var(--mm-overlay-black-10);
-  box-shadow: 0 2px 4px var(--mm-warning-alpha-30);
+  background: var(--muted);
+  border-left: 4px solid var(--primary);
+  border-bottom: 1px solid var(--border);
   overflow: hidden;
 }
 
@@ -62,8 +62,8 @@
   width: 100%;
   padding: var(--vmap-header-padding);
   font-size: 1rem;
-  color: var(--mm-text-body);
-  font-weight: 500;
+  color: var(--foreground);
+  font-weight: 600;
   text-align: left;
   background: transparent;
   border: 0;
@@ -72,11 +72,11 @@
   height: var(--vmap-header-height);
   min-height: var(--vmap-header-height);
   transition:
-    color var(--mm-transition-fast),
-    background var(--mm-transition-fast),
-    border-color var(--mm-transition-fast),
-    box-shadow var(--mm-transition-fast),
-    font-weight var(--mm-transition-fast);
+    color 0.15s ease-in-out,
+    background 0.15s ease-in-out,
+    border-color 0.15s ease-in-out,
+    box-shadow 0.15s ease-in-out,
+    font-weight 0.15s ease-in-out;
 }
 
 @media (max-width: 768px) {
@@ -91,63 +91,18 @@
   }
 }
 
-.virtual-map-container .map-toggle-button:not(.collapsed) {
-  color: var(--mm-text-body);
-  background: rgba(255, 255, 255, 0.3);
-  box-shadow: inset 0 -1px 0 var(--mm-overlay-black-10);
-  font-weight: 600;
-}
-
-.virtual-map-container .map-toggle-button:hover {
-  z-index: 2;
-  background: rgba(255, 255, 255, 0.4);
-  color: var(--mm-text-body);
-  font-weight: 600;
-}
-
-.virtual-map-container .map-toggle-button:hover:not(.collapsed) {
-  background: rgba(255, 255, 255, 0.5);
-  color: var(--mm-text-body);
-}
-
 .virtual-map-container .map-toggle-button:focus {
   z-index: 3;
-  border-color: var(--mm-primary-light);
   outline: 0;
-  box-shadow: var(--mm-focus-shadow);
-}
-
-.virtual-map-container .map-toggle-button::after {
-  flex-shrink: 0;
-  width: 1.25rem;
-  height: 1.25rem;
-  margin-left: auto;
-  content: "";
-  background-image: url("https://assets.ministry-mapper.com/up-chevron.svg");
-  background-repeat: no-repeat;
-  background-size: 1.25rem;
-  transition: transform 0.2s ease-in-out;
-}
-
-@media (max-width: 480px) {
-  .virtual-map-container .map-toggle-button::after {
-    width: 1rem;
-    height: 1rem;
-    background-size: 1rem;
-  }
-}
-
-.virtual-map-container .map-toggle-button:not(.collapsed)::after {
-  background-image: url("https://assets.ministry-mapper.com/up-chevron.svg");
-  transform: rotate(-180deg);
+  box-shadow: none;
 }
 
 .virtual-map-container .map-content {
   border-top: none;
-  background-color: var(--mm-white);
+  background-color: var(--background);
   overflow: visible;
   position: relative;
-  transition: var(--mm-transition-fast);
+  transition: opacity 0.15s ease-in-out;
   border-radius: 0 0 0.5rem 0.5rem;
   box-sizing: border-box;
   width: 100%;
@@ -155,53 +110,16 @@
 
 .virtual-map-container .map-content-body {
   padding: 0;
-  background-color: var(--mm-gray-50);
+  background-color: var(--background);
   position: relative;
   overflow: visible;
-}
-
-.virtual-map-container .map-content-body .navbar {
-  overflow: visible;
-  position: relative;
-  z-index: 1060;
-}
-
-.virtual-map-container .map-content-body .table-responsive {
-  max-height: 500px;
-  overflow-y: auto;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-  border: 1px solid var(--mm-overlay-black-12);
-  border-radius: 0.375rem;
-  scroll-behavior: smooth;
-}
-
-@media (max-width: 768px) {
-  .virtual-map-container .map-content-body .table-responsive {
-    max-height: 450px;
-  }
-}
-
-@media (max-width: 480px) {
-  .virtual-map-container .map-content-body .table-responsive {
-    max-height: 420px;
-    overscroll-behavior: contain;
-    min-height: 200px;
-    font-size: 0.875rem;
-  }
-}
-
-@media (max-width: 430px) {
-  .virtual-map-container .map-content-body .table-responsive {
-    max-height: 440px;
-    padding: 0.25rem;
-  }
 }
 
 .virtual-map-container .map-toggle-button:disabled {
   pointer-events: none;
-  color: var(--mm-secondary);
-  background-color: var(--mm-gray-100);
+  cursor: default;
+  color: var(--muted-foreground);
+  background-color: var(--card);
 }
 
 .virtual-map-container .map-toggle-button:disabled::after {
@@ -224,4 +142,18 @@
 
 .map-container-flush .map-item .map-toggle-button {
   border-radius: 0;
+}
+
+/* Raw rgba() values are intentional here because there are no matching dark-mode tokens for these hover effects. */
+.dark .virtual-map-container .map-toggle-button {
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.dark .virtual-map-container .map-toggle-button:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.dark .virtual-map-container .map-toggle-button::after {
+  filter: invert(1) brightness(1.2);
 }

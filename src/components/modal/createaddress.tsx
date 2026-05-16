@@ -1,22 +1,33 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal from "@ebay/nice-modal-react";
 import { useState, FormEvent, ChangeEvent, lazy } from "react";
-import { Modal, Form, Collapse } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  USER_ACCESS_LEVELS,
   STATUS_CODES,
   NOT_HOME_STATUS_CODES,
   MIN_START_FLOOR,
   ADDRESS_CREATE_SOURCE
 } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
-import {
+import type {
   latlongInterface,
   SelectProps,
   typeInterface,
   CreateAddressModalProps
 } from "../../utils/interface";
 import DncDateField from "../form/dncdate";
-import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import HHNotHomeField from "../form/nothome";
 import HHStatusField from "../form/status";
@@ -24,7 +35,7 @@ import GenericTextAreaField from "../form/textarea";
 import HHTypeField from "../form/household";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import { sanitizePropertyCode } from "../../utils/helpers/processpropertyno";
-import { MultiValue } from "react-select";
+import ComponentAuthorizer from "../navigation/authorizer";
 const ChangeMapGeolocation = lazy(() => import("./changegeolocation"));
 
 const CreateAddress = NiceModal.create(
@@ -37,7 +48,7 @@ const CreateAddress = NiceModal.create(
     writeCreate,
     onOptimisticCreate
   }: CreateAddressModalProps) => {
-    const modal = useModal();
+    const { modal, hide, dialogProps, contentProps } = useBaseUiDialog();
     const { t } = useTranslation();
     const { notifyWarning, runAction } = useNotification();
     const { showModal } = useModalManagement();
@@ -46,8 +57,6 @@ const CreateAddress = NiceModal.create(
     const addressName = addressData.name;
     const addressType = addressData.type;
 
-    const [isNotHome, setIsNotHome] = useState(false);
-    const [isDnc, setIsDnc] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
     const [hhType, setHhtype] = useState<typeInterface[] | undefined>(
       undefined
@@ -59,8 +68,10 @@ const CreateAddress = NiceModal.create(
     const [coordinates, setCoordinates] = useState<
       latlongInterface | undefined
     >(undefined);
-    const [location, setLocation] = useState("");
     const [propertyNumber, setPropertyNumber] = useState("");
+
+    const isNotHome = unitStatus === STATUS_CODES.NOT_HOME;
+    const isDnc = unitStatus === STATUS_CODES.DO_NOT_CALL;
 
     const handleSubmitClick = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
@@ -81,8 +92,7 @@ const CreateAddress = NiceModal.create(
         status: unitStatus || STATUS_CODES.DEFAULT,
         not_home_tries: hhNhcount ? parseInt(hhNhcount) : 0,
         dnc_time: hhDnctime ? new Date(hhDnctime).toISOString() : "",
-        coordinates: coordinates ? JSON.stringify(coordinates) : null,
-        updated_by: policy.userName
+        coordinates: coordinates ? JSON.stringify(coordinates) : null
       };
       await runAction(
         async () => {
@@ -96,7 +106,6 @@ const CreateAddress = NiceModal.create(
               floor: MIN_START_FLOOR,
               sequence,
               congregation: policy.congregation,
-              created_by: policy.userName,
               source: ADDRESS_CREATE_SOURCE
             },
             updateData,
@@ -119,7 +128,7 @@ const CreateAddress = NiceModal.create(
                   })
               : undefined
           });
-          modal.hide();
+          hide();
         },
         { setLoading: setIsSaving }
       );
@@ -134,19 +143,13 @@ const CreateAddress = NiceModal.create(
       });
       const newCoordinates = result as latlongInterface;
       if (newCoordinates) {
-        setLocation(`${newCoordinates.lat}, ${newCoordinates.lng}`);
         setCoordinates(newCoordinates);
       }
     };
 
     const handleStatusChange = (toggleValue: string) => {
       let dnctime = undefined;
-      setIsNotHome(false);
-      setIsDnc(false);
-      if (toggleValue === STATUS_CODES.NOT_HOME) {
-        setIsNotHome(true);
-      } else if (toggleValue === STATUS_CODES.DO_NOT_CALL) {
-        setIsDnc(true);
+      if (toggleValue === STATUS_CODES.DO_NOT_CALL) {
         dnctime = new Date().getTime();
       }
       setHhNhcount(NOT_HOME_STATUS_CODES.DEFAULT);
@@ -158,9 +161,8 @@ const CreateAddress = NiceModal.create(
       setHhNhcount(toggleValue);
     };
 
-    const handleDncDateChange = (date: unknown) => {
-      const dateValue = date as Date;
-      setHhDnctime(dateValue.getTime());
+    const handleDncDateChange = (date: Date) => {
+      setHhDnctime(date.getTime());
     };
 
     const handleNoteChange = (e: ChangeEvent<HTMLElement>) => {
@@ -173,105 +175,128 @@ const CreateAddress = NiceModal.create(
       setPropertyNumber(sanitizePropertyCode(value));
     };
 
-    const handleHHTypeChange = (option: MultiValue<SelectProps>) => {
+    const handleHHTypeChange = (option: SelectProps[]) => {
       setHhtype(
         option.map((opt: SelectProps) => ({ id: opt.value, code: opt.label }))
       );
     };
 
     return (
-      <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
-        <Modal.Header>
-          <Modal.Title>
-            {t("address.createAddress", "Add address to {{name}}", {
-              name: addressName
-            })}
-          </Modal.Title>
-        </Modal.Header>
-        <Form onSubmit={handleSubmitClick}>
-          <Modal.Body
-            style={{
-              maxHeight: "70dvh",
-              overflowY: "auto"
-            }}
+      <Dialog {...dialogProps}>
+        <DialogContent
+          {...contentProps}
+          className={cn(contentProps.className, "flex flex-col h-[65dvh]")}
+        >
+          <DialogHeader>
+            <DialogTitle>
+              {t("address.createAddress", "Add address to {{name}}", {
+                name: addressName
+              })}
+            </DialogTitle>
+          </DialogHeader>
+          <form
+            onSubmit={handleSubmitClick}
+            className="flex flex-col flex-1 min-h-0 space-y-3"
           >
-            <HHStatusField
-              handleGroupChange={handleStatusChange}
-              changeValue={unitStatus}
-            />
-            <Collapse in={isDnc}>
-              <div className="text-center">
-                <DncDateField
-                  changeDate={hhDnctime}
-                  handleDateChange={handleDncDateChange}
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="space-y-3 px-1 py-1">
+                <HHStatusField
+                  handleGroupChange={handleStatusChange}
+                  changeValue={unitStatus}
                 />
-              </div>
-            </Collapse>
-            <Collapse in={isNotHome}>
-              <div className="text-center">
-                <HHNotHomeField
-                  changeValue={hhNhcount}
-                  handleGroupChange={handleNotHomeCountChange}
+                {isDnc && (
+                  <div className="text-center">
+                    <DncDateField
+                      changeDate={hhDnctime}
+                      handleDateChange={handleDncDateChange}
+                    />
+                  </div>
+                )}
+                {isNotHome && (
+                  <div className="text-center">
+                    <HHNotHomeField
+                      changeValue={hhNhcount}
+                      handleGroupChange={handleNotHomeCountChange}
+                    />
+                  </div>
+                )}
+                <GenericInputField
+                  label={t("address.propertyNumber", "Property Number")}
+                  name="propertyNumber"
+                  handleChange={handlePropertyNumberChange}
+                  changeValue={propertyNumber}
+                  required={true}
+                  autoComplete="off"
+                  placeholder={t(
+                    "address.propertyNumberPlaceholder",
+                    "e.g. 1, 2A, B3"
+                  )}
                 />
+                <HHTypeField
+                  handleChange={handleHHTypeChange}
+                  changeValue={hhType}
+                  options={policy.options.map((option) => ({
+                    label: option.description,
+                    value: option.id
+                  }))}
+                />
+                <GenericTextAreaField
+                  label={t("address.notes", "Notes")}
+                  name="note"
+                  handleChange={handleNoteChange}
+                  changeValue={hhNote}
+                  information={t(
+                    "address.notesInformation",
+                    "Property notes only. No personal information."
+                  )}
+                />
+                {addressType && (
+                  <GenericInputField
+                    label={t("address.coordinates", "Address Coordinates")}
+                    name="location"
+                    placeholder={t(
+                      "address.clickToSelectOnMap",
+                      "Click to select on map"
+                    )}
+                    handleClick={handleMapCoordinatesClick}
+                    changeValue={
+                      coordinates
+                        ? `${coordinates.lat}, ${coordinates.lng}`
+                        : ""
+                    }
+                    information={t(
+                      "address.coordinatesDescription",
+                      "Latitude and Longitude of the address."
+                    )}
+                    readOnly={true}
+                    autoComplete="off"
+                  />
+                )}
               </div>
-            </Collapse>
-            <GenericInputField
-              label={t("address.propertyNumber", "Property Number")}
-              name="propertyNumber"
-              handleChange={handlePropertyNumberChange}
-              changeValue={propertyNumber}
-              required={true}
-              autoComplete="off"
-              placeholder={t(
-                "address.propertyNumberPlaceholder",
-                "e.g. 1, 2A, B3"
-              )}
-            />
-            <HHTypeField
-              handleChange={handleHHTypeChange}
-              changeValue={hhType}
-              options={policy.options.map((option) => ({
-                label: option.description,
-                value: option.id
-              }))}
-            />
-            <GenericTextAreaField
-              label={t("address.notes", "Notes")}
-              name="note"
-              handleChange={handleNoteChange}
-              changeValue={hhNote}
-              information={t(
-                "address.notesInformation",
-                "Property notes only. No personal information."
-              )}
-            />
-            {addressType && (
-              <GenericInputField
-                label={t("address.coordinates", "Address Coordinates")}
-                name="location"
-                placeholder={t(
-                  "address.clickToSelectOnMap",
-                  "Click to select on map"
-                )}
-                handleClick={handleMapCoordinatesClick}
-                changeValue={location}
-                handleChange={() => {}}
-                information={t(
-                  "address.coordinatesDescription",
-                  "Latitude and Longitude of the address."
-                )}
-                autoComplete="off"
-              />
-            )}
-          </Modal.Body>
-          <ModalFooter
-            handleClick={() => modal.hide()}
-            isSaving={isSaving}
-            userAccessLevel={policy.userRole}
-            submitLabel={t("common.create", "Create")}
-          />
-        </Form>
-      </Modal>
+            </ScrollArea>
+            <DialogFooter>
+              <Button
+                variant="outline"
+                type="button"
+                onClick={() => modal.hide()}
+              >
+                {t("common.cancel")}
+              </Button>
+              <ComponentAuthorizer
+                requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
+                userPermission={policy.userRole}
+              >
+                <Button type="submit" disabled={isSaving}>
+                  {isSaving && (
+                    <Spinner data-icon="inline-start" aria-hidden="true" />
+                  )}
+                  {t("common.create", "Create")}
+                </Button>
+              </ComponentAuthorizer>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     );
   }
 );

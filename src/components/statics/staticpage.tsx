@@ -1,6 +1,8 @@
-import { Container, Card } from "react-bootstrap";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 import { useTranslation } from "react-i18next";
+import * as m from "motion/react-m";
+import { fadeSlideUp } from "@/lib/motion";
 
 interface StaticPageCardProps {
   title?: string;
@@ -23,23 +25,29 @@ const StaticPageCard = ({
   const defaultLogoAlt = t("branding.logo", "Ministry Mapper logo");
 
   return (
-    <Container className="container-main">
-      <Card className={cardClassName}>
-        {showLogo && (
-          <Card.Body className="text-center">
-            <Card.Img
-              alt={logoAlt || defaultLogoAlt}
-              className="mm-logo mx-auto d-block"
-              src={getAssetUrl(logoSrc)}
-            />
-          </Card.Body>
-        )}
-        <Card.Body>
-          {title && <Card.Title className="text-center">{title}</Card.Title>}
-          {children}
-        </Card.Body>
-      </Card>
-    </Container>
+    <div className="flex min-h-dvh items-center justify-center bg-background">
+      <m.div variants={fadeSlideUp} initial="hidden" animate="show">
+        <Card className={cardClassName}>
+          {showLogo && (
+            <CardContent className="text-center">
+              <img
+                alt={logoAlt || defaultLogoAlt}
+                className="mx-auto block w-[30%]"
+                src={getAssetUrl(logoSrc)}
+              />
+            </CardContent>
+          )}
+          <CardContent>
+            {title && (
+              <CardHeader className="px-0 pt-0">
+                <CardTitle className="text-center">{title}</CardTitle>
+              </CardHeader>
+            )}
+            {children}
+          </CardContent>
+        </Card>
+      </m.div>
+    </div>
   );
 };
 

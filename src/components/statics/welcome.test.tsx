@@ -18,23 +18,9 @@ describe("Welcome", () => {
   it("should display territory selection message", () => {
     const { container } = render(<Welcome name="John" />);
 
-    const text = container.querySelector(".welcome-card-text");
-    expect(text).toBeInTheDocument();
-  });
-
-  it("should render logo image", () => {
-    render(<Welcome name="John" />);
-
-    const logo = screen.getByAltText("Ministry Mapper logo");
-    expect(logo).toBeInTheDocument();
-    expect(logo).toHaveClass("welcome-image");
-  });
-
-  it("should have correct welcome card styling", () => {
-    const { container } = render(<Welcome name="John" />);
-
-    const card = container.querySelector(".welcome-card");
-    expect(card).toBeInTheDocument();
+    expect(
+      container.querySelector("p.text-muted-foreground")
+    ).toBeInTheDocument();
   });
 
   it("should display waving hand emoji", () => {
@@ -43,10 +29,9 @@ describe("Welcome", () => {
     expect(screen.getByText(/👋/)).toBeInTheDocument();
   });
 
-  it("should render image in container", () => {
-    const { container } = render(<Welcome name="John" />);
+  it("should render the logo", () => {
+    render(<Welcome name="John" />);
 
-    const imageContainer = container.querySelector(".welcome-image-container");
-    expect(imageContainer).toBeInTheDocument();
+    expect(screen.getByAltText(/Ministry Mapper logo/i)).toBeInTheDocument();
   });
 });

@@ -412,8 +412,4 @@ describe("useGeolocation", () => {
       expect(result.current.locationError).toBeNull();
     });
   });
-
-  // Backwards compatibility alias test removed
-  // The functionality is already fully tested above
-  // useMapInitialCenter is just an alias to useGeolocation
 });

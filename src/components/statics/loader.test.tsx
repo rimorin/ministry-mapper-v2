@@ -3,33 +3,33 @@ import { render, screen } from "../../utils/test";
 import Loader from "./loader";
 
 describe("Loader", () => {
-  it("should render loading overlay with spinner", () => {
-    const { container } = render(<Loader />);
+  it("should render a loading progress bar", () => {
+    const progressbar = render(<Loader />).getByRole("progressbar", {
+      name: "Loading"
+    });
 
-    const overlay = container.querySelector(".loading-overlay");
-    expect(overlay).toBeInTheDocument();
-
-    const spinner = container.querySelector(".loading-spinner");
-    expect(spinner).toBeInTheDocument();
+    expect(progressbar).toBeInTheDocument();
   });
 
-  it("should display loading text", () => {
+  it("should expose its loading label through aria-label", () => {
     render(<Loader />);
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    expect(
+      screen.getByRole("progressbar", { name: "Loading" })
+    ).toBeInTheDocument();
   });
 
-  it("should use border animation spinner", () => {
+  it("should render the shimmer animation element", () => {
     const { container } = render(<Loader />);
 
-    const spinner = container.querySelector(".spinner-border");
-    expect(spinner).toBeInTheDocument();
+    expect(
+      container.querySelector('[role="progressbar"] > div')
+    ).toBeInTheDocument();
   });
 
-  it("should use primary variant", () => {
-    const { container } = render(<Loader />);
+  it("should not render visible loading text", () => {
+    render(<Loader />);
 
-    const spinner = container.querySelector(".text-primary");
-    expect(spinner).toBeInTheDocument();
+    expect(screen.queryByText("Loading...")).not.toBeInTheDocument();
   });
 });

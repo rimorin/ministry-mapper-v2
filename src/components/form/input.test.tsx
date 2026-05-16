@@ -52,7 +52,7 @@ describe("GenericInputField", () => {
       render(<GenericInputField {...defaultProps} />);
 
       const input = screen.getByRole("textbox");
-      expect(input).toHaveAttribute("type", "string");
+      expect(input).toHaveAttribute("type", "text");
     });
 
     it("should render as email input", () => {
@@ -190,11 +190,11 @@ describe("GenericInputField", () => {
       expect(input).toHaveAttribute("autocomplete", "email");
     });
 
-    it("should not have autocomplete attribute when not provided", () => {
+    it("should default to autocomplete off when not provided", () => {
       render(<GenericInputField {...defaultProps} />);
 
       const input = screen.getByRole("textbox");
-      expect(input).not.toHaveAttribute("autocomplete");
+      expect(input).toHaveAttribute("autocomplete", "off");
     });
   });
 
@@ -204,13 +204,6 @@ describe("GenericInputField", () => {
 
       const input = screen.getByRole("textbox");
       expect(input).toHaveAttribute("name", "userEmail");
-    });
-
-    it("should be part of Form.Group", () => {
-      const { container } = render(<GenericInputField {...defaultProps} />);
-
-      const formGroup = container.querySelector(".mb-3");
-      expect(formGroup).toBeInTheDocument();
     });
   });
 });

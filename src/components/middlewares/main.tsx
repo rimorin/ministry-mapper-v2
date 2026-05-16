@@ -1,5 +1,4 @@
 import { FC, lazy, ReactNode, Suspense } from "react";
-import { Container } from "react-bootstrap";
 import VersionDisplay from "../navigation/versiondisplay";
 import EnvironmentIndicator from "../navigation/environment";
 import { NetworkStatusBanner } from "../statics/networkstatus";
@@ -22,18 +21,12 @@ const MainMiddleware: FC<MainMiddlewareProps> = ({ children }) => {
   }
   return (
     <NetworkStatusProvider>
-      <Container
-        className="p-2"
-        fluid
-        style={{
-          minHeight: "95vh"
-        }}
-      >
+      <div className="min-h-[95vh] p-2">
         <NetworkStatusBanner />
         <EnvironmentIndicator environment={VITE_SYSTEM_ENVIRONMENT} />
         {children}
         <VersionDisplay />
-      </Container>
+      </div>
     </NetworkStatusProvider>
   );
 };

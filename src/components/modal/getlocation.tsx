@@ -1,11 +1,29 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal from "@ebay/nice-modal-react";
+import * as m from "motion/react-m";
 import { useState, useEffect, useRef } from "react";
-import { Image, Modal } from "react-bootstrap";
+import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
+import { Spinner } from "@/components/ui/spinner";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { XIcon, Car, Footprints } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, Marker } from "react-leaflet";
 import CustomControl from "../map/customcontrol";
-import { DESTINATION_PROXIMITY_THRESHOLD_METERS } from "../../utils/constants";
+import { ThemedTileLayer } from "../map/themedtilelayer";
+import {
+  DESTINATION_PROXIMITY_THRESHOLD_METERS,
+  PREFERRED_TRAVEL_MODE_KEY
+} from "../../utils/constants";
+import { getAssetUrl } from "../../utils/helpers/assetpath";
+import getWazeDirection from "../../utils/helpers/wazegenerator";
 import {
   currentLocationIcon,
   destinationIcon
@@ -23,33 +41,43 @@ import RoutingService from "../map/routingservice";
 import { MapController } from "../map/mapcontroller";
 import { calculateDistance } from "../../utils/helpers/calculatedistance";
 import getDirection from "../../utils/helpers/directiongenerator";
-import { getAssetUrl } from "../../utils/helpers/assetpath";
 import useGeolocation from "../../hooks/useGeolocation";
+import { formatDistance, formatDuration } from "../../utils/helpers/maphelpers";
 
 // Minimum distance (in meters) user must move before route updates
 const ROUTE_UPDATE_THRESHOLD_METERS = 20;
 
 const GetMapGeolocation = NiceModal.create(
   ({ coordinates, name }: GetMapGeolocationModalProps) => {
+    const { dialogProps, contentProps } = useBaseUiDialog({
+      size: "fullscreen"
+    });
     const { t } = useTranslation();
     const { notifyWarning } = useNotification();
     const { trackEvent } = useAnalytics();
     const [centerOverride, setCenterOverride] =
       useState<latlongInterface | null>(null);
     const [travelMode, setTravelMode] = useState<TravelMode>(() => {
-      const saved = localStorage.getItem("preferredTravelMode");
+      const saved = localStorage.getItem(PREFERRED_TRAVEL_MODE_KEY);
       return (saved as TravelMode) || "WALKING";
     });
     const [isRouteLoading, setIsRouteLoading] = useState(false);
+    const [routeInfo, setRouteInfo] = useState<{
+      duration: number;
+      distance: number;
+    } | null>(null);
     const [distanceToDestination, setDistanceToDestination] = useState<
       number | null
     >(null);
-    const modal = useModal();
 
     const [routeStartLocation, setRouteStartLocation] =
       useState<latlongInterface | null>(null);
     const lastRouteUpdateLocation = useRef<latlongInterface | null>(null);
     const isInitialMount = useRef(true);
+
+    const isWithinProximity =
+      distanceToDestination !== null &&
+      distanceToDestination <= DESTINATION_PROXIMITY_THRESHOLD_METERS;
 
     const { currentLocation, locationError, isSupported } = useGeolocation({
       enableWatch: true,
@@ -59,17 +87,6 @@ const GetMapGeolocation = NiceModal.create(
         timeout: 15000
       }
     });
-
-    const isWithinProximity =
-      distanceToDestination !== null &&
-      distanceToDestination <= DESTINATION_PROXIMITY_THRESHOLD_METERS;
-
-    const formatDistance = (meters: number): string => {
-      if (meters >= 1000) {
-        return `${(meters / 1000).toFixed(1)} km`;
-      }
-      return `${Math.round(meters)} m`;
-    };
 
     useEffect(() => {
       if (!isSupported) {
@@ -102,6 +119,9 @@ const GetMapGeolocation = NiceModal.create(
           coordinates.lng
         );
         setDistanceToDestination(distance);
+        if (distance <= DESTINATION_PROXIMITY_THRESHOLD_METERS) {
+          setRouteInfo(null);
+        }
 
         if (!lastRouteUpdateLocation.current) {
           setRouteStartLocation(currentLocation);
@@ -124,7 +144,7 @@ const GetMapGeolocation = NiceModal.create(
 
     const handleTravelModeChange = (mode: TravelMode) => {
       setTravelMode(mode);
-      localStorage.setItem("preferredTravelMode", mode);
+      localStorage.setItem(PREFERRED_TRAVEL_MODE_KEY, mode);
       trackEvent(ANALYTICS_EVENTS.TRAVEL_MODE_CHANGED, { mode });
     };
 
@@ -140,111 +160,156 @@ const GetMapGeolocation = NiceModal.create(
     }, [travelMode]);
 
     return (
-      <Modal {...bootstrapDialog(modal)} fullscreen>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {t("address.locationWithName", "{{name}} Location", { name })}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body className="geolocation-modal-body">
-          <MapContainer
-            center={[coordinates.lat, coordinates.lng]}
-            zoom={16}
-            className="map-container"
-            zoomControl={true}
-            scrollWheelZoom={true}
-            attributionControl={false}
+      <Dialog {...dialogProps}>
+        <DialogContent {...contentProps}>
+          <DialogHeader className="flex-row items-center justify-between px-4 pt-4 pb-3 shrink-0 border-b gap-2">
+            <DialogTitle className="truncate">
+              {t("address.locationWithName", "{{name}} Location", { name })}
+            </DialogTitle>
+            <DialogClose
+              render={
+                <Button variant="ghost" size="icon-sm" className="shrink-0" />
+              }
+            >
+              <XIcon />
+              <span className="sr-only">Close</span>
+            </DialogClose>
+          </DialogHeader>
+          <m.div
+            className="geolocation-modal-body flex-1 relative overflow-hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.35, ease: "linear", delay: 0.2 }}
           >
-            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-            <MapController center={centerOverride} zoomLevel={16} />
-            {currentLocation && (
-              <>
-                <Marker
-                  position={[currentLocation.lat, currentLocation.lng]}
-                  icon={currentLocationIcon}
-                />
-                {!isWithinProximity && routeStartLocation && (
-                  <RoutingService
-                    start={routeStartLocation}
-                    end={coordinates}
-                    travelMode={travelMode}
-                    onLoadingChange={setIsRouteLoading}
+            <MapContainer
+              center={[coordinates.lat, coordinates.lng]}
+              zoom={16}
+              className="map-container"
+              zoomControl={true}
+              scrollWheelZoom={true}
+            >
+              <ThemedTileLayer />
+              <MapController center={centerOverride} zoomLevel={16} />
+              {currentLocation && (
+                <>
+                  <Marker
+                    position={[currentLocation.lat, currentLocation.lng]}
+                    icon={currentLocationIcon}
                   />
-                )}
-              </>
-            )}
-            <Marker
-              position={[coordinates.lat, coordinates.lng]}
-              icon={destinationIcon}
-            />
-            {currentLocation && (
-              <CustomControl position="topright">
-                <MapCurrentTarget
-                  onClick={() => setCenterOverride({ ...currentLocation })}
-                />
-              </CustomControl>
-            )}
-            <CustomControl position="topright">
-              <div className="map-control-button">
-                <Image
-                  src={getAssetUrl("gmaps.svg")}
-                  alt={t("navigation.openMaps")}
-                  width={24}
-                  height={24}
-                  onClick={() => {
-                    trackEvent(ANALYTICS_EVENTS.DIRECTIONS_OPENED);
-                    window.open(getDirection(coordinates), "_blank");
-                  }}
-                />
-              </div>
-            </CustomControl>
-            {isWithinProximity && (
-              <CustomControl position="bottomleft">
-                <div className="alert alert-success map-notification map-notification-arrival">
-                  <i className="bi bi-check-circle-fill me-2"></i>
-                  {t(
-                    "location.arrivedAtDestination",
-                    "You've reached your destination"
+                  {!isWithinProximity && routeStartLocation && (
+                    <RoutingService
+                      start={routeStartLocation}
+                      end={coordinates}
+                      travelMode={travelMode}
+                      onLoadingChange={setIsRouteLoading}
+                      onRouteData={setRouteInfo}
+                    />
                   )}
+                </>
+              )}
+              <Marker
+                position={[coordinates.lat, coordinates.lng]}
+                icon={destinationIcon}
+              />
+              {currentLocation && (
+                <CustomControl position="topright">
+                  <MapCurrentTarget
+                    onClick={() => setCenterOverride({ ...currentLocation })}
+                  />
+                </CustomControl>
+              )}
+              <CustomControl position="topright">
+                <div className="flex flex-col overflow-hidden rounded-xl border bg-background/95 backdrop-blur-sm shadow-md divide-y divide-border">
+                  <button
+                    type="button"
+                    aria-label={t("navigation.openMaps")}
+                    className="flex min-h-[44px] min-w-[44px] items-center justify-center p-2.5 hover:bg-muted transition-colors"
+                    onClick={() => {
+                      trackEvent(ANALYTICS_EVENTS.DIRECTIONS_OPENED);
+                      window.open(getDirection(coordinates), "_blank");
+                    }}
+                  >
+                    <img
+                      src={getAssetUrl("gmaps.svg")}
+                      className="h-6 w-6"
+                      alt=""
+                    />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Waze"
+                    className="flex min-h-[44px] min-w-[44px] items-center justify-center p-2.5 hover:bg-muted transition-colors"
+                    onClick={() => {
+                      trackEvent(ANALYTICS_EVENTS.DIRECTIONS_OPENED);
+                      window.open(getWazeDirection(coordinates), "_blank");
+                    }}
+                  >
+                    <img
+                      src={getAssetUrl("waze.svg")}
+                      className="h-6 w-6"
+                      alt=""
+                    />
+                  </button>
                 </div>
               </CustomControl>
-            )}
-            {!isWithinProximity && distanceToDestination !== null && (
-              <CustomControl position="bottomright">
-                <div className="alert alert-info map-notification map-notification-tracking">
-                  <div className="map-notification-tracking-spinner">
-                    <div
-                      className="spinner-grow spinner-grow-sm text-primary"
-                      role="status"
-                    >
-                      <span className="visually-hidden">
-                        {t("navigation.updatingLocation", "Updating location")}
+              {isWithinProximity && (
+                <CustomControl position="bottomleft">
+                  <Alert variant="success">
+                    <AlertDescription>
+                      {t(
+                        "location.arrivedAtDestination",
+                        "You've reached your destination"
+                      )}
+                    </AlertDescription>
+                  </Alert>
+                </CustomControl>
+              )}
+              {!isWithinProximity && distanceToDestination !== null && (
+                <CustomControl position="bottomright">
+                  {routeInfo ? (
+                    <div className="bg-white dark:bg-zinc-900 rounded-full border shadow-md px-4 py-2 flex items-center gap-2">
+                      {travelMode === "DRIVING" ? (
+                        <Car className="size-4 text-muted-foreground shrink-0" />
+                      ) : (
+                        <Footprints className="size-4 text-muted-foreground shrink-0" />
+                      )}
+                      <span className="text-sm font-bold tabular-nums">
+                        {formatDuration(routeInfo.duration)}
+                      </span>
+                      <span className="text-muted-foreground text-sm">·</span>
+                      <span className="text-sm text-muted-foreground">
+                        {formatDistance(routeInfo.distance)}
                       </span>
                     </div>
-                  </div>
-                  <div className="map-notification-tracking-content">
-                    <span className="map-notification-distance">
-                      {formatDistance(distanceToDestination)}
-                    </span>
-                    <span className="map-notification-status">
-                      {t("navigation.updatingLocation", "Updating location")}
-                    </span>
-                  </div>
-                </div>
-              </CustomControl>
-            )}
-            {!isWithinProximity && (
-              <CustomControl position="bottomleft">
-                <TravelModeButtons
-                  travelMode={travelMode}
-                  onTravelModeChange={handleTravelModeChange}
-                  isLoading={isRouteLoading}
-                />
-              </CustomControl>
-            )}
-          </MapContainer>
-        </Modal.Body>
-      </Modal>
+                  ) : (
+                    <div className="bg-white dark:bg-zinc-900 rounded-full border shadow-md px-4 py-2 flex items-center gap-2">
+                      <Spinner
+                        aria-label={t(
+                          "navigation.updatingLocation",
+                          "Updating location"
+                        )}
+                        className="text-primary size-3.5 shrink-0"
+                      />
+                      <span className="text-sm font-semibold tabular-nums">
+                        {formatDistance(distanceToDestination)}
+                      </span>
+                    </div>
+                  )}
+                </CustomControl>
+              )}
+              {!isWithinProximity && (
+                <CustomControl position="bottomleft">
+                  <TravelModeButtons
+                    travelMode={travelMode}
+                    onTravelModeChange={handleTravelModeChange}
+                    isLoading={isRouteLoading}
+                  />
+                </CustomControl>
+              )}
+            </MapContainer>
+          </m.div>
+        </DialogContent>
+      </Dialog>
     );
   }
 );

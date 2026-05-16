@@ -7,21 +7,20 @@
 ### Digital Territory Management for Field Ministry
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Node](https://img.shields.io/badge/node-%3E%3D22.0.0-brightgreen?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![Node](https://img.shields.io/badge/node-%3E%3D24.0.0-brightgreen?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-8-646cff?logo=vite&logoColor=white)](https://vite.dev)
 [![PocketBase](https://img.shields.io/badge/PocketBase-backend-b8dbe4?logo=pocketbase)](https://pocketbase.io)
 
 [📖 Documentation](https://doc.ministry-mapper.com/) · [🐛 Report Bug](../../issues) · [✨ Request Feature](../../issues)
 
-![Ministry Mapper Screenshot](https://user-images.githubusercontent.com/40650158/185554709-ce94a04e-2a34-43a9-b7de-09aa7f437139.png)
-
 </div>
 
 ---
 
-> **⚠️ Privacy Notice**  
+> [!WARNING]
+> **Privacy Notice**
 > Ministry Mapper tracks residential addresses, which may be subject to data privacy laws (GDPR, CCPA, LGPD, etc.). Please review your local regulations and ensure compliance before deployment.
 
 ---
@@ -94,8 +93,8 @@ Digital systems consistently outperform paper in accuracy, accessibility, and du
 
 **👥 Admin & Reporting**
 - Role-based access control per congregation
-- On-demand & automated monthly Excel reports
-- AI-powered report summaries
+- On-demand & automated monthly Excel reports (backend-generated)
+- AI-powered report summaries (backend-powered)
 - Account lifecycle management (inactivity warnings)
 - Google OAuth2 sign-in
 
@@ -136,10 +135,10 @@ Digital systems consistently outperform paper in accuracy, accessibility, and du
 │                            │                                    │
 │   React 19 + TypeScript    │   Go + PocketBase                  │
 │   Vite                     │   SQLite (embedded)                │
-│   Leaflet Maps             │   REST API + Real-time Events      │
-│   i18n · 8 languages       │   Scheduled Jobs (Cron)            │
-│   Sentry                   │   MailerSend · OpenAI · LaunchDark │
-│   Umami Analytics          │                                    │
+│   Tailwind CSS + shadcn/ui │   REST API + Real-time Events      │
+│   Leaflet Maps             │   Scheduled Jobs (Cron)            │
+│   i18n · 8 languages       │   MailerSend · OpenAI · LaunchDark │
+│   Sentry · Umami Analytics │                                    │
 └────────────────────────────┴────────────────────────────────────┘
              │                              │
              └────────── PocketBase ────────┘
@@ -152,14 +151,16 @@ The frontend communicates with the backend via the [PocketBase JS SDK](https://g
 
 ## 🛠️ Built With
 
-[![React][react-badge]][react-url] [![TypeScript][ts-badge]][ts-url] [![Vite][vite-badge]][vite-url] [![Bootstrap][bootstrap-badge]][bootstrap-url] [![Leaflet][leaflet-badge]][leaflet-url] [![PocketBase][pb-badge]][pb-url] [![Sentry][sentry-badge]][sentry-url] [![Vitest][vitest-badge]][vitest-url]
+[![React][react-badge]][react-url] [![TypeScript][ts-badge]][ts-url] [![Vite][vite-badge]][vite-url] [![Tailwind][tailwind-badge]][tailwind-url] [![shadcn/ui][shadcn-badge]][shadcn-url] [![Leaflet][leaflet-badge]][leaflet-url] [![PocketBase][pb-badge]][pb-url] [![Sentry][sentry-badge]][sentry-url] [![Vitest][vitest-badge]][vitest-url]
 
 | Category | Technology |
 |---|---|
 | **UI Framework** | React 19 with React Compiler |
-| **Language** | TypeScript 5.9 (strict mode) |
+| **Language** | TypeScript 6 (strict mode) |
 | **Build Tool** | Vite 8 |
-| **Styling** | Bootstrap 5.3 + SASS |
+| **Styling** | Tailwind CSS 4 + shadcn/ui |
+| **Icons** | Lucide React |
+| **Forms** | React Hook Form |
 | **Mapping** | Leaflet 1.9 + React-Leaflet + OpenStreetMap |
 | **Routing** | Wouter (lightweight client-side router) |
 | **Backend** | PocketBase (self-hosted BaaS on Go + SQLite) |
@@ -175,7 +176,7 @@ The frontend communicates with the backend via the [PocketBase JS SDK](https://g
 
 ### Prerequisites
 
-- **Node.js** >= 22.0.0 — [download](https://nodejs.org/)
+- **Node.js** >= 24.0.0 — [download](https://nodejs.org/)
 - A running **PocketBase backend** — see [Backend Setup](#backend-setup) below
 
 ### Backend Setup
@@ -204,20 +205,27 @@ cp .env.example .env
 
 ### Environment Variables
 
-| Variable | Required | Description |
-|---|:---:|---|
-| `VITE_POCKETBASE_URL` | ✅ | URL of your PocketBase backend (e.g. `http://localhost:8090`) |
-| `VITE_SYSTEM_ENVIRONMENT` | ✅ | `local` \| `staging` \| `production` |
+**Required**
 
-| `VITE_LOCATIONIQ_API_KEY` | ✅ | [LocationIQ](https://locationiq.com/) API key (geocoding and routing) |
-| `VITE_PRIVACY_URL` | ✅ | Link to your privacy policy |
-| `VITE_TERMS_URL` | ✅ | Link to your terms of service |
-| `VITE_ABOUT_URL` | ✅ | Link to your about page |
-| `VITE_SENTRY_DSN` | ⚠️ | Sentry DSN for error tracking (optional) |
-| `SENTRY_AUTH_TOKEN` | ⚠️ | Sentry auth token for source map uploads (optional) |
-| `VITE_UMAMI_SRC_URL` | ⚠️ | Umami analytics script URL (optional) |
-| `VITE_UMAMI_WEBSITE_ID` | ⚠️ | Umami website ID for analytics (optional) |
-| `VITE_UMAMI_DOMAINS` | ⚠️ | Comma-separated domains for Umami tracking (optional) |
+| Variable | Description |
+|---|---|
+| `VITE_POCKETBASE_URL` | URL of your PocketBase backend (e.g. `http://localhost:8090`) |
+| `VITE_SYSTEM_ENVIRONMENT` | `local` \| `staging` \| `production` |
+| `VITE_GEOAPIFY_API_KEY` | [Geoapify](https://www.geoapify.com/) API key (maps, geocoding and routing) |
+| `VITE_PRIVACY_URL` | Link to your privacy policy |
+| `VITE_TERMS_URL` | Link to your terms of service |
+| `VITE_ABOUT_URL` | Link to your about page |
+
+**Optional**
+
+| Variable | Description |
+|---|---|
+| `VITE_MAINTENANCE_MODE` | Set to `true` to display a maintenance page to all users |
+| `VITE_SENTRY_DSN` | Sentry DSN for error tracking |
+| `SENTRY_AUTH_TOKEN` | Sentry auth token for source map uploads (build-time) |
+| `VITE_UMAMI_SRC_URL` | Umami analytics script URL |
+| `VITE_UMAMI_WEBSITE_ID` | Umami website ID |
+| `VITE_UMAMI_DOMAINS` | Comma-separated domains for Umami tracking |
 
 Then start the development server:
 
@@ -234,10 +242,14 @@ npm start
 |---|---|
 | `npm start` | Start development server with HMR |
 | `npm run build` | Create optimized production build |
-| `npm test` | Run test suite |
-| `npm run test:coverage` | Generate test coverage report |
-| `npm run prettier:fix` | Auto-fix code formatting |
 | `npm run serve` | Preview production build locally |
+| `npm test` | Run full test suite |
+| `npm run test:watch` | Run tests in watch mode |
+| `npm run test:ui` | Open interactive Vitest UI |
+| `npm run test:coverage` | Generate test coverage report |
+| `npm run lint` | Lint source files |
+| `npm run lint:fix` | Auto-fix lint issues |
+| `npm run prettier:fix` | Auto-fix code formatting |
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -279,7 +291,7 @@ Contributions are welcome! To get started:
 1. Fork the repository
 2. Create a feature branch: `git checkout -b feat/your-feature`
 3. Make your changes (TypeScript strict mode; tests required)
-4. Format: `npm run prettier:fix` and lint-check: `npm test`
+4. Format: `npm run prettier:fix` and lint: `npm run lint:fix`
 5. Commit following [Conventional Commits](https://www.conventionalcommits.org/): `git commit -m 'feat: add amazing feature'`
 6. Push and open a Pull Request
 
@@ -308,12 +320,14 @@ For security concerns, please review our [Security Policy](SECURITY.md).
 <!-- Badge definitions -->
 [react-badge]: https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=white
 [react-url]: https://react.dev
-[ts-badge]: https://img.shields.io/badge/TypeScript-5.9-3178c6?logo=typescript&logoColor=white
+[ts-badge]: https://img.shields.io/badge/TypeScript-6-3178c6?logo=typescript&logoColor=white
 [ts-url]: https://www.typescriptlang.org/
 [vite-badge]: https://img.shields.io/badge/Vite-8-646cff?logo=vite&logoColor=white
 [vite-url]: https://vite.dev
-[bootstrap-badge]: https://img.shields.io/badge/Bootstrap-5.3-7952b3?logo=bootstrap&logoColor=white
-[bootstrap-url]: https://getbootstrap.com
+[tailwind-badge]: https://img.shields.io/badge/Tailwind_CSS-4-06b6d4?logo=tailwindcss&logoColor=white
+[tailwind-url]: https://tailwindcss.com
+[shadcn-badge]: https://img.shields.io/badge/shadcn%2Fui-components-000000?logo=shadcnui&logoColor=white
+[shadcn-url]: https://ui.shadcn.com
 [leaflet-badge]: https://img.shields.io/badge/Leaflet-1.9-199900?logo=leaflet&logoColor=white
 [leaflet-url]: https://leafletjs.com
 [pb-badge]: https://img.shields.io/badge/PocketBase-backend-b8dbe4?logo=pocketbase

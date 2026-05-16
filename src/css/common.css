@@ -1,153 +1,163 @@
 /* Common styles - uses centralized variables from variables.css */
 
-/* ===== LAYOUT & TABLE ===== */
+/* Scrollbar hidden until hover — matches macOS overlay feel */
+.map-body {
+  overflow: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.map-body:hover {
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+}
+
+.map-body::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.map-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.map-body::-webkit-scrollbar-thumb {
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.2s ease;
+}
+
+.map-body:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.dark .map-body:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+}
+
 .sticky-table {
   border-collapse: separate;
   border-spacing: 0;
 }
 
+.map-cell {
+  min-width: 4rem;
+  white-space: nowrap;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 0;
+  vertical-align: middle;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.map-cell:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.map-cell:active {
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+.dark .map-cell:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.dark .map-cell:active {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* Sticky left column — row header th cells */
 .sticky-left-cell {
   position: sticky;
   left: 0;
-  background-color: var(--mm-bg-body) !important;
-  z-index: 2;
+  background-color: var(
+    --color-muted
+  ) !important; /* Tailwind bridge token — resolves to same value as var(--muted) */
+  z-index: 10;
+  box-shadow: 2px 0 4px -1px rgba(0, 0, 0, 0.06);
 }
 
+/* Sticky top row — header th cells (frosted glass) */
 .sticky-top-cell {
   position: sticky;
   top: 0;
-  background-color: var(--mm-bg-body);
-  z-index: 3;
+  background-color: color-mix(
+    in oklch,
+    var(--color-muted) 85%,
+    /* Tailwind bridge token — resolves to same value as var(--muted) */
+    transparent
+  ) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 11;
 }
 
-.inline-cell {
+/* Top-left intersection — needs both axes, highest z-index (frosted glass) */
+.sticky-corner {
+  position: sticky;
+  top: 0;
+  left: 0;
+  z-index: 12;
+  background-color: color-mix(
+    in oklch,
+    var(--color-muted) 85%,
+    /* Tailwind bridge token — resolves to same value as var(--muted) */
+    transparent
+  ) !important;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 2px 0 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+/* Table header row — fixed height, never grows with content */
+.sticky-table thead tr {
+  height: 3rem;
+}
+
+.sticky-table thead th {
+  border: 1px solid var(--border);
+  padding: 0.25rem 0.5rem;
   white-space: nowrap;
-  min-width: 4rem;
+  overflow: hidden;
 }
 
-.inline-row {
-  height: 4rem;
+/* Row header cells (floor numbers) */
+.sticky-table tbody th {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 0.25rem 0.5rem;
 }
 
-.group-wrap {
-  display: block;
-  flex-wrap: wrap;
-}
-
-.brand-wrap {
-  white-space: normal;
-}
-
-/* ===== BADGES & ICONS ===== */
-.badge-nothome {
-  color: var(--mm-black);
-  position: absolute;
-  font-size: 0.8em;
-  font-weight: bold;
-}
-
-.parent-nothome {
-  position: relative;
-  vertical-align: middle;
-  height: 1.4em;
-  display: inline-block;
-}
-
-.container-nothome {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  width: 1.4em;
-}
-
-.nothome-envelope {
-  width: 1.4em;
-  height: 1.4em;
-  opacity: 0.4;
-}
-
-.language-icon {
-  filter: none;
-}
-
-/* ===== STATE INDICATORS ===== */
 .available {
   background-color: var(--mm-success-alpha-10) !important;
+  transition: background-color 0.2s ease;
 }
 
 .cell-highlight {
-  box-shadow: 0 0 10px 2px var(--mm-highlight-color) inset !important;
+  background-color: color-mix(
+    in oklch,
+    var(--mm-highlight-color) 12%,
+    transparent
+  ) !important;
 }
 
-.landed-unit {
-  min-height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 0.15rem;
-  padding: 0.2rem;
+/* All portal and floating UI elements must render above the Leaflet map
+   (which uses z-index 200–1000 internally). !important is required because
+   Leaflet's own rules would otherwise win. */
+[data-floating-ui-portal],
+[data-slot="dropdown-menu-portal"],
+[data-slot="tooltip-provider"],
+[data-slot="popover-portal"],
+[data-slot="dialog-overlay"],
+[data-slot="dialog-content"],
+[data-slot="sheet-overlay"],
+[data-slot="sheet-content"] {
+  z-index: 2000 !important;
 }
 
-/* ===== TEXT & TYPOGRAPHY ===== */
-.text-underline {
-  cursor: pointer;
-}
-
-.text-underline:hover {
-  text-decoration: underline;
-}
-
-.text-highlight {
-  text-shadow: 2px 3px 3px var(--mm-shadow-3xl);
-  font-weight: bold;
-}
-
-/* ===== OVERLAYS ===== */
-.loading-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--mm-overlay-white-95);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 9999;
-  backdrop-filter: blur(4px);
-}
-
-.loading-content {
-  text-align: center;
-}
-
-.loading-spinner {
-  width: 3rem;
-  height: 3rem;
-  color: var(--mm-primary);
-}
-
-.loading-text {
-  margin-top: 1rem;
-  font-size: 1rem;
-  color: var(--mm-secondary);
-}
-
-.note-overlay {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: var(--mm-overlay-white-70);
-  z-index: 1;
-}
-
-.confirm-overlay {
-  z-index: 9999 !important;
-}
-
-/* ===== MAP MARKERS ===== */
 .leaflet-control-attribution {
-  /* disable leaflet attribution */
   display: none !important;
 }
 
@@ -155,56 +165,83 @@
   pointer-events: auto;
 }
 
-.map-control-button {
-  background: transparent;
-  padding: 8px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+/* Leaflet zoom control bar — restyled to match shadcn */
+.leaflet-bar {
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.12),
+    0 1px 3px rgba(0, 0, 0, 0.08) !important;
+  border-radius: var(--radius) !important;
+  border: 1px solid var(--border) !important;
+  overflow: hidden;
 }
 
-.map-control-button img {
-  cursor: pointer;
+.leaflet-bar a {
+  background-color: var(--background) !important;
+  color: var(--foreground) !important;
+  border-bottom: 1px solid var(--border) !important;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  font-size: 18px !important;
+  font-weight: 400 !important;
+  transition: background-color 0.15s ease !important;
 }
 
-.travel-mode-button-group {
-  background-color: white;
-  border-radius: 8px;
+.leaflet-touch .leaflet-bar a {
+  width: 44px !important;
+  height: 44px !important;
+  line-height: 44px !important;
 }
 
-.travel-mode-btn {
-  min-width: 60px;
-  min-height: 44px;
-  font-size: 13px;
-  font-weight: 500;
-  border: 1px solid #dee2e6;
-  transition: all 0.2s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 1px;
-  padding: 4px 8px;
-  position: relative;
+.leaflet-bar a:hover,
+.leaflet-bar a:focus {
+  background-color: var(--muted) !important;
+  outline: none !important;
 }
 
-.travel-mode-btn.active {
-  font-weight: 600;
-  border: 2px solid var(--bs-primary);
+.leaflet-bar a:first-child {
+  border-top-left-radius: calc(var(--radius) - 1px) !important;
+  border-top-right-radius: calc(var(--radius) - 1px) !important;
 }
 
-.travel-mode-btn.loading {
-  opacity: 0.5;
+.leaflet-bar a:last-child {
+  border-bottom-left-radius: calc(var(--radius) - 1px) !important;
+  border-bottom-right-radius: calc(var(--radius) - 1px) !important;
+  border-bottom: none !important;
 }
 
-.travel-mode-btn.first {
-  border-radius: 6px 0 0 6px;
+.leaflet-bar a.leaflet-disabled {
+  background-color: var(--muted) !important;
+  color: var(--muted-foreground) !important;
+  cursor: default !important;
 }
 
-.travel-mode-btn.last {
-  border-radius: 0 6px 6px 0;
+.dark .leaflet-bar {
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.4),
+    0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.dark .leaflet-bar a {
+  background-color: var(--card) !important;
+  color: var(--foreground) !important;
+  border-bottom-color: var(--border) !important;
+}
+
+.dark .leaflet-bar a:hover,
+.dark .leaflet-bar a:focus {
+  background-color: var(--muted) !important;
+}
+
+/* Hide zoom controls on touch/mobile devices */
+@media (hover: none) and (pointer: coarse) {
+  .leaflet-control-zoom {
+    display: none !important;
+  }
+}
+
+.leaflet-container {
+  font-family: inherit !important;
 }
 
 .travel-mode-btn-spinner-overlay {
@@ -216,7 +253,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: color-mix(in oklch, var(--background) 80%, transparent);
 }
 
 .travel-mode-btn-spinner-overlay.first {
@@ -227,19 +264,11 @@
   border-radius: 0 6px 6px 0;
 }
 
-.travel-mode-btn-icon {
-  font-size: 16px;
-}
-
-.travel-mode-btn-label {
-  font-size: 10px;
-}
-
 .address-marker {
   width: 30px;
   height: 30px;
-  background: red;
-  border: 2px solid white;
+  background: red; /* Intentional marker red; context unclear for token replacement. */
+  border: 2px solid var(--background);
   border-radius: 50%;
 }
 
@@ -260,69 +289,29 @@
   width: 100%;
 }
 
+.route-line-main {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
 .quicklink-stats-panel {
   position: absolute;
   top: 20px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 1000;
+  z-index: 1001;
   min-width: 280px;
 }
 
-.quicklink-assignee-badge {
-  font-size: 0.875rem;
+.loc-ripple-ring {
+  will-change: transform, opacity;
+  animation: location-pulse 2.4s ease-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
 }
 
-.current-location-marker {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background-color: #0066ff;
-  border: 3px solid white;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  position: relative;
-  z-index: 1;
-}
-
-.current-location-marker::before,
-.current-location-marker::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background-color: rgba(0, 102, 255, 0.3);
-  transform: translate(-50%, -50%) scale(1);
-  pointer-events: none;
-  animation: ripple 2s ease-out infinite;
-}
-
-.current-location-marker::after {
-  animation-delay: 1s;
-}
-
-.current-location-marker-ripple {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background-color: rgba(0, 102, 255, 0.3);
-  transform: translate(-50%, -50%) scale(1);
-  pointer-events: none;
-  animation: ripple 2s ease-out infinite;
-  animation-delay: 0.5s;
-}
-
-.destination-marker {
-  width: 30px;
-  height: 30px;
-  background: red;
-  border: 2px solid white;
-  border-radius: 50%;
+.loc-ripple-ring-2 {
+  animation-delay: 1.2s;
 }
 
 .map-marker {
@@ -335,31 +324,19 @@
   justify-content: center;
   font-size: 16px;
   font-weight: 900;
-  color: var(--mm-marker-label-text);
-  border: 2px solid var(--mm-marker-border);
+  color: #ffffff;
+  border: 2px solid #ffffff;
   box-shadow: 0 0 5px var(--mm-marker-shadow);
   text-shadow: var(--mm-marker-text-shadow);
 }
 
-.map-marker::after {
-  content: "";
-  font-size: 16px;
-}
-
-.map-marker[data-status="invalid"]::after {
-  content: "✖️";
-}
-
-.map-marker[data-status="done"]::after {
-  content: "✅";
-}
-
-.map-marker[data-status="do_not_call"]::after {
-  content: "🚫";
-}
-
-.map-marker[data-status="not_home"]::after {
-  content: attr(data-nhcount);
+.map-marker-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(-1px -1px 1px rgba(0, 0, 0, 0.9))
+    drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.9))
+    drop-shadow(0 0 3px rgba(0, 0, 0, 0.7));
 }
 
 .map-marker-label {
@@ -369,527 +346,6 @@
   font-size: 10px;
   padding: 1px 3px;
   background-color: var(--mm-marker-label-bg);
-  color: var(--mm-marker-label-text);
+  color: #ffffff;
   border-radius: 2px;
-}
-
-/* ===== ANIMATIONS ===== */
-.blinking {
-  animation: blinker 1s linear infinite;
-  font-weight: 500;
-}
-
-@keyframes blinker {
-  50% {
-    opacity: 0;
-  }
-}
-
-@keyframes pulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-}
-
-@keyframes ripple {
-  0% {
-    transform: translate(-50%, -50%) scale(1);
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 0.4;
-  }
-  100% {
-    transform: translate(-50%, -50%) scale(3);
-    opacity: 0;
-  }
-}
-
-@keyframes spinLocator {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* ===== RESPONSIVE TYPOGRAPHY ===== */
-/*
- * Fluid sizing via linear interpolation (point-slope formula):
- *   preferred = intercept + slope·vi
- *   slope  = (maxFS - minFS) / (maxVW - minVW)
- *   intercept = minFS - slope * minVW
- *
- * vi = viewport inline unit (1vi = 1% of viewport width for LTR text)
- * Mixing a rem base with vi means font-size responds to BOTH viewport AND zoom/user-preference.
- * Purely vi-only would be hostile to user zoom settings (web.dev WCAG 1.4.4 guidance).
- *
- * WCAG 1.4.4 compliance: max ≤ 2.5 × min ensures effective 200% zoom is always possible.
- */
-
-/* Navbar titles / primary labels: 0.9rem at 320px → 1.25rem at 1024px
- * slope = (1.25-0.9)rem / (1024-320)px = 0.00795 → 0.795vi
- * intercept = 0.9rem - 0.00795*320px = 14.4px - 2.544px = 11.856px ≈ 0.741rem
- * WCAG: 1.25rem ≤ 2.5 × 0.9rem (2.25rem) ✓ */
-.fluid-text {
-  font-size: clamp(0.9rem, 0.741rem + 0.795vi, 1.25rem);
-}
-
-.fluid-bolding {
-  font-weight: 700;
-}
-
-/* Secondary / helper text: 0.75rem at 320px → 0.95rem at 1024px
- * slope = (0.95-0.75)rem / (1024-320)px = 0.00284 → 0.284vi
- * intercept = 0.75rem - 0.00284*320px = 12px - 0.909px = 11.091px ≈ 0.693rem
- * WCAG: 0.95rem ≤ 2.5 × 0.75rem (1.875rem) ✓ */
-.fluid-small {
-  font-size: clamp(0.75rem, 0.693rem + 0.284vi, 0.95rem);
-}
-
-/* Buttons: 0.65rem at 320px → 1rem at 1024px
- * slope = (1-0.65)rem / (1024-320)px = 0.00497 → 0.497vi
- * intercept = 0.65rem - 0.00497*320px = 10.4px - 1.591px = 8.809px ≈ 0.551rem
- * WCAG: 1rem ≤ 2.5 × 0.65rem (1.625rem) ✓ */
-.fluid-button {
-  font-size: clamp(0.65rem, 0.551rem + 0.497vi, 1rem);
-  font-weight: 700;
-}
-
-/* Dark mode fix for outline-dark buttons */
-[data-bs-theme="dark"] .btn-outline-dark {
-  --bs-btn-color: #f8f9fa !important;
-  --bs-btn-border-color: #6c757d !important;
-  --bs-btn-hover-color: #fff !important;
-  --bs-btn-hover-bg: #495057 !important;
-  --bs-btn-hover-border-color: #495057 !important;
-  --bs-btn-active-color: #fff !important;
-  --bs-btn-active-bg: #343a40 !important;
-  --bs-btn-active-border-color: #343a40 !important;
-  --bs-btn-disabled-color: #6c757d !important;
-  --bs-btn-disabled-border-color: #495057 !important;
-}
-
-[data-bs-theme="dark"] .btn-outline-dark.active {
-  background-color: #495057 !important;
-  border-color: #495057 !important;
-  color: #fff !important;
-}
-
-/* Improve visibility of other outline buttons in dark mode */
-[data-bs-theme="dark"] .btn-outline-success {
-  --bs-btn-color: #ffffff !important;
-  --bs-btn-border-color: #198754 !important;
-  --bs-btn-hover-color: #fff !important;
-  --bs-btn-hover-bg: #198754 !important;
-  --bs-btn-hover-border-color: #198754 !important;
-}
-
-[data-bs-theme="dark"] .btn-outline-secondary {
-  --bs-btn-color: #ffffff !important;
-  --bs-btn-border-color: #6c757d !important;
-  --bs-btn-hover-color: #fff !important;
-  --bs-btn-hover-bg: #6c757d !important;
-  --bs-btn-hover-border-color: #6c757d !important;
-}
-
-[data-bs-theme="dark"] .btn-outline-danger {
-  --bs-btn-color: #ffffff !important;
-  --bs-btn-border-color: #dc3545 !important;
-  --bs-btn-hover-color: #fff !important;
-  --bs-btn-hover-bg: #dc3545 !important;
-  --bs-btn-hover-border-color: #dc3545 !important;
-}
-
-[data-bs-theme="dark"] .btn-outline-info {
-  --bs-btn-color: #ffffff !important;
-  --bs-btn-border-color: #0dcaf0 !important;
-  --bs-btn-hover-color: #000 !important;
-  --bs-btn-hover-bg: #0dcaf0 !important;
-  --bs-btn-hover-border-color: #0dcaf0 !important;
-}
-
-[data-bs-theme="dark"] .btn-outline-primary {
-  --bs-btn-color: #ffffff !important;
-  --bs-btn-border-color: #0d6efd !important;
-  --bs-btn-hover-color: #fff !important;
-  --bs-btn-hover-bg: #0d6efd !important;
-  --bs-btn-hover-border-color: #0d6efd !important;
-}
-
-/* Ensure button text is visible */
-[data-bs-theme="dark"] .btn {
-  color: inherit;
-}
-
-[data-bs-theme="dark"] .btn-primary {
-  color: #fff !important;
-  background-color: #0d6efd !important;
-  border-color: #0d6efd !important;
-}
-
-[data-bs-theme="dark"] .btn-secondary {
-  color: #fff !important;
-  background-color: #6c757d !important;
-  border-color: #6c757d !important;
-}
-
-[data-bs-theme="dark"] .btn-success {
-  color: #fff !important;
-  background-color: #198754 !important;
-  border-color: #198754 !important;
-}
-
-[data-bs-theme="dark"] .btn-danger {
-  color: #fff !important;
-  background-color: #dc3545 !important;
-  border-color: #dc3545 !important;
-}
-
-[data-bs-theme="dark"] .btn-warning {
-  color: #000 !important;
-  background-color: #ffc107 !important;
-  border-color: #ffc107 !important;
-}
-
-[data-bs-theme="dark"] .btn-info {
-  color: #000 !important;
-  background-color: #0dcaf0 !important;
-  border-color: #0dcaf0 !important;
-}
-
-[data-bs-theme="dark"] .btn-light {
-  color: #000 !important;
-  background-color: #f8f9fa !important;
-  border-color: #f8f9fa !important;
-}
-
-[data-bs-theme="dark"] .btn-dark {
-  color: #fff !important;
-  background-color: #212529 !important;
-  border-color: #212529 !important;
-}
-
-/* Dark mode modal support */
-[data-bs-theme="dark"] .modal-content {
-  background-color: #212529;
-  color: #dee2e6;
-}
-
-[data-bs-theme="dark"] .modal-header {
-  border-bottom-color: #495057;
-}
-
-[data-bs-theme="dark"] .modal-footer {
-  border-top-color: #495057;
-}
-
-/* Dark mode card support */
-[data-bs-theme="dark"] .card {
-  background-color: #212529;
-  color: #dee2e6;
-  border-color: #495057;
-}
-
-[data-bs-theme="dark"] .card-header {
-  background-color: #2c3034;
-  border-bottom-color: #495057;
-}
-
-[data-bs-theme="dark"] .card-footer {
-  background-color: #2c3034;
-  border-top-color: #495057;
-}
-
-.add-more-card {
-  cursor: pointer;
-  opacity: 0.6;
-  transition:
-    opacity 0.15s ease-in-out,
-    transform 0.1s ease-in-out;
-}
-
-.add-more-card:hover {
-  opacity: 1;
-}
-
-.add-more-card:active {
-  transform: scale(0.97);
-}
-
-/* Dark mode list group support */
-[data-bs-theme="dark"] .list-group-item {
-  background-color: #212529;
-  color: #dee2e6;
-  border-color: #495057;
-}
-
-[data-bs-theme="dark"] .list-group-item.active {
-  background-color: #0d6efd;
-  border-color: #0d6efd;
-}
-
-[data-bs-theme="dark"] .list-group-item:hover {
-  background-color: #2c3034;
-}
-
-/* Dark mode form controls */
-[data-bs-theme="dark"] .form-control,
-[data-bs-theme="dark"] .form-select {
-  background-color: #2c3034;
-  border-color: #495057;
-  color: #dee2e6;
-}
-
-[data-bs-theme="dark"] .form-control:focus,
-[data-bs-theme="dark"] .form-select:focus {
-  background-color: #2c3034;
-  border-color: #6ea8fe;
-  color: #dee2e6;
-}
-
-[data-bs-theme="dark"] .form-control::placeholder {
-  color: #6c757d;
-}
-
-/* ===== FLOATING LABELS ===== */
-[data-bs-theme="dark"] .form-floating > .form-control::placeholder,
-[data-bs-theme="dark"] .form-floating > .form-select::placeholder,
-[data-bs-theme="dark"] .form-floating > .form-control:focus::placeholder,
-[data-bs-theme="dark"] .form-floating > .form-select:focus::placeholder {
-  color: transparent;
-}
-
-[data-bs-theme="dark"] .form-floating > label {
-  color: #6c757d;
-}
-
-[data-bs-theme="dark"] .form-floating > .form-control:focus ~ label,
-[data-bs-theme="dark"]
-  .form-floating
-  > .form-control:not(:placeholder-shown)
-  ~ label,
-[data-bs-theme="dark"] .form-floating > .form-select ~ label {
-  color: rgba(222, 226, 230, 0.65);
-  transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
-}
-
-[data-bs-theme="dark"] .form-floating > .form-control:focus ~ label {
-  color: #6ea8fe;
-}
-
-/* Dark mode dropdown support */
-[data-bs-theme="dark"] .dropdown-menu {
-  background-color: #2c3034 !important;
-  border-color: #495057 !important;
-}
-
-[data-bs-theme="dark"] .dropdown-item {
-  color: #dee2e6 !important;
-}
-
-[data-bs-theme="dark"] .dropdown-item:hover,
-[data-bs-theme="dark"] .dropdown-item:focus {
-  background-color: #495057 !important;
-  color: #fff !important;
-}
-
-[data-bs-theme="dark"] .dropdown-divider {
-  border-top-color: #495057 !important;
-}
-
-/* Dropdown toggle should match regular button styling - no color override */
-/* Buttons already have proper colors defined, dropdown toggle inherits them */
-
-/* Dark mode button group support */
-[data-bs-theme="dark"] .btn-group {
-  border-color: #495057;
-}
-
-/* Dark mode spinner */
-[data-bs-theme="dark"] .spinner-border {
-  color: #6ea8fe;
-}
-
-/* Dark mode progress bar */
-[data-bs-theme="dark"] .progress {
-  background-color: #495057;
-}
-
-[data-bs-theme="dark"] .progress-bar {
-  background-color: #0d6efd;
-}
-
-/* Dark mode container */
-[data-bs-theme="dark"] .container,
-[data-bs-theme="dark"] .container-fluid {
-  color: #dee2e6;
-}
-
-/* Dark mode table support */
-[data-bs-theme="dark"] .table {
-  color: #dee2e6;
-  border-color: #495057;
-}
-
-[data-bs-theme="dark"] .table thead,
-[data-bs-theme="dark"] .table tbody,
-[data-bs-theme="dark"] .table th,
-[data-bs-theme="dark"] .table td {
-  border-color: #495057;
-}
-
-[data-bs-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) > * {
-  --bs-table-bg-type: rgba(255, 255, 255, 0.05);
-  color: #dee2e6;
-}
-
-[data-bs-theme="dark"] .table-hover > tbody > tr:hover > * {
-  --bs-table-bg-state: rgba(255, 255, 255, 0.075);
-  color: #dee2e6;
-}
-
-[data-bs-theme="dark"] .table-bordered {
-  border-color: #495057;
-}
-
-/* Dark mode badge support */
-[data-bs-theme="dark"] .badge {
-  color: #fff;
-}
-
-[data-bs-theme="dark"] .badge.bg-secondary {
-  background-color: #6c757d !important;
-  color: #fff;
-}
-
-/* Ensure available cells are visible in dark mode */
-[data-bs-theme="dark"] .available {
-  background-color: var(--mm-success-alpha-10) !important;
-}
-
-[data-bs-theme="dark"] .cell-highlight {
-  box-shadow: 0 0 10px 2px var(--mm-highlight-color) inset !important;
-}
-
-/* Card header text visibility in dark mode */
-[data-bs-theme="dark"] .card-header {
-  color: #dee2e6;
-}
-
-[data-bs-theme="dark"] .card-body {
-  color: #dee2e6;
-}
-
-/* Dark mode - NotHome icon */
-[data-bs-theme="dark"] .badge-nothome {
-  color: var(--mm-text-body);
-}
-
-[data-bs-theme="dark"] .nothome-envelope {
-  filter: var(--mm-icon-invert-bright);
-  opacity: 0.6;
-}
-
-/* Dark mode - Status symbols */
-[data-bs-theme="dark"] .status-invalid {
-  filter: brightness(1.5) contrast(1.3);
-  text-shadow: 0 0 2px rgba(255, 255, 255, 1);
-}
-
-/* Dark mode - Form controls */
-[data-bs-theme="dark"] .form-check-input[type="radio"] {
-  background-color: var(--mm-border-color);
-  border-color: var(--mm-border-subtle);
-}
-
-[data-bs-theme="dark"] .form-check-input[type="radio"]:checked {
-  background-color: #0d6efd;
-  border-color: #0d6efd;
-}
-
-[data-bs-theme="dark"] .form-check-input[type="radio"]:focus {
-  border-color: #86b7fe;
-  box-shadow: var(--mm-focus-shadow);
-}
-
-[data-bs-theme="dark"] .form-check-label {
-  color: var(--mm-text-body);
-}
-
-[data-bs-theme="dark"] .fw-semibold {
-  color: var(--mm-text-semibold);
-}
-
-.language-icon {
-  filter: none;
-}
-
-[data-bs-theme="dark"] .language-icon {
-  filter: invert(1) brightness(1.2);
-}
-
-/* ===== MAP NOTIFICATIONS ===== */
-.map-notification {
-  font-weight: bold;
-  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
-  margin-bottom: 0;
-}
-
-.map-notification-arrival {
-  /* Uses Bootstrap .alert-success */
-}
-
-.map-notification-tracking {
-  /* Uses Bootstrap .alert-info */
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.map-notification-tracking-spinner {
-  flex-shrink: 0;
-}
-
-.map-notification-tracking-content {
-  flex: 1;
-}
-
-.map-notification-distance {
-  display: block;
-  font-size: 1rem;
-  font-weight: bold;
-}
-
-.map-notification-status {
-  display: block;
-  font-size: 0.75rem;
-  color: var(--bs-secondary-color, #6c757d);
-  margin-top: 0.125rem;
-}
-
-/* ============================================
-   Stacked Modal Support
-   ============================================ */
-
-/* Ensure proper z-index stacking for nested modals */
-.modal.show ~ .modal.show {
-  z-index: calc(var(--bs-modal-zindex, 1055) + 10);
-}
-
-.modal-backdrop.show ~ .modal-backdrop.show {
-  z-index: calc(var(--bs-backdrop-zindex, 1050) + 10);
-}
-
-/* Dim parent modal when confirm dialog opens on top */
-.modal.show:has(~ .modal.show) {
-  filter: brightness(0.7);
-  transition: filter 0.15s ease-in-out;
-}
-
-/* Keep topmost modal fully visible */
-.modal.show ~ .modal.show {
-  filter: none;
 }

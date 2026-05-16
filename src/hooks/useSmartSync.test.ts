@@ -66,8 +66,7 @@ const makeOp = (overrides: Partial<StoredOp> = {}): StoredOp => ({
     status: "X",
     not_home_tries: 0,
     dnc_time: "",
-    coordinates: "",
-    updated_by: "user-1"
+    coordinates: ""
   },
   initialOptionIds: [],
   desiredOptionIds: [],
@@ -411,7 +410,6 @@ describe("useSmartSync", () => {
           floor: 1,
           sequence: 1,
           congregation: "cong-1",
-          created_by: "user-1",
           source: ""
         },
         ...overrides
@@ -500,7 +498,6 @@ describe("useSmartSync", () => {
           floor: 1,
           sequence: 1,
           congregation: "cong-1",
-          created_by: "user-1",
           source: ""
         }
       });
@@ -522,7 +519,6 @@ describe("useSmartSync", () => {
           floor: 1,
           sequence: 1,
           congregation: "cong-1",
-          created_by: "user-1",
           source: ""
         }
       });
@@ -546,7 +542,6 @@ describe("useSmartSync", () => {
           floor: 1,
           sequence: 1,
           congregation: "cong-1",
-          created_by: "user-1",
           source: ""
         }
       });
@@ -829,7 +824,6 @@ describe("useSmartSync", () => {
         floor: 1,
         sequence: 1,
         congregation: "cong-1",
-        created_by: "user-1",
         source: ""
       },
       updateData: makeOp().updateData,
@@ -897,7 +891,6 @@ describe("useSmartSync", () => {
         floor: 1,
         sequence: 1,
         congregation: "cong-1",
-        created_by: "user-1",
         source: ""
       },
       updateData: makeOp().updateData,
@@ -1116,7 +1109,6 @@ describe("useSmartSync", () => {
             floor: 1,
             sequence: 1,
             congregation: "cong-1",
-            created_by: "user-1",
             source: ""
           },
           updateData: makeOp().updateData,

@@ -1,7 +1,9 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createData, verifyEmail } from "../utils/pocketbase";
 import useNotification from "./useNotification";
 import useAnalytics, { ANALYTICS_EVENTS } from "./useAnalytics";
+import { mapPbAuthError } from "../utils/helpers/pbErrors";
 
 interface SignupFormData {
   email: string;
@@ -11,6 +13,7 @@ interface SignupFormData {
 }
 
 export default function useSignup() {
+  const { t } = useTranslation();
   const { notifyError, notifyWarning, runAction } = useNotification();
   const { trackEvent } = useAnalytics();
   const [formData, setFormData] = useState<SignupFormData>({
@@ -54,7 +57,7 @@ export default function useSignup() {
         setLoading: setIsCreating,
         onError: (err) => {
           setValidated(false);
-          notifyError(err);
+          notifyError(mapPbAuthError(err, t) ?? err);
         }
       }
     );

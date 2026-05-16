@@ -4,6 +4,11 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
 import "fake-indexeddb/auto";
+
+// jsdom doesn't implement the Web Animations API used by @base-ui/react ScrollArea
+if (typeof Element !== "undefined" && !Element.prototype.getAnimations) {
+  Element.prototype.getAnimations = () => [];
+}
 window.matchMedia =
   window.matchMedia ||
   function () {

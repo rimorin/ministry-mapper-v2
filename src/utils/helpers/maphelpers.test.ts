@@ -4,7 +4,9 @@ import {
   getPolygonCenterAsObject,
   isValidCoordinate,
   getDefaultMapCenter,
-  getNextSequence
+  getNextSequence,
+  formatDistance,
+  formatDuration
 } from "./maphelpers";
 import { DEFAULT_COORDINATES } from "../constants";
 
@@ -224,6 +226,52 @@ describe("getDefaultMapCenter", () => {
 
       expect(center).toEqual(coordinate);
     });
+  });
+});
+
+describe("formatDistance", () => {
+  it("formats metres below 1km", () => {
+    expect(formatDistance(0)).toBe("0 m");
+    expect(formatDistance(500)).toBe("500 m");
+    expect(formatDistance(999)).toBe("999 m");
+  });
+
+  it("rounds fractional metres", () => {
+    expect(formatDistance(99.6)).toBe("100 m");
+    expect(formatDistance(99.4)).toBe("99 m");
+  });
+
+  it("formats 1km and above in kilometres with one decimal", () => {
+    expect(formatDistance(1000)).toBe("1.0 km");
+    expect(formatDistance(1500)).toBe("1.5 km");
+    expect(formatDistance(10000)).toBe("10.0 km");
+  });
+});
+
+describe("formatDuration", () => {
+  it("formats durations under 1 hour in minutes", () => {
+    expect(formatDuration(60)).toBe("1 min");
+    expect(formatDuration(600)).toBe("10 min");
+    expect(formatDuration(3540)).toBe("59 min");
+  });
+
+  it("rounds to nearest minute", () => {
+    expect(formatDuration(90)).toBe("2 min");
+    expect(formatDuration(89)).toBe("1 min");
+  });
+
+  it("formats exactly 1 hour", () => {
+    expect(formatDuration(3600)).toBe("1 h");
+  });
+
+  it("formats hours with remaining minutes", () => {
+    expect(formatDuration(3660)).toBe("1 h 1 min");
+    expect(formatDuration(5400)).toBe("1 h 30 min");
+    expect(formatDuration(7380)).toBe("2 h 3 min");
+  });
+
+  it("formats whole hours without minutes", () => {
+    expect(formatDuration(7200)).toBe("2 h");
   });
 });
 

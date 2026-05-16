@@ -16,14 +16,15 @@ describe("GenericButton", () => {
       render(<GenericButton label="Button" />);
 
       const button = screen.getByRole("button");
-      expect(button).toHaveClass("btn-sm");
+      expect(button).toHaveAttribute("data-slot", "button");
+      expect(button).toHaveClass("h-8");
     });
 
-    it("should use outline-primary variant by default", () => {
+    it("should use outline variant by default", () => {
       render(<GenericButton label="Button" />);
 
       const button = screen.getByRole("button");
-      expect(button).toHaveClass("btn-outline-primary");
+      expect(button).toHaveClass("border-border", "bg-background", "shadow-xs");
     });
 
     it("should apply custom className", () => {
@@ -35,25 +36,25 @@ describe("GenericButton", () => {
   });
 
   describe("button variants", () => {
-    it("should render with primary variant", () => {
-      render(<GenericButton label="Primary" variant="primary" />);
+    it("should render default variant", () => {
+      render(<GenericButton label="Default" variant="default" />);
 
       const button = screen.getByRole("button");
-      expect(button).toHaveClass("btn-primary");
+      expect(button).toHaveClass("bg-primary", "text-primary-foreground");
     });
 
-    it("should render with danger variant", () => {
-      render(<GenericButton label="Danger" variant="danger" />);
+    it("should render destructive variant", () => {
+      render(<GenericButton label="Destructive" variant="destructive" />);
 
       const button = screen.getByRole("button");
-      expect(button).toHaveClass("btn-danger");
+      expect(button).toHaveClass("text-destructive");
     });
 
-    it("should render with success variant", () => {
-      render(<GenericButton label="Success" variant="success" />);
+    it("should render secondary variant", () => {
+      render(<GenericButton label="Secondary" variant="secondary" />);
 
       const button = screen.getByRole("button");
-      expect(button).toHaveClass("btn-success");
+      expect(button).toHaveClass("bg-secondary", "text-secondary-foreground");
     });
   });
 
@@ -62,14 +63,14 @@ describe("GenericButton", () => {
       render(<GenericButton label="Small" size="sm" />);
 
       const button = screen.getByRole("button");
-      expect(button).toHaveClass("btn-sm");
+      expect(button).toHaveClass("h-8");
     });
 
     it("should render with large size", () => {
       render(<GenericButton label="Large" size="lg" />);
 
       const button = screen.getByRole("button");
-      expect(button).toHaveClass("btn-lg");
+      expect(button).toHaveClass("h-10");
     });
   });
 

@@ -1,3 +1,7 @@
+import { useEffect } from "react";
+import { CheckCircle2, XCircle } from "lucide-react";
+import { cn } from "@/lib/utils";
+
 interface PasswordChecklistProps {
   password: string;
   passwordConfirm: string;
@@ -50,28 +54,31 @@ const PasswordChecklist = ({
   ];
 
   const allValid = validationRules.every((rule) => rule.isValid);
-  if (onChange) {
-    onChange(allValid);
-  }
+
+  useEffect(() => {
+    onChange?.(allValid);
+  }, [allValid, onChange]);
 
   return (
-    <ul className="list-unstyled mb-0">
+    <ul className="space-y-1.5">
       {validationRules.map((rule) => (
-        <li
-          key={rule.key}
-          className="d-flex align-items-start mb-1 fluid-small"
-          style={{ lineHeight: "1.4" }}
-        >
+        <li key={rule.key} className="flex items-center gap-2 text-sm">
+          {rule.isValid ? (
+            <CheckCircle2
+              className="size-4 shrink-0 text-green-500"
+              aria-hidden="true"
+            />
+          ) : (
+            <XCircle
+              className="size-4 shrink-0 text-destructive"
+              aria-hidden="true"
+            />
+          )}
           <span
-            className="me-2"
-            style={{
-              color: rule.isValid ? "var(--bs-success)" : "var(--bs-danger)"
-            }}
-            aria-label={rule.isValid ? "valid" : "invalid"}
+            className={cn(
+              rule.isValid ? "text-muted-foreground" : "text-foreground"
+            )}
           >
-            {rule.isValid ? "✓" : "✗"}
-          </span>
-          <span style={{ color: rule.isValid ? "inherit" : "inherit" }}>
             {rule.message}
           </span>
         </li>

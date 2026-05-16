@@ -1,4 +1,6 @@
-import { Form } from "react-bootstrap";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 import { FormProps } from "../../utils/interface";
 
 const GenericInputField = ({
@@ -10,15 +12,18 @@ const GenericInputField = ({
   required = false,
   placeholder = "",
   information = "",
-  inputType = "string",
+  inputType = "text",
   readOnly = false,
   focus = false,
   autoComplete
 }: FormProps) => {
+  const inputId = `basicForm${name}Text`;
+
   return (
-    <Form.Group className="mb-3" controlId={`basicForm${name}Text`}>
-      <Form.Label>{label}</Form.Label>
-      <Form.Control
+    <div className={cn("flex flex-col gap-1.5")}>
+      <Label htmlFor={inputId}>{label}</Label>
+      <Input
+        id={inputId}
         type={inputType}
         onChange={handleChange}
         onClick={handleClick}
@@ -27,12 +32,13 @@ const GenericInputField = ({
         required={required}
         placeholder={placeholder}
         readOnly={readOnly}
-        // autofocus does not work for ios safari
         autoFocus={focus}
         autoComplete={autoComplete}
       />
-      {information && <Form.Text muted>{information}</Form.Text>}
-    </Form.Group>
+      {information && (
+        <p className="text-xs text-muted-foreground">{information}</p>
+      )}
+    </div>
   );
 };
 

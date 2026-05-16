@@ -23,7 +23,7 @@ describe("NotFoundPage", () => {
     it("should use StaticPageCard wrapper", () => {
       const { container } = render(<NotFoundPage />);
 
-      const card = container.querySelector(".card");
+      const card = container.querySelector('[data-slot="card"]');
       expect(card).toBeInTheDocument();
     });
   });
@@ -32,7 +32,7 @@ describe("NotFoundPage", () => {
     it("should have proper text alignment", () => {
       const { container } = render(<NotFoundPage />);
 
-      const cardText = container.querySelector(".text-justify");
+      const cardText = container.querySelector(".text-center");
       expect(cardText).toBeInTheDocument();
     });
   });

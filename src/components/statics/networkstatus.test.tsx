@@ -23,7 +23,7 @@ describe("NetworkStatusBanner", () => {
     const { container } = render(<NetworkStatusBanner />);
 
     expect(
-      container.querySelector(".network-status-indicator")
+      container.querySelector("[data-network-status]")
     ).not.toBeInTheDocument();
   });
 
@@ -37,7 +37,7 @@ describe("NetworkStatusBanner", () => {
     const { container, getByText } = render(<NetworkStatusBanner />);
 
     expect(
-      container.querySelector(".network-status-indicator")
+      container.querySelector("[data-network-status]")
     ).toBeInTheDocument();
     expect(getByText(/No internet connection/i)).toBeInTheDocument();
   });
@@ -50,7 +50,7 @@ describe("NetworkStatusBanner", () => {
     });
 
     const { container, getByText } = render(<NetworkStatusBanner />);
-    const indicator = container.querySelector(".network-status-indicator");
+    const indicator = container.querySelector("[data-network-status]");
 
     expect(indicator).toBeInTheDocument();
     expect(indicator).toHaveAttribute("data-slow", "true");

@@ -16,6 +16,16 @@ vi.mock("./useNotification", () => ({
     notifyError: vi.fn()
   })
 }));
+vi.mock("react-i18next", async () => {
+  const actual = await vi.importActual("react-i18next");
+  return {
+    ...(actual as object),
+    useTranslation: () => ({
+      t: (key: string, defaultValue: string) => defaultValue,
+      i18n: { language: "en" }
+    })
+  };
+});
 
 const futureDate = new Date(Date.now() + 1_000_000).toISOString();
 const pastDate = new Date(Date.now() - 1_000_000).toISOString();

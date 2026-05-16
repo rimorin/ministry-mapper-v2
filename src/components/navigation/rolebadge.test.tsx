@@ -5,27 +5,25 @@ import UserRoleBadge from "./rolebadge";
 describe("UserRoleBadge", () => {
   describe("role display", () => {
     it("should display read-only badge", () => {
-      const { container } = render(<UserRoleBadge role="read_only" />);
+      render(<UserRoleBadge role="read_only" />);
 
-      const badge = container.querySelector(".bg-secondary");
-      expect(badge).toBeInTheDocument();
-      expect(badge).toHaveTextContent(/read/i);
+      const badge = screen.getByText(/read/i);
+      expect(badge).toHaveAttribute("data-slot", "badge");
+      expect(badge).toHaveClass("bg-secondary");
     });
 
     it("should display conductor badge", () => {
-      const { container } = render(<UserRoleBadge role="conductor" />);
+      render(<UserRoleBadge role="conductor" />);
 
-      const badge = container.querySelector(".bg-success");
-      expect(badge).toBeInTheDocument();
-      expect(badge).toHaveTextContent(/conductor/i);
+      const badge = screen.getByText(/conductor/i);
+      expect(badge).toHaveClass("bg-green-600", "text-white");
     });
 
     it("should display administrator badge for administrator role", () => {
-      const { container } = render(<UserRoleBadge role="administrator" />);
+      render(<UserRoleBadge role="administrator" />);
 
-      const badge = container.querySelector(".bg-primary");
-      expect(badge).toBeInTheDocument();
-      expect(badge).toHaveTextContent(/admin/i);
+      const badge = screen.getByText(/admin/i);
+      expect(badge).toHaveClass("bg-primary", "text-primary-foreground");
     });
   });
 
@@ -48,24 +46,24 @@ describe("UserRoleBadge", () => {
   });
 
   describe("badge styling", () => {
-    it("should render as Bootstrap badge", () => {
-      const { container } = render(<UserRoleBadge role="conductor" />);
+    it("should render as a shadcn badge", () => {
+      render(<UserRoleBadge role="conductor" />);
 
-      const badge = container.querySelector(".badge");
-      expect(badge).toBeInTheDocument();
+      expect(screen.getByText(/conductor/i)).toHaveAttribute(
+        "data-slot",
+        "badge"
+      );
     });
 
     it("should use correct variant colors", () => {
-      const { rerender, container } = render(
-        <UserRoleBadge role="read_only" />
-      );
-      expect(container.querySelector(".bg-secondary")).toBeInTheDocument();
+      const { rerender } = render(<UserRoleBadge role="read_only" />);
+      expect(screen.getByText(/read/i)).toHaveClass("bg-secondary");
 
       rerender(<UserRoleBadge role="conductor" />);
-      expect(container.querySelector(".bg-success")).toBeInTheDocument();
+      expect(screen.getByText(/conductor/i)).toHaveClass("bg-green-600");
 
       rerender(<UserRoleBadge role="administrator" />);
-      expect(container.querySelector(".bg-primary")).toBeInTheDocument();
+      expect(screen.getByText(/admin/i)).toHaveClass("bg-primary");
     });
   });
 });

@@ -1,51 +1,10 @@
-.network-status-indicator {
-  position: fixed;
-  bottom: max(0.5rem, env(safe-area-inset-bottom));
-  right: max(0.5rem, env(safe-area-inset-right));
-  z-index: 1030;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.75rem;
-  padding: 0.2rem 0.5rem;
-  border-radius: 999px;
-  background-color: var(--mm-danger);
-  color: white;
-  user-select: none;
-  white-space: nowrap;
-  max-width: calc(100vw - 1rem - env(safe-area-inset-right));
-  animation: status-pulse 2s ease-in-out infinite;
-}
-
-.network-status-indicator[data-slow="true"] {
+[data-network-status][data-slow="true"] {
   background-color: var(--mm-warning);
-  color: #000;
+  color: #000000;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .network-status-indicator {
+  [data-network-status] {
     animation: none;
-  }
-}
-
-.pending-sync-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 0.875rem;
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
-  color: var(--mm-warning);
-  animation: status-pulse 2s ease-in-out infinite;
-  user-select: none;
-}
-
-@keyframes status-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
   }
 }

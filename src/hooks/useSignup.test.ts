@@ -100,7 +100,6 @@ describe("useSignup", () => {
       const { result } = renderHook(() => useSignup());
       const onSuccess = vi.fn();
 
-      // Set form data
       act(() => {
         result.current.handleInputChange({
           target: { id: "name", value: "John Doe" }
@@ -184,7 +183,6 @@ describe("useSignup", () => {
     it("should reset all form fields to default", () => {
       const { result } = renderHook(() => useSignup());
 
-      // Set some values
       act(() => {
         result.current.handleInputChange({
           target: { id: "name", value: "John Doe" }

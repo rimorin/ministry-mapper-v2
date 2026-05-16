@@ -12,7 +12,7 @@ describe("VersionDisplay", () => {
     vi.stubEnv("VITE_APP_VERSION", "1.2.3");
 
     const { container } = render(<VersionDisplay />);
-    const versionDiv = container.querySelector(".fixed-bottom");
+    const versionDiv = container.querySelector(".fixed");
     expect(versionDiv).toBeInTheDocument();
   });
 
@@ -29,7 +29,7 @@ describe("VersionDisplay", () => {
     vi.stubEnv("VITE_APP_VERSION", "1.2.3");
 
     const { container } = render(<VersionDisplay />);
-    const versionDiv = container.querySelector(".fixed-bottom");
+    const versionDiv = container.querySelector(".fixed");
     expect(versionDiv).toBeInTheDocument();
   });
 
@@ -46,7 +46,11 @@ describe("VersionDisplay", () => {
     vi.stubEnv("VITE_APP_VERSION", "1.0.0");
 
     const { container } = render(<VersionDisplay />);
-    const versionDiv = container.querySelector(".fixed-bottom");
-    expect(versionDiv).toHaveClass("text-muted", "opacity-25", "m-2");
+    const versionDiv = container.querySelector(".fixed");
+    expect(versionDiv).toHaveClass(
+      "text-muted-foreground",
+      "opacity-25",
+      "m-2"
+    );
   });
 });

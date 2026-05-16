@@ -1,19 +1,18 @@
-import "../App.scss";
+import "../css/variables.css";
 import "../css/main.css";
 import "../css/common.css";
-import "../css/toast.css";
-import "../css/darkmode.css";
+import "@/index.css";
 import { FC, ReactNode } from "react";
 import MaintenanceMiddleware from "../components/middlewares/maintenance";
 import PwaMiddleware from "../components/middlewares/pwa";
 import MainMiddleware from "../components/middlewares/main";
-import StateMiddleware from "../components/middlewares/context";
 import ThemeMiddleware from "../components/middlewares/theme";
 import { Provider as NiceModelMiddleware } from "@ebay/nice-modal-react";
+import { LazyMotion, domAnimation, MotionConfig } from "motion/react";
 import Router from "./router";
 import "../i18n";
 import { LanguageProvider } from "../i18n/LanguageContext";
-import { ToastProvider } from "../components/middlewares/toast";
+import { Toaster } from "@/components/ui/sonner";
 import { ReleaseNotesProvider } from "../components/middlewares/releasenotescontext";
 import SwUpdatePrompt from "../components/middlewares/swupdateprompt";
 
@@ -22,24 +21,25 @@ interface CombinedMiddlewareProps {
 }
 
 const CombinedMiddleware: FC<CombinedMiddlewareProps> = ({ children }) => (
-  <MainMiddleware>
-    <LanguageProvider>
-      <ThemeMiddleware>
-        <ToastProvider>
-          <SwUpdatePrompt />
-          <MaintenanceMiddleware>
-            <PwaMiddleware>
-              <NiceModelMiddleware>
-                <ReleaseNotesProvider>
-                  <StateMiddleware>{children}</StateMiddleware>
-                </ReleaseNotesProvider>
-              </NiceModelMiddleware>
-            </PwaMiddleware>
-          </MaintenanceMiddleware>
-        </ToastProvider>
-      </ThemeMiddleware>
-    </LanguageProvider>
-  </MainMiddleware>
+  <LazyMotion features={domAnimation} strict>
+    <MotionConfig reducedMotion="user">
+      <MainMiddleware>
+        <LanguageProvider>
+          <ThemeMiddleware>
+            <Toaster />
+            <SwUpdatePrompt />
+            <MaintenanceMiddleware>
+              <PwaMiddleware>
+                <NiceModelMiddleware>
+                  <ReleaseNotesProvider>{children}</ReleaseNotesProvider>
+                </NiceModelMiddleware>
+              </PwaMiddleware>
+            </MaintenanceMiddleware>
+          </ThemeMiddleware>
+        </LanguageProvider>
+      </MainMiddleware>
+    </MotionConfig>
+  </LazyMotion>
 );
 
 const Main: FC = () => {

@@ -1,240 +1,131 @@
 /* Admin page styles - uses centralized variables from variables.css */
 
-/* ===== HEADER & HOVER EFFECTS ===== */
-.admin-unit-header:hover {
-  background-color: var(--mm-primary-lighter);
-  transition: var(--mm-transition-base);
-}
-
-.aggregate-dark-text {
-  color: var(--mm-black);
-}
-
-/* ===== NAVIGATION ===== */
-.back-to-top {
-  position: fixed;
-  bottom: 30px;
-  right: 25px;
-  cursor: pointer;
-  transition: var(--mm-transition-base);
-}
-
-.back-to-top:hover {
-  transform: translateY(-3px);
-}
-
-.no-confirm-btn {
-  margin-left: 1.5rem;
-}
-
-/* ===== DROPDOWNS ===== */
-.dropdown-btn {
-  display: inline-block;
-  margin: 0.25rem;
-}
-
-.dropdown-btn .dropdown-menu,
-.dropdown-btn .dropup .dropdown-menu,
-.dropdown-btn.dropup .dropdown-menu {
-  z-index: 1055 !important;
-  box-shadow: var(--mm-shadow-preset-lg);
-  border: none;
-  border-radius: var(--mm-radius-md);
-}
-
-.dropdown-btn .btn {
-  transition: all 0.25s ease-in-out;
-  border-radius: 0.375rem;
-}
-
-.dropdown-btn .btn:hover:not(:disabled) {
-  transform: translateY(-2px);
-  box-shadow: var(--mm-shadow-preset-lg);
-}
-
-.dropdown-btn .btn:active:not(:disabled) {
-  transform: translateY(0);
-}
-
-.dropdown-btn button:focus-visible,
-.dropdown-btn a:focus-visible {
-  outline: 2px solid var(--mm-primary);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px var(--mm-primary-alpha-25);
-}
-
-/* ===== TEXT & LINKS ===== */
-.resend-text {
-  cursor: pointer;
-  margin-bottom: 1.5rem;
-  color: var(--mm-primary);
-  transition: all 0.2s ease;
-  padding: 0.375rem 0.75rem;
-  border-radius: var(--mm-radius-md);
-  display: inline-block;
-}
-
-.resend-text:hover {
-  text-decoration: underline;
-  color: var(--mm-primary-hover);
-  background-color: var(--mm-primary-alpha-10);
-}
-
-/* ===== MAP CONTAINERS ===== */
 .map-body-admin {
   height: 490px;
   overflow: auto;
-  border: 1px solid var(--mm-overlay-black-10);
+  overscroll-behavior: contain;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 0.75rem;
   box-sizing: border-box;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
-  background: var(--mm-bg-body);
-  box-shadow: var(--mm-shadow-preset-sm);
+  background: var(--background);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.075);
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.map-body-admin:hover {
+  scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
 }
 
 .map-body-admin::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 .map-body-admin::-webkit-scrollbar-track {
-  background: var(--mm-scrollbar-track);
-  border-radius: 4px;
+  background: transparent;
 }
 
 .map-body-admin::-webkit-scrollbar-thumb {
-  background: var(--mm-scrollbar-thumb-alt);
-  border-radius: 4px;
+  background: transparent;
+  border-radius: 3px;
+  transition: background 0.2s ease;
 }
 
-.map-body-admin::-webkit-scrollbar-thumb:hover {
-  background: var(--mm-scrollbar-thumb-alt-hover);
+.map-body-admin:hover::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.2);
 }
 
-.map-view-admin {
-  height: 75dvh;
-  width: 100%;
-  position: relative;
-  overflow: hidden;
-  border-radius: 0.75rem;
-  box-shadow: var(--mm-shadow-preset-lg);
+.dark .map-body-admin:hover::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
 }
 
-/* ===== ANIMATIONS ===== */
-.notification-glow {
-  animation: notification-glow 1.5s infinite;
-}
-
-@keyframes notification-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 5px var(--mm-success-alpha-50);
-  }
-  50% {
-    box-shadow: 0 0 20px var(--mm-success-alpha-80);
-  }
-}
-
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-15px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.territory-content {
-  animation: fadeIn 0.4s ease-out;
-}
-
-@keyframes circular-glow {
-  0% {
-    stroke-width: 2;
-    stroke-opacity: 0.5;
-  }
-  100% {
-    stroke-width: 4;
-    stroke-opacity: 1;
-  }
-}
-
-/* ===== CIRCULAR PROGRESS ===== */
 .circular-progress-container {
   position: relative;
   display: inline-block;
   width: 55px;
   height: 55px;
   border-radius: 50%;
-  background-color: #ddd;
-  box-shadow: var(--mm-shadow-preset-md);
+  background-color: var(--background);
+  contain: layout style;
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.28),
+    0 0 0 1.5px rgba(0, 0, 0, 0.1);
 }
 
 .circular-progress {
-  transform: rotate(-180deg);
   width: 100%;
   height: 100%;
 }
 
-.circular-progress-background {
-  opacity: 0.2;
-  stroke: #ddd;
-  stroke-width: 3;
+.circular-progress-background,
+.circular-progress-highlight,
+.circular-progress-assignments,
+.circular-progress-personal,
+.selected-marker-ring {
   fill: none;
 }
 
-.circular-progress-highlight {
-  stroke: #00f;
+.circular-progress-background {
+  opacity: 0.5;
+  stroke: var(--muted-foreground);
   stroke-width: 3;
-  fill: none;
-  transition: stroke-dashoffset 0.35s ease;
-  transform: rotate(0.25turn);
+}
+
+.circular-progress-highlight {
+  stroke: var(--mm-progress);
+  stroke-width: 3;
+  /* Single -90deg rotation starts arc at 12 o'clock */
+  transform: rotate(-0.25turn);
   transform-origin: center;
+  transition: stroke-dashoffset 0.35s ease;
 }
 
 .circular-progress-center {
   position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 14px;
   font-weight: 900;
-  color: var(--mm-black);
+  color: var(--foreground);
   text-shadow:
-    -1px -1px 0 var(--mm-white),
-    1px -1px 0 var(--mm-white),
-    -1px 1px 0 var(--mm-white),
-    1px 1px 0 var(--mm-white),
-    0 0 3px var(--mm-overlay-white-80),
-    0 0 5px var(--mm-overlay-white-60);
+    -1px -1px 0 color-mix(in oklch, var(--background) 90%, transparent),
+    1px -1px 0 color-mix(in oklch, var(--background) 90%, transparent),
+    -1px 1px 0 color-mix(in oklch, var(--background) 90%, transparent),
+    1px 1px 0 color-mix(in oklch, var(--background) 90%, transparent);
 }
 
 .circular-progress-assignments,
 .circular-progress-personal {
   display: none;
-  fill: none;
 }
 
 .marker-has-assignments .circular-progress-assignments {
   display: block;
-  animation: circular-glow 1.5s infinite alternate;
-  opacity: 0.8;
+  opacity: 0.9;
   stroke: var(--mm-success);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 3px var(--mm-success));
+  animation: circular-glow 1.5s ease-in-out infinite alternate;
+  will-change: opacity;
 }
 
 .marker-has-personal .circular-progress-personal {
   display: block;
-  animation: circular-glow 1.5s infinite alternate;
   opacity: 0.9;
   stroke: var(--mm-warning);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 3px var(--mm-warning));
+  animation: circular-glow 1.5s ease-in-out infinite alternate;
+  will-change: opacity;
 }
 
-/* ===== MAP MARKERS ===== */
 .selected-marker {
   border: 2px solid var(--mm-warning);
   border-radius: 50%;
@@ -243,7 +134,6 @@
 
 .selected-marker-ring {
   display: none;
-  fill: none;
 }
 
 .marker-selected .selected-marker-ring {
@@ -251,455 +141,13 @@
   stroke: var(--mm-warning);
   stroke-width: 3;
   filter: drop-shadow(0 0 8px var(--mm-warning-alpha-60));
-  animation: pulse-ring 1.5s ease-in-out infinite;
+  animation: status-pulse 1.5s ease-in-out infinite;
+  will-change: opacity;
 }
 
-@keyframes pulse-ring {
-  0%,
-  100% {
-    opacity: 1;
-    stroke-width: 3;
-  }
-  50% {
-    opacity: 0.6;
-    stroke-width: 4;
-  }
-}
-
-.mode-toggle-button {
-  position: fixed;
-  bottom: 30px;
-  left: 25px;
-  background: var(--mm-gradient-primary);
-  color: var(--mm-white);
-  border: none;
-  border-radius: 50%;
-  width: 56px;
-  height: 56px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  box-shadow: var(--mm-shadow-preset-xl);
-  cursor: pointer;
-  opacity: 0.9;
-  z-index: 1000;
-  transition: all 0.3s ease;
-}
-
-.mode-toggle-button:hover {
-  opacity: 1;
-  transform: scale(1.1);
-  box-shadow: 0 8px 20px var(--mm-shadow-3xl);
-}
-
-.marker-info-card {
-  width: 17rem;
-  font-size: 0.9rem;
-  box-shadow: var(--mm-shadow-preset-lg);
-  border-radius: var(--mm-radius-md);
-  background-color: var(--mm-white);
-  color: var(--mm-text-body);
-  border: 1px solid var(--mm-border-color);
-}
-
-.marker-legend-card {
-  width: fit-content;
-}
-
-[data-bs-theme="dark"] .marker-info-card {
-  background-color: var(--mm-gray-950);
-  color: var(--mm-text-body);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-/* Map control panel for coordinates display */
-.map-control-panel {
-  max-width: 20rem;
-  font-size: 0.9rem;
-  background-color: var(--mm-white);
-  color: var(--mm-text-body);
-  border: none;
-  border-radius: 0.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-}
-
-.map-control-panel .card-body {
-  padding: 0.75rem 1rem;
-}
-
-[data-bs-theme="dark"] .map-control-panel {
-  background-color: var(--mm-gray-950);
-  color: var(--mm-text-body);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-}
-
-.map-control-panel-name {
-  font-weight: 500;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Map autocomplete search container */
-/* Map Autocomplete Container */
-.map-autocomplete-container {
-  width: 340px;
-  margin-top: 10px;
-}
-
-.map-autocomplete-input {
-  border-right: none;
-  height: 38px;
-  font-size: 0.875rem;
-  padding: 0.5rem 0.75rem;
-  background-color: var(--mm-overlay-white-95);
-  box-shadow: var(--mm-shadow-preset-sm);
-}
-
-.map-autocomplete-input::placeholder {
-  font-size: 0.875rem;
-}
-
-.map-autocomplete-input:focus {
-  border-right: none;
-  background-color: var(--mm-white);
-}
-
-.map-autocomplete-clear-btn {
-  border-left: none;
-  font-size: 0.875rem;
-  padding: 0.5rem 0.75rem;
-  box-shadow: var(--mm-shadow-preset-sm);
-}
-
-.map-autocomplete-results {
-  background-color: var(--mm-white);
-  box-shadow: var(--mm-shadow-preset-lg);
-  border: var(--mm-border-width) solid var(--mm-overlay-black-12);
-}
-
-.map-autocomplete-results .list-group-item {
-  background-color: var(--mm-bg-subtle);
-  border-color: var(--mm-overlay-black-8);
-  color: var(--mm-text-body);
-  font-weight: 500;
-  padding: 0.625rem 0.75rem;
-}
-
-.map-autocomplete-results .list-group-item:hover {
-  background-color: var(--mm-bg-muted);
-  color: var(--mm-text-dark);
-}
-
-[data-bs-theme="dark"] .map-autocomplete-input,
-[data-bs-theme="dark"] .map-autocomplete-clear-btn {
-  background-color: var(--mm-overlay-white-95);
-  box-shadow: var(--mm-shadow-preset-md);
-}
-
-[data-bs-theme="dark"] .map-autocomplete-input:focus {
-  background-color: var(--mm-bg-subtle);
-}
-
-[data-bs-theme="dark"] .map-autocomplete-results {
-  background-color: var(--mm-bg-subtle);
-  box-shadow: var(--mm-shadow-preset-xl);
-  border-color: var(--mm-border-color);
-}
-
-[data-bs-theme="dark"] .map-autocomplete-results .list-group-item:hover {
-  background-color: var(--mm-bg-muted);
-}
-
-/* ===== WELCOME CARD ===== */
-.welcome-card {
-  max-width: 500px;
-  margin: 2rem auto;
-  border: none;
-  border-radius: 1rem;
-  box-shadow: var(--mm-shadow-preset-lg);
-  overflow: hidden;
-  transition: all 0.3s ease;
-  background: var(--mm-bg-body);
-}
-
-.welcome-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px var(--mm-success-alpha-15);
-}
-
-.welcome-image-container {
-  padding: 3rem 2rem 2rem;
-  background: var(--mm-gradient-green-light);
-  text-align: center;
-  border-bottom: 3px solid var(--mm-success);
-}
-
-.welcome-image {
-  max-width: 160px;
-  width: 100%;
-  height: auto;
-  filter: drop-shadow(0 2px 8px var(--mm-shadow-xs));
-}
-
-.welcome-card-body {
-  padding: 2rem;
-  text-align: center;
-}
-
-.welcome-card-title {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--mm-text-dark);
-  margin-bottom: 1rem;
-}
-
-.welcome-card-text {
-  font-size: 1rem;
-  color: var(--mm-gray-900);
-  margin-bottom: 0;
-}
-
-/* ===== TERRITORY HEADER ===== */
-.territory-header {
-  background: var(--mm-gradient-header);
-  border-bottom: 2px solid var(--mm-success);
-  padding: 0.5rem 0;
-  font-size: 0.875rem;
-  color: var(--mm-success);
-  box-shadow: 0 1px 4px var(--mm-shadow-xs);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.territory-label {
-  font-weight: 500;
-  opacity: 0.85;
-}
-
-.territory-name {
-  font-weight: 600;
-}
-
-.admin-navbar {
-  box-shadow: 0 2px 12px var(--mm-shadow-md);
-  border-bottom: 1px solid var(--mm-overlay-black-5);
-  background-color: var(--mm-bg-body);
-}
-
-.admin-navbar .navbar-brand {
-  font-weight: 600;
-  font-size: 1.125rem;
-}
-
-/* ===== LIST GROUPS ===== */
-.list-group-item {
-  border: 1px solid var(--mm-overlay-black-8);
-  border-radius: var(--mm-radius-md);
-  margin-bottom: 0.5rem;
-  transition: var(--mm-transition-base);
-}
-
-.list-group-item:hover {
-  transform: translateX(4px);
-  box-shadow: 0 2px 8px var(--mm-shadow-md);
-  border-color: var(--mm-primary-alpha-30);
-}
-
-.list-group-item.active {
-  background: var(--mm-gradient-primary);
-  border-color: transparent;
-  color: var(--mm-white);
-}
-
-/* ===== EMPTY STATES ===== */
-.empty-state {
-  text-align: center;
-  padding: 3rem 1.5rem;
-  color: var(--mm-secondary);
-}
-
-.empty-state-icon {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  opacity: 0.3;
-}
-
-.empty-state-title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
-  color: var(--mm-gray-600er);
-}
-
-.empty-state-description {
-  font-size: 1rem;
-  color: var(--mm-secondary);
-}
-
-/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
   .map-body-admin {
     height: 450px;
-  }
-
-  .welcome-card {
-    margin: 1rem;
-  }
-
-  .welcome-image-container {
-    padding: 2rem 1.5rem 1.5rem;
-  }
-
-  .welcome-image {
-    max-width: 120px;
-  }
-
-  .welcome-card-body {
-    padding: 1.5rem;
-  }
-
-  .welcome-card-title {
-    font-size: 1.25rem;
-  }
-
-  .welcome-card-text {
-    font-size: 0.95rem;
-  }
-}
-
-/* ===== GETTING STARTED GUIDE ===== */
-.guide-container {
-  padding: 2rem 1rem;
-  max-width: 900px;
-  margin: 0 auto;
-  height: calc(100vh - 120px);
-  display: flex;
-  flex-direction: column;
-}
-
-.guide-welcome-card {
-  background: var(--mm-bg-body);
-  border: none;
-  border-radius: var(--mm-radius-lg);
-  box-shadow: var(--mm-shadow-preset-lg);
-  padding: 2rem;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  overflow: hidden;
-}
-
-.guide-header {
-  flex-shrink: 0;
-  margin-bottom: 1.5rem;
-}
-
-.guide-steps-container {
-  flex: 1;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-right: 0.5rem;
-  margin-right: -0.5rem;
-}
-
-.guide-steps-container::-webkit-scrollbar {
-  width: 8px;
-}
-
-.guide-steps-container::-webkit-scrollbar-track {
-  background: var(--mm-gray-100);
-  border-radius: 4px;
-}
-
-.guide-steps-container::-webkit-scrollbar-thumb {
-  background: var(--mm-gray-400);
-  border-radius: 4px;
-}
-
-.guide-steps-container::-webkit-scrollbar-thumb:hover {
-  background: var(--mm-gray-500);
-}
-
-.guide-step-card {
-  background: var(--mm-bg-body);
-  border: 2px solid var(--mm-gray-300);
-  border-radius: var(--mm-radius-md);
-  padding: 1.5rem;
-  margin-bottom: 1rem;
-  transition: var(--mm-transition-base);
-}
-
-.guide-step-card.available {
-  border-color: var(--mm-primary);
-  box-shadow: var(--mm-shadow-preset-sm);
-}
-
-.guide-step-card.completed {
-  border-color: var(--mm-success);
-  background: rgba(25, 135, 84, 0.05);
-}
-
-.guide-step-card.locked {
-  opacity: 0.6;
-  background: var(--mm-gray-50);
-  pointer-events: none;
-}
-
-.guide-step-number {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--mm-gradient-primary);
-  color: var(--mm-white);
-  font-weight: 700;
-  font-size: 1.25rem;
-  flex-shrink: 0;
-}
-
-.guide-step-card.completed .guide-step-number {
-  background: var(--mm-success);
-}
-
-.guide-step-card.locked .guide-step-number {
-  background: var(--mm-gray-400);
-}
-
-.guide-alert-pulse {
-  animation: guide-pulse 2s infinite;
-}
-
-@keyframes guide-pulse {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-@media (max-width: 768px) {
-  .guide-container {
-    padding: 1rem 0.5rem;
-    height: calc(100vh - 100px);
-  }
-
-  .guide-welcome-card {
-    padding: 1.5rem;
-  }
-
-  .guide-step-card {
-    padding: 1rem;
-  }
-
-  .guide-steps-container {
-    padding-right: 0.25rem;
-    margin-right: -0.25rem;
   }
 }
 
@@ -707,7 +155,6 @@
   .map-body-admin {
     height: 400px;
     font-size: 0.875rem;
-    overscroll-behavior: contain;
   }
 }
 
@@ -717,7 +164,6 @@
   }
 }
 
-/* ===== ACCESSIBILITY ===== */
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -725,15 +171,5 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
-  }
-}
-
-/* ===== PRINT ===== */
-@media print {
-  .dropdown-btn,
-  .back-to-top,
-  .mode-toggle-button,
-  .navbar {
-    display: none !important;
   }
 }
