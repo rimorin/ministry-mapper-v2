@@ -10,7 +10,7 @@ const VersionDisplay: FC = () => {
   }
 
   return (
-    <div className="fixed-bottom text-muted opacity-25 m-2">
+    <div className="fixed bottom-0 right-0 text-muted-foreground opacity-25 m-2">
       {t("common.version", "v{{version}}", { version: VITE_APP_VERSION })}
     </div>
   );

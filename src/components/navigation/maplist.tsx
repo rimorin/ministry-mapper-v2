@@ -1,5 +1,5 @@
 import React, { lazy, useState, useEffect } from "react";
-import { Container, Navbar, ProgressBar, Spinner } from "react-bootstrap";
+import { Spinner } from "@/components/ui/spinner";
 import {
   USER_ACCESS_LEVELS,
   TERRITORY_TYPES,
@@ -22,13 +22,30 @@ import {
 import { useTranslation } from "react-i18next";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useConfirm from "../../hooks/useConfirm";
+import AggregationBadge from "./aggrbadge";
 import GenericButton from "./button";
-import { GenericDropdownButton, GenericDropdownItem } from "./dropdownbutton";
+import {
+  GenericDropdownButton,
+  GenericDropdownItem,
+  GenericDropdownSeparator
+} from "./dropdownbutton";
+import {
+  Navigation2,
+  MapPin,
+  FolderInput,
+  ArrowUpDown,
+  Pencil,
+  Plus,
+  ChevronUp,
+  ChevronDown,
+  RotateCcw,
+  Trash2
+} from "lucide-react";
 import { List, type RowComponentProps } from "react-window";
 import useScrollPersistence from "../../hooks/useScrollPersistence";
 import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
-import "../../css/virtualmaps.css";
 
+import "../../css/virtualmaps.css";
 const GetMapGeolocation = lazy(() => import("../modal/getlocation"));
 const ChangeMapGeoLocation = lazy(() => import("../modal/changegeolocation"));
 
@@ -44,8 +61,6 @@ function MapRow({
   processingMap,
   policy,
   userAccessLevel,
-  accordingKeys,
-  isReadonly,
   dropDirections,
   territoryId,
   handlers,
@@ -64,35 +79,23 @@ function MapRow({
     handleAddLowerFloor,
     handleResetMap,
     handleDeleteMap,
-    handleToggleMapExpansion,
     handleSequenceUpdate
   } = handlers;
 
   const { id: mapId, name: mapName, type: mapType } = addressElement;
   const completeValue =
     addressElement.aggregates?.value || DEFAULT_AGGREGATES.value;
-  const completedPercent =
-    addressElement.aggregates?.display || DEFAULT_AGGREGATES.display;
-  const isExpanded = accordingKeys.includes(mapId);
 
   return (
     <div className="map-item border-0" style={style}>
-      {/* Map header */}
-      <div
-        className={`map-header ${isReadonly ? "" : "cursor-pointer"}`}
-        onClick={
-          !isReadonly ? () => handleToggleMapExpansion(mapId) : undefined
-        }
-        style={{ cursor: isReadonly ? "default" : "pointer" }}
-      >
-        <button
-          className={`map-toggle-button ${isExpanded ? "" : "collapsed"}`}
-          type="button"
-          disabled={isReadonly}
-        >
+      <div className="map-header" style={{ cursor: "default" }}>
+        <button className="map-toggle-button" type="button" disabled>
           <span
-            className="fluid-bolding fluid-text"
+            className="fluid-text tracking-tight text-foreground"
             style={{
+              flex: 1,
+              minWidth: 0,
+              fontWeight: 600,
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis"
@@ -100,153 +103,157 @@ function MapRow({
           >
             {mapName}
           </span>
+          <AggregationBadge
+            aggregate={completeValue}
+            className="ml-2 shrink-0"
+          />
         </button>
       </div>
 
-      {/* Map content */}
-      {(isExpanded || isReadonly) && (
-        <div className="map-content collapse show">
-          <div className="map-content-body p-0">
-            <ProgressBar
-              style={{ borderRadius: 0 }}
-              now={completeValue}
-              label={completedPercent}
-            />
-            <Navbar expand="lg" key={`navbar-${mapId}`}>
-              <Container fluid className="justify-content-end">
-                {mapType === TERRITORY_TYPES.SINGLE_STORY && (
-                  <GenericButton
-                    size="sm"
-                    variant="outline-primary"
-                    className="m-1"
-                    onClick={() => handleToggleMapView(mapId)}
-                    label={
-                      mapViews.get(mapId)
-                        ? t("navigation.listView", "List View")
-                        : t("navigation.mapView", "Map View")
-                    }
-                  />
-                )}
+      <div className="map-content">
+        <div className="map-content-body p-0">
+          <div className="flex flex-nowrap items-center justify-start gap-1 overflow-x-auto px-2 py-2 scrollbar-none">
+            {mapType === TERRITORY_TYPES.SINGLE_STORY && (
+              <GenericButton
+                size="sm"
+                variant="outline"
+                onClick={() => handleToggleMapView(mapId)}
+                label={
+                  mapViews.get(mapId)
+                    ? t("navigation.listView", "List View")
+                    : t("navigation.mapView", "Map View")
+                }
+              />
+            )}
 
-                <AssignmentButtonGroup
-                  key={`assignment-btn-${mapId}`}
-                  addressElement={addressElement}
-                  policy={policy}
-                  userId={getUser("id") as string}
-                />
-                <GenericButton
-                  size="sm"
-                  variant="outline-primary"
-                  className="m-1"
-                  onClick={() => handleShowGetLocation(addressElement)}
-                  label={t("navigation.direction", "Direction")}
-                />
-                <MessageButtonGroup
-                  key={`message-btn-${mapId}`}
-                  addressElement={addressElement}
-                  policy={policy}
-                />
-                <ComponentAuthorizer
-                  requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
-                  userPermission={userAccessLevel}
-                >
-                  <GenericDropdownButton
-                    className="dropdown-btn"
-                    align="end"
-                    variant="outline-primary"
-                    size="sm"
-                    label={
-                      <>
-                        {processingMap.isProcessing &&
-                          processingMap.mapId === mapId && (
-                            <>
-                              <Spinner
-                                as="span"
-                                animation="border"
-                                size="sm"
-                                aria-hidden="true"
-                              />{" "}
-                            </>
-                          )}{" "}
-                        {t("address.address", "Address")}
-                      </>
-                    }
-                    drop={dropDirections[mapId]}
-                    onClick={(e) => handleDropdownDirection(e, mapId)}
-                  >
-                    <GenericDropdownItem
-                      onClick={() =>
-                        handleShowChangeLocation(
-                          mapId,
-                          mapName,
-                          addressElement.coordinates
-                        )
-                      }
-                    >
-                      {t("address.changeLocation", "Change Location")}
-                    </GenericDropdownItem>
-
-                    <GenericDropdownItem
-                      onClick={() => handleChangeTerritory(mapId, mapName)}
-                    >
-                      {t("address.changeTerritory", "Change Territory")}
-                    </GenericDropdownItem>
-                    <GenericDropdownItem
-                      onClick={() => handleSequenceUpdate(mapId)}
-                    >
-                      {t("address.changeSequence", "Change Sequence")}
-                    </GenericDropdownItem>
-                    <GenericDropdownItem
-                      onClick={() => handleShowChangeName(mapId, mapName)}
-                    >
-                      {t("address.changeName", "Rename")}
-                    </GenericDropdownItem>
-                    <GenericDropdownItem
-                      onClick={() => handleShowAddUnit(mapId, addressElement)}
-                    >
-                      {mapType === TERRITORY_TYPES.SINGLE_STORY
-                        ? t("address.addProperty", "Add Property No.")
-                        : t("address.addUnit", "Add Unit No.")}
-                    </GenericDropdownItem>
-                    {(!mapType ||
-                      mapType === TERRITORY_TYPES.MULTIPLE_STORIES) && (
-                      <>
-                        <GenericDropdownItem
-                          onClick={() => handleAddHigherFloor(mapId)}
-                        >
-                          {t("address.addHigherFloor", "Add Higher Floor")}
-                        </GenericDropdownItem>
-                        <GenericDropdownItem
-                          onClick={() => handleAddLowerFloor(mapId)}
-                        >
-                          {t("address.addLowerFloor", "Add Lower Floor")}
-                        </GenericDropdownItem>
-                      </>
-                    )}
-                    <GenericDropdownItem
-                      onClick={() => handleResetMap(mapId, mapName)}
-                    >
-                      {t("address.resetStatus", "Reset Status")}
-                    </GenericDropdownItem>
-                    <GenericDropdownItem
-                      onClick={() => handleDeleteMap(mapId, mapName)}
-                    >
-                      {t("address.delete", "Delete")}
-                    </GenericDropdownItem>
-                  </GenericDropdownButton>
-                </ComponentAuthorizer>
-              </Container>
-            </Navbar>
-            <MainTable
-              mapView={mapViews.get(mapId)}
-              key={`table-${mapId}`}
+            <AssignmentButtonGroup
+              key={`assignment-btn-${mapId}`}
+              addressElement={addressElement}
               policy={policy}
-              addressDetails={addressElement}
-              territoryId={territoryId}
+              userId={getUser("id") as string}
             />
+            <GenericButton
+              size="sm"
+              variant="outline"
+              onClick={() => handleShowGetLocation(addressElement)}
+              label={
+                <span className="flex items-center gap-1.5">
+                  <Navigation2 className="size-3.5" />
+                  {t("navigation.direction", "Direction")}
+                </span>
+              }
+            />
+            <MessageButtonGroup
+              key={`message-btn-${mapId}`}
+              addressElement={addressElement}
+              policy={policy}
+            />
+            <ComponentAuthorizer
+              requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
+              userPermission={userAccessLevel}
+            >
+              <GenericDropdownButton
+                align="end"
+                variant="outline"
+                size="sm"
+                label={
+                  <>
+                    {processingMap.isProcessing &&
+                      processingMap.mapId === mapId && (
+                        <>
+                          <Spinner
+                            data-icon="inline-start"
+                            aria-hidden="true"
+                          />{" "}
+                        </>
+                      )}{" "}
+                    {t("address.address", "Address")}
+                  </>
+                }
+                drop={dropDirections[mapId]}
+                onClick={(e) => handleDropdownDirection(e, mapId)}
+              >
+                <GenericDropdownItem
+                  icon={<MapPin className="size-4" />}
+                  onClick={() =>
+                    handleShowChangeLocation(
+                      mapId,
+                      mapName,
+                      addressElement.coordinates
+                    )
+                  }
+                >
+                  {t("address.changeLocation", "Change Location")}
+                </GenericDropdownItem>
+
+                <GenericDropdownItem
+                  icon={<FolderInput className="size-4" />}
+                  onClick={() => handleChangeTerritory(mapId, mapName)}
+                >
+                  {t("address.changeTerritory", "Change Territory")}
+                </GenericDropdownItem>
+                <GenericDropdownItem
+                  icon={<ArrowUpDown className="size-4" />}
+                  onClick={() => handleSequenceUpdate(mapId)}
+                >
+                  {t("address.changeSequence", "Change Sequence")}
+                </GenericDropdownItem>
+                <GenericDropdownItem
+                  icon={<Pencil className="size-4" />}
+                  onClick={() => handleShowChangeName(mapId, mapName)}
+                >
+                  {t("address.changeName", "Rename")}
+                </GenericDropdownItem>
+                <GenericDropdownItem
+                  icon={<Plus className="size-4" />}
+                  onClick={() => handleShowAddUnit(mapId, addressElement)}
+                >
+                  {mapType === TERRITORY_TYPES.SINGLE_STORY
+                    ? t("address.addProperty", "Add Property No.")
+                    : t("address.addUnit", "Add Unit No.")}
+                </GenericDropdownItem>
+                {(!mapType || mapType === TERRITORY_TYPES.MULTIPLE_STORIES) && (
+                  <>
+                    <GenericDropdownItem
+                      icon={<ChevronUp className="size-4" />}
+                      onClick={() => handleAddHigherFloor(mapId)}
+                    >
+                      {t("address.addHigherFloor", "Add Higher Floor")}
+                    </GenericDropdownItem>
+                    <GenericDropdownItem
+                      icon={<ChevronDown className="size-4" />}
+                      onClick={() => handleAddLowerFloor(mapId)}
+                    >
+                      {t("address.addLowerFloor", "Add Lower Floor")}
+                    </GenericDropdownItem>
+                  </>
+                )}
+                <GenericDropdownSeparator />
+                <GenericDropdownItem
+                  icon={<RotateCcw className="size-4" />}
+                  onClick={() => handleResetMap(mapId, mapName)}
+                >
+                  {t("address.resetStatus", "Reset Status")}
+                </GenericDropdownItem>
+                <GenericDropdownItem
+                  icon={<Trash2 className="size-4" />}
+                  variant="destructive"
+                  onClick={() => handleDeleteMap(mapId, mapName)}
+                >
+                  {t("address.delete", "Delete")}
+                </GenericDropdownItem>
+              </GenericDropdownButton>
+            </ComponentAuthorizer>
           </div>
+          <MainTable
+            mapView={mapViews.get(mapId)}
+            key={`table-${mapId}`}
+            policy={policy}
+            addressDetails={addressElement}
+            territoryId={territoryId}
+          />
         </div>
-      )}
+      </div>
     </div>
   );
 }
@@ -264,7 +271,7 @@ const MapListing: React.FC<MapListingProps> = ({
   resetMap,
   deleteMap,
   values,
-  accordingKeys,
+  accordionKeys,
   setAccordionKeys,
   isReadonly,
   territoryId
@@ -274,14 +281,14 @@ const MapListing: React.FC<MapListingProps> = ({
   const { confirm } = useConfirm();
   const { trackEvent } = useAnalytics();
   const [dropDirections, setDropDirections] = useState<DropDirections>({});
-  const [screenSize, setScreenSize] = useState<"sm" | "md" | "lg">("lg");
+  const [screenSize, setScreenSize] = useState<"xs" | "sm" | "md" | "lg">("lg");
   const { listRef, onScroll: handleScroll } = useScrollPersistence(territoryId);
-
-  // Track screen size for responsive height calculations
   useEffect(() => {
     const updateScreenSize = () => {
       const width = window.innerWidth;
-      if (width <= 480) {
+      if (width <= 430) {
+        setScreenSize("xs");
+      } else if (width <= 480) {
         setScreenSize("sm");
       } else if (width <= 768) {
         setScreenSize("md");
@@ -300,19 +307,9 @@ const MapListing: React.FC<MapListingProps> = ({
     };
   }, []);
 
-  // Calculate row height based on expansion state
-  const getRowHeight = (index: number): number => {
-    const addressElement = sortedAddressList[index];
-    if (!addressElement) return getHeaderHeight();
-
-    const isExpanded = accordingKeys.includes(addressElement.id);
-    return !isExpanded && !isReadonly
-      ? getHeaderHeight()
-      : calculateExpandedHeight();
-  };
-
   const getHeaderHeight = (): number => {
     switch (screenSize) {
+      case "xs":
       case "sm":
         return 48;
       case "md":
@@ -322,48 +319,53 @@ const MapListing: React.FC<MapListingProps> = ({
     }
   };
 
-  const calculateExpandedHeight = (): number => {
-    const headerHeight = getHeaderHeight();
-    const progressBarHeight = 6;
-    const navbarHeight =
-      screenSize === "sm" ? 44 : screenSize === "md" ? 48 : 56;
-
-    const getFixedTableHeight = (): number => {
-      switch (screenSize) {
-        case "sm":
-          return 420;
-        case "md":
-          return 450;
-        default:
-          return 500;
-      }
-    };
-
-    const contentPadding =
-      screenSize === "sm" ? 16 : screenSize === "md" ? 14 : 12;
-
-    return (
-      headerHeight +
-      progressBarHeight +
-      navbarHeight +
-      getFixedTableHeight() +
-      contentPadding
-    );
+  const getAdminTableMaxHeight = (): number => {
+    // Must match .map-body-admin height breakpoints in admin.css
+    switch (screenSize) {
+      case "xs":
+        return 360;
+      case "sm":
+        return 400;
+      case "md":
+        return 450;
+      default:
+        return 490;
+    }
   };
 
-  // Event handlers
+  const getRowHeight = (_: number): number => {
+    const actionBarHeight = 52; // single-row nowrap: py-2 (16px) + btn height (32px) + 4px buffer
+    const contentPadding = 8;
+
+    const tableHeight = policy.isFromAdmin()
+      ? getAdminTableMaxHeight()
+      : (() => {
+          switch (screenSize) {
+            case "xs":
+              return 390;
+            case "sm":
+              return 420;
+            case "md":
+              return 450;
+            default:
+              return 500;
+          }
+        })();
+
+    return getHeaderHeight() + actionBarHeight + tableHeight + contentPadding;
+  };
+
   const handleDropdownDirection = (
     event: React.MouseEvent<HTMLElement, globalThis.MouseEvent>,
     dropdownId: string
   ) => {
     const button = event.currentTarget;
     const buttonRect = button.getBoundingClientRect();
-    const dropdownHeight = 350; // Estimated dropdown menu height with some buffer
+    const dropdownHeight = 350;
 
     const spaceBelow = window.innerHeight - buttonRect.bottom;
     const spaceAbove = buttonRect.top;
 
-    // Drop up if not enough space below AND there's more space above
     const dropdownDirection: DropDirection =
       spaceBelow < dropdownHeight && spaceAbove > spaceBelow ? "up" : "down";
 
@@ -498,7 +500,7 @@ const MapListing: React.FC<MapListingProps> = ({
     processingMap,
     policy,
     userAccessLevel,
-    accordingKeys,
+    accordionKeys,
     isReadonly,
     dropDirections,
     territoryId,
@@ -522,8 +524,7 @@ const MapListing: React.FC<MapListingProps> = ({
 
   return (
     <List
-      className="virtual-map-container map-container-flush"
-      style={{ height: "80dvh" }}
+      className="virtual-map-container map-container-flush h-[80dvh]"
       listRef={listRef}
       onScroll={handleScroll}
       rowCount={sortedAddressList.length}

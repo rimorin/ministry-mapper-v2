@@ -8,7 +8,7 @@ describe("MissingSetupPage", () => {
       <MissingSetupPage message="PocketBase URL is missing" />
     );
 
-    const title = container.querySelector(".card-title");
+    const title = container.querySelector('[data-slot="card-title"]');
     expect(title).toBeInTheDocument();
   });
 
@@ -17,7 +17,7 @@ describe("MissingSetupPage", () => {
       <MissingSetupPage message="Some configuration is missing" />
     );
 
-    const title = container.querySelector(".card-title");
+    const title = container.querySelector('[data-slot="card-title"]');
     expect(title).toBeInTheDocument();
   });
 
@@ -26,7 +26,7 @@ describe("MissingSetupPage", () => {
       <MissingSetupPage message="PocketBase URL not found" />
     );
 
-    const title = container.querySelector(".card-title");
+    const title = container.querySelector('[data-slot="card-title"]');
     expect(title?.textContent).toBe("errors.missingPocketBaseUrl");
   });
 
@@ -35,7 +35,7 @@ describe("MissingSetupPage", () => {
       <MissingSetupPage message="Database connection failed" />
     );
 
-    const title = container.querySelector(".card-title");
+    const title = container.querySelector('[data-slot="card-title"]');
     expect(title?.textContent).toBe("errors.missingSetup");
   });
 });

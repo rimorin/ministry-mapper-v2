@@ -454,7 +454,7 @@ describe("useNetworkStatus", () => {
         vi.advanceTimersByTime(15_000);
       });
       await act(async () => {});
-      expect(result.current.isSlow).toBe(true); // confirmed after 2 checks ✅
+      expect(result.current.isSlow).toBe(true); // confirmed after 2 checks
 
       nowSpy.mockRestore();
       vi.useRealTimers();

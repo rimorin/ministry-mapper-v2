@@ -1,4 +1,10 @@
-import { createContext, useContext, type FC, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useMemo,
+  type FC,
+  type ReactNode
+} from "react";
 import {
   useReleaseNotes,
   type ReleaseEntry
@@ -19,9 +25,14 @@ const ReleaseNotesContext = createContext<ReleaseNotesContextValue | null>(
 export const ReleaseNotesProvider: FC<{ children: ReactNode }> = ({
   children
 }) => {
-  const value = useReleaseNotes();
+  const { hasNewReleases, newReleases, allReleases, isLoading, markAsSeen } =
+    useReleaseNotes();
+  const contextValue = useMemo(
+    () => ({ hasNewReleases, newReleases, allReleases, isLoading, markAsSeen }),
+    [hasNewReleases, newReleases, allReleases, isLoading, markAsSeen]
+  );
   return (
-    <ReleaseNotesContext.Provider value={value}>
+    <ReleaseNotesContext.Provider value={contextValue}>
       {children}
     </ReleaseNotesContext.Provider>
   );

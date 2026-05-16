@@ -23,13 +23,13 @@ describe("NavBarBranding", () => {
 
   it("should not render naming text when not provided", () => {
     const { container } = render(<NavBarBranding />);
-    const navbarText = container.querySelector(".fluid-bolding");
+    const navbarText = container.querySelector(".font-bold");
     expect(navbarText).not.toBeInTheDocument();
   });
 
   it("should have correct styling classes", () => {
     const { container } = render(<NavBarBranding naming="Test" />);
     const brand = container.querySelector(".brand-wrap");
-    expect(brand).toHaveClass("d-flex", "align-items-center");
+    expect(brand).toHaveClass("flex", "items-center");
   });
 });

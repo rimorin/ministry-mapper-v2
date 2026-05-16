@@ -1,47 +1,38 @@
 import { describe, it, expect } from "vitest";
-import { render } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import NotHomeIcon from "./nothome";
 
 describe("NotHomeIcon", () => {
   it("renders without badge when nhcount is not provided", () => {
     const { container } = render(<NotHomeIcon />);
 
-    const envelope = container.querySelector(".nothome-envelope");
-    expect(envelope).toBeInTheDocument();
-
-    const badge = container.querySelector(".badge-nothome");
-    expect(badge).not.toBeInTheDocument();
+    expect(container.querySelector("svg")).toBeInTheDocument();
+    expect(screen.queryByText("3")).not.toBeInTheDocument();
   });
 
   it("renders with badge when nhcount is provided", () => {
-    const { container } = render(<NotHomeIcon nhcount="3" />);
+    render(<NotHomeIcon nhcount="3" />);
 
-    const badge = container.querySelector(".badge-nothome");
-    expect(badge).toBeInTheDocument();
-    expect(badge).toHaveTextContent("3");
+    expect(screen.getByText("3")).toBeInTheDocument();
   });
 
   it("applies default parent class", () => {
     const { container } = render(<NotHomeIcon />);
 
-    const parent = container.querySelector(".parent-nothome");
-    expect(parent).toBeInTheDocument();
+    expect(
+      container.querySelector("span.relative.inline-flex")
+    ).toBeInTheDocument();
   });
 
   it("applies custom class when provided", () => {
-    const { container } = render(<NotHomeIcon classProp="custom-class" />);
+    const { container } = render(<NotHomeIcon iconClassName="size-6" />);
 
-    const parent = container.querySelector(".parent-nothome");
-    expect(parent).toHaveClass("parent-nothome", "custom-class");
+    expect(container.querySelector("svg.size-6")).toBeInTheDocument();
   });
 
-  it("renders envelope image with correct src", () => {
+  it("renders envelope icon with amber styling", () => {
     const { container } = render(<NotHomeIcon />);
 
-    const envelope = container.querySelector(
-      ".nothome-envelope"
-    ) as HTMLImageElement;
-    expect(envelope).toBeInTheDocument();
-    expect(envelope?.src).toContain("envelope.svg");
+    expect(container.querySelector("svg.text-amber-500")).toBeInTheDocument();
   });
 });

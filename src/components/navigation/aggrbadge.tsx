@@ -1,26 +1,31 @@
-import { Badge } from "react-bootstrap";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 import { aggregateBadgeProp } from "../../utils/interface";
+import useAnimatedCounter from "../../hooks/useAnimatedCounter";
 
 const AggregationBadge = ({
   aggregate = 0,
-  width = "2.5rem"
+  width,
+  className,
+  size = "md"
 }: aggregateBadgeProp) => {
-  let badgeStyle = "";
-  let statusColor = "success";
-  if (aggregate > 70 && aggregate <= 90) {
-    statusColor = "warning";
-    badgeStyle = "aggregate-dark-text";
-  }
-  if (aggregate > 90) statusColor = "danger";
+  const displayed = useAnimatedCounter(aggregate);
+  const urgency = displayed > 90 ? "high" : displayed > 70 ? "medium" : "low";
+  const defaultWidth = size === "sm" ? "2.5rem" : "3rem";
+
   return (
-    <span style={{ margin: "0 0.25rem" }}>
+    <span className={cn("mx-1 shrink-0", className)}>
       <Badge
-        pill
-        bg={statusColor}
-        className={badgeStyle}
-        style={{ width: width }}
+        className={cn(
+          "rounded-full tabular-nums",
+          size === "sm" ? "h-4 text-[10px]" : "h-5 text-xs",
+          urgency === "high" && "bg-destructive text-white",
+          urgency === "medium" && "bg-yellow-500 text-black dark:text-black",
+          urgency === "low" && "bg-green-600 text-white"
+        )}
+        style={{ width: width ?? defaultWidth }}
       >
-        {aggregate}%
+        {displayed}%
       </Badge>
     </span>
   );

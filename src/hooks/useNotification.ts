@@ -1,4 +1,4 @@
-import { useToast } from "../components/middlewares/toast";
+import { toast } from "sonner";
 import * as Sentry from "@sentry/react";
 import { isAbortError } from "../utils/pocketbase";
 
@@ -9,8 +9,7 @@ interface NotificationOptions {
   silent?: boolean;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const extractValidationErrors = (data: any): string => {
+const extractValidationErrors = (data: Record<string, unknown>): string => {
   return Object.entries(data)
     .filter(
       ([, value]) =>
@@ -25,14 +24,19 @@ const extractValidationErrors = (data: any): string => {
     .join("\n");
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const formatErrorMessage = (error: any): string => {
-  const status = error.status || "Error";
-  const data = error.response?.data;
-  const message = error.response?.message;
+export const formatErrorMessage = (error: unknown): string => {
+  const e = error as {
+    status?: number | string;
+    response?: { data?: unknown; message?: string };
+  };
+  const status = e.status ?? "Error";
+  const data = e.response?.data;
+  const message = e.response?.message;
 
   if (data && typeof data === "object") {
-    const validationErrors = extractValidationErrors(data);
+    const validationErrors = extractValidationErrors(
+      data as Record<string, unknown>
+    );
     if (validationErrors) {
       return `${status}: ${message || "Validation failed"}\n\n${validationErrors}`;
     }
@@ -41,8 +45,6 @@ const formatErrorMessage = (error: any): string => {
 };
 
 export const useNotification = () => {
-  const toast = useToast();
-
   const handleNotification = (
     type: NotificationType,
     messageOrError: string | Error | unknown,
@@ -69,22 +71,24 @@ export const useNotification = () => {
           ? messageOrError
           : formatErrorMessage(messageOrError);
 
-      toast.error(errorMessage, "Error");
+      toast.error(errorMessage, { id: "app-error", duration: Infinity });
     } else {
       const message =
         typeof messageOrError === "string"
           ? messageOrError
           : String(messageOrError);
 
+      const opts = title ? { description: title } : undefined;
+
       switch (type) {
         case "success":
-          toast.success(message, title);
+          toast.success(message, opts);
           break;
         case "warning":
-          toast.warning(message, title);
+          toast.warning(message, opts);
           break;
         case "info":
-          toast.info(message, title);
+          toast.info(message, opts);
           break;
       }
     }

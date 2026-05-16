@@ -1,6 +1,7 @@
 import { renderHook, act } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { useState } from "react";
+import { RecordModel } from "pocketbase";
 import useTerritoryManagement from "./useTerritoryManagement";
 import * as pocketbase from "../utils/pocketbase";
 
@@ -190,20 +191,20 @@ describe("useTerritoryManagement", () => {
     it("should process congregation territories correctly", () => {
       const { result } = renderHook(() => useTerritoryManagement());
 
-      const mockTerritories = {
-        t1: {
+      const mockTerritories = [
+        {
           id: "territory1",
           code: "T-01",
           description: "Territory 1",
           progress: 50
         },
-        t2: {
+        {
           id: "territory2",
           code: "T-02",
           description: "Territory 2",
           progress: 75
         }
-      };
+      ] as unknown as RecordModel[];
 
       const territoryMap =
         result.current.processCongregationTerritories(mockTerritories);

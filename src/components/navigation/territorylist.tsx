@@ -1,26 +1,30 @@
-import { lazy, use } from "react";
+import { lazy } from "react";
+import { cn } from "@/lib/utils";
+import { List, Map, MapPin, X } from "lucide-react";
+import * as m from "motion/react-m";
+import { fadeIn, staggerContainer } from "@/lib/motion";
 import {
-  Offcanvas,
-  ListGroup,
-  ToggleButtonGroup,
-  ToggleButton,
-  Image,
-  Spinner
-} from "react-bootstrap";
-import { TERRITORY_SELECTOR_VIEWPORT_HEIGHT } from "../../utils/constants";
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle
+} from "@/components/ui/sheet";
+import { Spinner } from "@/components/ui/spinner";
 import { TerritoryListingProps } from "../../utils/interface";
 import AggregationBadge from "./aggrbadge";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "../../hooks/useLocalStorage";
-import { getAssetUrl } from "../../utils/helpers/assetpath";
-import { ThemeContext } from "../utils/context";
 import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
 import SuspenseComponent from "../utils/suspense";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Button } from "@/components/ui/button";
 
 const TerritoryMapView = SuspenseComponent(
   lazy(() => import("./territorymapview")),
-  <div className="d-flex align-items-center justify-content-center h-100">
-    <Spinner animation="border" variant="secondary" size="sm" />
+  <div className="flex items-center justify-center h-full">
+    <Spinner aria-hidden="true" className="text-secondary" />
   </div>
 );
 
@@ -35,8 +39,8 @@ const TerritoryListing = ({
   congregationCode
 }: TerritoryListingProps) => {
   const { t } = useTranslation();
-  const { actualTheme } = use(ThemeContext);
   const { trackEvent } = useAnalytics();
+
   const [viewMode, setViewMode] = useLocalStorage<"list" | "map">(
     "territoryViewMode",
     "list"
@@ -49,113 +53,120 @@ const TerritoryListing = ({
       : territories;
 
   return (
-    <Offcanvas
-      placement="bottom"
-      show={showListing}
-      onHide={hideFunction}
-      style={{
-        height: TERRITORY_SELECTOR_VIEWPORT_HEIGHT,
-        borderTopLeftRadius: "1rem",
-        borderTopRightRadius: "1rem"
-      }}
-    >
-      <Offcanvas.Header closeButton>
-        <Offcanvas.Title className="d-flex justify-content-between align-items-center w-100 me-3">
-          <span className="fluid-text fluid-bolding">
-            {t("territory.selectTerritory")}
-          </span>
-          <ToggleButtonGroup
-            type="radio"
-            name="view-mode"
-            value={viewMode}
-            onChange={(value) => {
-              const newView = value as "list" | "map";
-              setViewMode(newView);
-              trackEvent(ANALYTICS_EVENTS.TERRITORY_LIST_VIEW_TOGGLED, {
-                view: newView
-              });
-            }}
-            size="sm"
-          >
-            <ToggleButton
-              id="view-mode-list"
-              value="list"
-              variant="outline-primary"
-            >
-              <Image
-                src={getAssetUrl("list.svg")}
-                alt={t("common.list", "List")}
-                width={20}
-                height={20}
-                style={{
-                  filter:
-                    actualTheme === "dark" ? "brightness(0) invert(1)" : "none"
+    <Sheet open={showListing} onOpenChange={(open) => !open && hideFunction()}>
+      <SheetContent
+        side="bottom"
+        showCloseButton={false}
+        className="h-[100dvh] gap-0 overflow-hidden p-0 sm:h-[85dvh] sm:rounded-t-2xl"
+      >
+        <SheetHeader className="border-b px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <SheetTitle className="fluid-text font-bold text-left">
+              {t("territory.selectTerritory")}
+            </SheetTitle>
+            <div className="flex items-center gap-2">
+              <ToggleGroup
+                value={[viewMode]}
+                onValueChange={(values) => {
+                  const v = values[values.length - 1];
+                  if (!v) return;
+                  const newView = v as "list" | "map";
+                  setViewMode(newView);
+                  trackEvent(ANALYTICS_EVENTS.TERRITORY_LIST_VIEW_TOGGLED, {
+                    view: newView
+                  });
                 }}
-              />
-            </ToggleButton>
-            <ToggleButton
-              id="view-mode-map"
-              value="map"
-              variant="outline-primary"
-            >
-              <Image
-                src={getAssetUrl("maplocation.svg")}
-                alt={t("common.map", "Map")}
-                width={20}
-                height={20}
-                style={{
-                  filter:
-                    actualTheme === "dark" ? "brightness(0) invert(1)" : "none"
-                }}
-              />
-            </ToggleButton>
-          </ToggleButtonGroup>
-        </Offcanvas.Title>
-      </Offcanvas.Header>
-      <Offcanvas.Body className={viewMode === "map" ? "p-0" : ""}>
-        {viewMode === "list" ? (
-          <ListGroup onSelect={handleSelect}>
-            {currentTerritories && currentTerritories.length > 0 ? (
-              currentTerritories.map((element) => (
-                <ListGroup.Item
-                  action
-                  key={`list-group-item-${element.code}`}
-                  eventKey={element.id}
-                  className={element.code === selectedTerritory ? "active" : ""}
+                size="sm"
+                variant="outline"
+              >
+                <ToggleGroupItem
+                  value="list"
+                  aria-label={t("common.list", "List")}
                 >
-                  <div className="d-flex justify-content-between align-items-center">
-                    <span className="fw-bold">
-                      {element.code}: {element.name}
-                    </span>
-                    <AggregationBadge aggregate={element.aggregates} />
-                  </div>
-                </ListGroup.Item>
-              ))
+                  <List className="size-4" />
+                </ToggleGroupItem>
+                <ToggleGroupItem
+                  value="map"
+                  aria-label={t("common.map", "Map")}
+                >
+                  <Map className="size-4" />
+                </ToggleGroupItem>
+              </ToggleGroup>
+              <SheetClose
+                render={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 shrink-0"
+                  />
+                }
+              >
+                <X className="size-4" />
+              </SheetClose>
+            </div>
+          </div>
+        </SheetHeader>
+        <ScrollArea
+          withFade
+          className={
+            viewMode === "map" ? "min-h-0 flex-1 p-0" : "min-h-0 flex-1"
+          }
+        >
+          {viewMode === "list" ? (
+            currentTerritories && currentTerritories.length > 0 ? (
+              <m.div
+                className="divide-y"
+                variants={staggerContainer(0.04)}
+                initial="hidden"
+                animate="show"
+              >
+                {currentTerritories.map((element) => {
+                  const isSelected = element.code === selectedTerritory;
+                  return (
+                    <m.button
+                      type="button"
+                      key={`list-group-item-${element.code}`}
+                      className={cn(
+                        "flex w-full items-center justify-between gap-3 border-l-[3px] px-4 py-3.5 text-left transition-colors",
+                        isSelected
+                          ? "border-l-primary bg-primary/10 text-primary"
+                          : "border-l-transparent hover:bg-accent hover:text-accent-foreground"
+                      )}
+                      style={
+                        isSelected
+                          ? { paddingLeft: "calc(1rem - 3px)" }
+                          : undefined
+                      }
+                      variants={fadeIn}
+                      onClick={(e) => handleSelect?.(element.id, e)}
+                    >
+                      <span className="min-w-0 truncate font-semibold">
+                        {element.code}: {element.name}
+                      </span>
+                      <AggregationBadge aggregate={element.aggregates} />
+                    </m.button>
+                  );
+                })}
+              </m.div>
             ) : (
-              <div className="empty-state">
-                <div className="empty-state-icon">📍</div>
-                <div className="empty-state-title">
+              <div className="flex flex-col items-center gap-2 py-12 text-muted-foreground">
+                <MapPin className="size-8 opacity-40" />
+                <span className="text-sm">
                   {t("territory.noTerritories", "No Territories")}
-                </div>
-                <div className="empty-state-description">
-                  {t(
-                    "territory.noTerritoriesDescription",
-                    "No territories available to select"
-                  )}
-                </div>
+                </span>
               </div>
-            )}
-          </ListGroup>
-        ) : (
-          <TerritoryMapView
-            territories={territories}
-            selectedTerritoryId={selectedTerritoryId}
-            handleSelect={handleSelect}
-            congregationCode={congregationCode}
-          />
-        )}
-      </Offcanvas.Body>
-    </Offcanvas>
+            )
+          ) : (
+            <TerritoryMapView
+              territories={territories}
+              selectedTerritoryId={selectedTerritoryId}
+              handleSelect={handleSelect}
+              congregationCode={congregationCode}
+            />
+          )}
+        </ScrollArea>
+      </SheetContent>
+    </Sheet>
   );
 };
 

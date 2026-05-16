@@ -1,4 +1,4 @@
-import { Form, ToggleButtonGroup, ToggleButton } from "react-bootstrap";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import { UserRoleProps } from "../../utils/interface";
 import { useTranslation } from "react-i18next";
@@ -9,55 +9,56 @@ const UserRoleField = ({
   isUpdate = true
 }: UserRoleProps) => {
   const { t } = useTranslation();
+  const roleOptions = [
+    ...(isUpdate
+      ? [
+          {
+            id: "status-tb-0",
+            value: USER_ACCESS_LEVELS.NO_ACCESS.CODE,
+            label: t("user.roles.noAccess", "No Access")
+          }
+        ]
+      : []),
+    {
+      id: "status-tb-1",
+      value: USER_ACCESS_LEVELS.READ_ONLY.CODE,
+      label: t("user.roles.readOnly", "Read-only")
+    },
+    {
+      id: "status-tb-2",
+      value: USER_ACCESS_LEVELS.CONDUCTOR.CODE,
+      label: t("user.roles.conductor", "Conductor")
+    },
+    {
+      id: "status-tb-4",
+      value: USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE,
+      label: t("user.roles.administrator", "Admin")
+    }
+  ];
 
   return (
-    <Form.Group
-      className="mb-1 text-center"
-      controlId="formBasicRolebtnCheckbox"
+    <ToggleGroup
+      aria-label="Select role"
+      value={role ? [role] : []}
+      variant="outline"
+      onValueChange={(values) => {
+        const value = values[0];
+        if (value) {
+          handleRoleChange?.(value);
+        }
+      }}
+      className="flex flex-nowrap gap-0 justify-center w-full"
     >
-      <ToggleButtonGroup
-        name="status"
-        type="radio"
-        value={role}
-        className="mb-3"
-        onChange={handleRoleChange}
-      >
-        {isUpdate && (
-          <ToggleButton
-            id="status-tb-0"
-            variant="outline-danger"
-            value={USER_ACCESS_LEVELS.NO_ACCESS.CODE}
-            className="fluid-button"
-          >
-            {t("user.roles.noAccess", "No Access")}
-          </ToggleButton>
-        )}
-        <ToggleButton
-          id="status-tb-1"
-          variant="outline-secondary"
-          value={USER_ACCESS_LEVELS.READ_ONLY.CODE}
-          className="fluid-button"
+      {roleOptions.map((roleOption) => (
+        <ToggleGroupItem
+          key={roleOption.id}
+          value={roleOption.value}
+          className="min-w-0 flex-1 px-2 text-sm"
         >
-          {t("user.roles.readOnly", "Read-only")}
-        </ToggleButton>
-        <ToggleButton
-          id="status-tb-2"
-          variant="outline-success"
-          value={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
-          className="fluid-button"
-        >
-          {t("user.roles.conductor", "Conductor")}
-        </ToggleButton>
-        <ToggleButton
-          id="status-tb-4"
-          variant="outline-primary"
-          value={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
-          className="fluid-button"
-        >
-          {t("user.roles.administrator", "Administrator")}
-        </ToggleButton>
-      </ToggleButtonGroup>
-    </Form.Group>
+          {roleOption.label}
+        </ToggleGroupItem>
+      ))}
+    </ToggleGroup>
   );
 };
 

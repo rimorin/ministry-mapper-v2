@@ -48,7 +48,6 @@ const assignmentMessage = (
     greetKey = "greetings.evening";
   }
 
-  // Default greeting values as fallbacks
   const defaultGreeting =
     hrs < 12 ? "Morning" : hrs < 17 ? "Afternoon" : "Evening";
   const greetingText = i18n.t(greetKey, {

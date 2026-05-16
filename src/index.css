@@ -1,0 +1,303 @@
+@import "tailwindcss";
+
+/* shadcn keyframes + data-* state variants */
+@import "shadcn/tailwind.css";
+
+/* Dark mode strategy: class on <html> element */
+@custom-variant dark (&:is(.dark *));
+
+/* Bridge CSS vars → Tailwind utility generators */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --sidebar: hsl(0 0% 98%);
+  --sidebar-foreground: hsl(240 5.3% 26.1%);
+  --sidebar-primary: hsl(240 5.9% 10%);
+  --sidebar-primary-foreground: hsl(0 0% 98%);
+  --sidebar-accent: hsl(240 4.8% 95.9%);
+  --sidebar-accent-foreground: hsl(240 5.9% 10%);
+  --sidebar-border: hsl(220 13% 91%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.985 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --destructive-foreground: oklch(0.985 0 0);
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+  --sidebar: hsl(240 5.9% 10%);
+  --sidebar-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-primary: hsl(224.3 76.3% 48%);
+  --sidebar-primary-foreground: hsl(0 0% 100%);
+  --sidebar-accent: hsl(240 3.7% 15.9%);
+  --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
+  --sidebar-border: hsl(240 3.7% 15.9%);
+  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    height: 100%;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      transition: none;
+    }
+  }
+  body {
+    @apply bg-background text-foreground;
+    height: 100%;
+    overscroll-behavior: none;
+  }
+  #root {
+    height: 100dvh;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@utility fluid-text {
+  font-size: clamp(0.9rem, 0.741rem + 0.795vi, 1.25rem);
+  line-height: 1.5;
+}
+
+@utility fluid-small {
+  font-size: clamp(0.75rem, 0.693rem + 0.284vi, 0.95rem);
+  line-height: 1.4;
+}
+
+@utility fluid-button {
+  font-size: clamp(0.65rem, 0.551rem + 0.497vi, 1rem);
+  line-height: 1;
+  font-weight: 700;
+}
+
+@keyframes caret-blink {
+  0%,
+  70%,
+  100% {
+    opacity: 1;
+  }
+  20%,
+  50% {
+    opacity: 0;
+  }
+}
+
+@utility animate-caret-blink {
+  animation: caret-blink 1.25s ease-out infinite;
+}
+
+/* @starting-style sets initial state before first paint — immune to React StrictMode's
+   effect double-invocation and the Safari double-flash from JS-driven transforms.
+   .map-content: page-level entrance (map.tsx).
+   .virtual-map-container .map-content: accordion row entrance (maplist.tsx).
+   The scoped selector has higher specificity, so it wins inside the virtual container. */
+.map-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.15s ease-out,
+    transform 0.15s ease-out;
+}
+
+@starting-style {
+  .map-content {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+.virtual-map-container .map-content {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.15s ease-out,
+    transform 0.15s ease-out;
+}
+
+@starting-style {
+  .virtual-map-container .map-content {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-content,
+  .virtual-map-container .map-content {
+    transition: none;
+  }
+}
+
+/* Collapsible height animation — base-ui sets --collapsible-panel-height
+   and data-open / data-closed on the panel element. */
+[data-slot="collapsible-content"] {
+  overflow: hidden;
+  height: var(--collapsible-panel-height);
+  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@starting-style {
+  [data-slot="collapsible-content"][data-open] {
+    height: 0;
+  }
+}
+
+[data-slot="collapsible-content"][data-closed] {
+  height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="collapsible-content"] {
+    transition: none;
+  }
+}
+
+@keyframes shimmer {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes circular-glow {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes location-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+  100% {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+@keyframes status-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  15% {
+    transform: translateX(-5px);
+  }
+  30% {
+    transform: translateX(5px);
+  }
+  45% {
+    transform: translateX(-4px);
+  }
+  60% {
+    transform: translateX(4px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+  90% {
+    transform: translateX(2px);
+  }
+}

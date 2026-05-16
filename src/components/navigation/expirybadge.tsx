@@ -1,5 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Timer } from "lucide-react";
+import * as m from "motion/react-m";
+import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
 const ONE_HOUR_MS = 60 * 60 * 1000;
@@ -53,9 +57,8 @@ interface ExpiryBadgeProps {
 const ExpiryBadge = ({ endtime, onExpired }: ExpiryBadgeProps) => {
   const { t } = useTranslation();
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(endtime));
-  const onExpiredRef = useRef(onExpired);
-  useEffect(() => {
-    onExpiredRef.current = onExpired;
+  const onExpiredCallback = useEffectEvent(() => {
+    onExpired?.();
   });
 
   useEffect(() => {
@@ -78,7 +81,7 @@ const ExpiryBadge = ({ endtime, onExpired }: ExpiryBadgeProps) => {
         const remaining = tick();
         if (remaining <= 0) {
           clearInterval(id);
-          onExpiredRef.current?.();
+          onExpiredCallback();
           return;
         }
         // Switch interval granularity when crossing the critical threshold
@@ -101,17 +104,42 @@ const ExpiryBadge = ({ endtime, onExpired }: ExpiryBadgeProps) => {
   const display = formatDisplay(timeLeft);
 
   return (
-    <span
-      className={`expiry-badge expiry-badge--${urgency}`}
+    <Badge
+      variant={
+        urgency === "critical"
+          ? "destructive"
+          : urgency === "warning"
+            ? "outline"
+            : "outline"
+      }
+      className={cn(
+        "gap-1 font-variant-numeric tabular-nums select-none text-xs transition-[color,border-color,background-color,opacity] duration-700 ease-in-out motion-reduce:transition-none",
+        urgency === "safe" && "opacity-75",
+        urgency === "warning" && "border-amber-500 text-amber-500",
+        urgency === "critical" && "animate-pulse"
+      )}
       role="timer"
       aria-live="polite"
       aria-label={t("assignments.expiresIn", "Expires in {{time}}", {
         time: display
       })}
     >
-      <span aria-hidden="true">⌛</span>
-      {display}
-    </span>
+      <Timer aria-hidden="true" />
+      <span>{t("assignments.expires", "Expires")}</span>
+      {urgency === "critical" ? (
+        <m.span
+          key={timeLeft.seconds}
+          className="tabular-nums"
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", visualDuration: 0.15, bounce: 0.1 }}
+        >
+          {display}
+        </m.span>
+      ) : (
+        display
+      )}
+    </Badge>
   );
 };
 

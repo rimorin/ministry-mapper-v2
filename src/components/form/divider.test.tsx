@@ -21,15 +21,18 @@ describe("Divider", () => {
     it("should have proper flex layout", () => {
       const { container } = render(<Divider text="TEST" />);
 
-      const divider = container.querySelector(".d-flex");
-      expect(divider).toBeInTheDocument();
-      expect(divider).toHaveClass("align-items-center");
+      expect(container.firstElementChild).toHaveClass(
+        "flex",
+        "items-center",
+        "gap-3",
+        "my-2"
+      );
     });
 
     it("should have muted text", () => {
       const { container } = render(<Divider text="TEST" />);
 
-      const text = container.querySelector(".text-muted");
+      const text = container.querySelector(".text-xs.text-muted-foreground");
       expect(text).toBeInTheDocument();
       expect(text).toHaveTextContent("TEST");
     });
@@ -37,34 +40,29 @@ describe("Divider", () => {
     it("should have small text size", () => {
       const { container } = render(<Divider text="TEST" />);
 
-      const text = container.querySelector(".small");
-      expect(text).toBeInTheDocument();
+      expect(container.querySelector(".text-xs")).toBeInTheDocument();
     });
 
-    it("should have horizontal rules on both sides", () => {
+    it("should render border lines on both sides", () => {
       const { container } = render(<Divider text="TEST" />);
 
-      const hrs = container.querySelectorAll("hr");
-      expect(hrs).toHaveLength(2);
+      expect(container.querySelectorAll(".flex-1.h-px.bg-border")).toHaveLength(
+        2
+      );
     });
 
     it("should have proper spacing", () => {
       const { container } = render(<Divider text="TEST" />);
 
-      const wrapper = container.querySelector(".my-3");
-      expect(wrapper).toBeInTheDocument();
-
-      const text = container.querySelector(".px-3");
-      expect(text).toBeInTheDocument();
+      expect(container.firstElementChild).toHaveClass("my-2", "gap-3");
     });
   });
 
-  describe("hr elements", () => {
-    it("should have flex-grow-1 class on hr elements", () => {
+  describe("line elements", () => {
+    it("should use flex-1 on both divider lines", () => {
       const { container } = render(<Divider text="TEST" />);
 
-      const hrs = container.querySelectorAll("hr.flex-grow-1");
-      expect(hrs).toHaveLength(2);
+      expect(container.querySelectorAll(".flex-1.bg-border")).toHaveLength(2);
     });
   });
 });

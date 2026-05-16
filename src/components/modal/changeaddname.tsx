@@ -1,13 +1,29 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-
-import { useState, FormEvent } from "react";
-import { Modal, Form } from "react-bootstrap";
+import NiceModal from "@ebay/nice-modal-react";
+import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { USER_ACCESS_LEVELS } from "../../utils/constants";
+import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import useNotification from "../../hooks/useNotification";
-import ModalFooter from "../form/footer";
-import GenericInputField from "../form/input";
+import ComponentAuthorizer from "../navigation/authorizer";
 import { ChangeAddressNameModalProps } from "../../utils/interface";
+import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import { updateDataById } from "../../utils/pocketbase";
 
 const ChangeAddressName = NiceModal.create(
@@ -18,54 +34,90 @@ const ChangeAddressName = NiceModal.create(
   }: ChangeAddressNameModalProps) => {
     const { t } = useTranslation();
     const { runAction } = useNotification();
-    const [addressName, setAddressName] = useState(name);
-    const [isSaving, setIsSaving] = useState(false);
-    const modal = useModal();
+    const {
+      modal,
+      dialogProps: baseDialogProps,
+      contentProps
+    } = useBaseUiDialog();
+    const form = useForm<{ name: string }>({
+      values: { name }
+    });
 
-    const handleUpdateBlockName = async (event: FormEvent<HTMLElement>) => {
-      event.preventDefault();
-      await runAction(
-        async () => {
-          await updateDataById(
-            "maps",
-            mapId,
-            { description: addressName },
-            {
-              requestKey: `update-map-desc-${mapId}`
-            }
-          );
-          modal.hide();
-        },
-        { setLoading: setIsSaving }
-      );
+    const dialogProps = {
+      ...baseDialogProps,
+      onOpenChange: (open: boolean) => {
+        if (!open) {
+          form.reset();
+        }
+        baseDialogProps.onOpenChange(open);
+      }
     };
+
+    const onSubmit = async (values: { name: string }) => {
+      await runAction(async () => {
+        await updateDataById(
+          "maps",
+          mapId,
+          { description: values.name },
+          {
+            requestKey: `update-map-desc-${mapId}`
+          }
+        );
+        modal.hide();
+      });
+    };
+
     return (
-      <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
-        <Modal.Header>
-          <Modal.Title>
-            {t("address.changeName", "Change Address Name")}
-          </Modal.Title>
-        </Modal.Header>
-        <Form onSubmit={handleUpdateBlockName}>
-          <Modal.Body>
-            <GenericInputField
-              label={t("address.name", "Name")}
-              name="name"
-              handleChange={(event) => {
-                const { value } = event.target as HTMLInputElement;
-                setAddressName(value);
-              }}
-              changeValue={addressName}
-              required={true}
-            />
-          </Modal.Body>
-          <ModalFooter
-            handleClick={modal.hide}
-            userAccessLevel={footerSaveAcl}
-            isSaving={isSaving}
-          />
-        </Form>
-      </Modal>
+      <Dialog {...dialogProps}>
+        <DialogContent {...contentProps}>
+          <DialogHeader>
+            <DialogTitle>
+              {t("address.changeName", "Change Address Name")}
+            </DialogTitle>
+          </DialogHeader>
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                rules={{ required: true }}
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("address.name", "Name")}</FormLabel>
+                    <FormControl>
+                      <Input {...field} aria-required="true" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => {
+                    form.reset();
+                    modal.hide();
+                  }}
+                >
+                  {t("common.cancel")}
+                </Button>
+                <ComponentAuthorizer
+                  requiredPermission={footerSaveAcl}
+                  userPermission={footerSaveAcl}
+                >
+                  <Button type="submit" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting && (
+                      <Spinner data-icon="inline-start" aria-hidden="true" />
+                    )}
+                    {t("common.save")}
+                  </Button>
+                </ComponentAuthorizer>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     );
   }
 );

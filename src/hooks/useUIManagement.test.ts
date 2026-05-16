@@ -1,13 +1,8 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 import useUIState from "./useUIManagement";
 
 describe("useUIManagement", () => {
-  beforeEach(() => {
-    // Reset window scroll
-    window.scrollY = 0;
-  });
-
   describe("initialization", () => {
     it("should initialize with default values", () => {
       const { result } = renderHook(() => useUIState());
@@ -30,37 +25,6 @@ describe("useUIManagement", () => {
       });
 
       expect(result.current.isUnauthorised).toBe(true);
-    });
-  });
-
-  describe("handleScroll", () => {
-    it("should show back to top button when scrolled past threshold", () => {
-      const { result } = renderHook(() => useUIState());
-
-      act(() => {
-        window.scrollY = 1000; // Above threshold
-        result.current.handleScroll();
-      });
-
-      expect(result.current.showBkTopButton).toBe(true);
-    });
-
-    it("should hide back to top button when scrolled below threshold", () => {
-      const { result } = renderHook(() => useUIState());
-
-      act(() => {
-        window.scrollY = 1000;
-        result.current.handleScroll();
-      });
-
-      expect(result.current.showBkTopButton).toBe(true);
-
-      act(() => {
-        window.scrollY = 0;
-        result.current.handleScroll();
-      });
-
-      expect(result.current.showBkTopButton).toBe(false);
     });
   });
 

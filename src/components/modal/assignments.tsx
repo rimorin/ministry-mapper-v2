@@ -1,18 +1,32 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
-import { Modal, ListGroup } from "react-bootstrap";
+import NiceModal from "@ebay/nice-modal-react";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
-  LINK_SELECTOR_VIEWPORT_HEIGHT,
-  USER_ACCESS_LEVELS
-} from "../../utils/constants";
+  ExternalLink,
+  Trash2,
+  Clock,
+  CalendarCheck,
+  BookUser,
+  UserCog
+} from "lucide-react";
+import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import LinkTypeDescription from "../../utils/helpers/linkdesc";
 import LinkDateFormatter from "../../utils/helpers/linkdateformatter";
-import { LinkSession } from "../../utils/policies";
-import ModalFooter from "../form/footer";
-import { useEffect, useState } from "react";
-import { AssignmentModalProps } from "../../utils/interface";
+import type { LinkSession } from "../../utils/policies";
+import type { AssignmentModalProps } from "../../utils/interface";
 import { deleteDataById } from "../../utils/pocketbase";
-import { useTranslation } from "react-i18next";
-import GenericButton from "../navigation/button";
 import useNotification from "../../hooks/useNotification";
 
 const GetAssignments = NiceModal.create(
@@ -21,7 +35,7 @@ const GetAssignments = NiceModal.create(
     assignmentType,
     assignmentTerritory
   }: AssignmentModalProps) => {
-    const modal = useModal();
+    const { modal, dialogProps, contentProps } = useBaseUiDialog();
     const { t } = useTranslation();
     const { runAction } = useNotification();
 
@@ -44,100 +58,132 @@ const GetAssignments = NiceModal.create(
     const isAssignOrPersonalAssignments = assignmentType && assignmentTerritory;
 
     return (
-      <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
-        <Modal.Header>
-          <Modal.Title>
-            {isAssignOrPersonalAssignments
-              ? t(
-                  "assignment.linkWithTerritory",
-                  "{{territory}} {{type}} Links",
-                  {
-                    territory: assignmentTerritory,
-                    type: LinkTypeDescription(assignmentType)
-                  }
-                )
-              : t("assignment.assignments", "Assignments")}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <ListGroup
-            style={{
-              height: LINK_SELECTOR_VIEWPORT_HEIGHT,
-              overflow: "auto"
-            }}
-          >
-            {currentAssignments.map((assignment) => {
-              return (
-                <ListGroup.Item
+      <Dialog {...dialogProps}>
+        <DialogContent {...contentProps}>
+          <DialogHeader>
+            <DialogTitle>
+              {isAssignOrPersonalAssignments
+                ? t(
+                    "assignment.linkWithTerritory",
+                    "{{territory}} {{type}} Links",
+                    {
+                      territory: assignmentTerritory,
+                      type: LinkTypeDescription(assignmentType)
+                    }
+                  )
+                : t("assignment.assignments", "Assignments")}
+            </DialogTitle>
+            <DialogDescription>
+              {currentAssignments.length}{" "}
+              {currentAssignments.length === 1
+                ? t("assignment.activeLink", "active link")
+                : t("assignment.activeLinks", "active links")}
+            </DialogDescription>
+          </DialogHeader>
+          <Separator />
+          <ScrollArea className="max-h-[40dvh]">
+            <ul className="m-0 list-none space-y-2 p-0">
+              {currentAssignments.map((assignment) => (
+                <li
                   key={`assignment-${assignment.id}`}
-                  className="d-flex justify-content-between align-items-center"
+                  className="flex items-start gap-3 rounded-lg border bg-card p-3 transition-colors hover:bg-accent/30"
                 >
-                  <div className="ms-2 me-auto">
-                    <div className="fluid-text fluid-bolding">
+                  <div className="flex-1 min-w-0 space-y-2">
+                    <div className="flex items-center gap-2">
                       <a
                         href={`map/${assignment.id}`}
                         target="_blank"
                         rel="noreferrer"
+                        className="flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
                       >
+                        <ExternalLink className="size-3.5 shrink-0" />
                         {isAssignOrPersonalAssignments
                           ? t("assignment.link", "Link")
                           : assignment.name}
                       </a>
+                      {!isAssignOrPersonalAssignments &&
+                        assignment.linkType && (
+                          <Badge
+                            variant="secondary"
+                            className="text-[10px] px-1.5"
+                          >
+                            {LinkTypeDescription(assignment.linkType)}
+                          </Badge>
+                        )}
                     </div>
-                    {!isAssignOrPersonalAssignments && (
-                      <div className="fluid-text">
-                        {LinkTypeDescription(assignment.linkType)}
-                      </div>
-                    )}
-                    {assignment.publisherName && (
-                      <div className="fluid-text">
-                        {t("assignments.publisher", "Publisher")}:{" "}
-                        {assignment.publisherName}
-                      </div>
-                    )}
-                    <div className="fluid-text">
-                      {t("assignments.createdDate", "Created Dt")}:{" "}
-                      {LinkDateFormatter.format(
-                        new Date(assignment.tokenCreatetime)
+
+                    <div className="space-y-1">
+                      {assignment.assignerName && (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <UserCog className="size-3 shrink-0" />
+                          <span>
+                            {t("assignments.assignedBy")}{" "}
+                            {assignment.assignerName}
+                          </span>
+                        </div>
                       )}
-                    </div>
-                    <div className="fluid-text">
-                      {t("assignments.expiryDate", "Expiry Dt")}:{" "}
-                      {LinkDateFormatter.format(
-                        new Date(assignment.tokenEndtime)
+                      {assignment.publisherName && (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <BookUser className="size-3 shrink-0" />
+                          <span>
+                            {t("assignments.assignedTo")}{" "}
+                            {assignment.publisherName}
+                          </span>
+                        </div>
                       )}
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <CalendarCheck className="size-3 shrink-0" />
+                        <span>
+                          {t("assignments.created", "Created")}{" "}
+                          {LinkDateFormatter.format(
+                            new Date(assignment.tokenCreatetime)
+                          )}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                        <Clock className="size-3 shrink-0" />
+                        <span>
+                          {t("assignments.expires", "Expires")}{" "}
+                          {LinkDateFormatter.format(
+                            new Date(assignment.tokenEndtime)
+                          )}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                  <GenericButton
-                    variant="outline-warning"
-                    className="me-1"
-                    onClick={async (event) => {
-                      const { linkid } = event.currentTarget.dataset;
+
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="size-8 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                    onClick={async () => {
                       await runAction(async () => {
-                        await deleteAssignment(linkid as string);
-                        setCurrentAssignments((currentAssignments) =>
-                          currentAssignments.filter(
-                            (assignment) => assignment.id !== linkid
-                          )
+                        await deleteAssignment(assignment.id);
+                        setCurrentAssignments((prev) =>
+                          prev.filter((a) => a.id !== assignment.id)
                         );
                       });
                     }}
-                    dataAttributes={{
-                      linkid: assignment.id,
-                      postal: assignment.mapId
-                    }}
-                    label="🗑️"
-                  />
-                </ListGroup.Item>
-              );
-            })}
-          </ListGroup>
-        </Modal.Body>
-        <ModalFooter
-          handleClick={() => modal.hide()}
-          userAccessLevel={USER_ACCESS_LEVELS.READ_ONLY.CODE}
-        />
-      </Modal>
+                    aria-label={t("common.delete", "Delete")}
+                  >
+                    <Trash2 className="size-4" />
+                  </Button>
+                </li>
+              ))}
+            </ul>
+          </ScrollArea>
+          <Separator />
+          <DialogFooter>
+            <Button
+              variant="outline"
+              type="button"
+              onClick={() => modal.hide()}
+            >
+              {t("common.close", "Close")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     );
   }
 );

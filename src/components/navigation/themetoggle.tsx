@@ -1,9 +1,9 @@
 import { FC, lazy, use } from "react";
-import { Button, Image } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { Palette } from "lucide-react";
 import { useModalManagement } from "../../hooks/useModalManagement";
-import { getAssetUrl } from "../../utils/helpers/assetpath";
 import { ThemeContext } from "../utils/context";
+import GenericButton from "./button";
 
 const ThemeSettingsModal = lazy(() => import("../modal/themesettings"));
 
@@ -13,7 +13,7 @@ interface ThemeToggleProps {
 
 const ThemeToggle: FC<ThemeToggleProps> = ({ className = "" }) => {
   const { t } = useTranslation();
-  const { actualTheme } = use(ThemeContext);
+  use(ThemeContext);
   const { showModal } = useModalManagement();
 
   const handleOpenThemeSettings = () => {
@@ -21,25 +21,20 @@ const ThemeToggle: FC<ThemeToggleProps> = ({ className = "" }) => {
   };
 
   return (
-    <Button
-      variant="outline-primary"
+    <GenericButton
+      variant="outline"
       size="sm"
       onClick={handleOpenThemeSettings}
       className={className}
       aria-label={t("theme.settings", "Theme Settings")}
       title={t("theme.settings", "Theme Settings")}
-    >
-      <Image
-        src={getAssetUrl("dark-theme.svg")}
-        alt=""
-        aria-hidden="true"
-        style={{
-          width: "1.25em",
-          height: "1.25em",
-          filter: actualTheme === "dark" ? "brightness(0) invert(1)" : "none"
-        }}
-      />
-    </Button>
+      label={
+        <Palette
+          aria-hidden="true"
+          style={{ width: "1.25em", height: "1.25em" }}
+        />
+      }
+    />
   );
 };
 

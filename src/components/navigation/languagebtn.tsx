@@ -1,8 +1,7 @@
-import { FC, use } from "react";
-import { Button, Image } from "react-bootstrap";
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { getAssetUrl } from "../../utils/helpers/assetpath";
-import { ThemeContext } from "../utils/context";
+import { Languages } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface LanguageBtnProps {
   onClick: () => void;
@@ -11,26 +10,19 @@ interface LanguageBtnProps {
 
 const LanguageBtn: FC<LanguageBtnProps> = ({ onClick, className = "" }) => {
   const { t } = useTranslation();
-  const { actualTheme } = use(ThemeContext);
 
   return (
     <Button
-      variant="outline-primary"
+      variant="outline"
       size="sm"
       onClick={onClick}
       className={className}
       aria-label={t("common.Language", "Language")}
       title={t("common.Language", "Language")}
     >
-      <Image
-        src={getAssetUrl("language.svg")}
-        alt=""
+      <Languages
         aria-hidden="true"
-        style={{
-          width: "1.25em",
-          height: "1.25em",
-          filter: actualTheme === "dark" ? "brightness(0) invert(1)" : "none"
-        }}
+        style={{ width: "1.25em", height: "1.25em" }}
       />
     </Button>
   );

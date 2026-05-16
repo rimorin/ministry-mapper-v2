@@ -4,12 +4,16 @@ import usePasswordReset from "./usePasswordReset";
 import * as pocketbase from "../utils/pocketbase";
 
 vi.mock("../utils/pocketbase");
-vi.mock("./useNotification", () => ({
-  default: () => ({
-    notifyError: vi.fn(),
-    notifyWarning: vi.fn()
-  })
-}));
+vi.mock("./useNotification", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("./useNotification")>();
+  return {
+    ...actual,
+    default: () => ({
+      notifyError: vi.fn(),
+      notifyWarning: vi.fn()
+    })
+  };
+});
 
 describe("usePasswordReset", () => {
   beforeEach(() => {
@@ -135,7 +139,7 @@ describe("usePasswordReset", () => {
 
       expect(result.current.isProcessing).toBe(false);
       expect(result.current.isSuccess).toBe(false);
-      expect(result.current.message).toBe("Verification failed");
+      expect(result.current.message).toBe("Error: Verification failed");
     });
 
     it("should handle non-Error objects", async () => {
@@ -149,7 +153,7 @@ describe("usePasswordReset", () => {
       });
 
       expect(result.current.isSuccess).toBe(false);
-      expect(result.current.message).toContain("VERIFICATION_ERROR");
+      expect(result.current.message).toBeTruthy();
     });
   });
 

@@ -27,8 +27,8 @@ describe("GenericDropdownButton", () => {
     const button = screen.getByRole("button", { name: /menu/i });
     await user.click(button);
 
-    expect(screen.getByText("Item 1")).toBeInTheDocument();
-    expect(screen.getByText("Item 2")).toBeInTheDocument();
+    expect(await screen.findByText("Item 1")).toBeInTheDocument();
+    expect(await screen.findByText("Item 2")).toBeInTheDocument();
   });
 
   it("applies custom className", () => {
@@ -38,17 +38,17 @@ describe("GenericDropdownButton", () => {
       </GenericDropdownButton>
     );
     const button = screen.getByRole("button", { name: /menu/i });
-    expect(button.parentElement).toHaveClass("custom-dropdown");
+    expect(button).toHaveClass("custom-dropdown");
   });
 
-  it("applies custom variant", () => {
+  it("renders with default variant", () => {
     render(
-      <GenericDropdownButton label="Menu" variant="primary">
+      <GenericDropdownButton label="Menu" variant="default">
         <div />
       </GenericDropdownButton>
     );
     const button = screen.getByRole("button", { name: /menu/i });
-    expect(button).toHaveClass("btn-primary");
+    expect(button).toHaveClass("bg-primary", "text-primary-foreground");
   });
 
   it("applies custom size", () => {
@@ -58,7 +58,7 @@ describe("GenericDropdownButton", () => {
       </GenericDropdownButton>
     );
     const button = screen.getByRole("button", { name: /menu/i });
-    expect(button).toHaveClass("btn-lg");
+    expect(button).toHaveClass("h-10");
   });
 
   it("calls onClick when button is clicked", async () => {
@@ -89,7 +89,7 @@ describe("GenericDropdownItem", () => {
     const button = screen.getByRole("button", { name: /menu/i });
     await user.click(button);
 
-    expect(screen.getByText("Test Item")).toBeInTheDocument();
+    expect(await screen.findByText("Test Item")).toBeInTheDocument();
   });
 
   it("calls onClick when item is clicked", async () => {
@@ -106,7 +106,7 @@ describe("GenericDropdownItem", () => {
     const button = screen.getByRole("button", { name: /menu/i });
     await user.click(button);
 
-    const item = screen.getByText("Click Me");
+    const item = await screen.findByText("Click Me");
     await user.click(item);
 
     expect(handleClick).toHaveBeenCalled();

@@ -5,18 +5,27 @@ import { STATUS_CODES } from "../../utils/constants";
 
 describe("AddressStatus", () => {
   it("renders invalid status", () => {
-    render(<AddressStatus status={STATUS_CODES.INVALID} type={[]} />);
-    expect(screen.getByText("✖️")).toBeInTheDocument();
+    const { container } = render(
+      <AddressStatus status={STATUS_CODES.INVALID} type={[]} />
+    );
+
+    expect(container.querySelector(".text-violet-500")).toBeInTheDocument();
   });
 
   it("renders done status", () => {
-    render(<AddressStatus status={STATUS_CODES.DONE} type={[]} />);
-    expect(screen.getByText("✅")).toBeInTheDocument();
+    const { container } = render(
+      <AddressStatus status={STATUS_CODES.DONE} type={[]} />
+    );
+
+    expect(container.querySelector(".text-green-600")).toBeInTheDocument();
   });
 
   it("renders do not call status", () => {
-    render(<AddressStatus status={STATUS_CODES.DO_NOT_CALL} type={[]} />);
-    expect(screen.getByText("🚫")).toBeInTheDocument();
+    const { container } = render(
+      <AddressStatus status={STATUS_CODES.DO_NOT_CALL} type={[]} />
+    );
+
+    expect(container.querySelector(".text-destructive")).toBeInTheDocument();
   });
 
   it("renders not home icon when status is not home", () => {
@@ -24,15 +33,18 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.NOT_HOME} nhcount="3" type={[]} />
     );
 
-    const nothomeIcon = container.querySelector(".parent-nothome");
-    expect(nothomeIcon).toBeInTheDocument();
+    expect(
+      container.querySelector(".relative.inline-flex")
+    ).toBeInTheDocument();
+    expect(container.querySelector("svg")).toBeInTheDocument();
   });
 
   it("renders note icon when note exists", () => {
     const { container } = render(
       <AddressStatus status={STATUS_CODES.DONE} note="Test note" type={[]} />
     );
-    expect(container.textContent).toContain("🗒️");
+
+    expect(container.querySelector(".text-amber-500")).toBeInTheDocument();
   });
 
   it("renders household type badges", () => {
@@ -44,10 +56,9 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.DEFAULT} type={types} />
     );
 
-    const badge = container.querySelector(".badge");
-    expect(badge).toBeInTheDocument();
-    expect(badge).toHaveTextContent("CH, EN");
-    expect(badge).toHaveAttribute("title", "CH, EN");
+    expect(container.querySelectorAll("span.bg-muted")).toHaveLength(2);
+    expect(screen.getByText("CH")).toBeInTheDocument();
+    expect(screen.getByText("EN")).toBeInTheDocument();
   });
 
   it("filters out default option from household types", () => {
@@ -56,7 +67,8 @@ describe("AddressStatus", () => {
       { id: "2", code: "EN" },
       { id: "default", code: "DEFAULT" }
     ];
-    const { container } = render(
+
+    render(
       <AddressStatus
         status={STATUS_CODES.DEFAULT}
         type={types}
@@ -64,9 +76,9 @@ describe("AddressStatus", () => {
       />
     );
 
-    const badge = container.querySelector(".badge");
-    expect(badge).toHaveTextContent("CH, EN");
-    expect(badge).not.toHaveTextContent("DEFAULT");
+    expect(screen.getByText("CH")).toBeInTheDocument();
+    expect(screen.getByText("EN")).toBeInTheDocument();
+    expect(screen.queryByText("DEFAULT")).not.toBeInTheDocument();
   });
 
   it("does not render badge when only default option exists", () => {
@@ -79,8 +91,7 @@ describe("AddressStatus", () => {
       />
     );
 
-    const badge = container.querySelector(".badge");
-    expect(badge).not.toBeInTheDocument();
+    expect(container.querySelector("span.bg-muted")).not.toBeInTheDocument();
   });
 
   it("does not render badge when type is empty", () => {
@@ -88,8 +99,7 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.DEFAULT} type={[]} />
     );
 
-    const badge = container.querySelector(".badge");
-    expect(badge).not.toBeInTheDocument();
+    expect(container.querySelector("span.bg-muted")).not.toBeInTheDocument();
   });
 
   it("shows overflow count in badge when types exceed visible limit", () => {
@@ -99,14 +109,12 @@ describe("AddressStatus", () => {
       { id: "3", code: "ML" },
       { id: "4", code: "BD" }
     ];
-    const { container } = render(
-      <AddressStatus status={STATUS_CODES.DEFAULT} type={types} />
-    );
 
-    const badge = container.querySelector(".badge");
-    expect(badge).toBeInTheDocument();
-    expect(badge).toHaveTextContent("CH, EN +2");
-    expect(badge).toHaveAttribute("title", "CH, EN, ML, BD");
+    render(<AddressStatus status={STATUS_CODES.DEFAULT} type={types} />);
+
+    expect(screen.getByText("CH")).toBeInTheDocument();
+    expect(screen.getByText("EN")).toBeInTheDocument();
+    expect(screen.getByText("+2")).toBeInTheDocument();
   });
 
   it("does not show overflow when types are exactly at visible limit", () => {
@@ -114,13 +122,12 @@ describe("AddressStatus", () => {
       { id: "1", code: "CH" },
       { id: "2", code: "EN" }
     ];
-    const { container } = render(
-      <AddressStatus status={STATUS_CODES.DEFAULT} type={types} />
-    );
 
-    const badge = container.querySelector(".badge");
-    expect(badge).toHaveTextContent("CH, EN");
-    expect(badge).not.toHaveTextContent("+");
+    render(<AddressStatus status={STATUS_CODES.DEFAULT} type={types} />);
+
+    expect(screen.getByText("CH")).toBeInTheDocument();
+    expect(screen.getByText("EN")).toBeInTheDocument();
+    expect(screen.queryByText(/\+\d+/)).not.toBeInTheDocument();
   });
 
   it("combines multiple status indicators", () => {
@@ -129,8 +136,8 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.DONE} note="Test note" type={types} />
     );
 
-    expect(container.textContent).toContain("✅");
-    expect(container.textContent).toContain("🗒️");
+    expect(container.querySelector(".text-green-600")).toBeInTheDocument();
+    expect(container.querySelector(".text-amber-500")).toBeInTheDocument();
     expect(screen.getByText("CH")).toBeInTheDocument();
   });
 });

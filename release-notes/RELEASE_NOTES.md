@@ -109,6 +109,17 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ---
 
+## 2026-06-15
+
+[NEW] A fresh new look.
+  The app's look and feel has been rebuilt from the ground up. The design language it was built on dates back to 2011 — it served its purpose well for many years, but times have changed and a more modern design system now exists. The new one is lighter, more refined, and built for how apps are crafted today.
+
+  Publishers: everything works the same as before — it just looks different.
+
+  Administrators: your menus are now in a panel on the left. Tap the button at the top-left to open it.
+
+---
+
 ## 2026-05-05
 
 > Publishers: Smart Sync only covers your address updates. Administrators: admin actions still require a live connection.

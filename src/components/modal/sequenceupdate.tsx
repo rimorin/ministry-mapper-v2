@@ -1,12 +1,23 @@
-import NiceModal, { bootstrapDialog, useModal } from "@ebay/nice-modal-react";
+import NiceModal from "@ebay/nice-modal-react";
+import { GripVertical, Info } from "lucide-react";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import { MapSequenceUpdateModalProps } from "../../utils/interface";
-import { Form, Image, Modal } from "react-bootstrap";
-import ModalFooter from "../form/footer";
+import { createPortal } from "react-dom";
 import { FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
+import { cn } from "@/lib/utils";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { Spinner } from "@/components/ui/spinner";
 import { callFunction, ignoreAbort } from "../../utils/pocketbase";
-import { getAssetUrl } from "../../utils/helpers/assetpath";
 import "../../css/sortable.css";
 import {
   DndContext,
@@ -27,7 +38,9 @@ import {
   rectSortingStrategy
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import { motion } from "motion/react";
 import useNotification from "../../hooks/useNotification";
+import ComponentAuthorizer from "../navigation/authorizer";
 
 interface SortableItemProps {
   id: string;
@@ -47,21 +60,44 @@ const SortableItem = ({ id, code, sequence }: SortableItemProps) => {
 
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
-    opacity: isDragging ? 0.5 : 1
+    transition
   };
 
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className="sortable-item"
-      {...attributes}
-      {...listeners}
+    <motion.div
+      layout
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{
+        layout: { type: "spring", stiffness: 300, damping: 30 },
+        opacity: {
+          duration: 0.18,
+          delay: Math.min((sequence - 1) * 0.035, 0.35)
+        },
+        y: { duration: 0.18, delay: Math.min((sequence - 1) * 0.035, 0.35) }
+      }}
     >
-      <span className="sortable-item-sequence">{sequence}</span>
-      <span className="sortable-item-code">{code}</span>
-    </div>
+      <div
+        ref={setNodeRef}
+        style={style}
+        className={cn(
+          "sortable-item flex touch-none select-none items-center gap-2 rounded-lg border px-3 py-2 transition-[transform,opacity] duration-200 ease-in",
+          isDragging
+            ? "cursor-grabbing border-dashed border-primary/50 bg-background/40 opacity-40 shadow-none"
+            : "cursor-grab border-[#e0e0e0] bg-background shadow-[0_2px_4px_rgba(0,0,0,0.075)]"
+        )}
+        {...attributes}
+        {...listeners}
+      >
+        <GripVertical className="h-4 w-4 shrink-0 text-muted-foreground/40" />
+        <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-secondary text-xs font-semibold leading-none text-white">
+          {sequence}
+        </span>
+        <span className="text-[0.95rem] font-semibold text-foreground">
+          {code}
+        </span>
+      </div>
+    </motion.div>
   );
 };
 
@@ -71,21 +107,24 @@ const DragOverlayItem = ({
 }: {
   code: string;
   sequence: number;
-}) => {
-  return (
-    <div className="sortable-item sortable-item-dragging">
-      <span className="sortable-item-sequence">{sequence}</span>
-      <span className="sortable-item-code">{code}</span>
-    </div>
-  );
-};
+}) => (
+  <div className="sortable-item sortable-item-dragging flex cursor-grabbing touch-none select-none items-center gap-2 rounded-lg border border-[#e0e0e0] bg-background px-3 py-2 shadow-[0_2px_4px_rgba(0,0,0,0.075)]">
+    <GripVertical className="h-4 w-4 shrink-0 text-muted-foreground/40" />
+    <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold leading-none text-white">
+      {sequence}
+    </span>
+    <span className="flex-1 text-[0.95rem] font-semibold text-foreground">
+      {code}
+    </span>
+  </div>
+);
 
 const ChangeMapSequence = NiceModal.create(
   ({
     mapId,
     footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE
   }: MapSequenceUpdateModalProps) => {
-    const modal = useModal();
+    const { modal, dialogProps, contentProps } = useBaseUiDialog();
     const { t } = useTranslation();
     const { runAction } = useNotification();
     const [isSaving, setIsSaving] = useState(false);
@@ -100,14 +139,18 @@ const ChangeMapSequence = NiceModal.create(
     );
 
     useEffect(() => {
+      let isCleaned = false;
       const fetchAddressList = async () => {
         const response = await callFunction("/map/codes", {
           method: "POST",
           body: { map_id: mapId }
         });
-        setCodeList(response.codes || []);
+        if (!isCleaned) setCodeList(response.codes || []);
       };
       ignoreAbort(fetchAddressList)();
+      return () => {
+        isCleaned = true;
+      };
     }, [mapId]);
 
     const handleDragStart = (event: DragStartEvent) => {
@@ -150,66 +193,80 @@ const ChangeMapSequence = NiceModal.create(
     const activeIndex = activeId ? codeList.indexOf(activeId) : -1;
 
     return (
-      <Modal
-        {...bootstrapDialog(modal)}
-        onHide={() => modal.remove()}
-        size="lg"
-      >
-        <Modal.Header>
-          <Modal.Title>
-            {t("map.updateMapSequence", "Update Map Sequence")}
-          </Modal.Title>
-        </Modal.Header>
-        <Form onSubmit={handleSave}>
-          <Modal.Body className="sortable-modal-body">
+      <Dialog {...dialogProps}>
+        <DialogContent
+          {...contentProps}
+          className={cn(contentProps.className, "sm:max-w-2xl")}
+        >
+          <DialogHeader>
+            <DialogTitle>
+              {t("map.updateMapSequence", "Update Map Sequence")}
+            </DialogTitle>
+          </DialogHeader>
+          <form onSubmit={handleSave} className="space-y-4">
             {codeList.length > 0 && (
-              <div className="sortable-instructions">
-                <Image
-                  src={getAssetUrl("information.svg")}
-                  alt="Information"
-                  width={16}
-                  height={16}
-                  style={{ display: "inline-block", marginRight: "0.5rem" }}
-                />
+              <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                <Info className="h-3 w-3 shrink-0" aria-hidden="true" />
                 {t(
                   "map.dragToReorder",
                   "Drag and drop the cards to reorder the sequence"
                 )}
-              </div>
+              </p>
             )}
-            <DndContext
-              sensors={sensors}
-              collisionDetection={closestCenter}
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-            >
-              <SortableContext items={codeList} strategy={rectSortingStrategy}>
-                <div className="sortable-grid">
-                  {codeList.map((code, index) => (
-                    <SortableItem
-                      key={code}
-                      id={code}
-                      code={code}
-                      sequence={index + 1}
-                    />
-                  ))}
-                </div>
-              </SortableContext>
-              <DragOverlay>
-                {activeId && activeIndex !== -1 ? (
-                  <DragOverlayItem code={activeId} sequence={activeIndex + 1} />
-                ) : null}
-              </DragOverlay>
-            </DndContext>
-          </Modal.Body>
-          <ModalFooter
-            handleClick={modal.hide}
-            userAccessLevel={footerSaveAcl}
-            requiredAcLForSave={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
-            isSaving={isSaving}
-          />
-        </Form>
-      </Modal>
+            <ScrollArea className="max-h-[70dvh]">
+              <DndContext
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+              >
+                <SortableContext
+                  items={codeList}
+                  strategy={rectSortingStrategy}
+                >
+                  <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-1.5 rounded-md bg-muted p-3">
+                    {codeList.map((code, index) => (
+                      <SortableItem
+                        key={code}
+                        id={code}
+                        code={code}
+                        sequence={index + 1}
+                      />
+                    ))}
+                  </div>
+                </SortableContext>
+                {createPortal(
+                  <DragOverlay>
+                    {activeId && activeIndex !== -1 ? (
+                      <DragOverlayItem
+                        code={activeId}
+                        sequence={activeIndex + 1}
+                      />
+                    ) : null}
+                  </DragOverlay>,
+                  document.body
+                )}
+              </DndContext>
+            </ScrollArea>
+            <DialogFooter>
+              <Button variant="outline" type="button" onClick={modal.hide}>
+                {t("common.cancel", "Cancel")}
+              </Button>
+              <ComponentAuthorizer
+                requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
+                userPermission={footerSaveAcl}
+              >
+                <Button type="submit" disabled={isSaving}>
+                  {isSaving && (
+                    <Spinner data-icon="inline-start" aria-hidden="true" />
+                  )}
+                  {t("common.save", "Save")}
+                </Button>
+              </ComponentAuthorizer>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     );
   }
 );

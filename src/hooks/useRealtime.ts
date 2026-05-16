@@ -1,10 +1,11 @@
-import { useEffect, useEffectEvent } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
 import {
   RecordModel,
   RecordSubscribeOptions,
   RecordSubscription
 } from "pocketbase";
 import { setupRealtimeListener, isAbortError } from "../utils/pocketbase";
+import useOnTabFocus from "./useOnTabFocus";
 
 /**
  * Custom hook to manage a PocketBase real-time subscription.
@@ -18,6 +19,9 @@ import { setupRealtimeListener, isAbortError } from "../utils/pocketbase";
  *   value (e.g. 50) for components that mount inside virtual lists, where rows
  *   may be mounted and immediately unmounted during initial layout, to avoid
  *   unnecessary cancelled network requests. Defaults to 0 (no debounce).
+ * @param topic - The subscription topic. Defaults to "*" (all records). Pass a
+ *   record ID to subscribe to a single record directly, which is more efficient
+ *   than using a `filter` and ensures realtime events are received reliably.
  */
 export default function useRealtimeSubscription(
   collectionName: string,
@@ -25,21 +29,27 @@ export default function useRealtimeSubscription(
   options: RecordSubscribeOptions | undefined,
   dependencies: React.DependencyList = [],
   enabled = true,
-  debounceMs = 0
+  debounceMs = 0,
+  topic = "*"
 ) {
   const onData = useEffectEvent((data: RecordSubscription<RecordModel>) => {
     callback(data);
   });
+  const getOptions = useEffectEvent(() => options);
+
+  const [resubscribeKey, setResubscribeKey] = useState(0);
+  useOnTabFocus(() => setResubscribeKey((k) => k + 1));
 
   useEffect(() => {
     if (!enabled) return;
 
     let isCleaned = false;
     let unsubscribe: (() => void) | undefined;
+    let retryTimeoutId: ReturnType<typeof setTimeout> | undefined;
 
     const subscribe = (retryCount = 0) => {
       if (isCleaned) return;
-      setupRealtimeListener(collectionName, onData, options)
+      setupRealtimeListener(collectionName, onData, getOptions(), topic)
         .then((unsub) => {
           if (isCleaned) {
             unsub();
@@ -51,7 +61,7 @@ export default function useRealtimeSubscription(
           if (isCleaned || isAbortError(error)) return;
           console.error("Failed to setup realtime listener:", error);
           const delay = Math.min(1_000 * 2 ** retryCount, 30_000);
-          setTimeout(() => subscribe(retryCount + 1), delay);
+          retryTimeoutId = setTimeout(() => subscribe(retryCount + 1), delay);
         });
     };
 
@@ -62,10 +72,18 @@ export default function useRealtimeSubscription(
     return () => {
       isCleaned = true;
       if (timeoutId !== undefined) clearTimeout(timeoutId);
+      if (retryTimeoutId !== undefined) clearTimeout(retryTimeoutId);
       if (unsubscribe) {
         unsubscribe();
       }
     };
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- spread deps are caller-controlled; options captured via closure
-  }, [enabled, debounceMs, collectionName, ...dependencies]);
+  }, [
+    enabled,
+    debounceMs,
+    collectionName,
+    topic,
+    resubscribeKey,
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- spread deps are caller-controlled
+    ...dependencies
+  ]);
 }

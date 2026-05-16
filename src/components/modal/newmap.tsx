@@ -1,7 +1,23 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal from "@ebay/nice-modal-react";
 import { useState, FormEvent, ChangeEvent } from "react";
-import { Modal, Form } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
+import { Info, Layers, Home } from "lucide-react";
+import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Separator } from "@/components/ui/separator";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Spinner } from "@/components/ui/spinner";
 import {
   USER_ACCESS_LEVELS,
   TERRITORY_TYPES,
@@ -9,22 +25,17 @@ import {
 } from "../../utils/constants";
 import isValidMapSequence from "../../utils/helpers/checkvalidseq";
 import useNotification from "../../hooks/useNotification";
-import {
+import type {
   NewPrivateAddressModalProps,
   latlongInterface
 } from "../../utils/interface";
 import FloorField from "../form/floors";
-import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import TagField from "../form/tagfield";
 import ChangeMapGeolocation from "./changegeolocation";
 import { callFunction } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
-
-interface SequenceOption {
-  value: string;
-  label: string;
-}
+import ComponentAuthorizer from "../navigation/authorizer";
 
 const NewMap = NiceModal.create(
   ({
@@ -33,17 +44,17 @@ const NewMap = NiceModal.create(
     territoryCode,
     origin
   }: NewPrivateAddressModalProps) => {
-    const modal = useModal();
+    const { modal, dialogProps, contentProps } = useBaseUiDialog({
+      size: "lg"
+    });
     const { t } = useTranslation();
     const { notifyWarning, runAction } = useNotification();
     const { showModal } = useModalManagement();
     const [name, setName] = useState("");
-    const [location, setLocation] = useState("");
     const [coordinates, setCoordinates] = useState<
       latlongInterface | undefined
     >();
-    const [sequence, setSequence] = useState("");
-    const [sequenceTags, setSequenceTags] = useState<SequenceOption[]>([]);
+    const [sequenceTags, setSequenceTags] = useState<string[]>([]);
     const [mapType, setMapType] = useState(TERRITORY_TYPES.MULTIPLE_STORIES);
     const [floors, setFloors] = useState(MIN_START_FLOOR);
     const [isSaving, setIsSaving] = useState(false);
@@ -54,6 +65,8 @@ const NewMap = NiceModal.create(
       event: FormEvent<HTMLElement>
     ) => {
       event.preventDefault();
+
+      const sequence = sequenceTags.join(",");
 
       if (!isValidMapSequence(sequence)) {
         notifyWarning(t("map.invalidSequence"));
@@ -94,110 +107,145 @@ const NewMap = NiceModal.create(
       });
       const newCoordinates = result as latlongInterface;
       if (newCoordinates) {
-        setLocation(`${newCoordinates.lat}, ${newCoordinates.lng}`);
         setCoordinates(newCoordinates);
       }
     };
 
-    const handleSequenceChange = (
-      newValue: readonly SequenceOption[] | null
-    ) => {
-      if (!newValue) {
-        setSequenceTags([]);
-        setSequence("");
-        return;
-      }
-
-      const tags = newValue as SequenceOption[];
-      setSequenceTags(tags);
-      setSequence(tags.map((tag) => tag.value).join(","));
-    };
-
     return (
-      <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
-        <Modal.Header>
-          <Modal.Title>{t("map.createMap")}</Modal.Title>
-        </Modal.Header>
-        <Form onSubmit={handleCreateTerritoryAddress}>
-          <Modal.Body
-            style={{
-              maxHeight: window.innerHeight < 700 ? "70dvh" : "80dvh",
-              overflowY: "auto"
-            }}
+      <Dialog {...dialogProps}>
+        <DialogContent
+          {...contentProps}
+          className={cn(contentProps.className, "h-[75dvh] flex flex-col")}
+        >
+          <DialogHeader>
+            <DialogTitle>{t("map.createMap")}</DialogTitle>
+            <DialogDescription>
+              {t(
+                "map.createMapDescription",
+                "Configure and add a new map to this territory."
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <Separator />
+          <form
+            onSubmit={handleCreateTerritoryAddress}
+            className="flex flex-col flex-1 min-h-0 gap-5"
           >
-            <Form.Group className="mb-3" controlId="basicFormMapType">
-              <Form.Label>{t("map.mapType")}</Form.Label>
-              <Form.Select
-                value={mapType}
-                onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-                  setMapType(e.target.value)
-                }
-                required
+            <ScrollArea className="flex-1 min-h-0">
+              <div className="flex flex-col gap-5 px-1 py-1">
+                <div className="flex flex-col gap-2">
+                  <p className="text-sm font-medium">{t("map.mapType")}</p>
+                  <ToggleGroup
+                    variant="outline"
+                    value={[mapType]}
+                    onValueChange={(vals) => {
+                      if (vals.length > 0) setMapType(vals[vals.length - 1]);
+                    }}
+                    className="w-full"
+                  >
+                    <ToggleGroupItem
+                      value={TERRITORY_TYPES.MULTIPLE_STORIES}
+                      className="flex-1 gap-2"
+                    >
+                      <Layers className="size-4" />
+                      {t("map.multiStory")}
+                    </ToggleGroupItem>
+                    <ToggleGroupItem
+                      value={TERRITORY_TYPES.SINGLE_STORY}
+                      className="flex-1 gap-2"
+                    >
+                      <Home className="size-4" />
+                      {t("map.singleStory")}
+                    </ToggleGroupItem>
+                  </ToggleGroup>
+                  <Alert>
+                    <Info className="size-4" />
+                    <AlertDescription className="text-xs">
+                      {isMultiStory
+                        ? t("map.multiStoryDescription")
+                        : t("map.singleStoryDescription")}
+                    </AlertDescription>
+                  </Alert>
+                </div>
+
+                <Separator />
+
+                <div className="flex flex-col gap-4">
+                  <GenericInputField
+                    label={t("map.mapName")}
+                    name="name"
+                    handleChange={(e: ChangeEvent<HTMLElement>) =>
+                      setName((e.target as HTMLInputElement).value)
+                    }
+                    changeValue={name}
+                    required={true}
+                    information={t("map.descriptionInfo")}
+                    autoComplete="off"
+                  />
+                  <GenericInputField
+                    label={t("map.mapCoordinates")}
+                    name="location"
+                    placeholder={t("map.clickToSelectLocation")}
+                    handleClick={handleLocationSelect}
+                    changeValue={
+                      coordinates
+                        ? `${coordinates.lat}, ${coordinates.lng}`
+                        : ""
+                    }
+                    required={true}
+                    information={t("map.coordinatesInfo")}
+                    readOnly={true}
+                    autoComplete="off"
+                  />
+                </div>
+
+                <Separator />
+
+                <TagField
+                  label={t("map.sequence")}
+                  value={sequenceTags}
+                  onChange={setSequenceTags}
+                  placeholder={t("map.sequencePlaceholder")}
+                  noOptionsMessage={t("map.sequenceNoOptions")}
+                  formatCreateLabel={(inputValue) =>
+                    t("map.sequenceAdd", { value: inputValue })
+                  }
+                  helpText={t("map.sequenceHelpText")}
+                />
+
+                {isMultiStory && (
+                  <>
+                    <Separator />
+                    <FloorField
+                      handleChange={(e: ChangeEvent<HTMLElement>) =>
+                        setFloors(Number((e.target as HTMLInputElement).value))
+                      }
+                      changeValue={floors}
+                    />
+                  </>
+                )}
+              </div>
+            </ScrollArea>
+            <Separator />
+            <DialogFooter>
+              <Button variant="outline" type="button" onClick={modal.hide}>
+                {t("common.cancel", "Cancel")}
+              </Button>
+              <ComponentAuthorizer
+                requiredPermission={footerSaveAcl}
+                userPermission={footerSaveAcl}
               >
-                <option value={TERRITORY_TYPES.MULTIPLE_STORIES}>
-                  {t("map.multiStory")}
-                </option>
-                <option value={TERRITORY_TYPES.SINGLE_STORY}>
-                  {t("map.singleStory")}
-                </option>
-              </Form.Select>
-              <Form.Text muted>{t("map.mapTypeInfo")}</Form.Text>
-            </Form.Group>
-            <p>
-              {isMultiStory
-                ? t("map.multiStoryDescription")
-                : t("map.singleStoryDescription")}
-            </p>
-            <GenericInputField
-              label={t("map.mapName")}
-              name="name"
-              handleChange={(e: ChangeEvent<HTMLElement>) =>
-                setName((e.target as HTMLInputElement).value)
-              }
-              changeValue={name}
-              required={true}
-              information={t("map.descriptionInfo")}
-              autoComplete="off"
-            />
-            <GenericInputField
-              label={t("map.mapCoordinates")}
-              name="location"
-              placeholder={t("map.clickToSelectLocation")}
-              handleClick={handleLocationSelect}
-              changeValue={location}
-              required={true}
-              handleChange={() => {}}
-              information={t("map.coordinatesInfo")}
-              autoComplete="off"
-            />
-            {isMultiStory && (
-              <FloorField
-                handleChange={(e: ChangeEvent<HTMLElement>) =>
-                  setFloors(Number((e.target as HTMLInputElement).value))
-                }
-                changeValue={floors}
-              />
-            )}
-            <TagField
-              label={t("map.sequence")}
-              value={sequenceTags}
-              onChange={handleSequenceChange}
-              placeholder={t("map.sequencePlaceholder")}
-              noOptionsMessage={t("map.sequenceNoOptions")}
-              formatCreateLabel={(inputValue) =>
-                t("map.sequenceAdd", { value: inputValue })
-              }
-              helpText={t("map.sequenceHelpText")}
-            />
-          </Modal.Body>
-          <ModalFooter
-            submitLabel={t("common.create")}
-            handleClick={modal.hide}
-            userAccessLevel={footerSaveAcl}
-            isSaving={isSaving}
-          />
-        </Form>
-      </Modal>
+                <Button type="submit" disabled={isSaving}>
+                  {isSaving && (
+                    <Spinner data-icon="inline-start" aria-hidden="true" />
+                  )}
+                  {t("common.create")}
+                </Button>
+              </ComponentAuthorizer>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     );
   }
 );

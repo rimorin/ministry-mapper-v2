@@ -64,19 +64,14 @@ describe("GenericTextAreaField", () => {
     });
   });
 
-  describe("textarea rows", () => {
-    it("should use 3 rows by default", () => {
-      render(<GenericTextAreaField {...defaultProps} />);
+  describe("textarea height", () => {
+    it("should apply textareaClassName to the textarea", () => {
+      render(
+        <GenericTextAreaField {...defaultProps} textareaClassName="min-h-24" />
+      );
 
       const textarea = screen.getByRole("textbox");
-      expect(textarea).toHaveAttribute("rows", "3");
-    });
-
-    it("should use custom row count", () => {
-      render(<GenericTextAreaField {...defaultProps} rows={5} />);
-
-      const textarea = screen.getByRole("textbox");
-      expect(textarea).toHaveAttribute("rows", "5");
+      expect(textarea).toHaveClass("min-h-24");
     });
   });
 
@@ -150,11 +145,11 @@ describe("GenericTextAreaField", () => {
   });
 
   describe("form integration", () => {
-    it("should be part of Form.Group", () => {
-      const { container } = render(<GenericTextAreaField {...defaultProps} />);
+    it("should have a textarea available for form submission", () => {
+      render(<GenericTextAreaField {...defaultProps} />);
 
-      const formGroup = container.querySelector(".mb-3");
-      expect(formGroup).toBeInTheDocument();
+      const textarea = screen.getByRole("textbox");
+      expect(textarea).toHaveAttribute("name", "notes");
     });
   });
 });

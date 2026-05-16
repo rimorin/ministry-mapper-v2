@@ -2,14 +2,30 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { latlongInterface } from "../utils/interface";
 import { getDefaultMapCenter } from "../utils/helpers/maphelpers";
 
-/**
- * Geolocation options for getCurrentPosition
- */
-export const GEOLOCATION_OPTIONS: PositionOptions = {
+const GEOLOCATION_OPTIONS: PositionOptions = {
   timeout: 5000,
   maximumAge: 0,
   enableHighAccuracy: false
 };
+
+const WATCH_GEOLOCATION_OPTIONS: PositionOptions = {
+  timeout: 15000,
+  maximumAge: 1000,
+  enableHighAccuracy: true
+};
+
+const mergePositionOptions = (
+  defaults: PositionOptions,
+  overrides?: UseGeolocationOptions["watchOptions"]
+): PositionOptions =>
+  overrides
+    ? {
+        timeout: overrides.timeout ?? defaults.timeout,
+        maximumAge: overrides.maximumAge ?? defaults.maximumAge,
+        enableHighAccuracy:
+          overrides.enableHighAccuracy ?? defaults.enableHighAccuracy
+      }
+    : defaults;
 
 /**
  * Get current device location (internal helper)
@@ -98,7 +114,7 @@ interface UseGeolocationReturn {
  *   watchOptions: { enableHighAccuracy: true }
  * });
  */
-export function useGeolocation({
+function useGeolocation({
   coordinates,
   skipGeolocation = false,
   enableWatch = false,
@@ -126,16 +142,7 @@ export function useGeolocation({
       setIsLoadingLocation(true);
       setLocationError(null);
 
-      const options: PositionOptions = watchOptions
-        ? {
-            timeout: watchOptions.timeout ?? GEOLOCATION_OPTIONS.timeout,
-            maximumAge:
-              watchOptions.maximumAge ?? GEOLOCATION_OPTIONS.maximumAge,
-            enableHighAccuracy:
-              watchOptions.enableHighAccuracy ??
-              GEOLOCATION_OPTIONS.enableHighAccuracy
-          }
-        : GEOLOCATION_OPTIONS;
+      const options = mergePositionOptions(GEOLOCATION_OPTIONS, watchOptions);
 
       try {
         const location = await getCurrentLocation(options);
@@ -157,17 +164,10 @@ export function useGeolocation({
   const startWatching = useCallback(() => {
     if (!isSupported || watchIdRef.current !== null) return;
 
-    const options: PositionOptions = watchOptions
-      ? {
-          timeout: watchOptions.timeout ?? 15000,
-          maximumAge: watchOptions.maximumAge ?? 1000,
-          enableHighAccuracy: watchOptions.enableHighAccuracy ?? true
-        }
-      : {
-          timeout: 15000,
-          maximumAge: 1000,
-          enableHighAccuracy: true
-        };
+    const options = mergePositionOptions(
+      WATCH_GEOLOCATION_OPTIONS,
+      watchOptions
+    );
 
     setIsLoadingLocation(true);
     setLocationError(null);
@@ -332,17 +332,6 @@ export function useGeolocation({
     stopWatching,
     clearError
   };
-}
-
-// Deprecated alias for backward compatibility
-/**
- * @deprecated Use `useGeolocation` instead. This alias will be removed in a future version.
- */
-export function useMapInitialCenter(
-  options: UseGeolocationOptions
-): Pick<UseGeolocationReturn, "center" | "isLoadingLocation"> {
-  const { center, isLoadingLocation } = useGeolocation(options);
-  return { center, isLoadingLocation };
 }
 
 export default useGeolocation;

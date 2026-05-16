@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY } from "../utils/constants";
 
 export default function useUIState() {
   const [showBkTopButton, setShowBkTopButton] = useState(false);
@@ -11,10 +10,6 @@ export default function useUIState() {
   const [isAssignmentLoading, setIsAssignmentLoading] =
     useState<boolean>(false);
 
-  const handleScroll = (): void => {
-    setShowBkTopButton(window.scrollY > PIXELS_TILL_BK_TO_TOP_BUTTON_DISPLAY);
-  };
-
   const toggleAddressTerritoryListing = () => {
     setShowChangeAddressTerritory((existingState) => !existingState);
   };
@@ -25,6 +20,7 @@ export default function useUIState() {
 
   return {
     showBkTopButton,
+    setShowBkTopButton,
     isUnauthorised,
     setIsUnauthorised,
     showChangeAddressTerritory,
@@ -33,7 +29,6 @@ export default function useUIState() {
     setValues,
     isAssignmentLoading,
     setIsAssignmentLoading,
-    handleScroll,
     toggleAddressTerritoryListing,
     toggleLanguageSelector
   };

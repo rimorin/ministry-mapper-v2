@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   authenticateEmailAndPassword,
   authenticateOTP,
@@ -7,8 +8,10 @@ import {
 } from "../utils/pocketbase";
 import useNotification from "./useNotification";
 import useAnalytics, { ANALYTICS_EVENTS } from "./useAnalytics";
+import { mapPbAuthError } from "../utils/helpers/pbErrors";
 
 export default function useAuthentication() {
+  const { t } = useTranslation();
   const { notifyError, notifyInfo, runAction } = useNotification();
   const { trackEvent } = useAnalytics();
   const [isLogin, setIsLogin] = useState(false);
@@ -34,11 +37,10 @@ export default function useAuthentication() {
       setIsLogin(true);
       await authenticateEmailAndPassword(processedEmail, password);
       trackEvent(ANALYTICS_EVENTS.LOGIN);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (err: any) {
-      const mfaId = err.response?.mfaId;
+    } catch (err: unknown) {
+      const mfaId = (err as { response?: { mfaId?: string } })?.response?.mfaId;
       if (!mfaId) {
-        notifyError(err);
+        notifyError(mapPbAuthError(err, t) ?? err);
         return;
       }
       await handleOtpRequest(processedEmail);

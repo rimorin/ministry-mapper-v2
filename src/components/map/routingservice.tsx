@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
+import { isAbortError } from "../../utils/pocketbase";
 import { useMap } from "react-leaflet";
 import { Polyline as LeafletPolyline, LatLngBounds } from "leaflet";
 import { latlongInterface, TravelMode } from "../../utils/interface";
@@ -9,6 +10,14 @@ interface RoutingServiceProps {
   travelMode: TravelMode;
   color?: string;
   onLoadingChange?: (loading: boolean) => void;
+  onRouteData?: (data: { duration: number; distance: number }) => void;
+}
+
+interface GeoapifyRoutingResponse {
+  features?: Array<{
+    geometry: { coordinates: number[][][] };
+    properties: { time: number; distance: number };
+  }>;
 }
 
 const RoutingService: React.FC<RoutingServiceProps> = ({
@@ -16,83 +25,113 @@ const RoutingService: React.FC<RoutingServiceProps> = ({
   end,
   travelMode,
   color = "#2563eb",
-  onLoadingChange
+  onLoadingChange,
+  onRouteData
 }) => {
   const map = useMap();
-  const routeLineRef = useRef<LeafletPolyline | null>(null);
+  const routeLayersRef = useRef<LeafletPolyline[]>([]);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  useEffect(() => {
-    if (!start) return;
+  const clearRouteLayers = useCallback(() => {
+    routeLayersRef.current.forEach((layer) => {
+      map.removeLayer(layer);
+    });
+    routeLayersRef.current = [];
+  }, [map]);
 
-    // Cancel any in-flight request to prevent race conditions
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
+  useEffect(() => {
+    abortControllerRef.current?.abort();
+    clearRouteLayers();
+
+    if (!start) {
+      onLoadingChange?.(false);
+      return;
     }
 
-    abortControllerRef.current = new AbortController();
-    const profile = travelMode === "DRIVING" ? "driving" : "walking";
-    const coords = `${start.lng},${start.lat};${end.lng},${end.lat}`;
+    const currentController = new AbortController();
+    abortControllerRef.current = currentController;
+
+    const mode = travelMode === "DRIVING" ? "drive" : "walk";
+    const params = new URLSearchParams({
+      waypoints: `${start.lat},${start.lng}|${end.lat},${end.lng}`,
+      mode,
+      type: mode === "walk" ? "short" : "balanced",
+      apiKey: import.meta.env.VITE_GEOAPIFY_API_KEY as string
+    });
 
     const fetchRoute = async () => {
       onLoadingChange?.(true);
       try {
         const response = await fetch(
-          `https://us1.locationiq.com/v1/directions/${profile}/${coords}?key=${import.meta.env.VITE_LOCATIONIQ_API_KEY}&geometries=geojson&overview=simplified`,
-          {
-            signal: abortControllerRef.current?.signal
-          }
+          `https://api.geoapify.com/v1/routing?${params}`,
+          { signal: currentController.signal }
         );
+        if (!response.ok) throw new Error(`Routing error: ${response.status}`);
 
-        const data = await response.json();
+        const data: GeoapifyRoutingResponse = await response.json();
 
-        if (data.routes?.[0]?.geometry?.coordinates) {
-          const latLngs: [number, number][] =
-            data.routes[0].geometry.coordinates.map(
-              (coord: number[]) => [coord[1], coord[0]] as [number, number]
-            );
+        if (data.features?.[0]?.geometry?.coordinates) {
+          const multiLine = data.features[0].geometry.coordinates;
+          const latLngs: [number, number][] = multiLine
+            .flat()
+            .map(([lon, lat]) => [lat, lon]);
 
-          // Swap old route with new route atomically (prevents flicker during live updates)
-          if (routeLineRef.current) {
-            map.removeLayer(routeLineRef.current);
-          }
+          routeLayersRef.current = [
+            new LeafletPolyline(latLngs, {
+              color: "#1e40af",
+              weight: 14,
+              opacity: 0.2,
+              interactive: false
+            }).addTo(map),
+            new LeafletPolyline(latLngs, {
+              color: "#ffffff",
+              weight: 9,
+              opacity: 0.55,
+              interactive: false
+            }).addTo(map),
+            new LeafletPolyline(latLngs, {
+              color,
+              weight: 6,
+              opacity: 1,
+              smoothFactor: 1.5,
+              className: "route-line-main"
+            }).addTo(map)
+          ];
 
-          routeLineRef.current = new LeafletPolyline(latLngs, {
-            color,
-            weight: 5,
-            opacity: 0.7,
-            smoothFactor: 1
-          }).addTo(map);
+          onRouteData?.({
+            duration: data.features[0].properties.time,
+            distance: data.features[0].properties.distance
+          });
 
           map.fitBounds(new LatLngBounds(latLngs), { padding: [50, 50] });
         }
       } catch (error) {
-        if (error instanceof Error && error.name === "AbortError") {
-          return; // Expected when new route request starts
-        }
+        if (isAbortError(error)) return;
         console.error("Error fetching route:", error);
       } finally {
-        onLoadingChange?.(false);
+        if (abortControllerRef.current === currentController) {
+          abortControllerRef.current = null;
+          onLoadingChange?.(false);
+        }
       }
     };
 
     fetchRoute();
 
     return () => {
-      // Abort ongoing requests but keep route visible during updates
-      abortControllerRef.current?.abort();
+      currentController.abort();
+      clearRouteLayers();
     };
-  }, [map, start, end, travelMode, color, onLoadingChange]);
-
-  // Remove route only on component unmount
-  useEffect(() => {
-    return () => {
-      if (routeLineRef.current) {
-        map.removeLayer(routeLineRef.current);
-        routeLineRef.current = null;
-      }
-    };
-  }, [map]);
+  }, [
+    map,
+    start,
+    end,
+    travelMode,
+    color,
+    onLoadingChange,
+    onRouteData,
+    clearRouteLayers
+  ]);
 
   return null;
 };

@@ -10,6 +10,7 @@ vi.mock("../utils/pocketbase", () => ({
 // Import after mocks
 const { default: useRealtimeSubscription } = await import("./useRealtime");
 const { setupRealtimeListener } = await import("../utils/pocketbase");
+const { TAB_FOCUS_THROTTLE_MS } = await import("./useOnTabFocus");
 
 describe("useRealtimeSubscription", () => {
   const mockUnsubscribe = vi.fn();
@@ -34,7 +35,8 @@ describe("useRealtimeSubscription", () => {
         expect(setupRealtimeListener).toHaveBeenCalledWith(
           "territories",
           expect.any(Function),
-          options
+          options,
+          "*"
         );
       });
     });
@@ -344,7 +346,8 @@ describe("useRealtimeSubscription", () => {
         expect(setupRealtimeListener).toHaveBeenCalledWith(
           "territories",
           expect.any(Function),
-          expect.objectContaining({ filter: 'congregation="123"' })
+          expect.objectContaining({ filter: 'congregation="123"' }),
+          "*"
         );
       });
     });
@@ -361,7 +364,8 @@ describe("useRealtimeSubscription", () => {
         expect(setupRealtimeListener).toHaveBeenCalledWith(
           "territories",
           expect.any(Function),
-          expect.objectContaining({ expand: "user,maps" })
+          expect.objectContaining({ expand: "user,maps" }),
+          "*"
         );
       });
     });
@@ -412,7 +416,8 @@ describe("useRealtimeSubscription", () => {
       expect(setupRealtimeListener).toHaveBeenCalledWith(
         "territories",
         expect.any(Function),
-        undefined
+        undefined,
+        "*"
       );
     });
 
@@ -457,6 +462,102 @@ describe("useRealtimeSubscription", () => {
 
       // Only one subscription should be set up (for dep2), not two
       expect(setupRealtimeListener).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("sleep/wake reconnection", () => {
+    const simulateHide = () => {
+      Object.defineProperty(document, "hidden", {
+        writable: true,
+        configurable: true,
+        value: true
+      });
+      document.dispatchEvent(new Event("visibilitychange"));
+    };
+
+    const simulateShow = () => {
+      Object.defineProperty(document, "hidden", {
+        writable: true,
+        configurable: true,
+        value: false
+      });
+      document.dispatchEvent(new Event("visibilitychange"));
+    };
+
+    beforeEach(() => {
+      vi.useFakeTimers();
+    });
+
+    afterEach(() => {
+      vi.useRealTimers();
+      Object.defineProperty(document, "hidden", {
+        writable: true,
+        configurable: true,
+        value: false
+      });
+    });
+
+    it("resubscribes when the tab wakes after being hidden longer than the throttle window", async () => {
+      const callback = vi.fn();
+
+      renderHook(() =>
+        useRealtimeSubscription("territories", callback, undefined, [], true)
+      );
+
+      // Flush the initial subscribe promise
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0);
+      });
+      expect(setupRealtimeListener).toHaveBeenCalledTimes(1);
+
+      // Tab goes to sleep
+      act(() => simulateHide());
+
+      // Advance past the throttle window — Date.now() moves forward with fake timers
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(TAB_FOCUS_THROTTLE_MS);
+      });
+
+      // Tab wakes
+      act(() => simulateShow());
+
+      // State update (resubscribeKey++) causes effect cleanup + fresh subscribe
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0);
+      });
+
+      expect(mockUnsubscribe).toHaveBeenCalledTimes(1);
+      expect(setupRealtimeListener).toHaveBeenCalledTimes(2);
+    });
+
+    it("does not resubscribe on a quick alt-tab within the throttle window", async () => {
+      const callback = vi.fn();
+
+      renderHook(() =>
+        useRealtimeSubscription("territories", callback, undefined, [], true)
+      );
+
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0);
+      });
+      expect(setupRealtimeListener).toHaveBeenCalledTimes(1);
+
+      // First wake: always fires because lastCalledAt starts at -Infinity
+      act(() => simulateHide());
+      act(() => simulateShow());
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(0);
+      });
+      expect(setupRealtimeListener).toHaveBeenCalledTimes(2);
+
+      // Quick alt-tab within the throttle window of the first wake — should be suppressed
+      act(() => simulateHide());
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(TAB_FOCUS_THROTTLE_MS - 1);
+      });
+      act(() => simulateShow());
+
+      expect(setupRealtimeListener).toHaveBeenCalledTimes(2);
     });
   });
 

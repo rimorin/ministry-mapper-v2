@@ -60,7 +60,7 @@ describe("useMapManagement", () => {
         mapId: null
       });
       expect(result.current.sortedAddressList).toEqual([]);
-      expect(result.current.accordingKeys).toEqual([]);
+      expect(result.current.accordionKeys).toEqual([]);
       expect(result.current.mapViews).toBeInstanceOf(Map);
       expect(result.current.mapViews.size).toBe(0);
       expect(result.current.isMapView).toBe(false);
@@ -306,7 +306,7 @@ describe("useMapManagement", () => {
           fields: expect.any(String)
         });
         expect(result.current.sortedAddressList).toHaveLength(2);
-        expect(result.current.accordingKeys).toEqual(["map-1", "map-2"]);
+        expect(result.current.accordionKeys).toEqual(["map-1", "map-2"]);
         expect(result.current.mapViews.size).toBe(2);
       });
     });
@@ -338,7 +338,6 @@ describe("useMapManagement", () => {
 
       const { result } = renderHook(() => useMapManagement());
 
-      // Set map view to true
       act(() => {
         result.current.setIsMapView(true);
       });
@@ -377,7 +376,6 @@ describe("useMapManagement", () => {
 
       const { result } = renderHook(() => useMapManagement());
 
-      // Add a map to the list first
       act(() => {
         result.current.setSortedAddressList([
           {
@@ -510,14 +508,14 @@ describe("useMapManagement", () => {
       expect(result.current.sortedAddressList).toEqual(newList);
     });
 
-    it("should update accordingKeys", () => {
+    it("should update accordionKeys", () => {
       const { result } = renderHook(() => useMapManagement());
 
       act(() => {
         result.current.setAccordionKeys(["key-1", "key-2"]);
       });
 
-      expect(result.current.accordingKeys).toEqual(["key-1", "key-2"]);
+      expect(result.current.accordionKeys).toEqual(["key-1", "key-2"]);
     });
 
     it("should update mapViews", () => {

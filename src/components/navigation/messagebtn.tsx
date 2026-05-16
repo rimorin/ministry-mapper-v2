@@ -1,5 +1,5 @@
 import React, { lazy, useEffect } from "react";
-import { ButtonGroup, Badge } from "react-bootstrap";
+import { Button } from "@/components/ui/button";
 import {
   MESSAGE_TYPES,
   REALTIME_DEBOUNCE_MS,
@@ -9,11 +9,11 @@ import { addressDetails } from "../../utils/interface";
 import { Policy } from "../../utils/policies";
 import { useTranslation } from "react-i18next";
 
+import { MessageSquare } from "lucide-react";
 import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
-import { getList, ignoreAbort } from "../../utils/pocketbase";
 import useRealtimeSubscription from "../../hooks/useRealtime";
+import { getList, ignoreAbort } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
-import GenericButton from "./button";
 const UpdateMapMessages = lazy(() => import("../modal/mapmessages"));
 
 interface PersonalButtonGroupProps {
@@ -92,27 +92,32 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   };
 
   return (
-    <>
-      <ButtonGroup className="m-1">
-        <GenericButton
+    <div className="m-1 flex items-center gap-0">
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={handleMessagesClick}
+        className={
+          isAdmin && unreadMsgCount > 0
+            ? "rounded-r-none border-r-0"
+            : undefined
+        }
+      >
+        <MessageSquare className="size-3.5" />
+        {t("messages.messages", "Messages")}
+      </Button>
+      {isAdmin && unreadMsgCount > 0 && (
+        <Button
           size="sm"
-          variant="outline-primary"
+          variant="default"
           onClick={handleMessagesClick}
-          label={t("messages.messages", "Messages")}
-        />
-        {isAdmin && unreadMsgCount > 0 && (
-          <GenericButton
-            size="sm"
-            variant="outline-primary"
-            label={
-              <Badge bg="success" className="me-1 notification-glow">
-                {unreadMsgCount}
-              </Badge>
-            }
-          />
-        )}
-      </ButtonGroup>
-    </>
+          className="rounded-l-none px-3"
+          aria-label={`${unreadMsgCount} ${t("messages.unread", "unread messages")}`}
+        >
+          {unreadMsgCount}
+        </Button>
+      )}
+    </div>
   );
 };
 

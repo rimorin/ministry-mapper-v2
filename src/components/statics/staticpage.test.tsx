@@ -65,10 +65,10 @@ describe("StaticPageCard", () => {
     expect(card).toBeInTheDocument();
   });
 
-  it("should render logo with correct CSS class", () => {
+  it("should render logo with correct Tailwind classes", () => {
     render(<StaticPageCard />);
 
     const logo = screen.getByAltText(/Ministry Mapper logo/i);
-    expect(logo).toHaveClass("mm-logo");
+    expect(logo).toHaveClass("mx-auto", "block", "w-[30%]");
   });
 });

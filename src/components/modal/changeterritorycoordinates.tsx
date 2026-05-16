@@ -1,10 +1,20 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal from "@ebay/nice-modal-react";
+import * as m from "motion/react-m";
 import { useState, useRef, useEffect } from "react";
-import { Modal, Button, Card, Form } from "react-bootstrap";
+import { Button } from "@/components/ui/button";
+import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
+import { cn } from "@/lib/utils";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
 import { useTranslation } from "react-i18next";
 import {
   MapContainer,
-  TileLayer,
   Polygon,
   CircleMarker,
   Polyline,
@@ -18,7 +28,7 @@ import {
   ConfigureTerritoryCoordinatesModalProps,
   latlongInterface
 } from "../../utils/interface";
-import ModalFooter from "../form/footer";
+import ModalSubmitButton from "../form/submit";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import CustomControl from "../map/customcontrol";
 import useNotification from "../../hooks/useNotification";
@@ -29,6 +39,11 @@ import { MapController } from "../map/mapcontroller";
 import useGeolocation from "../../hooks/useGeolocation";
 import { currentLocationIcon } from "../../utils/helpers/mapicons";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
+import ComponentAuthorizer from "../navigation/authorizer";
+import GenericButton from "../navigation/button";
+import { Check, Undo2, X, Pentagon, TriangleAlert } from "lucide-react";
+import { ThemedTileLayer } from "../map/themedtilelayer";
+import { useIsMobile } from "../../hooks/use-mobile";
 
 const PRIMARY_BLUE = "#3388ff";
 const VERTEX_RADIUS_MOBILE = 8;
@@ -95,9 +110,7 @@ const TerritoryPolygonDrawer = ({
     }
   });
 
-  const isMobile =
-    typeof window !== "undefined" &&
-    window.matchMedia("(max-width: 768px)").matches;
+  const isMobile = useIsMobile();
   const vertexRadius = isMobile ? VERTEX_RADIUS_MOBILE : VERTEX_RADIUS_DESKTOP;
 
   useEffect(() => {
@@ -168,111 +181,115 @@ const TerritoryPolygonDrawer = ({
       )}
 
       <CustomControl position="topleft">
-        <Card
-          className="map-control-panel"
+        <div
+          className="w-52 rounded-xl border bg-background/95 shadow-lg backdrop-blur-sm"
           onClick={(e) => e.stopPropagation()}
         >
-          <Card.Body>
-            <div className="d-flex flex-column gap-2">
+          {/* Header */}
+          <div className="flex items-center justify-between px-3 pt-3 pb-2 border-b">
+            <span className="text-xs font-semibold text-foreground uppercase tracking-wide">
+              {t("territory.drawBoundaryTitle", "Draw Boundary")}
+            </span>
+            <span
+              className={cn(
+                "inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold",
+                vertices.length >= 3
+                  ? "bg-primary text-primary-foreground"
+                  : "bg-muted text-muted-foreground"
+              )}
+            >
+              {vertices.length}/{MAX_VERTICES}
+            </span>
+          </div>
+
+          {/* Action buttons */}
+          <div className="p-2.5 flex flex-col gap-1.5">
+            <Button
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation();
+                onComplete();
+              }}
+              disabled={vertices.length < 3}
+              className="w-full h-8"
+              aria-label={t("territory.completeDrawing", "Complete drawing")}
+            >
+              <Check className="size-3.5" />
+              {t("territory.complete", "Complete")}
+            </Button>
+
+            <div className="grid grid-cols-2 gap-1.5">
               <Button
                 size="sm"
-                variant="success"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onComplete();
-                }}
-                disabled={vertices.length < 3}
-                className="w-100"
-                aria-label={t("territory.completeDrawing", "Complete drawing")}
-              >
-                <i className="bi bi-check-circle me-2"></i>
-                {t("territory.complete", "Complete")} ({vertices.length})
-              </Button>
-              <Button
-                size="sm"
-                variant="warning"
+                variant="outline"
                 onClick={(e) => {
                   e.stopPropagation();
                   onUndo();
                 }}
                 disabled={vertices.length === 0}
-                className="w-100"
+                className="h-8 text-xs"
                 aria-label={t("territory.undoLastPoint", "Undo last point")}
               >
-                <i className="bi bi-arrow-counterclockwise me-2"></i>
+                <Undo2 className="size-3.5" />
                 {t("common.undo", "Undo")}
               </Button>
               <Button
                 size="sm"
-                variant="danger"
+                variant="outline"
                 onClick={(e) => {
                   e.stopPropagation();
                   onCancel();
                 }}
-                className="w-100"
+                className="h-8 text-xs text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30"
                 aria-label={t("territory.cancelDrawing", "Cancel drawing")}
               >
-                <i className="bi bi-x-circle me-2"></i>
+                <X className="size-3.5" />
                 {t("common.cancel", "Cancel")}
               </Button>
             </div>
-            <div className="mt-2 small text-muted">
-              <div>{t("territory.clickToAdd", "Click map to add points")}</div>
-              <div>
-                {t("territory.doubleClickFinish", "Double-click to finish")}
-              </div>
-              <div>
-                {t("territory.pointsRange", "Min 3, max {{max}} points", {
-                  max: MAX_VERTICES
-                })}
-              </div>
-              <div
-                className="mt-1"
-                style={{ fontFamily: "monospace", fontSize: "0.85em" }}
-              >
-                <kbd
-                  style={{
-                    padding: "2px 4px",
-                    backgroundColor: "#f0f0f0",
-                    border: "1px solid #ccc",
-                    borderRadius: "3px"
-                  }}
-                >
-                  ESC
-                </kbd>
-                : {t("common.cancel", "Cancel")} |{" "}
-                <kbd
-                  style={{
-                    padding: "2px 4px",
-                    backgroundColor: "#f0f0f0",
-                    border: "1px solid #ccc",
-                    borderRadius: "3px"
-                  }}
-                >
-                  ⌫
-                </kbd>
-                : {t("common.undo", "Undo")} |{" "}
-                <kbd
-                  style={{
-                    padding: "2px 4px",
-                    backgroundColor: "#f0f0f0",
-                    border: "1px solid #ccc",
-                    borderRadius: "3px"
-                  }}
-                >
-                  ↵
-                </kbd>
-                : {t("territory.complete", "Complete")}
-              </div>
-            </div>
-            {vertices.length >= MAX_VERTICES && (
-              <div className="mt-2 small text-warning">
-                <i className="bi bi-exclamation-triangle me-1"></i>
+          </div>
+
+          {/* Hints */}
+          <div className="px-2.5 pb-2.5 flex flex-col gap-1 border-t pt-2">
+            {vertices.length >= MAX_VERTICES ? (
+              <div className="flex items-center gap-1.5 text-xs text-amber-600 font-medium">
+                <TriangleAlert className="size-3.5 shrink-0" />
                 {t("territory.maxVertices", "Maximum points reached")}
               </div>
+            ) : (
+              <p className="text-[11px] text-muted-foreground leading-snug">
+                {vertices.length === 0
+                  ? t("territory.clickToAdd", "Click map to add points")
+                  : vertices.length < 3
+                    ? t(
+                        "territory.needMorePoints",
+                        "Add {{n}} more point(s) to complete",
+                        { n: 3 - vertices.length }
+                      )
+                    : t(
+                        "territory.canComplete",
+                        "Double-click or press Complete"
+                      )}
+              </p>
             )}
-          </Card.Body>
-        </Card>
+            <div className="flex items-center gap-1 text-[10px] text-muted-foreground/70 flex-wrap">
+              <kbd className="inline-flex h-4 items-center rounded border border-border bg-muted px-1 font-mono">
+                ESC
+              </kbd>
+              <span>cancel</span>
+              <span>·</span>
+              <kbd className="inline-flex h-4 items-center rounded border border-border bg-muted px-1 font-mono">
+                ⌫
+              </kbd>
+              <span>undo</span>
+              <span>·</span>
+              <kbd className="inline-flex h-4 items-center rounded border border-border bg-muted px-1 font-mono">
+                ↵
+              </kbd>
+              <span>done</span>
+            </div>
+          </div>
+        </div>
       </CustomControl>
     </>
   );
@@ -311,11 +328,6 @@ const ConfigureTerritoryCoordinates = NiceModal.create(
     origin,
     isSelectOnly = false
   }: ConfigureTerritoryCoordinatesModalProps) => {
-    const { t } = useTranslation();
-    const { runAction } = useNotification();
-    const { trackEvent } = useAnalytics();
-    const modal = useModal();
-
     const [vertices, setVertices] = useState<latlongInterface[]>(coordinates);
     const [isDrawing, setIsDrawing] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
@@ -324,6 +336,28 @@ const ConfigureTerritoryCoordinates = NiceModal.create(
     );
     const [recenterTrigger, setRecenterTrigger] = useState(0);
     const hasInitiallyRecentered = useRef(false);
+
+    const { modal, dialogProps, contentProps } = useBaseUiDialog({
+      size: "fullscreen",
+      staticBackdrop: isDrawing
+    });
+    const { t } = useTranslation();
+    const { runAction } = useNotification();
+    const { trackEvent } = useAnalytics();
+
+    const handleClose = () => {
+      modal.resolve(undefined);
+      modal.hide();
+    };
+
+    const mergedDialogProps = {
+      ...dialogProps,
+      onOpenChange: (open: boolean) => {
+        if (!open && !isDrawing) {
+          handleClose();
+        }
+      }
+    };
 
     // Use universal map centering hook
     const { center: initialCenter, currentLocation } = useGeolocation({
@@ -395,138 +429,150 @@ const ConfigureTerritoryCoordinates = NiceModal.create(
     };
 
     return (
-      <Modal
-        {...bootstrapDialog(modal)}
-        onHide={() => {
-          modal.resolve(undefined);
-          modal.remove();
-        }}
-        keyboard={!isDrawing}
-        fullscreen
-      >
-        <Form onSubmit={handleSave}>
-          <Modal.Header closeButton>
-            <Modal.Title>
-              {isSelectOnly
-                ? t("territory.selectLocation", "Select Territory Location")
-                : territoryName
-                  ? `${t("territory.changeLocation", "Change Location")}: ${territoryName}`
-                  : t("territory.setLocation", "Set Territory Location")}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="p-0">
-            <MapContainer
-              center={[initialCenter.lat, initialCenter.lng]}
-              zoom={17}
-              style={{ height: "calc(100vh - 120px)", width: "100%" }}
-            >
-              <TileLayer
-                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-              />
-
-              {/* Search control for location search */}
-              <SearchControl
-                onLocationSelect={(location) => {
-                  setSearchCenter(location);
-                  setRecenterTrigger((prev) => prev + 1);
-                }}
-                origin={origin}
-              />
-
-              {/* Device location marker - only show for new polygons */}
-              {currentLocation && vertices.length < 3 && (
-                <Marker
-                  position={[currentLocation.lat, currentLocation.lng]}
-                  icon={currentLocationIcon}
-                />
+      <Dialog {...mergedDialogProps}>
+        <DialogContent {...contentProps} showCloseButton={false}>
+          <form
+            onSubmit={handleSave}
+            className="flex flex-1 flex-col overflow-hidden"
+          >
+            <DialogHeader className="flex-row items-center justify-between px-4 py-2 shrink-0 border-b">
+              <DialogTitle>
+                {isSelectOnly
+                  ? t("territory.selectLocation", "Select Territory Location")
+                  : territoryName
+                    ? `${t("territory.changeBoundary", "Change Boundary")}: ${territoryName}`
+                    : t("territory.setLocation", "Set Territory Location")}
+              </DialogTitle>
+              {!isDrawing && (
+                <DialogClose
+                  render={
+                    <Button variant="ghost" size="icon-sm" type="button" />
+                  }
+                >
+                  <X />
+                  <span className="sr-only">Close</span>
+                </DialogClose>
               )}
+            </DialogHeader>
+            <m.div
+              className="p-0 flex-1 relative overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.35, ease: "linear", delay: 0.2 }}
+            >
+              <MapContainer
+                center={[initialCenter.lat, initialCenter.lng]}
+                zoom={17}
+                style={{ height: "100%", width: "100%" }}
+              >
+                <ThemedTileLayer />
 
-              {/* Recenter to device location button */}
-              {currentLocation && !isDrawing && vertices.length < 3 && (
-                <CustomControl position="topright">
-                  <MapCurrentTarget
-                    onClick={() => {
-                      setSearchCenter(currentLocation);
-                      setRecenterTrigger((prev) => prev + 1);
+                {/* Search control for location search */}
+                <SearchControl
+                  onLocationSelect={(location) => {
+                    setSearchCenter(location);
+                    setRecenterTrigger((prev) => prev + 1);
+                  }}
+                  origin={origin}
+                />
+
+                {/* Device location marker - only show for new polygons */}
+                {currentLocation && vertices.length < 3 && (
+                  <Marker
+                    position={[currentLocation.lat, currentLocation.lng]}
+                    icon={currentLocationIcon}
+                  />
+                )}
+
+                {/* Recenter to device location button */}
+                {currentLocation && !isDrawing && vertices.length < 3 && (
+                  <CustomControl position="topright">
+                    <MapCurrentTarget
+                      onClick={() => {
+                        setSearchCenter(currentLocation);
+                        setRecenterTrigger((prev) => prev + 1);
+                      }}
+                    />
+                  </CustomControl>
+                )}
+
+                {/* Smoothly recenter when device location loads or search is used */}
+                {!isDrawing && vertices.length < 3 && (
+                  <MapController
+                    center={mapCenter}
+                    zoomLevel={17}
+                    trigger={recenterTrigger}
+                  />
+                )}
+
+                {!isDrawing && vertices.length >= 3 && (
+                  <FitBoundsToExistingPolygon vertices={vertices} />
+                )}
+
+                {!isDrawing && vertices.length >= 3 && (
+                  <Polygon
+                    positions={vertices.map(
+                      (v) => [v.lat, v.lng] as LatLngExpression
+                    )}
+                    pathOptions={{
+                      color: PRIMARY_BLUE,
+                      fillColor: PRIMARY_BLUE,
+                      fillOpacity: 0.3,
+                      weight: 2
                     }}
                   />
-                </CustomControl>
-              )}
+                )}
 
-              {/* Smoothly recenter when device location loads or search is used */}
-              {!isDrawing && vertices.length < 3 && (
-                <MapController
-                  center={mapCenter}
-                  zoomLevel={17}
-                  trigger={recenterTrigger}
+                {isDrawing && (
+                  <TerritoryPolygonDrawer
+                    vertices={vertices}
+                    setVertices={setVertices}
+                    onComplete={handleCompleteDrawing}
+                    onCancel={handleCancelDrawing}
+                    onUndo={handleUndo}
+                  />
+                )}
+
+                {!isDrawing && (
+                  <CustomControl position="bottomleft">
+                    <div onClick={(e) => e.stopPropagation()}>
+                      <Button
+                        size="sm"
+                        onClick={handleStartDrawing}
+                        className="shadow-md rounded-full px-4"
+                      >
+                        <Pentagon className="size-4" />
+                        {vertices.length >= 3
+                          ? t("territory.redrawBoundary", "Redraw Boundary")
+                          : t(
+                              "territory.drawBoundary",
+                              "Draw Territory Boundary"
+                            )}
+                      </Button>
+                    </div>
+                  </CustomControl>
+                )}
+              </MapContainer>
+            </m.div>
+            <DialogFooter className="px-4 py-3 shrink-0 flex-row justify-around">
+              <GenericButton
+                variant="secondary"
+                onClick={handleClose}
+                label={t("common.cancel")}
+              />
+              <ComponentAuthorizer
+                requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
+                userPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
+              >
+                <ModalSubmitButton
+                  isSaving={isSaving}
+                  disabled={vertices.length < 3}
                 />
-              )}
-
-              {!isDrawing && vertices.length >= 3 && (
-                <FitBoundsToExistingPolygon vertices={vertices} />
-              )}
-
-              {!isDrawing && vertices.length >= 3 && (
-                <Polygon
-                  positions={vertices.map(
-                    (v) => [v.lat, v.lng] as LatLngExpression
-                  )}
-                  pathOptions={{
-                    color: PRIMARY_BLUE,
-                    fillColor: PRIMARY_BLUE,
-                    fillOpacity: 0.3,
-                    weight: 2
-                  }}
-                />
-              )}
-
-              {isDrawing && (
-                <TerritoryPolygonDrawer
-                  vertices={vertices}
-                  setVertices={setVertices}
-                  onComplete={handleCompleteDrawing}
-                  onCancel={handleCancelDrawing}
-                  onUndo={handleUndo}
-                />
-              )}
-
-              {!isDrawing && (
-                <CustomControl position="bottomleft">
-                  <div
-                    className="bg-white p-2 rounded shadow"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <Button
-                      size="sm"
-                      variant="primary"
-                      onClick={handleStartDrawing}
-                      className="w-100"
-                    >
-                      <i className="bi bi-pentagon me-2"></i>
-                      {vertices.length >= 3
-                        ? t("territory.redrawBoundary", "Redraw Boundary")
-                        : t(
-                            "territory.drawBoundary",
-                            "Draw Territory Boundary"
-                          )}
-                    </Button>
-                  </div>
-                </CustomControl>
-              )}
-            </MapContainer>
-          </Modal.Body>
-          <ModalFooter
-            handleClick={() => {
-              modal.resolve(undefined);
-              modal.hide();
-            }}
-            userAccessLevel={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
-            isSaving={isSaving}
-            disableSubmitBtn={vertices.length < 3}
-          />
-        </Form>
-      </Modal>
+              </ComponentAuthorizer>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     );
   }
 );

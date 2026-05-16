@@ -23,6 +23,7 @@ vi.mock("../modal/releasenotes", () => ({ default: vi.fn() }));
 import { useReleaseNotesContext } from "../middlewares/releasenotescontext";
 import NiceModal from "@ebay/nice-modal-react";
 import { ReleaseNotifier } from "./releasenotifier";
+import { waitFor } from "../../utils/test";
 
 const sampleReleases: ReleaseEntry[] = [
   {
@@ -85,7 +86,7 @@ describe("ReleaseNotifier", () => {
     expect(NiceModal.show).not.toHaveBeenCalled();
   });
 
-  it("shows release notes modal when hasNewReleases is true", () => {
+  it("shows release notes modal when hasNewReleases is true", async () => {
     vi.mocked(useReleaseNotesContext).mockReturnValue({
       hasNewReleases: true,
       newReleases: sampleReleases,
@@ -95,7 +96,7 @@ describe("ReleaseNotifier", () => {
     });
 
     render(<ReleaseNotifier />);
-    expect(NiceModal.show).toHaveBeenCalledOnce();
+    await waitFor(() => expect(NiceModal.show).toHaveBeenCalledOnce());
     expect(NiceModal.show).toHaveBeenCalledWith(
       expect.anything(),
       expect.objectContaining({
@@ -105,7 +106,7 @@ describe("ReleaseNotifier", () => {
     );
   });
 
-  it("shows modal only once even when re-rendered", () => {
+  it("shows modal only once even when re-rendered", async () => {
     vi.mocked(useReleaseNotesContext).mockReturnValue({
       hasNewReleases: true,
       newReleases: sampleReleases,
@@ -115,6 +116,7 @@ describe("ReleaseNotifier", () => {
     });
 
     const { rerender } = render(<ReleaseNotifier />);
+    await waitFor(() => expect(NiceModal.show).toHaveBeenCalledOnce());
     rerender(<ReleaseNotifier />);
 
     expect(NiceModal.show).toHaveBeenCalledOnce();

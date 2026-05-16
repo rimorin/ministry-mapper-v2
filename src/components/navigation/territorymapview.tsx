@@ -1,5 +1,5 @@
 import { useState, Fragment, useRef, useEffect } from "react";
-import { MapContainer, TileLayer, Polygon, Marker } from "react-leaflet";
+import { MapContainer, Polygon, Marker } from "react-leaflet";
 import L, { LatLngExpression, LatLngBounds } from "leaflet";
 import { DEFAULT_COORDINATES } from "../../utils/constants";
 import type {
@@ -18,6 +18,7 @@ import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import useLocalStorage from "../../hooks/useLocalStorage";
 import useGeolocation from "../../hooks/useGeolocation";
 import { useTranslation } from "react-i18next";
+import { ThemedTileLayer } from "../map/themedtilelayer";
 import "leaflet/dist/leaflet.css";
 
 const DEFAULT_MAP_ZOOM =
@@ -232,16 +233,16 @@ const TerritoryMapView = ({
 
   if (territoriesWithCoordinates.length === 0) {
     return (
-      <div className="d-flex flex-column align-items-center justify-content-center h-100">
-        <div className="empty-state">
-          <div className="empty-state-icon">🗺️</div>
-          <div className="empty-state-title">
+      <div className="flex flex-col items-center justify-center h-full">
+        <div className="text-center p-12 text-muted-foreground">
+          <div className="text-5xl mb-4 opacity-30">🗺️</div>
+          <div className="text-xl font-semibold mb-2">
             {t("territory.noTerritoryCoordinates", "No Territory Boundaries")}
           </div>
-          <div className="empty-state-description">
+          <div className="text-base text-muted-foreground">
             {t(
               "territory.noTerritoryCoordinatesDescription",
-              "Use 'Change Location' in the Territory menu to draw territory boundaries."
+              "Use 'Change Boundary' in the Territory menu to draw territory boundaries."
             )}
           </div>
         </div>
@@ -256,10 +257,7 @@ const TerritoryMapView = ({
         zoom={DEFAULT_MAP_ZOOM}
         style={{ height: "100%", width: "100%" }}
       >
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        <ThemedTileLayer />
 
         {/* MapController for centering to current location */}
         <MapController
@@ -292,8 +290,8 @@ const TerritoryMapView = ({
         {/* Territory count indicator */}
         {territoriesWithoutCoordinates > 0 && (
           <CustomControl position="bottomright">
-            <div className="alert alert-warning map-notification mb-0">
-              <span style={{ color: "red", fontWeight: "600" }}>
+            <div className="mb-0 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 font-bold text-amber-900 shadow-[0_0.125rem_0.25rem_rgba(0,0,0,0.075)] dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
+              <span className="font-semibold text-red-600 dark:text-red-400">
                 {territoriesWithoutCoordinates}
               </span>{" "}
               {t("territory.withoutBoundaries", "without boundaries")}

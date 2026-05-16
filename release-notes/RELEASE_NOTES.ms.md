@@ -1,5 +1,16 @@
 # Nota Pelepasan (Bahasa Melayu)
 
+## 2026-06-15
+
+[NEW] Penampilan baharu yang segar.
+  Rupa dan rasa aplikasi telah dibina semula dari awal. Bahasa reka bentuk yang menjadi asasnya telah wujud sejak 2011 — ia telah memenuhi tujuannya dengan baik selama bertahun-tahun, tetapi zaman telah berubah dan sistem reka bentuk yang lebih moden kini tersedia. Yang baharu ini lebih ringan, lebih halus, dan dibina untuk cara aplikasi dicipta hari ini.
+
+  Penerbit: semuanya berfungsi sama seperti dulu — hanya rupa sahaja yang berbeza.
+
+  Pentadbir: menu-menu kini berada di panel sebelah kiri. Ketik butang di penjuru kiri atas untuk membukanya.
+
+---
+
 ## 2026-05-05
 
 > Penerbit: Smart Sync hanya merangkumi kemaskini alamat anda. Pentadbir: tindakan pentadbir masih memerlukan sambungan langsung.

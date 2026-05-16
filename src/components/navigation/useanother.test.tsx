@@ -1,6 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
+import { render, screen, userEvent } from "../../utils/test";
 import UseAnotherButton from "./useanother";
 
 describe("UseAnotherButton", () => {
@@ -25,6 +24,6 @@ describe("UseAnotherButton", () => {
   it("renders with secondary variant", () => {
     render(<UseAnotherButton handleClick={vi.fn()} />);
     const button = screen.getByRole("button", { name: /use another account/i });
-    expect(button).toHaveClass("btn-secondary");
+    expect(button).toHaveClass("bg-secondary", "text-secondary-foreground");
   });
 });

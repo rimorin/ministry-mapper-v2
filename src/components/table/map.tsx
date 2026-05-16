@@ -28,7 +28,11 @@ import useNotification from "../../hooks/useNotification";
 import useConfirm from "../../hooks/useConfirm";
 import MapPlaceholder from "../statics/placeholder";
 
-import { callFunction, ignoreAbort, pb } from "../../utils/pocketbase";
+import {
+  callFunction,
+  ignoreAbort,
+  isAbortError
+} from "../../utils/pocketbase";
 import { getNextSequence } from "../../utils/helpers/maphelpers";
 import {
   applyAddressEvent,
@@ -44,7 +48,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
-import useOnTabFocus from "../../hooks/useOnTabFocus";
+import useOnSSEReconnect from "../../hooks/useOnSSEReconnect";
 import { useSmartSyncContext } from "../../hooks/useSmartSync";
 const TerritoryMapView = lazy(() => import("./mapmode"));
 // Eager imports — both modals are needed for queued writes and must be
@@ -165,10 +169,7 @@ const useAddresses = (
       await processAddressResponse(response);
       // Cache persistence is centralized in the effect below.
     } catch (error) {
-      // Rethrow AbortErrors so the ignoreAbort wrapper can handle them
-      if (error instanceof DOMException && error.name === "AbortError") {
-        throw error;
-      }
+      if (isAbortError(error)) throw error;
       const cached = await loadAddressCache(cacheKey);
       if (cached) {
         // Re-apply pending ops on top of the cached snapshot so the user sees
@@ -228,14 +229,14 @@ const useAddresses = (
     );
   };
 
-  const onReconnect = useEffectEvent(() => {
+  useOnSSEReconnect(() => {
     fetchAddressData();
     // Mirror Firestore/RxDB's transport-coupled flush: SSE reconnect is a strong
     // signal the connection is back. Trigger an immediate health check (via
     // useNetworkStatus) and a direct flush attempt (via useSmartSync) so pending
     // ops go out as soon as possible — without waiting for the 30s polling tick.
     window.dispatchEvent(new CustomEvent("mm-sse-reconnect"));
-  });
+  }, !!mapId);
 
   const onFlushComplete = useEffectEvent(() => {
     // Re-fetch after smart sync queue is flushed so the cache reflects the
@@ -269,30 +270,6 @@ const useAddresses = (
     if (addresses.size === 0) return;
     void saveAddressCache(cacheKeyRef.current, Object.fromEntries(addresses));
   }, [addresses]);
-
-  // Refresh data whenever the SSE connection (re)establishes — covers network drops
-  // and cold starts. PB_CONNECT fires only on genuine reconnects.
-  useEffect(() => {
-    if (!mapId) return;
-
-    let isCleaned = false;
-    let unsubscribe: (() => void) | undefined;
-
-    pb.realtime.subscribe("PB_CONNECT", onReconnect).then((unsub) => {
-      if (isCleaned) {
-        unsub();
-        return;
-      }
-      unsubscribe = unsub;
-    });
-
-    return () => {
-      isCleaned = true;
-      if (unsubscribe) unsubscribe();
-    };
-  }, [mapId]);
-
-  useOnTabFocus(fetchAddressData);
 
   useRealtimeSubscription(
     "addresses",
@@ -558,20 +535,18 @@ const MainTable = ({
   if (floorList.length === 0) {
     return <MapPlaceholder policy={policy} />;
   }
-  if (mapType == TERRITORY_TYPES.SINGLE_STORY) {
-    if (mapView) {
-      return (
-        <Suspense fallback={<MapPlaceholder policy={policy} />}>
-          <TerritoryMapView
-            addressDetails={addressDetails}
-            houses={floorList[0] || []}
-            policy={policy}
-            handleHouseUpdate={handleHouseUpdate}
-          />
-        </Suspense>
-      );
-    }
-    return (
+
+  return mapType == TERRITORY_TYPES.SINGLE_STORY ? (
+    mapView ? (
+      <Suspense fallback={<MapPlaceholder policy={policy} />}>
+        <TerritoryMapView
+          addressDetails={addressDetails}
+          houses={floorList[0] || []}
+          policy={policy}
+          handleHouseUpdate={handleHouseUpdate}
+        />
+      </Suspense>
+    ) : (
       <PrivateTerritoryTable
         addressDetails={addressDetails}
         houses={floorList[0] || []}
@@ -580,10 +555,8 @@ const MainTable = ({
         policy={policy}
         pendingAddressIds={displayPendingAddressIds}
       />
-    );
-  }
-
-  return (
+    )
+  ) : (
     <PublicTerritoryTable
       floors={floorList}
       policy={policy}

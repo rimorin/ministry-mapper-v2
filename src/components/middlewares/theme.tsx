@@ -1,4 +1,4 @@
-import { FC, ReactNode, useEffect, useState } from "react";
+import { FC, ReactNode, useEffect, useMemo, useState } from "react";
 import { ThemeContext } from "../utils/context";
 import { ThemeMode } from "../../utils/interface";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
@@ -22,7 +22,7 @@ const ThemeMiddleware: FC<ThemeMiddlewareProps> = ({ children }) => {
 
   useEffect(() => {
     const applyTheme = (newTheme: "light" | "dark") => {
-      document.documentElement.setAttribute("data-bs-theme", newTheme);
+      document.documentElement.classList.toggle("dark", newTheme === "dark"); // shadcn dark mode
       setActualTheme(newTheme);
     };
 
@@ -38,8 +38,13 @@ const ThemeMiddleware: FC<ThemeMiddlewareProps> = ({ children }) => {
     }
   }, [theme]);
 
+  const contextValue = useMemo(
+    () => ({ theme, setTheme, actualTheme }),
+    [theme, setTheme, actualTheme]
+  );
+
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, actualTheme }}>
+    <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>
   );

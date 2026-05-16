@@ -1,5 +1,16 @@
 # Notas de versión (Español)
 
+## 2026-06-15
+
+[NEW] Un aspecto nuevo y fresco.
+  La apariencia de la app ha sido reconstruida desde cero. El lenguaje de diseño con el que fue construida data de 2011 — cumplió bien su función durante muchos años, pero los tiempos han cambiado y ahora existe un sistema de diseño más moderno. El nuevo es más ligero, más refinado y está hecho para cómo se crean las apps hoy en día.
+
+  Publicadores: todo funciona igual que antes — solo se ve diferente.
+
+  Administradores: los menús ahora están en un panel a la izquierda. Toca el botón en la esquina superior izquierda para abrirlo.
+
+---
+
 ## 2026-05-05
 
 > Publicadores: Smart Sync solo cubre sus actualizaciones de direcciones. Administradores: las acciones de administrador aún requieren una conexión activa.

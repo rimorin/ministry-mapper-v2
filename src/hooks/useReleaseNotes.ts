@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useLocalStorage } from "./useLocalStorage";
 
 export type LocalizedString = string | Record<string, string>;
 
-export interface ReleaseItem {
+interface ReleaseItem {
   type: "new" | "fix" | "improved" | "announcement";
   text: LocalizedString;
   description?: LocalizedString;
@@ -71,10 +71,12 @@ export function useReleaseNotes(): UseReleaseNotesReturn {
     };
   }, []);
 
-  const markAsSeen = () => {
-    if (newReleases.length > 0) setLastSeenReleaseId(newReleases[0].id);
-    setNewReleases([]);
-  };
+  const markAsSeen = useCallback(() => {
+    setNewReleases((prev) => {
+      if (prev.length > 0) setLastSeenReleaseId(prev[0].id);
+      return [];
+    });
+  }, [setLastSeenReleaseId]);
 
   return {
     hasNewReleases: newReleases.length > 0,

@@ -15,7 +15,8 @@ const CircularProgress: React.FC<CircularProgressProps> = ({
   const center = size / 2;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const offset = circumference * (1 - progress / 100);
+  const clampedProgress = Math.min(100, Math.max(0, progress));
+  const offset = circumference * (1 - clampedProgress / 100);
 
   return (
     <div

@@ -6,6 +6,7 @@ import {
   STATUS_CODES,
   LINK_TYPES,
   DEFAULT_CONGREGATION_MAX_TRIES,
+  ENDGAME_PROGRESS_THRESHOLD,
   DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
   USER_ACCESS_LEVELS,
   DEFAULT_SELF_DESTRUCT_HOURS
@@ -20,7 +21,8 @@ const processAvailableColour = (
   addressProgress = 0
 ) => {
   if (!countableUnit || completedUnit) return "";
-  if (addressProgress < 90) return AVAILABLE_STYLE_CLASS;
+  if (addressProgress < ENDGAME_PROGRESS_THRESHOLD)
+    return AVAILABLE_STYLE_CLASS;
 
   return `${AVAILABLE_STYLE_CLASS} cell-highlight`;
 };
@@ -111,6 +113,7 @@ export class LinkSession {
   key: string;
   name: string;
   publisherName: string;
+  assignerName: string;
   constructor(linkData?: RecordModel, key?: string) {
     this.id = "";
     this.tokenEndtime = 0;
@@ -123,6 +126,7 @@ export class LinkSession {
     this.key = "";
     this.name = "";
     this.publisherName = "";
+    this.assignerName = "";
     if (!linkData) return;
     this.id = linkData?.id || "";
     this.key = key || "";
@@ -133,6 +137,7 @@ export class LinkSession {
       i18n.language
     );
     this.publisherName = linkData.publisher;
+    this.assignerName = linkData.expand?.user?.name ?? "";
     this.tokenEndtime = new Date(linkData.expiry_date).getTime();
   }
 }

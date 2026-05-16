@@ -48,7 +48,6 @@ export async function batchUpdateAddress({
       coordinates: updateData.coordinates
         ? JSON.parse(updateData.coordinates)
         : null,
-      updated_by: updateData.updated_by,
       delete_ao_ids: toDeleteAoIds,
       add_option_ids: toAddOptionIds
     }
@@ -85,7 +84,6 @@ export async function batchCreateAddress({
       coordinates: updateData.coordinates
         ? JSON.parse(updateData.coordinates)
         : null,
-      updated_by: updateData.updated_by,
       add_option_ids: optionIds
     }
   });

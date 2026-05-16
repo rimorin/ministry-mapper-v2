@@ -7,7 +7,7 @@ describe("MapPlaceholder", () => {
     const { container } = render(<MapPlaceholder policy={undefined} />);
 
     const rows = container.querySelectorAll("tbody tr");
-    expect(rows).toHaveLength(10);
+    expect(rows).toHaveLength(15);
 
     const firstRowCells = rows[0].querySelectorAll("td");
     expect(firstRowCells).toHaveLength(4);
@@ -41,22 +41,17 @@ describe("MapPlaceholder", () => {
     expect(mapBody).toBeInTheDocument();
   });
 
-  it("should render table with correct Bootstrap classes", () => {
+  it("should render table with correct Tailwind CSS classes", () => {
     const { container } = render(<MapPlaceholder policy={undefined} />);
 
     const table = container.querySelector("table");
-    expect(table).toHaveClass(
-      "table",
-      "table-bordered",
-      "table-striped",
-      "table-hover"
-    );
+    expect(table).toHaveClass("w-full", "border-collapse");
   });
 
   it("should render placeholder animations", () => {
     const { container } = render(<MapPlaceholder policy={undefined} />);
 
-    const placeholders = container.querySelectorAll(".placeholder");
+    const placeholders = container.querySelectorAll(".animate-pulse");
     expect(placeholders.length).toBeGreaterThan(0);
   });
 
@@ -64,13 +59,13 @@ describe("MapPlaceholder", () => {
     const { container } = render(<MapPlaceholder policy={undefined} />);
 
     const table = container.querySelector("table");
-    expect(table).toHaveStyle({ opacity: "0.7" });
+    expect(table).toHaveClass("opacity-70");
   });
 
   it("should render glow animation", () => {
     const { container } = render(<MapPlaceholder policy={undefined} />);
 
-    const glowAnimations = container.querySelectorAll(".placeholder-glow");
+    const glowAnimations = container.querySelectorAll(".animate-pulse");
     expect(glowAnimations.length).toBeGreaterThan(0);
   });
 });

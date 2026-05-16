@@ -1,6 +1,9 @@
 import { FC } from "react";
-import { Placeholder, Table } from "react-bootstrap";
 import { Policy } from "../../utils/policies";
+import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
+import * as m from "motion/react-m";
+import { fadeIn, staggerContainer } from "@/lib/motion";
 
 interface MapPlaceholderProps {
   policy: Policy | undefined;
@@ -8,51 +11,53 @@ interface MapPlaceholderProps {
   columns?: number;
 }
 
+const widthClasses = ["w-1/2", "w-2/3", "w-7/12", "w-5/12", "w-3/4", "w-1/3"];
+
 const MapPlaceholder: FC<MapPlaceholderProps> = ({
   policy,
-  rows = 10,
+  rows = 15,
   columns = 4
 }) => {
   const isAdmin = policy?.isFromAdmin() ?? true;
-  const containerClass = isAdmin ? "map-body-admin" : "map-body";
-  const widths = [6, 8, 7, 5, 9, 4];
+  const containerClass = isAdmin
+    ? "map-body-admin !overflow-hidden"
+    : "h-full overflow-hidden";
 
   return (
-    <div className={`${containerClass} map-placeholder-content bg-body`}>
-      <Table
-        bordered
-        striped
-        hover
-        responsive
-        className="mb-0"
-        style={{ opacity: 0.7 }}
-      >
+    <m.div
+      className={cn(containerClass, "map-placeholder-content bg-background")}
+      variants={fadeIn}
+      initial="hidden"
+      animate="show"
+    >
+      <table className="w-full border-collapse mb-0 border border-border opacity-70">
         <thead>
           <tr>
             {Array.from({ length: columns }, (_, i) => (
-              <th key={i} className="py-2">
-                <Placeholder animation="glow">
-                  <Placeholder xs={6} />
-                </Placeholder>
+              <th
+                key={i}
+                className="py-2 px-3 border border-border bg-muted/50 text-left"
+              >
+                <Skeleton className="h-4 w-3/5" />
               </th>
             ))}
           </tr>
         </thead>
-        <tbody>
+        <m.tbody variants={staggerContainer(0.04)}>
           {Array.from({ length: rows }, (_, i) => (
-            <tr key={i}>
+            <m.tr key={i} variants={fadeIn}>
               {Array.from({ length: columns }, (_, j) => (
-                <td key={j} className="py-2">
-                  <Placeholder animation="glow">
-                    <Placeholder xs={widths[i % widths.length]} />
-                  </Placeholder>
+                <td key={j} className="py-2 px-3 border border-border">
+                  <Skeleton
+                    className={`h-4 ${widthClasses[i % widthClasses.length]}`}
+                  />
                 </td>
               ))}
-            </tr>
+            </m.tr>
           ))}
-        </tbody>
-      </Table>
-    </div>
+        </m.tbody>
+      </table>
+    </m.div>
   );
 };
 

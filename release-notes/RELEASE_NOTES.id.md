@@ -1,5 +1,16 @@
 # Catatan Rilis (Bahasa Indonesia)
 
+## 2026-06-15
+
+[NEW] Tampilan baru yang segar.
+  Tampilan aplikasi telah dibangun ulang dari awal. Bahasa desain yang menjadi landasannya sudah ada sejak 2011 — ia telah berfungsi dengan baik selama bertahun-tahun, tetapi zaman telah berubah dan sistem desain yang lebih modern kini telah hadir. Yang baru ini lebih ringan, lebih halus, dan dirancang untuk cara aplikasi dibuat hari ini.
+
+  Penerbit: semuanya bekerja sama seperti sebelumnya — hanya tampilannya yang berbeda.
+
+  Administrator: menu-menu kini ada di panel sebelah kiri. Ketuk tombol di pojok kiri atas untuk membukanya.
+
+---
+
 ## 2026-05-05
 
 > Penerbit: Smart Sync hanya mencakup pembaruan alamat Anda. Administrator: tindakan admin masih memerlukan koneksi langsung.

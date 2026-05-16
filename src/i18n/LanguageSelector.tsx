@@ -1,6 +1,12 @@
-import { ListGroup, Offcanvas } from "react-bootstrap";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { Check } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { TERRITORY_SELECTOR_VIEWPORT_HEIGHT } from "../utils/constants";
 import { LanguageListingProps } from "../utils/interface";
 
 const LanguageListing = ({
@@ -13,41 +19,37 @@ const LanguageListing = ({
   const { t } = useTranslation();
 
   return (
-    <Offcanvas
-      placement="bottom"
-      show={showListing}
-      onHide={hideFunction}
-      style={{ height: TERRITORY_SELECTOR_VIEWPORT_HEIGHT }}
+    <Dialog
+      open={showListing}
+      onOpenChange={(open) => {
+        if (!open) hideFunction();
+      }}
     >
-      <Offcanvas.Header closeButton>
-        <Offcanvas.Title>
-          {t("common.selectLanguage", "Select Language")}
-        </Offcanvas.Title>
-      </Offcanvas.Header>
-      <Offcanvas.Body>
-        <ListGroup>
-          {languageOptions.map((option) => (
-            <ListGroup.Item
-              key={option.value}
-              action
-              active={currentLanguage === option.value}
-              onClick={() => handleSelect(option.value)}
-              className="d-flex align-items-center"
-            >
-              <div
-                style={{
-                  justifyContent: "space-between",
-                  display: "flex",
-                  width: "100%"
-                }}
+      <DialogContent className="max-w-xs gap-0 p-0">
+        <DialogHeader className="border-b px-4 py-3 text-left">
+          <DialogTitle>
+            {t("common.selectLanguage", "Select Language")}
+          </DialogTitle>
+        </DialogHeader>
+        <div className="space-y-1 p-2">
+          {languageOptions.map((option) => {
+            const isActive = currentLanguage === option.value;
+            return (
+              <Button
+                key={option.value}
+                type="button"
+                variant={isActive ? "secondary" : "ghost"}
+                onClick={() => handleSelect(option.value)}
+                className="w-full justify-between font-semibold"
               >
-                <span className="fw-bold">{option.label}</span>
-              </div>
-            </ListGroup.Item>
-          ))}
-        </ListGroup>
-      </Offcanvas.Body>
-    </Offcanvas>
+                {option.label}
+                {isActive && <Check className="size-4 text-primary" />}
+              </Button>
+            );
+          })}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

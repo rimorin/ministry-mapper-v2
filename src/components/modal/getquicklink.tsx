@@ -1,13 +1,25 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal from "@ebay/nice-modal-react";
+import * as m from "motion/react-m";
 import { useState } from "react";
-import { Modal, Badge, Form } from "react-bootstrap";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { XIcon } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import { useTranslation } from "react-i18next";
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, Marker } from "react-leaflet";
 import {
-  USER_ACCESS_LEVELS,
   UNSUPPORTED_BROWSER_MSG,
-  DEFAULT_COORDINATES
+  DEFAULT_COORDINATES,
+  PREFERRED_TRAVEL_MODE_KEY
 } from "../../utils/constants";
 import {
   currentLocationIcon,
@@ -15,7 +27,6 @@ import {
 } from "../../utils/helpers/mapicons";
 import { latlongInterface, TravelMode } from "../../utils/interface";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
-import ModalFooter from "../form/footer";
 import GenericInputField from "../form/input";
 import useNotification from "../../hooks/useNotification";
 import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
@@ -23,9 +34,11 @@ import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import TravelModeButtons from "../map/travelmodebtn";
 import CustomControl from "../map/customcontrol";
 import RoutingService from "../map/routingservice";
-import { callFunction } from "../../utils/pocketbase";
+import { callFunction, isAbortError } from "../../utils/pocketbase";
 import { MapController } from "../map/mapcontroller";
 import useGeolocation from "../../hooks/useGeolocation";
+import { ThemedTileLayer } from "../map/themedtilelayer";
+import { formatDistance, formatDuration } from "../../utils/helpers/maphelpers";
 
 interface QuickLinkModalProps {
   territoryId: string;
@@ -44,10 +57,17 @@ interface MapDataType {
 
 const QuickLinkModal = NiceModal.create(
   ({ territoryId }: QuickLinkModalProps) => {
+    const {
+      modal,
+      dialogProps,
+      contentProps: fullscreenContentProps
+    } = useBaseUiDialog({ size: "fullscreen" });
+    const compactContentProps = {
+      className: "sm:max-w-[425px]"
+    };
     const { t } = useTranslation();
     const { notifyError, notifyWarning, runAction } = useNotification();
     const { trackEvent } = useAnalytics();
-    const modal = useModal();
     const { requestLocation } = useGeolocation({
       skipGeolocation: true
     });
@@ -62,14 +82,18 @@ const QuickLinkModal = NiceModal.create(
       DEFAULT_COORDINATES.Singapore
     );
     const [travelMode, setTravelMode] = useState<TravelMode>(() => {
-      const saved = localStorage.getItem("preferredTravelMode");
+      const saved = localStorage.getItem(PREFERRED_TRAVEL_MODE_KEY);
       return (saved as TravelMode) || "WALKING";
     });
     const [isRouteLoading, setIsRouteLoading] = useState(false);
+    const [routeInfo, setRouteInfo] = useState<{
+      duration: number;
+      distance: number;
+    } | null>(null);
 
     const handleTravelModeChange = (mode: TravelMode) => {
       setTravelMode(mode);
-      localStorage.setItem("preferredTravelMode", mode);
+      localStorage.setItem(PREFERRED_TRAVEL_MODE_KEY, mode);
       trackEvent(ANALYTICS_EVENTS.TRAVEL_MODE_CHANGED, { mode });
     };
 
@@ -109,7 +133,8 @@ const QuickLinkModal = NiceModal.create(
         return;
       }
       await navigator.share({
-        text: `${body}\n${new URL(`map/${linkId}`, window.location.href).toString()}`
+        text: `${body}
+${new URL(`map/${linkId}`, window.location.href).toString()}`
       });
     };
 
@@ -126,9 +151,7 @@ const QuickLinkModal = NiceModal.create(
         trackEvent(ANALYTICS_EVENTS.QUICK_LINK_SHARED);
         modal.remove();
       } catch (error) {
-        if (error instanceof Error && error.name === "AbortError") {
-          return;
-        }
+        if (isAbortError(error)) return;
         notifyError(error);
       } finally {
         setIsSharing(false);
@@ -136,19 +159,18 @@ const QuickLinkModal = NiceModal.create(
     };
 
     return (
-      <Modal
-        {...bootstrapDialog(modal)}
-        fullscreen={!isInputMode || undefined}
-        onHide={() => modal.remove()}
-      >
-        {isInputMode ? (
-          <>
-            <Modal.Header className="justify-content-center">
-              <Modal.Title>{t("admin.quickLink")}</Modal.Title>
-            </Modal.Header>
-            <Form onSubmit={handleSubmitPublisher}>
-              <Modal.Body>
-                <p className="mb-0 text-muted text-center">
+      <Dialog {...dialogProps}>
+        <DialogContent
+          {...(isInputMode ? compactContentProps : fullscreenContentProps)}
+          showCloseButton={false}
+        >
+          {isInputMode ? (
+            <>
+              <DialogHeader className="items-center">
+                <DialogTitle>{t("admin.quickLink")}</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmitPublisher} className="space-y-4">
+                <p className="text-sm text-muted-foreground text-center">
                   {t("generatedMap.info")}
                 </p>
                 <GenericInputField
@@ -161,144 +183,198 @@ const QuickLinkModal = NiceModal.create(
                   required
                   placeholder={t("territory.publisherPlaceholder")}
                 />
-              </Modal.Body>
-              <ModalFooter
-                handleClick={() => modal.hide()}
-                userAccessLevel={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
-                isSaving={isLoading}
-                submitLabel={t("admin.confirm")}
-              />
-            </Form>
-          </>
-        ) : (
-          <>
-            <Modal.Header className="justify-content-center border-0">
-              <Modal.Title className="text-center fw-bold w-100">
-                {mapData?.mapName || t("admin.generatedMap")}
-              </Modal.Title>
-            </Modal.Header>
-            <Form onSubmit={handleAssign}>
-              <Modal.Body className="quicklink-modal-body-container">
-                {mapData && (
-                  <>
-                    <MapContainer
-                      center={[
-                        mapData.coordinates.lat,
-                        mapData.coordinates.lng
-                      ]}
-                      zoom={16}
-                      style={{ height: "100%", width: "100%" }}
-                      zoomControl={true}
-                      scrollWheelZoom={true}
-                      attributionControl={false}
-                    >
-                      <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-                      <MapController
-                        center={currentCenter}
-                        onCenterChange={setCurrentCenter}
-                        zoomLevel={16}
-                      />
-                      {mapData.origin && (
-                        <>
-                          <Marker
-                            position={[mapData.origin.lat, mapData.origin.lng]}
-                            icon={currentLocationIcon}
-                          />
-                          <RoutingService
-                            start={mapData.origin}
-                            end={mapData.coordinates}
-                            travelMode={travelMode}
-                            onLoadingChange={setIsRouteLoading}
-                          />
-                          <CustomControl position="topright">
-                            <MapCurrentTarget
-                              onClick={() =>
-                                setCurrentCenter({ ...mapData.origin })
-                              }
-                            />
-                          </CustomControl>
-                        </>
-                      )}
-                      <Marker
-                        position={[
+                <DialogFooter className="flex-row justify-around">
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    onClick={modal.hide}
+                  >
+                    {t("common.cancel", "Cancel")}
+                  </Button>
+                  <Button type="submit" disabled={isLoading}>
+                    {isLoading && (
+                      <Spinner data-icon="inline-start" aria-hidden="true" />
+                    )}
+                    {t("admin.confirm")}
+                  </Button>
+                </DialogFooter>
+              </form>
+            </>
+          ) : (
+            <>
+              <div className="relative flex items-center px-4 pt-4 pb-2 shrink-0">
+                <DialogTitle className="absolute inset-x-0 text-center px-12 leading-none font-medium">
+                  {mapData?.mapName || t("admin.generatedMap")}
+                </DialogTitle>
+                <div className="ml-auto z-10">
+                  <Button
+                    variant="ghost"
+                    size="icon-sm"
+                    type="button"
+                    onClick={modal.hide}
+                  >
+                    <XIcon />
+                    <span className="sr-only">Close</span>
+                  </Button>
+                </div>
+              </div>
+              <form
+                onSubmit={handleAssign}
+                className="flex flex-1 flex-col overflow-hidden"
+              >
+                <m.div
+                  className="quicklink-modal-body-container flex-1 relative overflow-hidden"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.35, ease: "linear", delay: 0.2 }}
+                >
+                  {mapData && (
+                    <>
+                      <MapContainer
+                        center={[
                           mapData.coordinates.lat,
                           mapData.coordinates.lng
                         ]}
-                        icon={destinationIcon}
-                      />
-                      <CustomControl position="bottomleft">
-                        <TravelModeButtons
-                          travelMode={travelMode}
-                          onTravelModeChange={handleTravelModeChange}
-                          isLoading={isRouteLoading}
+                        zoom={16}
+                        style={{ height: "100%", width: "100%" }}
+                        zoomControl={true}
+                        scrollWheelZoom={true}
+                      >
+                        <ThemedTileLayer />
+                        <MapController
+                          center={currentCenter}
+                          onCenterChange={setCurrentCenter}
+                          zoomLevel={16}
                         />
-                      </CustomControl>
-                    </MapContainer>
-                    <div className="bg-body rounded-3 shadow-lg border p-3 quicklink-stats-panel">
-                      <div className="d-flex justify-content-center gap-3">
-                        <div className="text-center">
-                          <div className="fw-bold text-warning fs-5">
-                            {mapData.not_done}
-                          </div>
-                          <small className="text-body-secondary">
-                            {t("territory.notDone")}
-                          </small>
-                        </div>
-                        <div className="text-center border-start ps-4">
-                          <div className="fw-bold text-info fs-5">
-                            {mapData.not_home}
-                          </div>
-                          <small className="text-body-secondary">
-                            {t("territory.notHome")}
-                          </small>
-                        </div>
-                        <div className="text-center border-start ps-4">
-                          <div className="fw-bold text-success fs-5">
-                            {mapData.progress}%
-                          </div>
-                          <small className="text-body-secondary">
-                            {t("territory.completed")}
-                          </small>
-                        </div>
-                      </div>
-
-                      {mapData.assignees.length > 0 && (
-                        <div className="border-top pt-2 mt-2">
+                        {mapData.origin && (
+                          <>
+                            <Marker
+                              position={[
+                                mapData.origin.lat,
+                                mapData.origin.lng
+                              ]}
+                              icon={currentLocationIcon}
+                            />
+                            <RoutingService
+                              start={mapData.origin}
+                              end={mapData.coordinates}
+                              travelMode={travelMode}
+                              onLoadingChange={setIsRouteLoading}
+                              onRouteData={setRouteInfo}
+                            />
+                            <CustomControl position="topright">
+                              <MapCurrentTarget
+                                onClick={() =>
+                                  setCurrentCenter({ ...mapData.origin })
+                                }
+                              />
+                            </CustomControl>
+                          </>
+                        )}
+                        <Marker
+                          position={[
+                            mapData.coordinates.lat,
+                            mapData.coordinates.lng
+                          ]}
+                          icon={destinationIcon}
+                        />
+                        <CustomControl position="bottomleft">
+                          <TravelModeButtons
+                            travelMode={travelMode}
+                            onTravelModeChange={handleTravelModeChange}
+                            isLoading={isRouteLoading}
+                          />
+                        </CustomControl>
+                      </MapContainer>
+                      <div className="bg-background/95 backdrop-blur-sm rounded-xl border shadow-lg p-3 quicklink-stats-panel">
+                        <p className="text-sm font-semibold text-center mb-2 truncate">
+                          {mapData.mapName}
+                        </p>
+                        <div className="flex justify-center gap-4">
                           <div className="text-center">
-                            <small className="text-body-secondary fw-medium mb-2 d-block">
+                            <div className="text-xl font-bold text-amber-500 tabular-nums">
+                              {mapData.not_done}
+                            </div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">
+                              {t("territory.notDone")}
+                            </p>
+                          </div>
+                          <div className="text-center border-l pl-4">
+                            <div className="text-xl font-bold text-sky-500 tabular-nums">
+                              {mapData.not_home}
+                            </div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">
+                              {t("territory.notHome")}
+                            </p>
+                          </div>
+                          <div className="text-center border-l pl-4">
+                            <div className="text-xl font-bold text-emerald-500 tabular-nums">
+                              {mapData.progress}%
+                            </div>
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">
+                              {t("territory.completed")}
+                            </p>
+                          </div>
+                        </div>
+
+                        {mapData.assignees.length > 0 && (
+                          <div className="border-t pt-2 mt-2">
+                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground text-center mb-1.5">
                               {t("territory.assignees")}
-                            </small>
-                            <div className="d-flex flex-wrap justify-content-center gap-1">
+                            </p>
+                            <div className="flex flex-wrap justify-center gap-1">
                               {mapData.assignees.map((assignee, index) => (
                                 <Badge
                                   key={index}
-                                  bg="secondary"
-                                  className="px-2 py-1 quicklink-assignee-badge"
+                                  variant="secondary"
+                                  className="px-2 py-0.5 text-xs"
                                 >
                                   {assignee}
                                 </Badge>
                               ))}
                             </div>
                           </div>
-                        </div>
+                        )}
+                        {routeInfo && (
+                          <div className="border-t pt-2 mt-2 flex items-center justify-center gap-1.5">
+                            <span className="text-sm font-semibold tabular-nums">
+                              {travelMode === "DRIVING" ? "🚗" : "🚶"}{" "}
+                              {formatDuration(routeInfo.duration)}
+                            </span>
+                            <span className="text-muted-foreground text-xs">
+                              ·
+                            </span>
+                            <span className="text-xs text-muted-foreground">
+                              {formatDistance(routeInfo.distance)}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                    </>
+                  )}
+                </m.div>
+                {mapData && (
+                  <DialogFooter className="px-4 py-3 shrink-0 flex-row justify-around">
+                    <Button
+                      variant="secondary"
+                      type="button"
+                      onClick={modal.hide}
+                    >
+                      {t("common.cancel", "Cancel")}
+                    </Button>
+                    <Button type="submit" disabled={isSharing}>
+                      {isSharing && (
+                        <Spinner data-icon="inline-start" aria-hidden="true" />
                       )}
-                    </div>
-                  </>
+                      {t("generatedMap.share")}
+                    </Button>
+                  </DialogFooter>
                 )}
-              </Modal.Body>
-              {mapData && (
-                <ModalFooter
-                  handleClick={() => modal.hide()}
-                  submitLabel={t("generatedMap.share")}
-                  isSaving={isSharing}
-                  disableSubmitBtn={false}
-                  requiredAcLForSave={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
-                />
-              )}
-            </Form>
-          </>
-        )}
-      </Modal>
+              </form>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
     );
   }
 );

@@ -7,7 +7,7 @@ const TableHeader = ({ floors, maxUnitNumber = 2 }: tableHeaderProp) => {
 
   return (
     <>
-      <thead className="sticky-top-cell">
+      <thead className="sticky-top-cell bg-background">
         <tr>
           <th scope="col" className="text-center align-middle sticky-left-cell">
             {t("table.levelUnit", "lvl/unit")}

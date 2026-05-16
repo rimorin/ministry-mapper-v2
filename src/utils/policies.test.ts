@@ -663,7 +663,6 @@ describe("LinkDetails class", () => {
 describe("Integration tests", () => {
   describe("Policy with LinkSession", () => {
     it("should work together in realistic scenarios", () => {
-      // Create a policy with comprehensive options
       const options: Array<HHOptionProps> = [
         {
           id: "residential",
@@ -691,7 +690,6 @@ describe("Integration tests", () => {
         USER_ACCESS_LEVELS.CONDUCTOR.CODE
       );
 
-      // Create multiple units with different scenarios
       const units: unitDetails[] = [
         {
           id: "unit1",

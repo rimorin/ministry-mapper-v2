@@ -1,13 +1,25 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal from "@ebay/nice-modal-react";
 import { useTranslation } from "react-i18next";
-
-import { useState, FormEvent } from "react";
-import { Modal, Form } from "react-bootstrap";
+import { Controller, useForm } from "react-hook-form";
+import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Form } from "@/components/ui/form";
+import { Spinner } from "@/components/ui/spinner";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import { UserModalProps } from "../../utils/interface";
-import ModalFooter from "../form/footer";
 import UserRoleField from "../form/role";
+import ComponentAuthorizer from "../navigation/authorizer";
 import { deleteDataById, updateDataById } from "../../utils/pocketbase";
 
 const UpdateUser = NiceModal.create(
@@ -19,58 +31,105 @@ const UpdateUser = NiceModal.create(
   }: UserModalProps) => {
     const { t } = useTranslation();
     const { runAction } = useNotification();
-    const [userRole, setUserRole] = useState(role);
-    const [isSaving, setIsSaving] = useState(false);
-    const modal = useModal();
+    const {
+      modal,
+      dialogProps: baseDialogProps,
+      contentProps
+    } = useBaseUiDialog();
+    const form = useForm<{ role: string }>({
+      values: { role }
+    });
 
-    const handleUserDetails = async (event: FormEvent<HTMLElement>) => {
-      event.preventDefault();
-      await runAction(
-        async () => {
-          if (userRole === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
-            await deleteDataById("roles", uid, {
-              requestKey: `delete-usr-role-${uid}`
-            });
-          } else {
-            await updateDataById(
-              "roles",
-              uid,
-              { role: userRole },
-              {
-                requestKey: `update-usr-role-${uid}`
-              }
-            );
-          }
-          modal.resolve(userRole);
-          modal.hide();
-        },
-        { setLoading: setIsSaving }
-      );
+    const dialogProps = {
+      ...baseDialogProps,
+      onOpenChange: (open: boolean) => {
+        if (!open) {
+          form.reset();
+        }
+        baseDialogProps.onOpenChange(open);
+      }
     };
+
+    const handleUserDetails = async (values: { role: string }) => {
+      await runAction(async () => {
+        if (values.role === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
+          await deleteDataById("roles", uid, {
+            requestKey: `delete-usr-role-${uid}`
+          });
+        } else {
+          await updateDataById(
+            "roles",
+            uid,
+            { role: values.role },
+            {
+              requestKey: `update-usr-role-${uid}`
+            }
+          );
+        }
+        modal.resolve(values.role);
+        modal.hide();
+      });
+    };
+
     return (
-      <Modal {...bootstrapDialog(modal)} onHide={() => modal.remove()}>
-        <Modal.Header>
-          <Modal.Title>{t("user.updateRole", { name })}</Modal.Title>
-        </Modal.Header>
-        <Form onSubmit={handleUserDetails}>
-          <Modal.Body>
-            <Form.Group
-              className="mb-1 text-center"
-              controlId="formBasicUsrRolebtnCheckbox"
+      <Dialog {...dialogProps}>
+        <DialogContent {...contentProps}>
+          <DialogHeader>
+            <DialogTitle>{t("user.updateRole", { name })}</DialogTitle>
+            <DialogDescription>
+              {t(
+                "user.updateRoleDescription",
+                "Select the access level for this user."
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <Separator />
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handleUserDetails)}
+              className="space-y-4"
             >
-              <UserRoleField
-                role={userRole}
-                handleRoleChange={(value) => setUserRole(value)}
+              <Controller
+                control={form.control}
+                name="role"
+                render={({ field }) => (
+                  <div className="space-y-1.5">
+                    <Label>{t("user.accessLevel", "Access Level")}</Label>
+                    <UserRoleField
+                      role={field.value}
+                      handleRoleChange={field.onChange}
+                    />
+                  </div>
+                )}
               />
-            </Form.Group>
-          </Modal.Body>
-          <ModalFooter
-            handleClick={modal.hide}
-            userAccessLevel={footerSaveAcl}
-            isSaving={isSaving}
-          />
-        </Form>
-      </Modal>
+              <Separator />
+              <DialogFooter>
+                <Button
+                  variant="outline"
+                  type="button"
+                  onClick={() => {
+                    form.reset();
+                    modal.hide();
+                  }}
+                >
+                  {t("common.cancel")}
+                </Button>
+                <ComponentAuthorizer
+                  requiredPermission={footerSaveAcl}
+                  userPermission={footerSaveAcl}
+                >
+                  <Button type="submit" disabled={form.formState.isSubmitting}>
+                    {form.formState.isSubmitting && (
+                      <Spinner data-icon="inline-start" aria-hidden="true" />
+                    )}
+                    {t("common.save")}
+                  </Button>
+                </ComponentAuthorizer>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     );
   }
 );

@@ -25,7 +25,7 @@ function writeScrollRecord(record: ScrollRecord) {
   }
 }
 
-export function useScrollPersistence(id: string) {
+function useScrollPersistence(id: string) {
   const listRef = useListRef(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 

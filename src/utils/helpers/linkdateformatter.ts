@@ -1,6 +1,5 @@
 import i18n from "../../i18n";
 
-// Function that creates a new formatter based on the current language
 const createFormatter = () => {
   const options: Intl.DateTimeFormatOptions = {
     timeStyle: "short",
@@ -13,12 +12,10 @@ const createFormatter = () => {
   }
 };
 
-// Initial formatter
 let LinkDateFormatter = createFormatter();
 
-// Update formatter when language changes
 i18n.on("languageChanged", () => {
   LinkDateFormatter = createFormatter();
 });
 
-export default LinkDateFormatter;
+export { LinkDateFormatter as default };

@@ -31,15 +31,31 @@ describe("TravelModeButtons", () => {
   it("displays walking mode as active", () => {
     render(<TravelModeButtons {...defaultProps} travelMode="WALKING" />);
     const walkButton = screen.getByLabelText("Walk");
-    expect(walkButton).toHaveClass("active");
+    const driveButton = screen.getByLabelText("Drive");
+
     expect(walkButton).toHaveAttribute("aria-pressed", "true");
+    expect(walkButton).toHaveClass(
+      "bg-background",
+      "text-foreground",
+      "shadow-xs"
+    );
+    expect(driveButton).toHaveAttribute("aria-pressed", "false");
+    expect(driveButton).toHaveClass("text-muted-foreground");
   });
 
   it("displays driving mode as active", () => {
     render(<TravelModeButtons {...defaultProps} travelMode="DRIVING" />);
+    const walkButton = screen.getByLabelText("Walk");
     const driveButton = screen.getByLabelText("Drive");
-    expect(driveButton).toHaveClass("active");
+
     expect(driveButton).toHaveAttribute("aria-pressed", "true");
+    expect(driveButton).toHaveClass(
+      "bg-background",
+      "text-foreground",
+      "shadow-xs"
+    );
+    expect(walkButton).toHaveAttribute("aria-pressed", "false");
+    expect(walkButton).toHaveClass("text-muted-foreground");
   });
 
   it("calls onTravelModeChange when walk button is clicked", async () => {
@@ -72,19 +88,22 @@ describe("TravelModeButtons", () => {
         isLoading={true}
       />
     );
-    expect(container.querySelector(".spinner-border")).toBeInTheDocument();
+    expect(container.querySelector(".animate-spin")).toBeInTheDocument();
   });
 
   it("renders mode icons", () => {
     render(<TravelModeButtons {...defaultProps} />);
-    expect(screen.getByText("🚶")).toBeInTheDocument();
-    expect(screen.getByText("🚗")).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Walk").querySelector("svg.lucide-footprints")
+    ).toBeInTheDocument();
+    expect(
+      screen.getByLabelText("Drive").querySelector("svg.lucide-car")
+    ).toBeInTheDocument();
   });
 
-  it("applies correct CSS classes", () => {
-    const { container } = render(<TravelModeButtons {...defaultProps} />);
-    expect(
-      container.querySelector(".travel-mode-button-group")
-    ).toBeInTheDocument();
+  it("applies correct Tailwind classes", () => {
+    render(<TravelModeButtons {...defaultProps} />);
+    const group = screen.getByLabelText("Walk").parentElement;
+    expect(group).toHaveClass("bg-card", "rounded-lg", "p-1", "shadow-sm");
   });
 });

@@ -1,5 +1,6 @@
 import { lazy, useEffect, useState, FC } from "react";
-import { ButtonGroup, Spinner, Badge } from "react-bootstrap";
+import { Button } from "@/components/ui/button";
+import { Spinner } from "@/components/ui/spinner";
 import { useTranslation } from "react-i18next";
 import {
   UNSUPPORTED_BROWSER_MSG,
@@ -16,10 +17,9 @@ import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import ComponentAuthorizer from "./authorizer";
 import addHours from "../../utils/helpers/addhours";
 import { RecordModel } from "pocketbase";
-import { getList, createData } from "../../utils/pocketbase";
+import { getList, createData, isAbortError } from "../../utils/pocketbase";
 import useRealtimeSubscription from "../../hooks/useRealtime";
 import { useModalManagement } from "../../hooks/useModalManagement";
-import GenericButton from "./button";
 const ConfirmSlipDetails = lazy(
   () => import("../../components/modal/slipdetails")
 );
@@ -46,7 +46,7 @@ const useAssignments = (mapId: string) => {
     const mapAssignments = await getList("assignments", {
       filter: `map='${mapId}'`,
       requestKey: null,
-      expand: "map",
+      expand: "map,user",
       fields: PB_FIELDS.ASSIGNMENTS
     });
     const personalLinks = new Map<string, LinkSession>();
@@ -105,7 +105,8 @@ const useAssignments = (mapId: string) => {
     },
     {
       filter: `map='${mapId}'`,
-      fields: PB_FIELDS.ASSIGNMENTS
+      fields: PB_FIELDS.ASSIGNMENTS,
+      expand: "map,user"
     },
     [mapId],
     !!mapId,
@@ -196,12 +197,7 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
         text: `${body}\n${absoluteUrl.toString()}`
       });
     } catch (error) {
-      if (error instanceof Error) {
-        // Ignore the error if the user aborts the share
-        if (error.name === "AbortError") {
-          return;
-        }
-      }
+      if (isAbortError(error)) return;
       notifyError(error, true);
     }
   };
@@ -222,85 +218,91 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
         requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
         userPermission={policy.userRole}
       >
-        <ButtonGroup className="m-1">
-          <GenericButton
+        <div className="m-1 flex items-center gap-0">
+          <Button
             key={`assign-personal-${mapId}`}
             size="sm"
-            variant="outline-primary"
+            variant="outline"
             onClick={() => handleButtonClick(LINK_TYPES.PERSONAL)}
-            label={t("links.personal", "Personal")}
-          />
-          {(isSettingPersonalLink && (
-            <GenericButton
+            className={
+              personalLinks.size > 0 || isSettingPersonalLink
+                ? "rounded-r-none border-r-0"
+                : undefined
+            }
+          >
+            {t("links.personal", "Personal")}
+          </Button>
+          {isSettingPersonalLink ? (
+            <Button
               size="sm"
-              variant="outline-primary"
-              label={
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  aria-hidden="true"
-                />
-              }
-            />
-          )) ||
-            (personalLinks.size > 0 && (
-              <GenericButton
+              variant="outline"
+              className="rounded-l-none px-3"
+              disabled
+              aria-label={t("links.personal", "Personal")}
+            >
+              <Spinner data-icon="inline-start" aria-hidden="true" />
+            </Button>
+          ) : (
+            personalLinks.size > 0 && (
+              <Button
                 size="sm"
-                variant="outline-primary"
+                variant="default"
                 onClick={() =>
                   handleAssignmentsButtonClick(LINK_TYPES.PERSONAL)
                 }
-                label={
-                  <Badge bg="danger" className="me-1">
-                    {personalLinks.size}
-                  </Badge>
-                }
-              />
-            ))}
-        </ButtonGroup>
+                className="rounded-l-none px-3"
+                aria-label={t("assignments.assignments", "Assignments")}
+              >
+                {personalLinks.size}
+              </Button>
+            )
+          )}
+        </div>
       </ComponentAuthorizer>
       <ComponentAuthorizer
         requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
         userPermission={policy.userRole}
       >
-        <ButtonGroup className="m-1">
-          <GenericButton
+        <div className="m-1 flex items-center gap-0">
+          <Button
             key={`assign-normal-${mapId}`}
             size="sm"
-            variant="outline-primary"
+            variant="outline"
             onClick={() => handleButtonClick(LINK_TYPES.ASSIGNMENT)}
-            label={t("links.assignment", "Assign")}
-          />
-          {(isSettingNormalLink && (
-            <GenericButton
+            className={
+              normalLinks.size > 0 || isSettingNormalLink
+                ? "rounded-r-none border-r-0"
+                : undefined
+            }
+          >
+            {t("links.assignment", "Assign")}
+          </Button>
+          {isSettingNormalLink ? (
+            <Button
               size="sm"
-              variant="outline-primary"
-              label={
-                <Spinner
-                  as="span"
-                  animation="border"
-                  size="sm"
-                  aria-hidden="true"
-                />
-              }
-            />
-          )) ||
-            (normalLinks.size > 0 && (
-              <GenericButton
+              variant="outline"
+              className="rounded-l-none px-3"
+              disabled
+              aria-label={t("links.assignment", "Assign")}
+            >
+              <Spinner data-icon="inline-start" aria-hidden="true" />
+            </Button>
+          ) : (
+            normalLinks.size > 0 && (
+              <Button
                 size="sm"
-                variant="outline-primary"
+                variant="default"
                 onClick={() =>
                   handleAssignmentsButtonClick(LINK_TYPES.ASSIGNMENT)
                 }
-                label={
-                  <Badge bg="danger" className="me-1">
-                    {normalLinks.size}
-                  </Badge>
-                }
-              />
-            ))}
-        </ButtonGroup>
+                className="rounded-l-none px-3"
+                aria-label={t("assignments.assignments", "Assignments")}
+              >
+                {normalLinks.size}
+              </Button>
+            )
+          )}
+        </div>
       </ComponentAuthorizer>
     </>
   );

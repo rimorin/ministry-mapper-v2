@@ -1,9 +1,18 @@
+import path from "path";
+import { fileURLToPath } from "url";
 import { defineConfig } from "vitest/config";
 import react, { reactCompilerPreset } from "@vitejs/plugin-react";
 import babel from "@rolldown/plugin-babel";
 
+const __dirname = fileURLToPath(new URL(".", import.meta.url));
+
 export default defineConfig({
   plugins: [babel({ presets: [reactCompilerPreset()] }), react()],
+  resolve: {
+    alias: {
+      "@": path.resolve(__dirname, "./src")
+    }
+  },
   test: {
     globals: true,
     environment: "jsdom",

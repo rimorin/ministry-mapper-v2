@@ -20,8 +20,13 @@ export default defineConfig(
     rules: {
       "@typescript-eslint/no-unused-vars": [
         "error",
-        { ignoreRestSiblings: true }
+        {
+          ignoreRestSiblings: true,
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_"
+        }
       ],
+      "no-empty": ["error", { allowEmptyCatch: true }],
       // Advisory/style rules from @eslint-react recommended — not enforced yet
       "@eslint-react/jsx-no-children-prop": "off",
       "@eslint-react/set-state-in-effect": "off",

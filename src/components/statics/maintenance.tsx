@@ -1,4 +1,3 @@
-import { Card } from "react-bootstrap";
 import { useTranslation } from "react-i18next";
 import StaticPageCard from "./staticpage";
 
@@ -7,9 +6,9 @@ const MaintenanceMode = () => {
 
   return (
     <StaticPageCard title={t("maintenance.maintenanceMode")}>
-      <Card.Text className="text-justify">
+      <p className="text-justify text-sm text-muted-foreground">
         {t("maintenance.backSoon")}
-      </Card.Text>
+      </p>
     </StaticPageCard>
   );
 };

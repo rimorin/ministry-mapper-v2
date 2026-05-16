@@ -1,9 +1,21 @@
-import NiceModal, { useModal, bootstrapDialog } from "@ebay/nice-modal-react";
+import NiceModal from "@ebay/nice-modal-react";
 import { useState, SubmitEvent, useRef, useEffect } from "react";
-import { Modal, Form, Card, Spinner } from "react-bootstrap";
+import * as m from "motion/react-m";
+import { Button } from "@/components/ui/button";
+import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from "@/components/ui/dialog";
+import { XIcon } from "lucide-react";
+import { Spinner } from "@/components/ui/spinner";
 import { useTranslation } from "react-i18next";
 import "leaflet/dist/leaflet.css";
-import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { MapContainer, Marker, useMapEvents } from "react-leaflet";
 import {
   currentLocationIcon,
   addressMarkerIcon
@@ -16,13 +28,11 @@ import {
 } from "../../utils/interface";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import { updateDataById } from "../../utils/pocketbase";
-import GenericButton from "../navigation/button";
 import { MapController } from "../map/mapcontroller";
 import CustomControl from "../map/customcontrol";
 import { SearchControl } from "../map/searchcontrol";
 import useGeolocation from "../../hooks/useGeolocation";
-import "leaflet-geosearch/dist/geosearch.css";
-import "../../css/geosearch.css";
+import { ThemedTileLayer } from "../map/themedtilelayer";
 
 const MapClickHandler = ({
   onMapClick
@@ -43,6 +53,9 @@ const ChangeMapGeolocation = NiceModal.create(
     origin,
     isSelectOnly = false
   }: ConfigureAddressCoordinatesModalProps) => {
+    const { modal, dialogProps, contentProps } = useBaseUiDialog({
+      size: "fullscreen"
+    });
     const { t } = useTranslation();
     const { runAction } = useNotification();
     const { trackEvent } = useAnalytics();
@@ -54,7 +67,6 @@ const ChangeMapGeolocation = NiceModal.create(
     );
     const [recenterTrigger, setRecenterTrigger] = useState(0);
     const hasInitiallyRecentered = useRef(false);
-    const modal = useModal();
 
     // Use universal map centering hook to get device location
     const { currentLocation: deviceLocation, center: initialCenter } =
@@ -94,113 +106,109 @@ const ChangeMapGeolocation = NiceModal.create(
     };
 
     return (
-      <Modal
-        {...bootstrapDialog(modal)}
-        fullscreen
-        onHide={() => modal.remove()}
-      >
-        <Modal.Header>
-          <Modal.Title>
-            {isSelectOnly
-              ? t("common.select", "Select")
-              : t("common.change", "Change")}{" "}
-            {t("address.location", "Location")}
-          </Modal.Title>
-        </Modal.Header>
-        <Form onSubmit={handleUpdateGeoLocation}>
-          <Modal.Body
-            style={{
-              height: window.innerHeight < 700 ? "75dvh" : "80dvh"
-            }}
-          >
-            <MapContainer
-              center={[initialCenter.lat, initialCenter.lng]}
-              zoom={16}
-              style={{ height: "100%", width: "100%" }}
-              zoomControl
-              scrollWheelZoom
-              attributionControl={false}
-            >
-              <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-              <SearchControl
-                onLocationSelect={(location) => {
-                  setAddressLocation(location);
-                  setSearchCenter(location);
-                  setRecenterTrigger((prev) => prev + 1);
-                }}
-                origin={origin}
-              />
-              <MapController
-                center={mapCenter}
-                trigger={recenterTrigger}
-                zoomLevel={16}
-              />
-              <MapClickHandler onMapClick={setAddressLocation} />
-              {deviceLocation && (
-                <>
-                  <Marker
-                    position={[deviceLocation.lat, deviceLocation.lng]}
-                    icon={currentLocationIcon}
-                  />
-                  <CustomControl position="topright">
-                    <MapCurrentTarget
-                      onClick={() => {
-                        setSearchCenter(deviceLocation);
-                        setRecenterTrigger((prev) => prev + 1);
-                      }}
-                    />
-                  </CustomControl>
-                </>
-              )}
-              {addressLocation && (
-                <Marker
-                  position={[addressLocation.lat, addressLocation.lng]}
-                  icon={addressMarkerIcon}
-                />
-              )}
-              {addressLocation && name && (
-                <CustomControl position="bottomleft">
-                  <Card className="map-control-panel">
-                    <Card.Body className="d-flex align-items-center">
-                      <i
-                        className="bi bi-geo-alt-fill text-primary"
-                        style={{ fontSize: "1.1rem" }}
-                      ></i>
-                      <span className="map-control-panel-name">{name}</span>
-                    </Card.Body>
-                  </Card>
-                </CustomControl>
-              )}
-            </MapContainer>
-          </Modal.Body>
-          <Modal.Footer className="justify-content-around">
-            <GenericButton
-              variant="secondary"
-              onClick={() => modal.hide()}
-              label={t("common.cancel", "Cancel")}
-            />
-            <GenericButton
-              type="submit"
-              variant="primary"
-              label={
-                <>
-                  {isSaving && (
-                    <Spinner
-                      as="span"
-                      animation="border"
-                      size="sm"
-                      aria-hidden="true"
-                    />
-                  )}{" "}
-                  {isSelectOnly
-                    ? t("common.select", "Select")
-                    : t("common.save", "Save")}
-                </>
+      <Dialog {...dialogProps}>
+        <DialogContent {...contentProps}>
+          <DialogHeader className="flex-row items-center justify-between px-4 pt-4 pb-3 shrink-0 border-b gap-2">
+            <DialogTitle className="truncate">
+              {isSelectOnly
+                ? t("common.select", "Select")
+                : t("common.change", "Change")}{" "}
+              {t("address.location", "Location")}
+            </DialogTitle>
+            <DialogClose
+              render={
+                <Button variant="ghost" size="icon-sm" className="shrink-0" />
               }
-            />
-          </Modal.Footer>
-        </Form>
-      </Modal>
+            >
+              <XIcon />
+              <span className="sr-only">Close</span>
+            </DialogClose>
+          </DialogHeader>
+          <form
+            onSubmit={handleUpdateGeoLocation}
+            className="flex flex-1 flex-col overflow-hidden"
+          >
+            <m.div
+              className="flex-1 relative overflow-hidden"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.35, ease: "linear", delay: 0.2 }}
+            >
+              <MapContainer
+                center={[initialCenter.lat, initialCenter.lng]}
+                zoom={16}
+                style={{ height: "100%", width: "100%" }}
+                zoomControl
+                scrollWheelZoom
+              >
+                <ThemedTileLayer />
+                <SearchControl
+                  onLocationSelect={(location) => {
+                    setAddressLocation(location);
+                    setSearchCenter(location);
+                    setRecenterTrigger((prev) => prev + 1);
+                  }}
+                  origin={origin}
+                />
+                <MapController
+                  center={mapCenter}
+                  trigger={recenterTrigger}
+                  zoomLevel={16}
+                />
+                <MapClickHandler onMapClick={setAddressLocation} />
+                {deviceLocation && (
+                  <>
+                    <Marker
+                      position={[deviceLocation.lat, deviceLocation.lng]}
+                      icon={currentLocationIcon}
+                    />
+                    <CustomControl position="bottomright">
+                      <MapCurrentTarget
+                        onClick={() => {
+                          setSearchCenter(deviceLocation);
+                          setRecenterTrigger((prev) => prev + 1);
+                        }}
+                      />
+                    </CustomControl>
+                  </>
+                )}
+                {addressLocation && (
+                  <Marker
+                    position={[addressLocation.lat, addressLocation.lng]}
+                    icon={addressMarkerIcon}
+                  />
+                )}
+                {addressLocation && name && (
+                  <CustomControl position="bottomleft">
+                    <div className="max-w-80 rounded-lg border border-border bg-card text-[0.9rem] text-card-foreground shadow-[0_2px_8px_rgba(0,0,0,0.15)]">
+                      <div className="flex items-center gap-2 p-3">
+                        <i
+                          className="bi bi-geo-alt-fill text-primary"
+                          style={{ fontSize: "1.1rem" }}
+                        ></i>
+                        <span className="font-medium truncate">{name}</span>
+                      </div>
+                    </div>
+                  </CustomControl>
+                )}
+              </MapContainer>
+            </m.div>
+            <DialogFooter className="px-4 py-3 shrink-0 flex-row justify-around">
+              <Button variant="secondary" type="button" onClick={modal.hide}>
+                {t("common.cancel", "Cancel")}
+              </Button>
+              <Button type="submit" disabled={isSaving}>
+                {isSaving && (
+                  <Spinner data-icon="inline-start" aria-hidden="true" />
+                )}
+                {isSelectOnly
+                  ? t("common.select", "Select")
+                  : t("common.save", "Save")}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     );
   }
 );

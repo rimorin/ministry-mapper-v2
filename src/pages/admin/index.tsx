@@ -1,15 +1,16 @@
 import "../../css/admin.css";
 
-import { useEffect, useEffectEvent, use, lazy } from "react";
+import { useEffect, useRef, use, lazy } from "react";
 import { useTranslation } from "react-i18next";
 import {
   adminProps,
   userDetails,
   valuesDetails,
   addressDetails,
-  TerritoryPolygonCoordinate
+  TerritoryPolygonCoordinate,
+  HHOptionProps
 } from "../../utils/interface";
-import { LinkSession } from "../../utils/policies";
+import { LinkSession, Policy } from "../../utils/policies";
 import { sortByCode } from "../../utils/helpers/sorthelpers";
 import {
   USER_ACCESS_LEVELS,
@@ -24,7 +25,6 @@ import useMapManagement from "../../hooks/useMapManagement";
 import useCongregationManagement from "../../hooks/useCongManagement";
 import useUIState from "../../hooks/useUIManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
-import useOnTabFocus from "../../hooks/useOnTabFocus";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useAdminData from "../../hooks/useAdminData";
 import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
@@ -40,12 +40,14 @@ import {
   cleanupSession,
   getList,
   getUser,
-  pb,
   requestPasswordReset
 } from "../../utils/pocketbase";
+import useOnSSEReconnect from "../../hooks/useOnSSEReconnect";
 
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import AdminNavbar from "./components/adminnavbar";
-import FloatingActions from "./components/floatingactions";
+import { AppSidebar } from "./components/appsidebar";
+import BackToTopButton from "../../components/navigation/backtotop";
 import { useSmartSync, SmartSyncProvider } from "../../hooks/useSmartSync";
 
 const TerritoryContent = SuspenseComponent(
@@ -69,11 +71,8 @@ const NewMap = lazy(() => import("../../components/modal/newmap"));
 const InviteUser = lazy(() => import("../../components/modal/inviteuser"));
 const GetProfile = lazy(() => import("../../components/modal/profile"));
 const GetAssignments = lazy(() => import("../../components/modal/assignments"));
-const ChangeTerritoryName = lazy(
-  () => import("../../components/modal/changeterritoryname")
-);
-const ChangeTerritoryCode = lazy(
-  () => import("../../components/modal/changeterritorycd")
+const ChangeTerritoryDetails = lazy(
+  () => import("../../components/modal/changeterritorydetails")
 );
 const QuickLinkModal = lazy(
   () => import("../../components/modal/getquicklink")
@@ -97,7 +96,7 @@ function Admin({ user }: adminProps) {
     processingMap,
     sortedAddressList,
     setSortedAddressList,
-    accordingKeys,
+    accordionKeys,
     setAccordionKeys,
     mapViews,
     setMapViews,
@@ -161,6 +160,7 @@ function Admin({ user }: adminProps) {
 
   const {
     showBkTopButton,
+    setShowBkTopButton,
     isUnauthorised,
     setIsUnauthorised,
     showChangeAddressTerritory,
@@ -169,7 +169,6 @@ function Admin({ user }: adminProps) {
     setValues,
     isAssignmentLoading,
     setIsAssignmentLoading,
-    handleScroll,
     toggleAddressTerritoryListing,
     toggleLanguageSelector
   } = useUIState();
@@ -211,6 +210,23 @@ function Admin({ user }: adminProps) {
 
   const logoutUser = () => cleanupSession();
 
+  // Tracks which territory ID had setupMaps fired directly in the event handler,
+  // so the subsequent useEffect can skip the duplicate call and avoid re-fetching.
+  const setupMapsFiredForRef = useRef<string>("");
+  const isScrollingToTopRef = useRef(false);
+
+  // Calls setupMaps immediately inside the user-gesture event handler so Safari
+  // doesn't defer the fetch until after the sheet-close CSS animation finishes.
+  const handleTerritorySelectWithSetup = (
+    id: string | null,
+    _: React.SyntheticEvent<unknown>
+  ) => {
+    if (!id) return;
+    setupMapsFiredForRef.current = id;
+    void setupMaps(id);
+    handleTerritorySelect(id);
+  };
+
   const handleUserSelect = async (userKey: string | null) => {
     if (!userKey) return;
     const details = congregationUsers.get(userKey);
@@ -228,8 +244,9 @@ function Admin({ user }: adminProps) {
         existingUsers.delete(userKey);
         return new Map<string, userDetails>(existingUsers);
       }
-      details.role = updatedRole as string;
-      return new Map<string, userDetails>(existingUsers.set(userKey, details));
+      return new Map<string, userDetails>(
+        existingUsers.set(userKey, { ...details, role: updatedRole as string })
+      );
     });
   };
 
@@ -270,15 +287,8 @@ function Admin({ user }: adminProps) {
     }
   };
 
-  const handleGenerateTerritoryMap = async () => {
-    setIsAssignmentLoading(true);
-    try {
-      showModal(QuickLinkModal, {
-        territoryId: selectedTerritory.id
-      });
-    } finally {
-      setIsAssignmentLoading(false);
-    }
+  const handleGenerateTerritoryMap = () => {
+    showModal(QuickLinkModal, { territoryId: selectedTerritory.id });
   };
 
   const handleAddressTerritorySelect = async (
@@ -299,19 +309,53 @@ function Admin({ user }: adminProps) {
     loadAllCongregationData(selectedCode);
   };
 
-  const handleShowCongregationSettings = () => {
-    showModal(UpdateCongregationSettings, {
+  const handleShowCongregationSettings = async () => {
+    const result = await showModal(UpdateCongregationSettings, {
       currentName: congregationName,
       currentCongregation: congregationCode,
       currentMaxTries: policy?.maxTries || DEFAULT_CONGREGATION_MAX_TRIES,
       currentDefaultExpiryHrs: defaultExpiryHours
     });
+    if (result) {
+      const { name, maxTries, defaultExpiryHrs } = result as {
+        name: string;
+        maxTries: number;
+        defaultExpiryHrs: number;
+      };
+      setCongregationName(name);
+      document.title = name;
+      setDefaultExpiryHours(defaultExpiryHrs);
+      setPolicy(
+        new Policy(
+          userName,
+          policy.options,
+          maxTries,
+          policy.origin,
+          userAccessLevel ?? "",
+          defaultExpiryHrs,
+          congregationCode
+        )
+      );
+    }
   };
 
-  const handleShowCongregationOptions = () => {
-    showModal(UpdateCongregationOptions, {
+  const handleShowCongregationOptions = async () => {
+    const updatedOptions = await showModal(UpdateCongregationOptions, {
       currentCongregation: congregationCode
     });
+    if (updatedOptions && Array.isArray(updatedOptions)) {
+      setPolicy(
+        new Policy(
+          userName,
+          updatedOptions as HHOptionProps[],
+          policy.maxTries,
+          policy.origin,
+          userAccessLevel ?? "",
+          policy.defaultExpiryHours,
+          congregationCode
+        )
+      );
+    }
   };
 
   const handleManageUsers = async () => {
@@ -366,24 +410,19 @@ function Admin({ user }: adminProps) {
     });
   };
 
-  const handleChangeCode = async () => {
-    const updatedCode = await showModal(ChangeTerritoryCode, {
+  const handleChangeDetails = async () => {
+    const result = await showModal(ChangeTerritoryDetails, {
       footerSaveAcl: userAccessLevel,
       congregation: congregationCode,
       territoryCode: selectedTerritory.code,
-      territoryId: selectedTerritory.id
-    });
-    updateTerritoryCode(selectedTerritory.id, updatedCode as string);
-  };
-
-  const handleChangeName = async () => {
-    const updatedName = await showModal(ChangeTerritoryName, {
-      footerSaveAcl: userAccessLevel,
-      congregation: congregationCode,
-      territoryCode: selectedTerritory.id,
+      territoryId: selectedTerritory.id,
       name: selectedTerritory.name
     });
-    updateTerritoryName(selectedTerritory.id, updatedName as string);
+    if (result) {
+      const { code, name } = result as { code: string; name: string };
+      updateTerritoryCode(selectedTerritory.id, code);
+      updateTerritoryName(selectedTerritory.id, name);
+    }
   };
 
   const handleChangeSequence = () => {
@@ -465,45 +504,68 @@ function Admin({ user }: adminProps) {
 
   useEffect(() => {
     fetchData();
-    window.addEventListener("scroll", handleScroll);
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- intentionally run on mount only
   }, []);
+
+  const BACK_TO_TOP_THRESHOLD = 300;
+
+  useEffect(() => {
+    isScrollingToTopRef.current = false;
+    setShowBkTopButton(false);
+    if (!selectedTerritory.id) return;
+
+    let container: Element | null = null;
+    let mutObs: MutationObserver | undefined;
+
+    const handleContainerScroll = () => {
+      if (!container) return;
+      const scrollTop = container.scrollTop;
+      if (isScrollingToTopRef.current) {
+        if (scrollTop <= BACK_TO_TOP_THRESHOLD)
+          isScrollingToTopRef.current = false;
+        return;
+      }
+      setShowBkTopButton(scrollTop > BACK_TO_TOP_THRESHOLD);
+    };
+
+    const attachScroll = (nextContainer: Element) => {
+      container = nextContainer;
+      container.addEventListener("scroll", handleContainerScroll, {
+        passive: true
+      });
+    };
+
+    // Container may already exist (cached lazy chunk / territory re-select)
+    const existing = document.querySelector(".virtual-map-container");
+    if (existing) {
+      attachScroll(existing);
+    } else {
+      // Container not yet in DOM (lazy chunk loading) — observe until it appears
+      mutObs = new MutationObserver(() => {
+        const nextContainer = document.querySelector(".virtual-map-container");
+        if (!nextContainer) return;
+        mutObs?.disconnect();
+        attachScroll(nextContainer);
+      });
+      mutObs.observe(document.body, { childList: true, subtree: true });
+    }
+
+    return () => {
+      mutObs?.disconnect();
+      container?.removeEventListener("scroll", handleContainerScroll);
+    };
+  }, [selectedTerritory.id, setShowBkTopButton]);
 
   const checkMapsOnRealtimeUpdate = () => {
     checkForMaps(congregationCode);
   };
 
-  const onReconnect = useEffectEvent(() => {
-    if (selectedTerritory.id) setupMaps(selectedTerritory.id);
-  });
-
-  // Refresh maps list whenever the SSE connection (re)establishes — covers network
-  // drops and cold starts. PB_CONNECT fires only on genuine reconnects.
-  useEffect(() => {
-    if (!selectedTerritory.id) return;
-
-    let isCleaned = false;
-    let unsubscribe: (() => void) | undefined;
-
-    pb.realtime.subscribe("PB_CONNECT", onReconnect).then((unsub) => {
-      if (isCleaned) {
-        unsub();
-        return;
-      }
-      unsubscribe = unsub;
-    });
-
-    return () => {
-      isCleaned = true;
-      if (unsubscribe) unsubscribe();
-    };
-  }, [selectedTerritory.id]);
-
-  useOnTabFocus(() => {
-    if (selectedTerritory.id) setupMaps(selectedTerritory.id);
+  useOnSSEReconnect(() => {
+    if (selectedTerritory.id) {
+      void setupMaps(selectedTerritory.id);
+    } else {
+      fetchData();
+    }
   });
 
   useRealtimeSubscription(
@@ -540,7 +602,12 @@ function Admin({ user }: adminProps) {
 
   useEffect(() => {
     if (!selectedTerritory.id) return;
-    setupMaps(selectedTerritory.id);
+    // Skip if setupMaps was already fired in the gesture handler for this ID
+    if (setupMapsFiredForRef.current === selectedTerritory.id) {
+      setupMapsFiredForRef.current = "";
+    } else {
+      setupMaps(selectedTerritory.id);
+    }
     const selectedTerritoryData = territories.get(selectedTerritory.id);
     setSelectedTerritory((prev) => ({
       ...prev,
@@ -593,21 +660,20 @@ function Admin({ user }: adminProps) {
   );
   const { displayPendingCount } = smartSync;
 
-  if (isLoading) return <Loader />;
   if (isUnauthorised) {
-    return <UnauthorizedPage handleClick={logoutUser} name={userName} />;
+    return <UnauthorizedPage handleClick={logoutUser} />;
   }
   const isReadonly = userAccessLevel === USER_ACCESS_LEVELS.READ_ONLY.CODE;
 
   return (
-    <>
+    <SidebarProvider>
       <TerritoryListing
         showListing={showTerritoryListing}
         territories={congregationTerritoryList}
         selectedTerritory={selectedTerritory.code}
         selectedTerritoryId={selectedTerritory.id}
         hideFunction={toggleTerritoryListing}
-        handleSelect={handleTerritorySelect}
+        handleSelect={handleTerritorySelectWithSetup}
         congregationCode={congregationCode}
       />
       <TerritoryListing
@@ -640,8 +706,10 @@ function Admin({ user }: adminProps) {
         currentLanguage={currentLanguage}
         languageOptions={languageOptions}
       />
-      <AdminNavbar
+      <AppSidebar
         congregationName={congregationName}
+        userName={userName}
+        userEmail={userEmail}
         userCongregationAccesses={userCongregationAccesses}
         congregationTerritoryList={congregationTerritoryList}
         selectedTerritory={selectedTerritory}
@@ -657,14 +725,12 @@ function Admin({ user }: adminProps) {
         onCreateTerritory={handleCreateTerritory}
         onTerritoryActions={{
           onCreateNew: handleCreateTerritory,
-          onChangeCode: handleChangeCode,
-          onChangeName: handleChangeName,
+          onChangeDetails: handleChangeDetails,
           onChangeLocation: handleChangeLocation,
           onChangeSequence: handleChangeSequence,
           onDelete: handleDeleteTerritory,
           onReset: handleResetTerritory
         }}
-        onCreateMap={handleCreateMap}
         onCongregationActions={{
           onShowSettings: handleShowCongregationSettings,
           onShowOptions: handleShowCongregationOptions,
@@ -679,43 +745,60 @@ function Admin({ user }: adminProps) {
           onLogout: logoutUser
         }}
       />
-      <SmartSyncProvider value={smartSync}>
-        <TerritoryContent
-          selectedTerritory={selectedTerritory}
-          userName={userName}
-          isMapView={isMapView}
-          sortedAddressList={sortedAddressList}
-          accordingKeys={accordingKeys}
-          setAccordionKeys={setAccordionKeys}
-          mapViews={mapViews}
-          setMapViews={setMapViews}
-          policy={policy}
-          values={values}
-          setValues={setValues}
-          userAccessLevel={userAccessLevel}
-          isReadonly={isReadonly}
-          deleteMap={deleteMap}
-          addFloorToMap={addFloorToMap}
-          resetMap={resetMap}
-          processingMap={processingMap}
-          toggleAddressTerritoryListing={toggleAddressTerritoryListing}
-          congregationOptions={policy.options}
-          territories={territories}
-          onCreateOptions={handleShowCongregationOptions}
-          onCreateTerritory={handleCreateTerritory}
-          hasAnyMaps={hasAnyMaps}
-        />
-        {selectedTerritory.code && (
-          <FloatingActions
-            showBkTopButton={showBkTopButton}
-            isMapView={isMapView}
-            isAssignmentLoading={isAssignmentLoading}
-            onToggleMapView={() => setIsMapView(!isMapView)}
-            onGenerateLink={handleGenerateTerritoryMap}
-          />
+      <SidebarInset className="min-w-0">
+        {isLoading ? (
+          <Loader />
+        ) : (
+          <>
+            <AdminNavbar
+              congregationName={congregationName}
+              pendingCount={displayPendingCount}
+            />
+            <SmartSyncProvider value={smartSync}>
+              <TerritoryContent
+                selectedTerritory={selectedTerritory}
+                userName={userName}
+                isMapView={isMapView}
+                isAssignmentLoading={isAssignmentLoading}
+                onToggleMapView={() => setIsMapView(!isMapView)}
+                onGenerateLink={handleGenerateTerritoryMap}
+                sortedAddressList={sortedAddressList}
+                accordionKeys={accordionKeys}
+                setAccordionKeys={setAccordionKeys}
+                mapViews={mapViews}
+                setMapViews={setMapViews}
+                policy={policy}
+                values={values}
+                setValues={setValues}
+                userAccessLevel={userAccessLevel}
+                isReadonly={isReadonly}
+                deleteMap={deleteMap}
+                addFloorToMap={addFloorToMap}
+                resetMap={resetMap}
+                processingMap={processingMap}
+                toggleAddressTerritoryListing={toggleAddressTerritoryListing}
+                congregationOptions={policy.options}
+                territories={territories}
+                onCreateOptions={handleShowCongregationOptions}
+                onCreateTerritory={handleCreateTerritory}
+                hasAnyMaps={hasAnyMaps}
+                onCreateMap={handleCreateMap}
+              />
+              <BackToTopButton
+                showButton={showBkTopButton && !isMapView}
+                onScrollToTop={() => {
+                  isScrollingToTopRef.current = true;
+                  setShowBkTopButton(false);
+                  document
+                    .querySelector(".virtual-map-container")
+                    ?.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              />
+            </SmartSyncProvider>
+          </>
         )}
-      </SmartSyncProvider>
-    </>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
 

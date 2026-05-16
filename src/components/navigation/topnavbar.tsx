@@ -1,8 +1,6 @@
-import { Container, Image, Navbar } from "react-bootstrap";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 import ExpiryBadge from "./expirybadge";
 import PendingBadge from "./pendingbadge";
-import "../../css/networkstatus.css";
 
 interface TopNavbarProps {
   title: string;
@@ -18,39 +16,30 @@ const TopNavbar = ({
   onTokenExpired
 }: TopNavbarProps) => {
   return (
-    <Navbar expand="sm">
-      <Container fluid>
-        <Navbar.Brand
-          className="brand-wrap d-flex align-items-center"
-          style={{ width: "100%", marginRight: 0 }}
-        >
-          <div style={{ flex: 0, textAlign: "left", marginRight: 10 }}>
-            <Image
-              src={getAssetUrl("favicon-32x32.png")}
-              alt=""
-              width="32"
-              height="32"
-              className="d-inline-block align-top"
-            />
+    <nav className="shrink-0 border-b bg-background">
+      <div className="flex min-h-14 items-center gap-3 px-4">
+        <img
+          src={getAssetUrl("favicon-32x32.png")}
+          alt=""
+          width="28"
+          height="28"
+          className="shrink-0"
+        />
+        <span className="font-bold fluid-text min-w-0 flex-1 line-clamp-2">
+          {title}
+        </span>
+        {pendingCount > 0 && (
+          <div className="shrink-0">
+            <PendingBadge count={pendingCount} />
           </div>
-          <div style={{ flex: 1, textAlign: "left" }}>
-            <Navbar.Text className="fluid-bolding fluid-text">
-              {title}
-            </Navbar.Text>
+        )}
+        {tokenEndTime > 0 && (
+          <div className="shrink-0">
+            <ExpiryBadge endtime={tokenEndTime} onExpired={onTokenExpired} />
           </div>
-          {pendingCount > 0 && (
-            <div style={{ flex: 0, marginLeft: 10 }}>
-              <PendingBadge count={pendingCount} />
-            </div>
-          )}
-          {tokenEndTime > 0 && (
-            <div style={{ flex: 0, marginLeft: 10 }}>
-              <ExpiryBadge endtime={tokenEndTime} onExpired={onTokenExpired} />
-            </div>
-          )}
-        </Navbar.Brand>
-      </Container>
-    </Navbar>
+        )}
+      </div>
+    </nav>
   );
 };
 

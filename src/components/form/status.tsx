@@ -1,65 +1,84 @@
-import { Form, ToggleButtonGroup, ToggleButton } from "react-bootstrap";
+import * as m from "motion/react-m";
 import { useTranslation } from "react-i18next";
 import { STATUS_CODES } from "../../utils/constants";
-import { FormProps } from "../../utils/interface";
+import type { FormProps } from "../../utils/interface";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import { Ban, Check, Circle, X } from "lucide-react";
+import NotHomeIcon from "../table/nothome";
 
-const HHStatusField = ({ handleGroupChange, changeValue }: FormProps) => {
+interface HHStatusFieldProps extends FormProps {
+  nhcount?: string;
+}
+
+const HHStatusField = ({
+  handleGroupChange,
+  changeValue,
+  nhcount
+}: HHStatusFieldProps) => {
   const { t } = useTranslation();
+  const options = [
+    {
+      value: STATUS_CODES.DEFAULT,
+      label: t("address.notDone", "Not Done"),
+      icon: <Circle className="size-5 text-muted-foreground" />
+    },
+    {
+      value: STATUS_CODES.DONE,
+      label: t("address.done", "Done"),
+      icon: <Check className="size-5 text-green-600 stroke-[2.5]" />
+    },
+    {
+      value: STATUS_CODES.NOT_HOME,
+      label: t("address.notHome", "Not Home"),
+      icon: <NotHomeIcon nhcount={nhcount} iconClassName="size-5" />
+    },
+    {
+      value: STATUS_CODES.DO_NOT_CALL,
+      label: t("address.dnc", "DNC"),
+      icon: <Ban className="size-5 text-destructive" />
+    },
+    {
+      value: STATUS_CODES.INVALID,
+      label: t("address.invalid", "Invalid"),
+      icon: <X className="size-5 text-violet-500" />
+    }
+  ];
 
   return (
-    <Form.Group
-      className="mb-1 text-center"
-      controlId="formBasicStatusbtnCheckbox"
-    >
-      <ToggleButtonGroup
-        name="status"
-        type="radio"
-        value={changeValue}
-        className="mb-3"
-        onChange={handleGroupChange}
+    <div className="flex flex-col gap-1.5">
+      <ToggleGroup
+        aria-label="Select status"
+        variant="outline"
+        value={changeValue ? [changeValue] : []}
+        onValueChange={(values) => {
+          const value = values[values.length - 1];
+          if (value) {
+            handleGroupChange?.(value);
+          }
+        }}
+        className="flex w-full"
       >
-        <ToggleButton
-          id="status-tb-0"
-          variant="outline-dark"
-          value={STATUS_CODES.DEFAULT}
-          className="fluid-button"
-        >
-          {t("address.notDone", "Not Done")}
-        </ToggleButton>
-        <ToggleButton
-          id="status-tb-1"
-          variant="outline-success"
-          value={STATUS_CODES.DONE}
-          className="fluid-button"
-        >
-          {t("address.done", "Done")}
-        </ToggleButton>
-        <ToggleButton
-          id="status-tb-2"
-          variant="outline-secondary"
-          value={STATUS_CODES.NOT_HOME}
-          className="fluid-button"
-        >
-          {t("address.notHome", "Not Home")}
-        </ToggleButton>
-        <ToggleButton
-          id="status-tb-4"
-          variant="outline-danger"
-          value={STATUS_CODES.DO_NOT_CALL}
-          className="fluid-button"
-        >
-          {t("address.dnc", "DNC")}
-        </ToggleButton>
-        <ToggleButton
-          id="status-tb-5"
-          variant="outline-info"
-          value={STATUS_CODES.INVALID}
-          className="fluid-button"
-        >
-          {t("address.invalid", "Invalid")}
-        </ToggleButton>
-      </ToggleButtonGroup>
-    </Form.Group>
+        {options.map(({ value, label, icon }) => (
+          <ToggleGroupItem
+            key={value}
+            value={value}
+            aria-label={label}
+            className="flex-1 flex-col gap-1 h-auto py-2.5 opacity-40 transition-[opacity,transform,background-color] duration-150 ease-in-out motion-reduce:transition-none active:scale-95 data-[pressed]:opacity-100 data-[pressed]:bg-primary/75 data-[pressed]:text-primary-foreground data-[pressed]:z-10 focus:outline-none"
+          >
+            <m.span
+              className="inline-flex"
+              animate={{ scale: changeValue === value ? 1.15 : 1 }}
+              transition={{ type: "spring", visualDuration: 0.25, bounce: 0.4 }}
+            >
+              {icon}
+            </m.span>
+            <span className="text-[10px] font-medium leading-none">
+              {label}
+            </span>
+          </ToggleGroupItem>
+        ))}
+      </ToggleGroup>
+    </div>
   );
 };
 

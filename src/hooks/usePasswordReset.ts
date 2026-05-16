@@ -1,12 +1,15 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   requestPasswordReset,
   confirmPasswordReset,
   confirmVerification
 } from "../utils/pocketbase";
-import useNotification from "./useNotification";
+import useNotification, { formatErrorMessage } from "./useNotification";
+import { mapPbAuthError } from "../utils/helpers/pbErrors";
 
 export default function usePasswordReset() {
+  const { t } = useTranslation();
   const { notifyError, notifyWarning } = useNotification();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
@@ -19,7 +22,7 @@ export default function usePasswordReset() {
       await requestPasswordReset(email);
       notifyWarning(`Password reset email sent to ${email}.`);
     } catch (error) {
-      notifyError(error);
+      notifyError(mapPbAuthError(error, t) ?? error);
     } finally {
       setIsProcessing(false);
     }
@@ -36,7 +39,7 @@ export default function usePasswordReset() {
       setMessage("Your password has been successfully reset.");
       setIsSuccess(true);
     } catch (error) {
-      setMessage(JSON.stringify(error));
+      setMessage(mapPbAuthError(error, t) ?? formatErrorMessage(error));
       setIsSuccess(false);
     } finally {
       setIsResetting(false);
@@ -50,9 +53,7 @@ export default function usePasswordReset() {
       setMessage("Your email address has been verified.");
       setIsSuccess(true);
     } catch (error) {
-      setMessage(
-        error instanceof Error ? error.message : JSON.stringify(error)
-      );
+      setMessage(mapPbAuthError(error, t) ?? formatErrorMessage(error));
       setIsSuccess(false);
     } finally {
       setIsProcessing(false);

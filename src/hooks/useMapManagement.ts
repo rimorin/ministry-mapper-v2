@@ -31,7 +31,7 @@ export default function useMapManagement() {
   const [sortedAddressList, setSortedAddressList] = useState<
     Array<addressDetails>
   >([]);
-  const [accordingKeys, setAccordionKeys] = useState<Array<string>>([]);
+  const [accordionKeys, setAccordionKeys] = useState<Array<string>>([]);
   const [mapViews, setMapViews] = useState<Map<string, boolean>>(new Map());
   const [isMapView, setIsMapView] = useLocalStorage("mapView", false);
 
@@ -167,7 +167,7 @@ export default function useMapManagement() {
     processingMap,
     sortedAddressList,
     setSortedAddressList,
-    accordingKeys,
+    accordionKeys,
     setAccordionKeys,
     mapViews,
     setMapViews,

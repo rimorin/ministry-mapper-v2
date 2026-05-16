@@ -1,9 +1,12 @@
 import { useEffect, useRef } from "react";
-import { ListGroup } from "react-bootstrap";
 import { Message } from "../../utils/interface";
 import { Policy } from "../../utils/policies";
 import { MESSAGE_TYPES, USER_ACCESS_LEVELS } from "../../utils/constants";
-import GenericButton from "./button";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Check, Pin, PinOff, Trash2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const FeedbackList = ({
   feedbacks,
@@ -23,77 +26,113 @@ const FeedbackList = ({
 
   useEffect(() => {
     if (listRef.current) {
-      listRef.current.scrollTop = listRef.current.scrollHeight;
+      const viewport = listRef.current.querySelector(
+        "[data-slot='scroll-area-viewport']"
+      ) as HTMLElement | null;
+      if (viewport) viewport.scrollTop = viewport.scrollHeight;
     }
   }, [feedbacks]);
 
+  const getInitials = (name: string) =>
+    name
+      .split(" ")
+      .map((w) => w[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+
   return (
-    <ListGroup
-      variant="flush"
-      style={{ maxHeight: "300px", overflowY: "auto" }}
-      ref={listRef}
-    >
-      {feedbacks.map((fb) => (
-        <ListGroup.Item
-          key={fb.id}
-          className={`m-2 p-2 ${fb.pinned ? "bg-primary-subtle border-primary" : ""}`}
-        >
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              marginBottom: "5px"
-            }}
+    <ScrollArea className="max-h-64 rounded-md border" ref={listRef} withFade>
+      <ul className="divide-y">
+        {feedbacks.map((fb) => (
+          <li
+            key={fb.id}
+            className={cn("px-3 py-3", fb.pinned && "bg-primary/5")}
           >
-            <div style={{ flex: 1 }}>
-              <strong>{fb.created_by}</strong>
-              <div>
-                <small>{fb.created.toLocaleString()}</small>
+            <div className="mb-2 flex items-start gap-2.5">
+              <div className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-xs font-semibold text-muted-foreground">
+                {getInitials(fb.created_by)}
               </div>
-            </div>
-            <div>
-              {isAdmin ? (
-                <>
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-sm font-semibold">{fb.created_by}</span>
+                  {fb.pinned && (
+                    <Badge
+                      variant="secondary"
+                      className="h-4 px-1.5 text-[10px]"
+                    >
+                      <Pin className="mr-0.5 size-2.5" />
+                      Pinned
+                    </Badge>
+                  )}
+                  {fb.read && fb.type !== MESSAGE_TYPES.ADMIN && !isAdmin && (
+                    <Badge
+                      variant="outline"
+                      className="h-4 border-green-200 px-1.5 text-[10px] text-green-600"
+                    >
+                      <Check className="mr-0.5 size-2.5" />
+                      Read
+                    </Badge>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {fb.created.toLocaleString()}
+                </p>
+              </div>
+              {isAdmin && (
+                <div className="flex shrink-0 items-center gap-1">
                   {!fb.read && (
-                    <GenericButton
-                      label="✅"
-                      size="sm"
-                      variant="outline-success"
-                      className="me-1"
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="size-7 text-green-600 hover:text-green-700 hover:bg-green-50"
                       onClick={() => handleRead(fb.id)}
-                    />
+                      aria-label="Mark as read"
+                    >
+                      <Check className="size-3.5" />
+                    </Button>
                   )}
                   {fb.read && fb.type === MESSAGE_TYPES.ADMIN && (
-                    <GenericButton
-                      label={fb.pinned ? "📌" : "📍"}
-                      size="sm"
-                      variant={
-                        fb.pinned ? "outline-primary" : "outline-secondary"
-                      }
-                      className="me-1"
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className={cn(
+                        "size-7",
+                        fb.pinned
+                          ? "text-primary hover:text-primary/80"
+                          : "text-muted-foreground hover:text-foreground"
+                      )}
                       onClick={() => handlePin(fb.id, !fb.pinned)}
-                    />
+                      aria-label={fb.pinned ? "Unpin message" : "Pin message"}
+                    >
+                      {fb.pinned ? (
+                        <PinOff className="size-3.5" />
+                      ) : (
+                        <Pin className="size-3.5" />
+                      )}
+                    </Button>
                   )}
                   {fb.read && (
-                    <GenericButton
-                      label="🗑️"
-                      size="sm"
-                      variant="outline-warning"
-                      className="me-1"
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="size-7 text-destructive hover:text-destructive/80 hover:bg-destructive/10"
                       onClick={() => handleDelete(fb.id)}
-                    />
+                      aria-label="Delete message"
+                    >
+                      <Trash2 className="size-3.5" />
+                    </Button>
                   )}
-                </>
-              ) : (
-                fb.read && fb.type != MESSAGE_TYPES.ADMIN && <>✅</>
+                </div>
               )}
             </div>
-          </div>
-          <p>{fb.message}</p>
-        </ListGroup.Item>
-      ))}
-    </ListGroup>
+            <p className="ml-[calc(2rem+0.625rem)] text-sm text-foreground/80">
+              {fb.message}
+            </p>
+          </li>
+        ))}
+      </ul>
+    </ScrollArea>
   );
 };
 

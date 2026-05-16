@@ -65,7 +65,7 @@ describe("UnauthorizedPage", () => {
         <UnauthorizedPage handleClick={mockHandleClick} />
       );
 
-      const alert = container.querySelector(".alert-warning");
+      const alert = container.querySelector(".bg-amber-50");
       expect(alert).toBeInTheDocument();
     });
 
@@ -80,8 +80,6 @@ describe("UnauthorizedPage", () => {
     it("should render use another account button", () => {
       render(<UnauthorizedPage handleClick={mockHandleClick} />);
 
-      // The UseAnotherButton component should be rendered
-      // We can check if it's in the document by looking for the button
       const buttons = screen.getAllByRole("button");
       expect(buttons.length).toBeGreaterThan(0);
     });

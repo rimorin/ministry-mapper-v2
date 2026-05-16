@@ -238,7 +238,6 @@ describe("useAuthentication", () => {
       vi.spyOn(pocketbase, "requestOTP").mockResolvedValue("otp-session-123");
       const { result } = renderHook(() => useAuthentication());
 
-      // Set OTP state
       await act(async () => {
         await result.current.handleResendOtp("test@example.com");
       });

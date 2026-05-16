@@ -1,11 +1,18 @@
 import { FC, ReactNode } from "react";
-import { Form } from "react-bootstrap";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle
+} from "@/components/ui/card";
 
 interface AuthContainerProps {
   children: ReactNode;
   title: string;
   subtitle?: string;
-  icon?: string;
+  icon?: ReactNode;
+  iconPlain?: boolean;
   iconColor?: "primary" | "secondary" | "success" | "danger";
   noValidate?: boolean;
   validated?: boolean;
@@ -17,34 +24,42 @@ const AuthContainer: FC<AuthContainerProps> = ({
   title,
   subtitle,
   icon,
-  iconColor = "primary",
+  iconPlain = false,
   noValidate = true,
   validated = false,
   onSubmit
 }) => (
-  <Form
-    noValidate={noValidate}
-    validated={validated}
-    onSubmit={onSubmit}
-    className="responsive-width py-3"
-  >
-    <Form.Group className="mb-3 text-center">
+  <Card className="w-full shadow-md">
+    <CardHeader className="text-center pb-2">
       {icon && (
-        <div className="mb-3">
-          <div
-            className={`icon-large icon-${iconColor}`}
-            role="img"
-            aria-label={title}
-          >
-            {icon}
-          </div>
+        <div
+          className={
+            iconPlain
+              ? "mx-auto mb-2 flex size-12 items-center justify-center"
+              : "mx-auto mb-2 flex size-12 items-center justify-center rounded-full bg-muted text-2xl"
+          }
+        >
+          {icon}
         </div>
       )}
-      <h1 className="h3 mb-2">{title}</h1>
-      {subtitle && <p className="text-muted mb-0 small">{subtitle}</p>}
-    </Form.Group>
-    {children}
-  </Form>
+      <CardTitle className="text-2xl font-semibold tracking-tight">
+        {title}
+      </CardTitle>
+      {subtitle && (
+        <CardDescription className="mt-1 text-sm">{subtitle}</CardDescription>
+      )}
+    </CardHeader>
+    <CardContent>
+      <form
+        noValidate={noValidate}
+        data-validated={validated}
+        onSubmit={onSubmit}
+        className="space-y-4"
+      >
+        {children}
+      </form>
+    </CardContent>
+  </Card>
 );
 
 export default AuthContainer;

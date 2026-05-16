@@ -1,7 +1,7 @@
 import "leaflet/dist/leaflet.css";
 import React, { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { MapContainer, TileLayer, Marker } from "react-leaflet";
+import { MapContainer, Marker } from "react-leaflet";
 import {
   DEFAULT_COORDINATES,
   LINK_TYPES,
@@ -14,7 +14,6 @@ import {
   latlongInterface,
   MapViewProps
 } from "../../utils/interface";
-import { Card, Table } from "react-bootstrap";
 import AddressMarker from "../map/marker";
 import AssignmentButtonGroup from "./assignmentbtn";
 import { getList, getUser } from "../../utils/pocketbase";
@@ -22,11 +21,17 @@ import ComponentAuthorizer from "./authorizer";
 import { MapController } from "../map/mapcontroller";
 import CustomControl from "../map/customcontrol";
 import useGeolocation from "../../hooks/useGeolocation";
+import { ThemedTileLayer } from "../map/themedtilelayer";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
+} from "@/components/ui/popover";
 
 const RING_LEGEND = [
   { color: "var(--mm-success)", labelKey: "navigation.normalRing" },
   { color: "var(--mm-warning)", labelKey: "navigation.personalRing" },
-  { color: "#00f", labelKey: "navigation.progressRing" }
+  { color: "var(--mm-progress)", labelKey: "navigation.progressRing" }
 ] as const;
 
 const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
@@ -75,16 +80,15 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
   const defaultCenter = sortedAddressList[0].coordinates || DEFAULT_COORDINATES;
 
   return (
-    <div className="map-view-admin">
+    <div className="relative z-0 h-[75dvh] w-full overflow-hidden rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.12)]">
       <MapContainer
         center={[defaultCenter.lat, defaultCenter.lng]}
         zoom={18}
         style={{ height: "100%", width: "100%" }}
         zoomControl
         scrollWheelZoom
-        attributionControl={false}
       >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <ThemedTileLayer />
         <MapController
           center={center}
           onCenterChange={setCenter}
@@ -110,72 +114,94 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
           />
         ))}
         <CustomControl position="topright">
-          <Card className="marker-info-card marker-legend-card">
-            <Card.Header className="text-center py-1">
-              <b>{t("navigation.markerGuide")}</b>
-            </Card.Header>
-            <Card.Body className="p-1">
-              {RING_LEGEND.map(({ color, labelKey }) => (
-                <div
-                  key={color}
-                  className="d-flex align-items-center gap-1 px-1"
-                >
-                  <svg width="16" height="16" viewBox="0 0 16 16">
-                    <circle
-                      cx="8"
-                      cy="8"
-                      r="5"
-                      fill="none"
-                      style={{ stroke: color }}
-                      strokeWidth="3"
+          <Popover>
+            <PopoverTrigger
+              className="flex size-[44px] items-center justify-center rounded-md border bg-background/95 backdrop-blur-sm shadow-md hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              aria-label={t("navigation.markerGuide")}
+            >
+              <span
+                className="flex flex-col items-center gap-[3px]"
+                aria-hidden="true"
+              >
+                {RING_LEGEND.map(({ color }) => (
+                  <span
+                    key={color}
+                    className="block size-[5px] rounded-full border-[1.5px]"
+                    style={{ borderColor: color }}
+                  />
+                ))}
+              </span>
+            </PopoverTrigger>
+            <PopoverContent
+              side="left"
+              align="start"
+              sideOffset={8}
+              className="w-auto p-0 gap-0 overflow-hidden"
+            >
+              <div className="px-3 py-2 border-b">
+                <p className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  {t("navigation.markerGuide")}
+                </p>
+              </div>
+              <div className="px-3 py-2 flex flex-col gap-2">
+                {RING_LEGEND.map(({ color, labelKey }) => (
+                  <div key={color} className="flex items-center gap-2.5">
+                    <div
+                      className="size-3 shrink-0 rounded-full border-2"
+                      style={{ borderColor: color }}
                     />
-                  </svg>
-                  <span className="small">{t(labelKey)}</span>
-                </div>
-              ))}
-            </Card.Body>
-          </Card>
+                    <span className="text-xs text-foreground whitespace-nowrap">
+                      {t(labelKey)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </PopoverContent>
+          </Popover>
         </CustomControl>
         {selectedAddress && (
           <CustomControl position="bottomright">
-            <Card className="marker-info-card">
-              <Card.Header className="text-center py-2">
-                <b>{selectedAddress.name}</b>
-              </Card.Header>
-              <Card.Body className="p-1">
-                <Table size="sm" hover responsive className="mb-1">
-                  <thead>
-                    <tr>
-                      <th className="text-center small">Not Done</th>
-                      <th className="text-center small">Not Home</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="text-center small">
-                        {selectedAddress.aggregates.notDone}
-                      </td>
-                      <td className="text-center small">
-                        {selectedAddress.aggregates.notHome}
-                      </td>
-                    </tr>
-                  </tbody>
-                </Table>
-                <ComponentAuthorizer
-                  requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
-                  userPermission={policy.userRole}
-                >
-                  <div className="text-center">
-                    <AssignmentButtonGroup
-                      key={selectedAddress.id}
-                      addressElement={selectedAddress}
-                      policy={policy}
-                      userId={getUser("id") as string}
-                    />
-                  </div>
-                </ComponentAuthorizer>
-              </Card.Body>
-            </Card>
+            <div className="w-56 overflow-hidden rounded-xl bg-background/95 text-sm shadow-lg backdrop-blur-sm ring-1 ring-foreground/10">
+              <div className="border-b px-4 py-3">
+                <p className="font-semibold leading-tight">
+                  {selectedAddress.name}
+                </p>
+                <p className="mt-0.5 text-xs capitalize text-muted-foreground">
+                  {selectedAddress.type}
+                </p>
+              </div>
+              <div className="grid grid-cols-2 divide-x">
+                <div className="flex flex-col items-center py-3">
+                  <span className="text-2xl font-bold tabular-nums">
+                    {selectedAddress.aggregates.notDone}
+                  </span>
+                  <span className="mt-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+                    Not Done
+                  </span>
+                </div>
+                <div className="flex flex-col items-center py-3">
+                  <span className="text-2xl font-bold tabular-nums">
+                    {selectedAddress.aggregates.notHome}
+                  </span>
+                  <span className="mt-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
+                    Not Home
+                  </span>
+                </div>
+              </div>
+              <ComponentAuthorizer
+                requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
+                userPermission={policy.userRole}
+              >
+                <div className="flex flex-row justify-center border-t px-3 py-2">
+                  <AssignmentButtonGroup
+                    key={selectedAddress.id}
+                    addressElement={selectedAddress}
+                    policy={policy}
+                    userId={getUser("id") as string}
+                  />
+                </div>
+              </ComponentAuthorizer>
+            </div>
           </CustomControl>
         )}
       </MapContainer>

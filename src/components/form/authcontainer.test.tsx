@@ -9,12 +9,12 @@ describe("AuthContainer", () => {
   };
 
   describe("rendering", () => {
-    it("should render title", () => {
+    it("should render title inside the card title slot", () => {
       render(<AuthContainer {...defaultProps} />);
 
-      expect(screen.getByText("Login")).toBeInTheDocument();
-      expect(screen.getByRole("heading", { level: 1 })).toHaveTextContent(
-        "Login"
+      expect(screen.getByText("Login")).toHaveAttribute(
+        "data-slot",
+        "card-title"
       );
     });
 
@@ -35,8 +35,9 @@ describe("AuthContainer", () => {
     it("should not render subtitle when not provided", () => {
       const { container } = render(<AuthContainer {...defaultProps} />);
 
-      const subtitle = container.querySelector(".text-muted");
-      expect(subtitle).not.toBeInTheDocument();
+      expect(
+        container.querySelector('[data-slot="card-description"]')
+      ).not.toBeInTheDocument();
     });
   });
 
@@ -44,42 +45,41 @@ describe("AuthContainer", () => {
     it("should render icon when provided", () => {
       render(<AuthContainer {...defaultProps} icon="🔒" />);
 
-      expect(screen.getByRole("img", { name: "Login" })).toBeInTheDocument();
       expect(screen.getByText("🔒")).toBeInTheDocument();
     });
 
     it("should not render icon when not provided", () => {
       render(<AuthContainer {...defaultProps} />);
 
-      const icon = screen.queryByRole("img");
-      expect(icon).not.toBeInTheDocument();
+      expect(screen.queryByText("🔒")).not.toBeInTheDocument();
     });
 
-    it("should use primary icon color by default", () => {
-      const { container } = render(
-        <AuthContainer {...defaultProps} icon="🔒" />
-      );
+    it("should render the shared muted icon container by default", () => {
+      render(<AuthContainer {...defaultProps} icon="🔒" />);
 
-      const icon = container.querySelector(".icon-primary");
-      expect(icon).toBeInTheDocument();
+      expect(screen.getByText("🔒")).toHaveClass(
+        "mx-auto",
+        "mb-2",
+        "flex",
+        "size-12",
+        "items-center",
+        "justify-center",
+        "rounded-full",
+        "bg-muted",
+        "text-2xl"
+      );
     });
 
-    it("should use custom icon color", () => {
-      const { container } = render(
-        <AuthContainer {...defaultProps} icon="🔒" iconColor="success" />
-      );
+    it("should keep the same icon styling when iconColor is provided", () => {
+      render(<AuthContainer {...defaultProps} icon="🔒" iconColor="success" />);
 
-      const icon = container.querySelector(".icon-success");
-      expect(icon).toBeInTheDocument();
+      expect(screen.getByText("🔒")).toHaveClass("bg-muted", "text-2xl");
     });
 
-    it("should render with danger icon color", () => {
-      const { container } = render(
-        <AuthContainer {...defaultProps} icon="⚠️" iconColor="danger" />
-      );
+    it("should render custom icons inside the same wrapper", () => {
+      render(<AuthContainer {...defaultProps} icon="⚠️" iconColor="danger" />);
 
-      const icon = container.querySelector(".icon-danger");
-      expect(icon).toBeInTheDocument();
+      expect(screen.getByText("⚠️")).toHaveClass("rounded-full", "bg-muted");
     });
   });
 
@@ -87,8 +87,7 @@ describe("AuthContainer", () => {
     it("should have noValidate by default", () => {
       const { container } = render(<AuthContainer {...defaultProps} />);
 
-      const form = container.querySelector("form");
-      expect(form).toHaveAttribute("novalidate");
+      expect(container.querySelector("form")).toHaveAttribute("novalidate");
     });
 
     it("should allow validation when noValidate is false", () => {
@@ -96,24 +95,27 @@ describe("AuthContainer", () => {
         <AuthContainer {...defaultProps} noValidate={false} />
       );
 
-      const form = container.querySelector("form");
-      expect(form).not.toHaveAttribute("novalidate");
+      expect(container.querySelector("form")).not.toHaveAttribute("novalidate");
     });
 
     it("should not be validated by default", () => {
       const { container } = render(<AuthContainer {...defaultProps} />);
 
-      const form = container.querySelector("form");
-      expect(form).not.toHaveClass("was-validated");
+      expect(container.querySelector("form")).toHaveAttribute(
+        "data-validated",
+        "false"
+      );
     });
 
-    it("should apply validated class when validated is true", () => {
+    it("should expose validated state through data-validated", () => {
       const { container } = render(
         <AuthContainer {...defaultProps} validated={true} />
       );
 
-      const form = container.querySelector("form");
-      expect(form).toHaveClass("was-validated");
+      expect(container.querySelector("form")).toHaveAttribute(
+        "data-validated",
+        "true"
+      );
     });
   });
 
@@ -125,8 +127,9 @@ describe("AuthContainer", () => {
         <AuthContainer {...defaultProps} onSubmit={handleSubmit} />
       );
 
-      const form = container.querySelector("form");
-      form?.dispatchEvent(new Event("submit", { bubbles: true }));
+      container
+        .querySelector("form")
+        ?.dispatchEvent(new Event("submit", { bubbles: true }));
 
       expect(handleSubmit).toHaveBeenCalled();
     });
@@ -139,25 +142,32 @@ describe("AuthContainer", () => {
   });
 
   describe("styling", () => {
-    it("should have responsive width class", () => {
+    it("should have responsive width classes on the card", () => {
       const { container } = render(<AuthContainer {...defaultProps} />);
 
-      const form = container.querySelector(".responsive-width");
-      expect(form).toBeInTheDocument();
+      expect(container.querySelector('[data-slot="card"]')).toHaveClass(
+        "w-full",
+        "shadow-md"
+      );
     });
 
     it("should have centered text for title section", () => {
       const { container } = render(<AuthContainer {...defaultProps} />);
 
-      const formGroup = container.querySelector(".text-center");
-      expect(formGroup).toBeInTheDocument();
+      expect(container.querySelector('[data-slot="card-header"]')).toHaveClass(
+        "text-center",
+        "pb-2"
+      );
     });
 
-    it("should have h3 styling on h1 title", () => {
-      const { container } = render(<AuthContainer {...defaultProps} />);
+    it("should use Tailwind typography classes for the title", () => {
+      render(<AuthContainer {...defaultProps} />);
 
-      const title = container.querySelector(".h3");
-      expect(title).toBeInTheDocument();
+      expect(screen.getByText("Login")).toHaveClass(
+        "text-2xl",
+        "font-semibold",
+        "tracking-tight"
+      );
     });
   });
 
