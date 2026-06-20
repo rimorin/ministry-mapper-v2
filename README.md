@@ -116,6 +116,7 @@ Digital systems consistently outperform paper in accuracy, accessibility, and du
 - Full data ownership with self-hosted backend
 - GDPR-aware — no third-party data sharing
 - Configurable privacy, terms & about URLs
+- Runtime feature flags & maintenance mode with LaunchDarkly (optional)
 - Error tracking with Sentry (optional)
 - Privacy-friendly analytics with Umami (optional)
 
@@ -165,6 +166,7 @@ The frontend communicates with the backend via the [PocketBase JS SDK](https://g
 | **Routing** | Wouter (lightweight client-side router) |
 | **Backend** | PocketBase (self-hosted BaaS on Go + SQLite) |
 | **Testing** | Vitest |
+| **Feature Flags** | LaunchDarkly (client-side React SDK) |
 | **Error Tracking** | Sentry |
 | **Analytics** | Umami (privacy-friendly, self-hostable) |
 | **i18n** | i18next |
@@ -220,7 +222,8 @@ cp .env.example .env
 
 | Variable | Description |
 |---|---|
-| `VITE_MAINTENANCE_MODE` | Set to `true` to display a maintenance page to all users |
+| `VITE_MAINTENANCE_MODE` | Set to `true` to display a maintenance page to all users (build-time kill-switch; can also be toggled at runtime via LaunchDarkly) |
+| `VITE_LAUNCHDARKLY_CLIENT_ID` | LaunchDarkly client-side ID for runtime feature flags (e.g. the `maintenance-mode` flag). Leave empty to disable feature flags |
 | `VITE_SENTRY_DSN` | Sentry DSN for error tracking |
 | `SENTRY_AUTH_TOKEN` | Sentry auth token for source map uploads (build-time) |
 | `VITE_UMAMI_SRC_URL` | Umami analytics script URL |

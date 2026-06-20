@@ -3,6 +3,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { initAnalytics } from "./utils/analytics";
 import { isAbortError } from "./utils/pocketbase";
+import { initLaunchDarkly } from "./lib/launchdarkly";
 import Main from "./pages/index";
 
 initAnalytics();
@@ -65,9 +66,20 @@ const rootElement = document.getElementById("root");
 
 if (rootElement) {
   const root = createRoot(rootElement);
-  root.render(
-    <StrictMode>
-      <Main />
-    </StrictMode>
-  );
+  // Resolve LaunchDarkly flags before the first render so the maintenance gate
+  // never flashes the real app. Falls back to a bare render when LD is disabled
+  // or unreachable (the env var still governs maintenance mode).
+  initLaunchDarkly().then((LDProvider) => {
+    root.render(
+      <StrictMode>
+        {LDProvider ? (
+          <LDProvider>
+            <Main />
+          </LDProvider>
+        ) : (
+          <Main />
+        )}
+      </StrictMode>
+    );
+  });
 }
