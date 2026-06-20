@@ -16,6 +16,7 @@ interface ImportMetaEnv {
   readonly VITE_SENTRY_DSN: string;
   readonly VITE_UMAMI_WEBSITE_ID: string;
   readonly VITE_UMAMI_SRC_URL: string;
+  readonly VITE_LAUNCHDARKLY_CLIENT_ID: string;
 }
 
 interface ImportMeta {

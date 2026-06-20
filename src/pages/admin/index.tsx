@@ -28,6 +28,7 @@ import useRealtimeSubscription from "../../hooks/useRealtime";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useAdminData from "../../hooks/useAdminData";
 import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
+import useLaunchDarklyContext from "../../hooks/useLaunchDarklyContext";
 
 import TerritoryListing from "../../components/navigation/territorylist";
 import UserListing from "../../components/navigation/userlist";
@@ -137,6 +138,8 @@ function Admin({ user }: adminProps) {
     handleCongregationSelect,
     generateReport
   } = useCongregationManagement({ userId });
+
+  useLaunchDarklyContext(userCongregationAccesses, congregationCode);
 
   const {
     selectedTerritory,
