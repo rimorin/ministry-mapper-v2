@@ -1,3 +1,10 @@
+# [1.38.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.37.0...v1.38.0) (2026-06-21)
+
+
+### Features
+
+* launchdarkly feature flag implementation ([16723fd](https://github.com/rimorin/ministry-mapper-v2/commit/16723fd24d1433b4c7074d6ec81645020447f876))
+
 # [1.37.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.36.3...v1.37.0) (2026-05-10)
 
 
