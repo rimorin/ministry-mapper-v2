@@ -1,3 +1,13 @@
+## [2.0.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.38.0...v2.0.0) (2026-06-21)
+
+### ⚠ BREAKING CHANGES
+
+* UI fully migrated from Bootstrap to shadcn/Tailwind.
+
+### Continuous Integration
+
+* use conventionalcommits preset for semantic-release ([4fa22c5](https://github.com/rimorin/ministry-mapper-v2/commit/4fa22c5592c63046c8ab4c6c4b1128c901d64262))
+
 # [1.38.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.37.0...v1.38.0) (2026-06-21)
 
 
