@@ -18,7 +18,8 @@ import {
   clearInFlight,
   resetAllInFlight,
   removeFromQueue,
-  incrementFailCount
+  incrementFailCount,
+  IDB_AVAILABLE
 } from "../utils/smartsync";
 import {
   fetchAddressOptionMap,
@@ -523,8 +524,8 @@ export function useSmartSync(scope?: SmartSyncScope): UseSmartSyncResult {
     desiredTypes,
     onOptimistic
   }: WriteUpdateParams) => {
-    if (!scope) {
-      // Direct mode (no scope): no queue — write straight to the server.
+    if (!scope || !IDB_AVAILABLE) {
+      // Direct mode: no queue — write straight to the server.
       // Errors propagate to the modal's catch block for notifyError display.
       const { toDeleteAoIds, toAddOptionIds } = await resolveOptionChanges(
         initialTypes.map((t) => t.id),
@@ -564,8 +565,8 @@ export function useSmartSync(scope?: SmartSyncScope): UseSmartSyncResult {
     onOptimistic
   }: WriteCreateParams) => {
     const clientId = generateAddressId();
-    if (!scope) {
-      // Direct mode (no scope): no queue — write straight to the server.
+    if (!scope || !IDB_AVAILABLE) {
+      // Direct mode: no queue — write straight to the server.
       await batchCreateAddress({
         addressId: clientId,
         mapId,

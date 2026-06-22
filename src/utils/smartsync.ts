@@ -31,7 +31,11 @@ type SmartSyncDB = IDBPDatabase<{
 // Singleton: reuse the same IDB connection for the lifetime of the page.
 let dbPromise: ReturnType<typeof openDB<SmartSyncDB>> | null = null;
 
+// Safari Private Browsing blocks IndexedDB entirely — the global doesn't exist.
+export const IDB_AVAILABLE = typeof indexedDB !== "undefined";
+
 function openSmartSyncDB(): ReturnType<typeof openDB<SmartSyncDB>> {
+  if (!IDB_AVAILABLE) return Promise.reject(new Error("IndexedDB unavailable"));
   if (!dbPromise) {
     dbPromise = openDB<SmartSyncDB>(DB_NAME, DB_VERSION, {
       upgrade(db) {
@@ -83,50 +87,66 @@ export function generateAddressId(): string {
  * changes A→B then B→C while offline, the flush correctly removes A (not B).
  */
 export async function enqueueOp(op: QueuedOp): Promise<void> {
-  const db = await openSmartSyncDB();
-  const opKey = `${op.assignmentId}:${op.addressId}`;
-  // Single readwrite transaction: the get + put are atomic, preventing a
-  // concurrent tab from reading the same baseline between our read and write
-  // and overwriting the preserved initialOptionIds.
-  const tx = db.transaction(STORE_OPS, "readwrite");
-  const existing = await tx.store.get(opKey);
+  try {
+    const db = await openSmartSyncDB();
+    const opKey = `${op.assignmentId}:${op.addressId}`;
+    // Single readwrite transaction: the get + put are atomic, preventing a
+    // concurrent tab from reading the same baseline between our read and write
+    // and overwriting the preserved initialOptionIds.
+    const tx = db.transaction(STORE_OPS, "readwrite");
+    const existing = await tx.store.get(opKey);
 
-  let storedOp: StoredOp;
-  if (existing?.kind === "create") {
-    // A later offline update to an address that was also created offline:
-    // keep the create semantics (kind + createPayload) and merge in the new
-    // field values so the single flush op represents the full intended state.
-    storedOp = {
-      ...op,
-      opKey,
-      kind: "create",
-      createPayload: existing.createPayload,
-      initialOptionIds: existing.initialOptionIds
-    };
-  } else if (existing) {
-    // Update upsert — preserve initialOptionIds from the first queued op
-    // (true server baseline) so offline chains don't lose removal intent.
-    storedOp = { ...op, opKey, initialOptionIds: existing.initialOptionIds };
-  } else {
-    storedOp = { ...op, opKey };
+    let storedOp: StoredOp;
+    if (existing?.kind === "create") {
+      // A later offline update to an address that was also created offline:
+      // keep the create semantics (kind + createPayload) and merge in the new
+      // field values so the single flush op represents the full intended state.
+      storedOp = {
+        ...op,
+        opKey,
+        kind: "create",
+        createPayload: existing.createPayload,
+        initialOptionIds: existing.initialOptionIds
+      };
+    } else if (existing) {
+      // Update upsert — preserve initialOptionIds from the first queued op
+      // (true server baseline) so offline chains don't lose removal intent.
+      storedOp = { ...op, opKey, initialOptionIds: existing.initialOptionIds };
+    } else {
+      storedOp = { ...op, opKey };
+    }
+    await tx.store.put(storedOp);
+    await tx.done;
+  } catch {
+    // IDB unavailable (e.g. Safari Private Browsing) — op is not queued
   }
-  await tx.store.put(storedOp);
-  await tx.done;
 }
 
 export async function getQueue(assignmentId: string): Promise<StoredOp[]> {
-  const db = await openSmartSyncDB();
-  return db.getAllFromIndex(STORE_OPS, "by_assignment", assignmentId);
+  try {
+    const db = await openSmartSyncDB();
+    return db.getAllFromIndex(STORE_OPS, "by_assignment", assignmentId);
+  } catch {
+    return [];
+  }
 }
 
 export async function getAllPendingOps(): Promise<StoredOp[]> {
-  const db = await openSmartSyncDB();
-  return db.getAll(STORE_OPS);
+  try {
+    const db = await openSmartSyncDB();
+    return db.getAll(STORE_OPS);
+  } catch {
+    return [];
+  }
 }
 
 export async function removeFromQueue(opKey: string): Promise<void> {
-  const db = await openSmartSyncDB();
-  await db.delete(STORE_OPS, opKey);
+  try {
+    const db = await openSmartSyncDB();
+    await db.delete(STORE_OPS, opKey);
+  } catch {
+    // IDB unavailable
+  }
 }
 
 /**
@@ -135,26 +155,34 @@ export async function removeFromQueue(opKey: string): Promise<void> {
  * than the snapshot ts, the op was superseded and must not be deleted.
  */
 export async function getOpTs(opKey: string): Promise<number | undefined> {
-  const db = await openSmartSyncDB();
-  const op = await db.get(STORE_OPS, opKey);
-  return op?.ts;
+  try {
+    const db = await openSmartSyncDB();
+    const op = await db.get(STORE_OPS, opKey);
+    return op?.ts;
+  } catch {
+    return undefined;
+  }
 }
 
 async function mutateOp(
   opKey: string,
   mutate: (op: StoredOp) => StoredOp
 ): Promise<StoredOp | undefined> {
-  const db = await openSmartSyncDB();
-  const tx = db.transaction(STORE_OPS, "readwrite");
-  const op = await tx.store.get(opKey);
-  if (!op) {
+  try {
+    const db = await openSmartSyncDB();
+    const tx = db.transaction(STORE_OPS, "readwrite");
+    const op = await tx.store.get(opKey);
+    if (!op) {
+      await tx.done;
+      return undefined;
+    }
+    const updated = mutate(op);
+    await tx.store.put(updated);
     await tx.done;
+    return updated;
+  } catch {
     return undefined;
   }
-  const updated = mutate(op);
-  await tx.store.put(updated);
-  await tx.done;
-  return updated;
 }
 
 /**
@@ -190,17 +218,21 @@ export async function clearInFlight(opKey: string): Promise<void> {
 // On startup: any op still marked in-flight survived a crash mid-write.
 // Reset so the op retries cleanly rather than being treated as a duplicate.
 export async function resetAllInFlight(): Promise<void> {
-  const db = await openSmartSyncDB();
-  const tx = db.transaction(STORE_OPS, "readwrite");
-  const ops = await tx.store.getAll();
-  for (const op of ops) {
-    if (op.inFlightAt !== undefined) {
-      const updated = { ...op };
-      delete updated.inFlightAt;
-      await tx.store.put(updated);
+  try {
+    const db = await openSmartSyncDB();
+    const tx = db.transaction(STORE_OPS, "readwrite");
+    const ops = await tx.store.getAll();
+    for (const op of ops) {
+      if (op.inFlightAt !== undefined) {
+        const updated = { ...op };
+        delete updated.inFlightAt;
+        await tx.store.put(updated);
+      }
     }
+    await tx.done;
+  } catch {
+    // IDB unavailable
   }
-  await tx.done;
 }
 
 export interface AddressCacheEntry {

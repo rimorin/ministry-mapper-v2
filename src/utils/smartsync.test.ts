@@ -339,6 +339,72 @@ describe("smartsync utils", () => {
     });
   });
 
+  // ── IDB unavailable (Safari Private Browsing) ────────────────────────────────
+
+  describe("when indexedDB is unavailable", () => {
+    let privateMod: typeof import("./smartsync");
+
+    beforeEach(async () => {
+      // Simulate Safari Private Browsing: indexedDB global doesn't exist.
+      // IDB_AVAILABLE is evaluated at module load time, so we must reset
+      // the module and re-import after removing the global.
+      vi.resetModules();
+      // @ts-expect-error — intentionally simulating missing indexedDB
+      delete globalThis.indexedDB;
+      privateMod = await import("./smartsync");
+    });
+
+    it("getQueue returns empty array", async () => {
+      expect(await privateMod.getQueue("map-1")).toEqual([]);
+    });
+
+    it("getAllPendingOps returns empty array", async () => {
+      expect(await privateMod.getAllPendingOps()).toEqual([]);
+    });
+
+    it("enqueueOp resolves without throwing", async () => {
+      await expect(privateMod.enqueueOp(makeOp())).resolves.toBeUndefined();
+    });
+
+    it("removeFromQueue resolves without throwing", async () => {
+      await expect(
+        privateMod.removeFromQueue("any-key")
+      ).resolves.toBeUndefined();
+    });
+
+    it("getOpTs returns undefined", async () => {
+      expect(await privateMod.getOpTs("any-key")).toBeUndefined();
+    });
+
+    it("incrementFailCount returns 0", async () => {
+      expect(await privateMod.incrementFailCount("any-key")).toBe(0);
+    });
+
+    it("markInFlight returns undefined", async () => {
+      expect(await privateMod.markInFlight("any-key")).toBeUndefined();
+    });
+
+    it("clearInFlight resolves without throwing", async () => {
+      await expect(
+        privateMod.clearInFlight("any-key")
+      ).resolves.toBeUndefined();
+    });
+
+    it("resetAllInFlight resolves without throwing", async () => {
+      await expect(privateMod.resetAllInFlight()).resolves.toBeUndefined();
+    });
+
+    it("saveAddressCache resolves without throwing", async () => {
+      await expect(
+        privateMod.saveAddressCache("map-1", {})
+      ).resolves.toBeUndefined();
+    });
+
+    it("loadAddressCache returns null", async () => {
+      expect(await privateMod.loadAddressCache("map-1")).toBeNull();
+    });
+  });
+
   // ── applyOpTypes ──────────────────────────────────────────────────────────────
 
   describe("applyOpTypes", () => {
