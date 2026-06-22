@@ -8,7 +8,12 @@ vi.mock("../components/middlewares/networkstatuscontext", () => ({
   useNetworkStatusContext: vi.fn()
 }));
 
+const mockIdbAvailable = vi.hoisted(() => ({ value: true }));
+
 vi.mock("../utils/smartsync", () => ({
+  get IDB_AVAILABLE() {
+    return mockIdbAvailable.value;
+  },
   enqueueOp: vi.fn(),
   getOpTs: vi.fn(),
   getQueue: vi.fn(),
@@ -97,6 +102,7 @@ async function runAllTimers() {
 describe("useSmartSync", () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    mockIdbAvailable.value = true;
     setOnline(true);
     vi.mocked(getQueue).mockResolvedValue([]);
     vi.mocked(getAllPendingOps).mockResolvedValue([]);
@@ -867,6 +873,80 @@ describe("useSmartSync", () => {
       expect(enqueueOp).toHaveBeenCalled();
       expect(onOptimistic).toHaveBeenCalled();
       expect(batchCreateAddress).not.toHaveBeenCalled();
+    });
+  });
+
+  // ── IDB unavailable (Safari Private Browsing) ────────────────────────────────
+
+  describe("IDB unavailable (Safari Private Browsing)", () => {
+    const writeUpdateParams = {
+      addressId: "addr-1",
+      mapId: "map-1",
+      congregation: "cong-1",
+      updateData: makeOp().updateData,
+      initialTypes: [],
+      desiredTypes: []
+    };
+    const writeCreateParams = {
+      mapId: "map-1",
+      congregation: "cong-1",
+      createPayload: {
+        map: "map-1",
+        territory: "territory-1",
+        code: "101",
+        floor: 1,
+        sequence: 1,
+        congregation: "cong-1",
+        source: ""
+      },
+      updateData: makeOp().updateData,
+      desiredTypes: []
+    };
+
+    beforeEach(() => {
+      mockIdbAvailable.value = false;
+    });
+
+    it("writeUpdate calls batchUpdateAddress directly and does not enqueue", async () => {
+      const { result } = renderHook(() => useSmartSync({ mapId: "map-1" }));
+      await act(async () => {
+        await result.current.writeUpdate(writeUpdateParams);
+      });
+      expect(batchUpdateAddress).toHaveBeenCalledTimes(1);
+      expect(enqueueOp).not.toHaveBeenCalled();
+    });
+
+    it("writeUpdate does not call onOptimistic", async () => {
+      const onOptimistic = vi.fn();
+      const { result } = renderHook(() => useSmartSync({ mapId: "map-1" }));
+      await act(async () => {
+        await result.current.writeUpdate({
+          ...writeUpdateParams,
+          onOptimistic
+        });
+      });
+      expect(onOptimistic).not.toHaveBeenCalled();
+    });
+
+    it("writeCreate calls batchCreateAddress directly and does not enqueue", async () => {
+      const { result } = renderHook(() => useSmartSync({ mapId: "map-1" }));
+      await act(async () => {
+        await result.current.writeCreate(writeCreateParams);
+      });
+      expect(batchCreateAddress).toHaveBeenCalledTimes(1);
+      expect(enqueueOp).not.toHaveBeenCalled();
+    });
+
+    it("writeCreate does not call onOptimistic", async () => {
+      const onOptimistic = vi.fn();
+      const { result } = renderHook(() => useSmartSync({ mapId: "map-1" }));
+      await act(async () => {
+        await result.current.writeCreate({
+          ...writeCreateParams,
+          onOptimistic
+        });
+      });
+      expect(onOptimistic).not.toHaveBeenCalled();
     });
   });
 
