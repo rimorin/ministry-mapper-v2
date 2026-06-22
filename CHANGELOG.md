@@ -1,3 +1,9 @@
+## [2.0.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.0.0...v2.0.1) (2026-06-22)
+
+### Bug Fixes
+
+* graceful degradation when IndexedDB is unavailable ([e0b90c1](https://github.com/rimorin/ministry-mapper-v2/commit/e0b90c18e7e494e2a116eccb18366163e6f62b9c))
+
 ## [2.0.0](https://github.com/rimorin/ministry-mapper-v2/compare/v1.38.0...v2.0.0) (2026-06-21)
 
 ### ⚠ BREAKING CHANGES
