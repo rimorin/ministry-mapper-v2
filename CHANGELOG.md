@@ -1,3 +1,9 @@
+## [2.0.2](https://github.com/rimorin/ministry-mapper-v2/compare/v2.0.1...v2.0.2) (2026-06-27)
+
+### Bug Fixes
+
+* show backdrop behind nested household selection dialog ([b530f33](https://github.com/rimorin/ministry-mapper-v2/commit/b530f33d5678417fca7621023dcc6a73082b315e))
+
 ## [2.0.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.0.0...v2.0.1) (2026-06-22)
 
 ### Bug Fixes
