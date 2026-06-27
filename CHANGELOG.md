@@ -1,3 +1,9 @@
+## [2.1.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.0.2...v2.1.0) (2026-06-27)
+
+### Features
+
+* add cancel button and translate done/cancel in multi-select ([8379551](https://github.com/rimorin/ministry-mapper-v2/commit/83795514b6518d36d76d3e307391b78b2afd76b4))
+
 ## [2.0.2](https://github.com/rimorin/ministry-mapper-v2/compare/v2.0.1...v2.0.2) (2026-06-27)
 
 ### Bug Fixes
