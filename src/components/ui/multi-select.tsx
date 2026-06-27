@@ -10,6 +10,7 @@ import {
   DialogTitle,
   DialogFooter
 } from "@/components/ui/dialog";
+import { useTranslation } from "react-i18next";
 
 export interface MultiSelectOption {
   value: string;
@@ -35,6 +36,7 @@ export function MultiSelect({
   className,
   label = "Select options"
 }: MultiSelectProps) {
+  const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);
   const [draft, setDraft] = React.useState<string[]>(value);
 
@@ -143,9 +145,17 @@ export function MultiSelect({
             )}
           </div>
 
-          <DialogFooter className="px-4 py-3 border-t">
-            <Button onClick={handleDone} className="w-full">
-              Done{draft.length > 0 && ` (${draft.length} selected)`}
+          <DialogFooter className="px-4 py-3 border-t flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setOpen(false)}
+              className="flex-1"
+            >
+              {t("common.cancel", "Cancel")}
+            </Button>
+            <Button onClick={handleDone} className="flex-1">
+              {t("common.done", "Done")}
+              {draft.length > 0 && ` (${draft.length})`}
             </Button>
           </DialogFooter>
         </DialogContent>
