@@ -1,3 +1,9 @@
+## [2.1.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.1.0...v2.1.1) (2026-06-27)
+
+### Bug Fixes
+
+* improve badge size, toggle selection contrast, and header text visibility ([5ca60aa](https://github.com/rimorin/ministry-mapper-v2/commit/5ca60aa48450409bd74845906311c467d30de2d6))
+
 ## [2.1.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.0.2...v2.1.0) (2026-06-27)
 
 ### Features
