@@ -20,7 +20,7 @@ const NotHomeIcon = ({
       {nhcount && (
         <span
           className={cn(
-            "absolute -right-1.5 -top-1.5 z-0 flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-0.5 text-[10px] font-bold leading-none",
+            "absolute -right-1.5 -top-1.5 flex size-4 items-center justify-center rounded-full text-[11px] font-bold",
             mapMode
               ? "bg-zinc-900 text-white border border-white shadow-sm"
               : "bg-primary text-primary-foreground border border-white shadow-sm"

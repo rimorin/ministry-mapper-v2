@@ -44,7 +44,7 @@ const HHNotHomeField = ({ handleGroupChange, changeValue }: FormProps) => {
           <ToggleGroupItem
             key={option.value}
             value={option.value}
-            className="flex-1"
+            className="flex-1 data-[pressed]:bg-primary/20 data-[pressed]:text-primary data-[pressed]:ring-1 data-[pressed]:ring-inset data-[pressed]:ring-primary"
           >
             {option.label}
           </ToggleGroupItem>

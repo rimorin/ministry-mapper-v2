@@ -75,6 +75,7 @@
   background-color: var(
     --color-muted
   ) !important; /* Tailwind bridge token — resolves to same value as var(--muted) */
+  color: var(--foreground);
   z-index: 10;
   box-shadow: 2px 0 4px -1px rgba(0, 0, 0, 0.06);
 }
@@ -89,6 +90,7 @@
     /* Tailwind bridge token — resolves to same value as var(--muted) */
     transparent
   ) !important;
+  color: var(--foreground);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 11;
