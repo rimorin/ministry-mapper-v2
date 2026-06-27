@@ -94,7 +94,10 @@ export function MultiSelect({
           }
         }}
       >
-        <DialogContent className="flex flex-col gap-0 p-0 max-h-[80dvh]">
+        <DialogContent
+          className="flex flex-col gap-0 p-0 max-h-[80dvh]"
+          overlayForceRender
+        >
           <DialogHeader className="px-4 py-4 border-b">
             <DialogTitle>{label}</DialogTitle>
           </DialogHeader>

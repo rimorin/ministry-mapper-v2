@@ -23,11 +23,13 @@ function DialogClose({ ...props }: DialogPrimitive.Close.Props) {
 
 function DialogOverlay({
   className,
+  forceRender,
   ...props
 }: DialogPrimitive.Backdrop.Props) {
   return (
     <DialogPrimitive.Backdrop
       data-slot="dialog-overlay"
+      forceRender={forceRender}
       className={cn(
         "fixed inset-0 isolate z-[2000] bg-black/10 transition-opacity duration-200 supports-backdrop-filter:backdrop-blur-xs data-starting-style:opacity-0 data-ending-style:opacity-0",
         className
@@ -39,6 +41,7 @@ function DialogOverlay({
 
 function DialogContent({
   className,
+  overlayForceRender,
   children,
   showCloseButton = false,
   fullscreen = false,
@@ -46,10 +49,11 @@ function DialogContent({
 }: DialogPrimitive.Popup.Props & {
   showCloseButton?: boolean;
   fullscreen?: boolean;
+  overlayForceRender?: boolean;
 }) {
   return (
     <DialogPortal>
-      <DialogOverlay />
+      <DialogOverlay forceRender={overlayForceRender} />
       <DialogPrimitive.Popup
         data-slot="dialog-content"
         className={cn(
