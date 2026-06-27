@@ -8,9 +8,13 @@ import NotHomeIcon from "./nothome";
 const StatusIcon = ({ status }: { status: string }) => {
   switch (status) {
     case STATUS_CODES.DONE:
-      return <Check className="size-5 text-green-600 stroke-[2.5]" />;
+      return (
+        <Check className="size-6 text-green-500 dark:text-green-400 stroke-[3]" />
+      );
     case STATUS_CODES.DO_NOT_CALL:
-      return <Ban className="size-4 text-destructive" />;
+      return (
+        <Ban className="size-5 text-red-500 dark:text-red-400 stroke-[3]" />
+      );
     default:
       return null;
   }
@@ -54,7 +58,7 @@ const AddressStatus = (props: unitProps) => {
           className="flex items-center justify-center w-full h-full"
           {...statusMotion}
         >
-          <X className="size-4 text-violet-500" />
+          <X className="size-5 text-violet-500 dark:text-violet-400 stroke-[3]" />
         </m.div>
       ) : (
         <m.div
@@ -64,7 +68,7 @@ const AddressStatus = (props: unitProps) => {
         >
           <div className="flex items-center justify-center">
             {isNotHome ? (
-              <NotHomeIcon nhcount={nhcount} />
+              <NotHomeIcon nhcount={nhcount} iconClassName="size-5" />
             ) : (
               <StatusIcon status={currentStatus} />
             )}
@@ -73,20 +77,20 @@ const AddressStatus = (props: unitProps) => {
             <div className="flex items-center justify-center gap-0.5 flex-wrap max-w-full px-0.5">
               {note && (
                 <StickyNote
-                  className="size-2.5 text-amber-500 shrink-0"
+                  className="size-4 text-amber-500 dark:text-amber-300 shrink-0"
                   aria-label={note}
                 />
               )}
               {visible.map((t) => (
                 <span
                   key={t.id}
-                  className="text-xs leading-none bg-muted text-muted-foreground font-semibold px-1 py-0.5 rounded-sm"
+                  className="text-sm leading-none bg-foreground/15 border border-foreground/20 text-foreground font-bold px-1.5 py-0.5 rounded min-w-5 text-center"
                 >
                   {t.code}
                 </span>
               ))}
               {overflow > 0 && (
-                <span className="text-xs leading-none text-muted-foreground font-semibold">
+                <span className="text-sm leading-none text-foreground font-bold">
                   +{overflow}
                 </span>
               )}

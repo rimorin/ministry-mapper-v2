@@ -30,9 +30,9 @@ describe("NotHomeIcon", () => {
     expect(container.querySelector("svg.size-6")).toBeInTheDocument();
   });
 
-  it("renders envelope icon with amber styling", () => {
+  it("renders envelope icon with orange styling", () => {
     const { container } = render(<NotHomeIcon />);
 
-    expect(container.querySelector("svg.text-amber-500")).toBeInTheDocument();
+    expect(container.querySelector("svg.text-orange-500")).toBeInTheDocument();
   });
 });
