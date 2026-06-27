@@ -14,7 +14,9 @@ const NotHomeIcon = ({
 }: NotHomeIconProps) => {
   return (
     <span className="relative inline-flex items-center justify-center">
-      <Mail className={cn(iconClassName, "text-amber-500")} />
+      <Mail
+        className={cn(iconClassName, "text-orange-500 dark:text-orange-400")}
+      />
       {nhcount && (
         <span
           className={cn(

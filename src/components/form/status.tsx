@@ -25,7 +25,9 @@ const HHStatusField = ({
     {
       value: STATUS_CODES.DONE,
       label: t("address.done", "Done"),
-      icon: <Check className="size-5 text-green-600 stroke-[2.5]" />
+      icon: (
+        <Check className="size-5 text-green-500 dark:text-green-400 stroke-[3]" />
+      )
     },
     {
       value: STATUS_CODES.NOT_HOME,
@@ -35,12 +37,14 @@ const HHStatusField = ({
     {
       value: STATUS_CODES.DO_NOT_CALL,
       label: t("address.dnc", "DNC"),
-      icon: <Ban className="size-5 text-destructive" />
+      icon: <Ban className="size-5 text-red-500 dark:text-red-400 stroke-[3]" />
     },
     {
       value: STATUS_CODES.INVALID,
       label: t("address.invalid", "Invalid"),
-      icon: <X className="size-5 text-violet-500" />
+      icon: (
+        <X className="size-5 text-violet-500 dark:text-violet-400 stroke-[3]" />
+      )
     }
   ];
 

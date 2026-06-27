@@ -17,7 +17,7 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.DONE} type={[]} />
     );
 
-    expect(container.querySelector(".text-green-600")).toBeInTheDocument();
+    expect(container.querySelector(".text-green-500")).toBeInTheDocument();
   });
 
   it("renders do not call status", () => {
@@ -25,7 +25,7 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.DO_NOT_CALL} type={[]} />
     );
 
-    expect(container.querySelector(".text-destructive")).toBeInTheDocument();
+    expect(container.querySelector(".text-red-500")).toBeInTheDocument();
   });
 
   it("renders not home icon when status is not home", () => {
@@ -56,7 +56,7 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.DEFAULT} type={types} />
     );
 
-    expect(container.querySelectorAll("span.bg-muted")).toHaveLength(2);
+    expect(container.querySelectorAll("span.min-w-5")).toHaveLength(2);
     expect(screen.getByText("CH")).toBeInTheDocument();
     expect(screen.getByText("EN")).toBeInTheDocument();
   });
@@ -91,7 +91,7 @@ describe("AddressStatus", () => {
       />
     );
 
-    expect(container.querySelector("span.bg-muted")).not.toBeInTheDocument();
+    expect(container.querySelector("span.min-w-5")).not.toBeInTheDocument();
   });
 
   it("does not render badge when type is empty", () => {
@@ -99,7 +99,7 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.DEFAULT} type={[]} />
     );
 
-    expect(container.querySelector("span.bg-muted")).not.toBeInTheDocument();
+    expect(container.querySelector("span.min-w-5")).not.toBeInTheDocument();
   });
 
   it("shows overflow count in badge when types exceed visible limit", () => {
@@ -136,7 +136,7 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.DONE} note="Test note" type={types} />
     );
 
-    expect(container.querySelector(".text-green-600")).toBeInTheDocument();
+    expect(container.querySelector(".text-green-500")).toBeInTheDocument();
     expect(container.querySelector(".text-amber-500")).toBeInTheDocument();
     expect(screen.getByText("CH")).toBeInTheDocument();
   });
