@@ -51,7 +51,7 @@ const AddressStatus = (props: unitProps) => {
   const isInvalid = currentStatus === STATUS_CODES.INVALID;
 
   return (
-    <AnimatePresence mode="popLayout">
+    <AnimatePresence mode="popLayout" initial={false}>
       {isInvalid ? (
         <m.div
           key="invalid"
