@@ -104,6 +104,8 @@
   display: none;
 }
 
+/* Static — animating opacity here pinned a GPU layer per marker (battery
+   drain on older iOS); colour + drop-shadow still convey the state. */
 .marker-has-assignments .circular-progress-assignments {
   display: block;
   opacity: 0.9;
@@ -111,8 +113,6 @@
   stroke-width: 3.5;
   stroke-linecap: round;
   filter: drop-shadow(0 0 3px var(--mm-success));
-  animation: circular-glow 1.5s ease-in-out infinite alternate;
-  will-change: opacity;
 }
 
 .marker-has-personal .circular-progress-personal {
@@ -122,8 +122,6 @@
   stroke-width: 3.5;
   stroke-linecap: round;
   filter: drop-shadow(0 0 3px var(--mm-warning));
-  animation: circular-glow 1.5s ease-in-out infinite alternate;
-  will-change: opacity;
 }
 
 .selected-marker {
@@ -141,8 +139,6 @@
   stroke: var(--mm-warning);
   stroke-width: 3;
   filter: drop-shadow(0 0 8px var(--mm-warning-alpha-60));
-  animation: status-pulse 1.5s ease-in-out infinite;
-  will-change: opacity;
 }
 
 @media (max-width: 768px) {
