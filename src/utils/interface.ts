@@ -233,7 +233,7 @@ export interface aggregateBadgeProp {
   aggregate?: number;
   width?: string;
   className?: string;
-  size?: "sm" | "md";
+  size?: "sm" | "md" | "lg";
 }
 
 export interface floorHeaderProp extends floorInterface {
