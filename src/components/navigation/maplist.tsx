@@ -85,6 +85,8 @@ function MapRow({
   const { id: mapId, name: mapName, type: mapType } = addressElement;
   const completeValue =
     addressElement.aggregates?.value || DEFAULT_AGGREGATES.value;
+  const notDoneCount = addressElement.aggregates?.notDone ?? 0;
+  const notHomeCount = addressElement.aggregates?.notHome ?? 0;
 
   return (
     <div className="map-item border-0" style={style}>
@@ -103,8 +105,33 @@ function MapRow({
           >
             {mapName}
           </span>
+          {(notDoneCount > 0 || notHomeCount > 0) && (
+            <span className="ml-3 grid shrink-0 grid-cols-[auto_auto] gap-x-2 whitespace-nowrap text-xs leading-tight text-muted-foreground">
+              {notDoneCount > 0 && (
+                <>
+                  <span className="text-left">
+                    {t("address.notDone", "Not Done")}
+                  </span>
+                  <span className="text-right tabular-nums">
+                    {notDoneCount}
+                  </span>
+                </>
+              )}
+              {notHomeCount > 0 && (
+                <>
+                  <span className="text-left">
+                    {t("address.notHome", "Not Home")}
+                  </span>
+                  <span className="text-right tabular-nums">
+                    {notHomeCount}
+                  </span>
+                </>
+              )}
+            </span>
+          )}
           <AggregationBadge
             aggregate={completeValue}
+            size="lg"
             className="ml-2 shrink-0"
           />
         </button>
