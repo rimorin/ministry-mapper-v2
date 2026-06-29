@@ -161,7 +161,7 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
         </CustomControl>
         {selectedAddress && (
           <CustomControl position="bottomright">
-            <div className="w-56 overflow-hidden rounded-xl bg-background/95 text-sm shadow-lg backdrop-blur-sm ring-1 ring-foreground/10">
+            <div className="w-72 max-w-[calc(100vw-2rem)] overflow-hidden rounded-xl bg-background/95 text-sm shadow-lg ring-1 ring-foreground/10">
               <div className="border-b px-4 py-3">
                 <p className="font-semibold leading-tight">
                   {selectedAddress.name}
