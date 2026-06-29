@@ -302,6 +302,12 @@
   animation-delay: 1.2s;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .loc-ripple-ring {
+    animation: none;
+  }
+}
+
 .map-marker {
   position: relative;
   width: 42px;

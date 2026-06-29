@@ -40,19 +40,18 @@ export const fadeZoom: Variants = {
 
 // Diagonal wave for grid/table cells. Pass custom={{ row, col }} on each m.* element.
 // Cells along the same top-left→bottom-right diagonal animate simultaneously.
+// Opacity-only: the staggered delay creates the wave, while a linear opacity tween
+// stays on the compositor (GPU) instead of running a per-cell spring on the main thread.
 export const diagonalCell: Variants = {
-  hidden: { opacity: 0, scale: 0.92 },
-  show: ({ row, col }: { row: number; col: number }) => {
-    const delay = PAGE_ENTER_DELAY + (row + col) * 0.04;
-    return {
-      opacity: 1,
-      scale: 1,
-      transition: {
-        default: { ...springBase, delay },
-        opacity: { duration: 0.35, ease: "linear", delay }
-      }
-    };
-  }
+  hidden: { opacity: 0 },
+  show: ({ row, col }: { row: number; col: number }) => ({
+    opacity: 1,
+    transition: {
+      duration: 0.35,
+      ease: "linear",
+      delay: PAGE_ENTER_DELAY + (row + col) * 0.04
+    }
+  })
 };
 
 // Parent that cascades children's entrance via stagger.
