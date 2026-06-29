@@ -1,10 +1,10 @@
 import { useEffect, useEffectEvent, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Timer } from "lucide-react";
-import * as m from "motion/react-m";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
+const ONE_MINUTE_MS = 60 * 1000;
 const FIFTEEN_MINUTES_MS = 15 * 60 * 1000;
 const ONE_HOUR_MS = 60 * 60 * 1000;
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
@@ -70,9 +70,14 @@ const ExpiryBadge = ({ endtime, onExpired }: ExpiryBadgeProps) => {
       return next.totalMs;
     };
 
-    // Tick every second in critical state, every minute otherwise
+    // Per-second ticks only matter in the final minute; coarser intervals above
+    // that keep the CPU idle (a 1s timer for 15 min per badge drained battery).
     const getInterval = (totalMs: number) =>
-      totalMs <= FIFTEEN_MINUTES_MS ? 1_000 : 60_000;
+      totalMs <= ONE_MINUTE_MS
+        ? 1_000
+        : totalMs <= FIFTEEN_MINUTES_MS
+          ? 5_000
+          : 60_000;
 
     let id: ReturnType<typeof setInterval>;
 
@@ -116,7 +121,7 @@ const ExpiryBadge = ({ endtime, onExpired }: ExpiryBadgeProps) => {
         "gap-1 font-variant-numeric tabular-nums select-none text-xs transition-[color,border-color,background-color,opacity] duration-700 ease-in-out motion-reduce:transition-none",
         urgency === "safe" && "opacity-75",
         urgency === "warning" && "border-amber-500 text-amber-500",
-        urgency === "critical" && "animate-pulse"
+        urgency === "critical" && "animate-pulse motion-reduce:animate-none"
       )}
       role="timer"
       aria-live="polite"
@@ -126,19 +131,7 @@ const ExpiryBadge = ({ endtime, onExpired }: ExpiryBadgeProps) => {
     >
       <Timer aria-hidden="true" />
       <span>{t("assignments.expires", "Expires")}</span>
-      {urgency === "critical" ? (
-        <m.span
-          key={timeLeft.seconds}
-          className="tabular-nums"
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: "spring", visualDuration: 0.15, bounce: 0.1 }}
-        >
-          {display}
-        </m.span>
-      ) : (
-        display
-      )}
+      {display}
     </Badge>
   );
 };

@@ -18,17 +18,18 @@ interface NetworkInformation extends EventTarget {
 const HEALTH_ENDPOINT = `${import.meta.env.VITE_POCKETBASE_URL}/api/health`;
 const INTERVAL_FAST = 30_000;
 const INTERVAL_SLOW = 60_000;
-// When navigator.connection is absent (iOS/Firefox), use more aggressive settings
-// to compensate for the lack of instant OS-level quality signals.
-const INTERVAL_FAST_NO_API = 15_000;
-const INTERVAL_SLOW_NO_API = 45_000;
+// navigator.connection is absent on iOS/Firefox. Match the API-path cadence
+// rather than polling harder — frequent health fetches keep the mobile radio
+// awake (tail energy), the dominant battery cost on these devices.
+const INTERVAL_FAST_NO_API = 30_000;
+const INTERVAL_SLOW_NO_API = 60_000;
 const MAX_RETRY_DELAY = 300_000;
 // Reduced from 10s: /api/health is a tiny payload; 5s is generous even on slow 3G
 const FETCH_TIMEOUT = 5_000;
 const SLOW_THRESHOLD_MS = 1_500;
 // Require 3 consecutive slow samples to avoid false positives on 3G jitter
 const SLOW_CONFIRM_COUNT = 3;
-// Without navigator.connection: 2 samples (each 20s) = ~40s to confirm slow,
+// Without navigator.connection: 2 samples (each 30s) = ~60s to confirm slow,
 // vs 3 × 30s = ~90s. More false positives are acceptable here — queuing is
 // transparent to the user and a flush happens as soon as the connection recovers.
 const SLOW_CONFIRM_COUNT_NO_API = 2;
