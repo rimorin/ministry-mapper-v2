@@ -10,6 +10,7 @@ import { Policy } from "../../utils/policies";
 import { useTranslation } from "react-i18next";
 
 import { MessageSquare } from "lucide-react";
+import CountBadge from "./countbadge";
 import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
 import useRealtimeSubscription from "../../hooks/useRealtime";
 import { getList, ignoreAbort } from "../../utils/pocketbase";
@@ -107,15 +108,12 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
         {t("messages.messages", "Messages")}
       </Button>
       {isAdmin && unreadMsgCount > 0 && (
-        <Button
-          size="sm"
-          variant="default"
+        <CountBadge
+          tone="notify"
+          count={unreadMsgCount}
           onClick={handleMessagesClick}
-          className="rounded-l-none px-3"
-          aria-label={`${unreadMsgCount} ${t("messages.unread", "unread messages")}`}
-        >
-          {unreadMsgCount}
-        </Button>
+          ariaLabel={`${unreadMsgCount} ${t("messages.unread", "unread messages")}`}
+        />
       )}
     </div>
   );

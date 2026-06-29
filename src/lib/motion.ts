@@ -108,6 +108,22 @@ export const checkEnter: Variants = {
   }
 };
 
+// Count badge pop — spring scale entrance, replayed on every count change via
+// key-remount. Draws the eye when an assignment/message count appears or increments.
+export const countPop: Variants = {
+  hidden: { opacity: 0, scale: 0.5 },
+  show: {
+    opacity: 1,
+    scale: 1,
+    transition: { type: "spring", visualDuration: 0.25, bounce: 0.5 }
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.6,
+    transition: { duration: 0.12, ease: "easeIn" }
+  }
+};
+
 // Quick exit upward — for content panels that enter with fadeSlideUp and need
 // a snappy directional exit rather than a reverse of the entrance.
 export const exitUp = {

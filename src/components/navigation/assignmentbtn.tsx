@@ -1,6 +1,7 @@
 import { lazy, useEffect, useState, FC } from "react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
+import CountBadge from "./countbadge";
 import { useTranslation } from "react-i18next";
 import {
   UNSUPPORTED_BROWSER_MSG,
@@ -222,11 +223,11 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
           <Button
             key={`assign-personal-${mapId}`}
             size="sm"
-            variant="outline"
+            variant={personalLinks.size > 0 ? "default" : "outline"}
             onClick={() => handleButtonClick(LINK_TYPES.PERSONAL)}
             className={
               personalLinks.size > 0 || isSettingPersonalLink
-                ? "rounded-r-none border-r-0"
+                ? "rounded-r-none"
                 : undefined
             }
           >
@@ -244,17 +245,14 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
             </Button>
           ) : (
             personalLinks.size > 0 && (
-              <Button
-                size="sm"
-                variant="default"
+              <CountBadge
+                tone="active"
+                count={personalLinks.size}
                 onClick={() =>
                   handleAssignmentsButtonClick(LINK_TYPES.PERSONAL)
                 }
-                className="rounded-l-none px-3"
-                aria-label={t("assignments.assignments", "Assignments")}
-              >
-                {personalLinks.size}
-              </Button>
+                ariaLabel={t("assignments.assignments", "Assignments")}
+              />
             )
           )}
         </div>
@@ -267,11 +265,11 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
           <Button
             key={`assign-normal-${mapId}`}
             size="sm"
-            variant="outline"
+            variant={normalLinks.size > 0 ? "default" : "outline"}
             onClick={() => handleButtonClick(LINK_TYPES.ASSIGNMENT)}
             className={
               normalLinks.size > 0 || isSettingNormalLink
-                ? "rounded-r-none border-r-0"
+                ? "rounded-r-none"
                 : undefined
             }
           >
@@ -289,17 +287,14 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
             </Button>
           ) : (
             normalLinks.size > 0 && (
-              <Button
-                size="sm"
-                variant="default"
+              <CountBadge
+                tone="active"
+                count={normalLinks.size}
                 onClick={() =>
                   handleAssignmentsButtonClick(LINK_TYPES.ASSIGNMENT)
                 }
-                className="rounded-l-none px-3"
-                aria-label={t("assignments.assignments", "Assignments")}
-              >
-                {normalLinks.size}
-              </Button>
+                ariaLabel={t("assignments.assignments", "Assignments")}
+              />
             )
           )}
         </div>
