@@ -8,7 +8,7 @@ export const MapCurrentTarget: React.FC<MapControlProps> = ({ onClick }) => (
     <Button
       variant="outline"
       size="icon"
-      className="min-h-[44px] min-w-[44px] bg-background/95 backdrop-blur-sm shadow-md"
+      className="min-h-[44px] min-w-[44px] bg-background/95 shadow-md"
       onClick={onClick}
       aria-label="Recenter to current location"
     >

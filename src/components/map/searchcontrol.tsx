@@ -120,7 +120,7 @@ export const SearchControl = ({
       >
         <div
           className={cn(
-            "flex items-center gap-2 rounded-xl border bg-background/95 backdrop-blur-sm px-3 py-2 shadow-md transition-shadow",
+            "flex items-center gap-2 rounded-xl border bg-background/95 px-3 py-2 shadow-md transition-shadow",
             isFocused && "ring-2 ring-ring/20"
           )}
         >
@@ -158,7 +158,7 @@ export const SearchControl = ({
         </div>
 
         {showDropdown && (
-          <div className="mt-1 rounded-xl border bg-background/95 backdrop-blur-sm shadow-lg overflow-hidden">
+          <div className="mt-1 rounded-xl border bg-background/95 shadow-lg overflow-hidden">
             {isLoading && results.length === 0 ? (
               <div className="flex items-center gap-2 px-3 py-2.5 text-sm text-muted-foreground">
                 <Spinner /> Searching…

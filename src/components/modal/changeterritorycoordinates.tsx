@@ -182,7 +182,7 @@ const TerritoryPolygonDrawer = ({
 
       <CustomControl position="topleft">
         <div
-          className="w-52 rounded-xl border bg-background/95 shadow-lg backdrop-blur-sm"
+          className="w-52 rounded-xl border bg-background/95 shadow-lg"
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}

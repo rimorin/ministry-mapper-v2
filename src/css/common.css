@@ -84,15 +84,8 @@
 .sticky-top-cell {
   position: sticky;
   top: 0;
-  background-color: color-mix(
-    in oklch,
-    var(--color-muted) 85%,
-    /* Tailwind bridge token — resolves to same value as var(--muted) */
-    transparent
-  ) !important;
+  background-color: var(--color-muted) !important;
   color: var(--foreground);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
   z-index: 11;
 }
 
@@ -102,14 +95,7 @@
   top: 0;
   left: 0;
   z-index: 12;
-  background-color: color-mix(
-    in oklch,
-    var(--color-muted) 85%,
-    /* Tailwind bridge token — resolves to same value as var(--muted) */
-    transparent
-  ) !important;
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
+  background-color: var(--color-muted) !important;
   box-shadow: 2px 0 4px -1px rgba(0, 0, 0, 0.06);
 }
 

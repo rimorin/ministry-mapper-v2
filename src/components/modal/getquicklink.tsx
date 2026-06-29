@@ -286,7 +286,7 @@ ${new URL(`map/${linkId}`, window.location.href).toString()}`
                           />
                         </CustomControl>
                       </MapContainer>
-                      <div className="bg-background/95 backdrop-blur-sm rounded-xl border shadow-lg p-3 quicklink-stats-panel">
+                      <div className="bg-background/95 rounded-xl border shadow-lg p-3 quicklink-stats-panel">
                         <p className="text-sm font-semibold text-center mb-2 truncate">
                           {mapData.mapName}
                         </p>

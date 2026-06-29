@@ -116,7 +116,7 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
         <CustomControl position="topright">
           <Popover>
             <PopoverTrigger
-              className="flex size-[44px] items-center justify-center rounded-md border bg-background/95 backdrop-blur-sm shadow-md hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex size-[44px] items-center justify-center rounded-md border bg-background/95 shadow-md hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               aria-label={t("navigation.markerGuide")}
             >
               <span
