@@ -219,7 +219,7 @@ const GetMapGeolocation = NiceModal.create(
                 </CustomControl>
               )}
               <CustomControl position="topright">
-                <div className="flex flex-col overflow-hidden rounded-xl border bg-background/95 backdrop-blur-sm shadow-md divide-y divide-border">
+                <div className="flex flex-col overflow-hidden rounded-xl border bg-background/95 shadow-md divide-y divide-border">
                   <button
                     type="button"
                     aria-label={t("navigation.openMaps")}
