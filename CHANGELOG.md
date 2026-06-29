@@ -1,3 +1,22 @@
+## [2.2.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.1.1...v2.2.0) (2026-06-29)
+
+### Features
+
+* add count badge ([98caca4](https://github.com/rimorin/ministry-mapper-v2/commit/98caca41d0f357fd862c3dfc42e1f504e18afaab))
+* show not-done and not-home counts in map list ([0074033](https://github.com/rimorin/ministry-mapper-v2/commit/0074033d0d8a5a7305dce53c9f2782a784f0beac))
+
+### Bug Fixes
+
+* widen map address popover ([dc0792a](https://github.com/rimorin/ministry-mapper-v2/commit/dc0792a633fb58c6005a7822935c9298e7d3cd05))
+
+### Performance Improvements
+
+* drop permanent gpu layer hint on map rows ([3051087](https://github.com/rimorin/ministry-mapper-v2/commit/3051087addb754d9e15285d6fceb0f5673c3625e))
+* lighten map and table animations ([59fce4e](https://github.com/rimorin/ministry-mapper-v2/commit/59fce4e36b553d900403a1d2891a14a15b55f7ee))
+* reduce timer and network polling frequency ([bac7dbd](https://github.com/rimorin/ministry-mapper-v2/commit/bac7dbdd3780a0e9fc0a9bdad088df6341893173))
+* remove backdrop blur on map and table surfaces ([7745206](https://github.com/rimorin/ministry-mapper-v2/commit/7745206d03b22e50b3675cd360d02db702768ee8))
+* skip per-cell status animation on mount ([5799edf](https://github.com/rimorin/ministry-mapper-v2/commit/5799edf7880ab8c9368c14104602eb1c65c53b7d))
+
 ## [2.1.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.1.0...v2.1.1) (2026-06-27)
 
 ### Bug Fixes
