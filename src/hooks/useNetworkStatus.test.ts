@@ -449,9 +449,9 @@ describe("useNetworkStatus", () => {
       await act(async () => {});
       expect(result.current.isSlow).toBe(false); // not yet (1/2)
 
-      // 2nd slow check at INTERVAL_FAST_NO_API = 15s
+      // 2nd slow check at INTERVAL_FAST_NO_API = 30s
       await act(async () => {
-        vi.advanceTimersByTime(15_000);
+        vi.advanceTimersByTime(30_000);
       });
       await act(async () => {});
       expect(result.current.isSlow).toBe(true); // confirmed after 2 checks
@@ -460,7 +460,7 @@ describe("useNetworkStatus", () => {
       vi.useRealTimers();
     });
 
-    it("should use INTERVAL_FAST_NO_API (15s) polling when navigator.connection absent", async () => {
+    it("should use INTERVAL_FAST_NO_API (30s) polling when navigator.connection absent", async () => {
       Object.defineProperty(navigator, "connection", {
         writable: true,
         configurable: true,
@@ -475,16 +475,16 @@ describe("useNetworkStatus", () => {
       await act(async () => {});
       fetchMock.mockClear();
 
-      // Should NOT fire at 10s (less than 15s)
+      // Should NOT fire at 20s (less than 30s)
       await act(async () => {
-        vi.advanceTimersByTime(10_000);
+        vi.advanceTimersByTime(20_000);
       });
       await act(async () => {});
       expect(fetchMock).not.toHaveBeenCalled();
 
-      // SHOULD fire at 15s (INTERVAL_FAST_NO_API)
+      // SHOULD fire at 30s (INTERVAL_FAST_NO_API)
       await act(async () => {
-        vi.advanceTimersByTime(5_000);
+        vi.advanceTimersByTime(10_000);
       });
       await act(async () => {});
       expect(fetchMock).toHaveBeenCalledTimes(1);
