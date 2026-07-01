@@ -1,11 +1,7 @@
 import { callFunction, getList } from "./pocketbase";
 import type { QueuedOp } from "./interface";
 
-/**
- * Fetches all address_options records for an address and returns a
- * Map<optionId, aoRecordId> for fast lookup.
- * mapId is required because the backend listRule enforces `filter ~ "map="`.
- */
+// mapId is required because the backend listRule enforces `filter ~ "map="`.
 export async function fetchAddressOptionMap(
   addressId: string,
   mapId: string
@@ -17,12 +13,7 @@ export async function fetchAddressOptionMap(
   return new Map(serverOptions.map((o) => [o.option as string, o.id]));
 }
 
-/**
- * Builds and sends a single atomic batch:
- * - Deletes the given address_options records (by ao record ID)
- * - Creates new address_options records for the given option IDs
- * - Updates the address record with the provided data
- */
+// Sent as a single request so the delete/create/update apply atomically.
 export async function batchUpdateAddress({
   addressId,
   mapId,
@@ -54,10 +45,6 @@ export async function batchUpdateAddress({
   });
 }
 
-/**
- * Creates an address record and its initial address_options via the
- * /address/add endpoint.
- */
 export async function batchCreateAddress({
   addressId,
   mapId,
