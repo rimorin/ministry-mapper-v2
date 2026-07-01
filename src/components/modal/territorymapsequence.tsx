@@ -7,6 +7,7 @@ import { FormEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
 import { cn } from "@/lib/utils";
+import { sortableItemEnter } from "@/lib/motion";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Button } from "@/components/ui/button";
 import {
@@ -74,13 +75,10 @@ const SortableItem = ({
   return (
     <motion.div
       layout
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        layout: { type: "spring", stiffness: 300, damping: 30 },
-        opacity: { duration: 0.18, delay: Math.min(index * 0.035, 0.35) },
-        y: { duration: 0.18, delay: Math.min(index * 0.035, 0.35) }
-      }}
+      variants={sortableItemEnter}
+      initial="hidden"
+      animate="show"
+      custom={{ delayIndex: index }}
     >
       <div
         ref={setNodeRef}

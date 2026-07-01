@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
 import { cn } from "@/lib/utils";
+import { fadeInDelayed } from "@/lib/motion";
 import {
   Dialog,
   DialogClose,
@@ -455,9 +456,9 @@ const ConfigureTerritoryCoordinates = NiceModal.create(
             </DialogHeader>
             <m.div
               className="p-0 flex-1 relative overflow-hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.35, ease: "linear", delay: 0.2 }}
+              variants={fadeInDelayed}
+              initial="hidden"
+              animate="show"
             >
               <MapContainer
                 center={[initialCenter.lat, initialCenter.lng]}

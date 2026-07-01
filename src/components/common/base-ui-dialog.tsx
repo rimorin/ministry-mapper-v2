@@ -5,6 +5,9 @@ type DialogSize = "default" | "lg" | "xl" | "fullscreen";
 type UseBaseUiDialogOptions = {
   size?: DialogSize;
   staticBackdrop?: boolean;
+  // Called whenever the dialog closes (backdrop click, Cancel, or programmatic
+  // hide) — use it for form.reset()/state cleanup instead of overriding onOpenChange.
+  onClose?: () => void;
 };
 
 const sizeClasses: Record<DialogSize, string> = {
@@ -15,7 +18,7 @@ const sizeClasses: Record<DialogSize, string> = {
 };
 
 export function useBaseUiDialog(options: UseBaseUiDialogOptions = {}) {
-  const { size = "default", staticBackdrop = false } = options;
+  const { size = "default", staticBackdrop = false, onClose } = options;
   const modal = useModal();
 
   // Always remove from registry after hiding so state doesn't persist on reopen
@@ -27,8 +30,11 @@ export function useBaseUiDialog(options: UseBaseUiDialogOptions = {}) {
   const dialogProps = {
     open: modal.visible,
     onOpenChange: (open: boolean) => {
-      if (!open && !staticBackdrop) {
-        hide();
+      if (!open) {
+        onClose?.();
+        if (!staticBackdrop) {
+          hide();
+        }
       }
     }
   };

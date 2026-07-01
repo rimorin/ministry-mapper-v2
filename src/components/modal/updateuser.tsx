@@ -31,24 +31,12 @@ const UpdateUser = NiceModal.create(
   }: UserModalProps) => {
     const { t } = useTranslation();
     const { runAction } = useNotification();
-    const {
-      modal,
-      dialogProps: baseDialogProps,
-      contentProps
-    } = useBaseUiDialog();
     const form = useForm<{ role: string }>({
       values: { role }
     });
-
-    const dialogProps = {
-      ...baseDialogProps,
-      onOpenChange: (open: boolean) => {
-        if (!open) {
-          form.reset();
-        }
-        baseDialogProps.onOpenChange(open);
-      }
-    };
+    const { modal, dialogProps, contentProps } = useBaseUiDialog({
+      onClose: () => form.reset()
+    });
 
     const handleUserDetails = async (values: { role: string }) => {
       await runAction(async () => {

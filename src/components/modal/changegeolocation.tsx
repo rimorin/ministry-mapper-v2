@@ -1,6 +1,7 @@
 import NiceModal from "@ebay/nice-modal-react";
 import { useState, SubmitEvent, useRef, useEffect } from "react";
 import * as m from "motion/react-m";
+import { fadeInDelayed } from "@/lib/motion";
 import { Button } from "@/components/ui/button";
 import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
 import {
@@ -129,9 +130,9 @@ const ChangeMapGeolocation = NiceModal.create(
           >
             <m.div
               className="flex-1 relative overflow-hidden"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ duration: 0.35, ease: "linear", delay: 0.2 }}
+              variants={fadeInDelayed}
+              initial="hidden"
+              animate="show"
             >
               <MapContainer
                 center={[initialCenter.lat, initialCenter.lng]}

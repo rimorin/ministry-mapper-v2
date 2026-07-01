@@ -1,8 +1,4 @@
-const isValidTerritoryCode = (territoryCd: string) => {
-  if (!/^[a-zA-Z0-9- ()]*$/.test(territoryCd)) {
-    return false;
-  }
-  return true;
-};
+const isValidTerritoryCode = (territoryCd: string) =>
+  /^[a-zA-Z0-9- ()]*$/.test(territoryCd);
 
 export default isValidTerritoryCode;

@@ -51,28 +51,18 @@ const NewTerritoryCode = NiceModal.create(
     const [coordinates, setCoordinates] = useState<TerritoryPolygonCoordinate>(
       []
     );
-    const {
-      modal,
-      dialogProps: baseDialogProps,
-      contentProps
-    } = useBaseUiDialog();
     const form = useForm<FormValues>({
       defaultValues: {
         code: "",
         name: ""
       }
     });
-
-    const dialogProps = {
-      ...baseDialogProps,
-      onOpenChange: (open: boolean) => {
-        if (!open) {
-          form.reset();
-          setCoordinates([]);
-        }
-        baseDialogProps.onOpenChange(open);
+    const { modal, dialogProps, contentProps } = useBaseUiDialog({
+      onClose: () => {
+        form.reset();
+        setCoordinates([]);
       }
-    };
+    });
 
     const handleLocationSelect = async () => {
       const result = await showModal(ConfigureTerritoryCoordinates, {

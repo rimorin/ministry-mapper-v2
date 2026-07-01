@@ -1,5 +1,6 @@
 import NiceModal from "@ebay/nice-modal-react";
 import * as m from "motion/react-m";
+import { fadeInDelayed } from "@/lib/motion";
 import { useState, useEffect, useRef } from "react";
 import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
 import { Spinner } from "@/components/ui/spinner";
@@ -177,9 +178,9 @@ const GetMapGeolocation = NiceModal.create(
           </DialogHeader>
           <m.div
             className="geolocation-modal-body flex-1 relative overflow-hidden"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.35, ease: "linear", delay: 0.2 }}
+            variants={fadeInDelayed}
+            initial="hidden"
+            animate="show"
           >
             <MapContainer
               center={[coordinates.lat, coordinates.lng]}

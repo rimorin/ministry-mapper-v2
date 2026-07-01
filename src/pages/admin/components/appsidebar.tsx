@@ -89,6 +89,43 @@ function runSectionStagger(
   );
 }
 
+// Open/close + persisted state + entrance stagger for a sidebar Collapsible section.
+// persistKey stores/reads its own open state in localStorage; omit it for
+// sections (like Account) that shouldn't remember their state across reloads.
+function useCollapsibleSection(
+  axis: "x" | "y",
+  shouldReduceMotion: boolean | null,
+  options: { persistKey?: string; defaultOpen?: boolean } = {}
+) {
+  const { persistKey, defaultOpen = false } = options;
+  const [open, setOpenState] = React.useState(() => {
+    if (!persistKey) return defaultOpen;
+    try {
+      const stored = localStorage.getItem(persistKey);
+      return stored === null ? defaultOpen : stored === "true";
+    } catch {
+      return defaultOpen;
+    }
+  });
+  const [scope, animate] = useAnimate();
+
+  const setOpen = (next: boolean) => {
+    setOpenState(next);
+    if (persistKey) {
+      try {
+        localStorage.setItem(persistKey, String(next));
+      } catch {}
+    }
+  };
+
+  React.useEffect(() => {
+    runSectionStagger(open, scope, animate, shouldReduceMotion, axis);
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- only re-run when section opens
+  }, [open]);
+
+  return { open, setOpen, scope };
+}
+
 interface AppSidebarProps {
   congregationName: string;
   userName?: string;
@@ -161,68 +198,14 @@ export function AppSidebar({
   const { t } = useTranslation();
   const { isMobile, setOpenMobile } = useSidebar();
   const shouldReduceMotion = useReducedMotion();
-  const [manageOpen, setManageOpen] = React.useState(() => {
-    try {
-      return localStorage.getItem("sidebar-manage-open") !== "false";
-    } catch {
-      return false;
-    }
+  const manage = useCollapsibleSection("x", shouldReduceMotion, {
+    persistKey: "sidebar-manage-open",
+    defaultOpen: true
   });
-  const [congregationOpen, setCongregationOpen] = React.useState(() => {
-    try {
-      return localStorage.getItem("sidebar-congregation-open") === "true";
-    } catch {
-      return false;
-    }
+  const congregationSection = useCollapsibleSection("x", shouldReduceMotion, {
+    persistKey: "sidebar-congregation-open"
   });
-
-  const [accountOpen, setAccountOpen] = React.useState(false);
-
-  const [manageScope, manageAnimate] = useAnimate();
-  const [congScope, congAnimate] = useAnimate();
-  const [accountScope, accountAnimate] = useAnimate();
-
-  const persistCollapsible =
-    (setter: React.Dispatch<React.SetStateAction<boolean>>, key: string) =>
-    (open: boolean) => {
-      setter(open);
-      try {
-        localStorage.setItem(key, String(open));
-      } catch {}
-    };
-
-  React.useEffect(() => {
-    runSectionStagger(
-      manageOpen,
-      manageScope,
-      manageAnimate,
-      shouldReduceMotion,
-      "x"
-    );
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- only re-run when section opens
-  }, [manageOpen]);
-
-  React.useEffect(() => {
-    runSectionStagger(
-      congregationOpen,
-      congScope,
-      congAnimate,
-      shouldReduceMotion,
-      "x"
-    );
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- only re-run when section opens
-  }, [congregationOpen]);
-
-  React.useEffect(() => {
-    runSectionStagger(
-      accountOpen,
-      accountScope,
-      accountAnimate,
-      shouldReduceMotion,
-      "y"
-    );
-    // eslint-disable-next-line @eslint-react/exhaustive-deps -- only re-run when section opens
-  }, [accountOpen]);
+  const account = useCollapsibleSection("y", shouldReduceMotion);
 
   const userInitials = userName
     ? userName
@@ -341,11 +324,8 @@ export function AppSidebar({
                     <SidebarMenuItem>
                       <Collapsible
                         className="group/collapsible"
-                        open={manageOpen}
-                        onOpenChange={persistCollapsible(
-                          setManageOpen,
-                          "sidebar-manage-open"
-                        )}
+                        open={manage.open}
+                        onOpenChange={manage.setOpen}
                       >
                         <CollapsibleTrigger
                           render={
@@ -365,7 +345,7 @@ export function AppSidebar({
                           <ChevronDown className="size-4 shrink-0 transition-transform group-data-open/collapsible:rotate-180" />
                         </CollapsibleTrigger>
                         <CollapsibleContent>
-                          <div ref={manageScope}>
+                          <div ref={manage.scope}>
                             <SidebarMenuSub>
                               <SidebarMenuSubItem>
                                 <SidebarMenuSubButton
@@ -494,11 +474,8 @@ export function AppSidebar({
                   <SidebarMenuItem>
                     <Collapsible
                       className="group/collapsible"
-                      open={congregationOpen}
-                      onOpenChange={persistCollapsible(
-                        setCongregationOpen,
-                        "sidebar-congregation-open"
-                      )}
+                      open={congregationSection.open}
+                      onOpenChange={congregationSection.setOpen}
                     >
                       <CollapsibleTrigger
                         render={
@@ -521,7 +498,7 @@ export function AppSidebar({
                         <SidebarMenuBadge>{pendingCount}</SidebarMenuBadge>
                       )}
                       <CollapsibleContent>
-                        <div ref={congScope}>
+                        <div ref={congregationSection.scope}>
                           <SidebarMenuSub>
                             <SidebarMenuSubItem>
                               <SidebarMenuSubButton
@@ -627,8 +604,8 @@ export function AppSidebar({
                 <SidebarMenuItem>
                   <Collapsible
                     className="group/collapsible"
-                    open={accountOpen}
-                    onOpenChange={setAccountOpen}
+                    open={account.open}
+                    onOpenChange={account.setOpen}
                   >
                     <CollapsibleTrigger
                       render={
@@ -655,7 +632,7 @@ export function AppSidebar({
                       <ChevronDown className="size-4 shrink-0 transition-transform group-data-open/collapsible:rotate-180" />
                     </CollapsibleTrigger>
                     <CollapsibleContent>
-                      <div ref={accountScope}>
+                      <div ref={account.scope}>
                         <SidebarMenuSub>
                           <SidebarMenuSubItem>
                             <SidebarMenuSubButton
