@@ -92,6 +92,27 @@ async function resolveOptionChanges(
   };
 }
 
+// Marks the op in-flight, runs the server write, then removes it from the
+// queue — unless the user edited the op again while the write was in flight
+// (its ts will have moved past the snapshot), in which case it's left queued
+// for the drain pass to send the newer edit instead of silently dropping it.
+async function commitAndClearIfUnedited(
+  opKey: string,
+  write: () => Promise<void>
+): Promise<void> {
+  const snapshotTs = await markInFlight(opKey);
+  await write();
+  let storedTs: number | undefined;
+  try {
+    storedTs = await getOpTs(opKey);
+  } catch {
+    storedTs = snapshotTs;
+  }
+  if (storedTs === undefined || storedTs === snapshotTs) {
+    await removeFromQueue(opKey);
+  }
+}
+
 export type SmartSyncScope = { mapId: string } | { congregationId: string };
 
 export interface UseSmartSyncResult {
@@ -259,24 +280,15 @@ export function useSmartSync(scope?: SmartSyncScope): UseSmartSyncResult {
           if (authExpired) break;
           try {
             if (op.kind === "create" && op.createPayload) {
-              const snapshotTs = await markInFlight(op.opKey);
-              await batchCreateAddress({
-                addressId: op.addressId,
-                mapId: op.assignmentId,
-                createPayload: op.createPayload,
-                updateData: op.updateData,
-                optionIds: op.desiredOptionIds
-              });
-              // Guard against mid-flush edit — same pattern as the update path below.
-              let storedTs: number | undefined;
-              try {
-                storedTs = await getOpTs(op.opKey);
-              } catch {
-                storedTs = snapshotTs;
-              }
-              if (storedTs === undefined || storedTs === snapshotTs) {
-                await removeFromQueue(op.opKey);
-              }
+              await commitAndClearIfUnedited(op.opKey, () =>
+                batchCreateAddress({
+                  addressId: op.addressId,
+                  mapId: op.assignmentId,
+                  createPayload: op.createPayload!,
+                  updateData: op.updateData,
+                  optionIds: op.desiredOptionIds
+                })
+              );
               flushedCount++;
               continue;
             }
@@ -289,27 +301,15 @@ export function useSmartSync(scope?: SmartSyncScope): UseSmartSyncResult {
                 op.assignmentId
               );
 
-            const snapshotTs = await markInFlight(op.opKey);
-            await batchUpdateAddress({
-              addressId: op.addressId,
-              mapId: op.assignmentId,
-              updateData: op.updateData,
-              toDeleteAoIds,
-              toAddOptionIds
-            });
-            // Guard against mid-flush upsert: if the user edited this address
-            // while batchUpdateAddress was in-flight, the IDB record now has a
-            // newer ts. Skip the delete so the drain pass sends the updated op
-            // instead of silently dropping it.
-            let storedTs: number | undefined;
-            try {
-              storedTs = await getOpTs(op.opKey);
-            } catch {
-              storedTs = snapshotTs;
-            }
-            if (storedTs === undefined || storedTs === snapshotTs) {
-              await removeFromQueue(op.opKey);
-            }
+            await commitAndClearIfUnedited(op.opKey, () =>
+              batchUpdateAddress({
+                addressId: op.addressId,
+                mapId: op.assignmentId,
+                updateData: op.updateData,
+                toDeleteAoIds,
+                toAddOptionIds
+              })
+            );
             // Count the server write regardless — mm-flush-complete fires even
             // when the IDB op was superseded and kept for the drain pass.
             flushedCount++;

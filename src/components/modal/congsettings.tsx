@@ -41,11 +41,6 @@ const UpdateCongregationSettings = NiceModal.create(
   }: UpdateCongregationSettingsModalProps) => {
     const { t } = useTranslation();
     const { notifySuccess, runAction } = useNotification();
-    const {
-      modal,
-      dialogProps: baseDialogProps,
-      contentProps
-    } = useBaseUiDialog();
     const form = useForm<FormValues>({
       values: {
         name: currentName,
@@ -53,16 +48,9 @@ const UpdateCongregationSettings = NiceModal.create(
         defaultExpiryHrs: currentDefaultExpiryHrs
       }
     });
-
-    const dialogProps = {
-      ...baseDialogProps,
-      onOpenChange: (open: boolean) => {
-        if (!open) {
-          form.reset();
-        }
-        baseDialogProps.onOpenChange(open);
-      }
-    };
+    const { modal, dialogProps, contentProps } = useBaseUiDialog({
+      onClose: () => form.reset()
+    });
 
     const onSubmit = async (values: FormValues) => {
       await runAction(async () => {

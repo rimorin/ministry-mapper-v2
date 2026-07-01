@@ -23,6 +23,15 @@ export const fadeIn: Variants = {
   show: { opacity: 1, transition: { duration: 0.25, ease: "linear" } }
 };
 
+// Delayed variant of fadeIn — lets a dialog finish opening before its content fades in.
+export const fadeInDelayed: Variants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: { duration: 0.35, ease: "linear", delay: 0.2 }
+  }
+};
+
 export const fadeSlideUp: Variants = {
   hidden: { opacity: 0, y: 24 },
   show: { opacity: 1, y: 0, transition: enterTransition }
@@ -89,6 +98,24 @@ export const rowHeader: Variants = {
       transition: {
         default: { ...springBase, delay },
         opacity: { duration: 0.35, ease: "linear", delay }
+      }
+    };
+  }
+};
+
+// Sortable list item entrance — staggers in by position, then keeps `layout`
+// spring smooth for drag-reorder. Pass custom={{ delayIndex }} on each item.
+export const sortableItemEnter: Variants = {
+  hidden: { opacity: 0, y: 6 },
+  show: ({ delayIndex }: { delayIndex: number }) => {
+    const delay = Math.min(delayIndex * 0.035, 0.35);
+    return {
+      opacity: 1,
+      y: 0,
+      transition: {
+        layout: { type: "spring", stiffness: 300, damping: 30 },
+        opacity: { duration: 0.18, delay },
+        y: { duration: 0.18, delay }
       }
     };
   }

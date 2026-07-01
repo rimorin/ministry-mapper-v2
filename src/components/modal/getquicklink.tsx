@@ -1,5 +1,6 @@
 import NiceModal from "@ebay/nice-modal-react";
 import * as m from "motion/react-m";
+import { fadeInDelayed } from "@/lib/motion";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -224,9 +225,9 @@ ${new URL(`map/${linkId}`, window.location.href).toString()}`
               >
                 <m.div
                   className="quicklink-modal-body-container flex-1 relative overflow-hidden"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.35, ease: "linear", delay: 0.2 }}
+                  variants={fadeInDelayed}
+                  initial="hidden"
+                  animate="show"
                 >
                   {mapData && (
                     <>

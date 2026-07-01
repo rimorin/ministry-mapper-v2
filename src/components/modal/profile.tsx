@@ -28,24 +28,12 @@ import { updateDataById } from "../../utils/pocketbase";
 const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
   const { t } = useTranslation();
   const { notifySuccess, runAction } = useNotification();
-  const {
-    modal,
-    dialogProps: baseDialogProps,
-    contentProps
-  } = useBaseUiDialog();
   const form = useForm<{ name: string }>({
     values: { name: user?.name ?? "" }
   });
-
-  const dialogProps = {
-    ...baseDialogProps,
-    onOpenChange: (open: boolean) => {
-      if (!open) {
-        form.reset();
-      }
-      baseDialogProps.onOpenChange(open);
-    }
-  };
+  const { modal, dialogProps, contentProps } = useBaseUiDialog({
+    onClose: () => form.reset()
+  });
 
   const onSubmit = async (values: { name: string }) => {
     await runAction(async () => {

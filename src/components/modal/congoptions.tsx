@@ -541,20 +541,29 @@ const UpdateCongregationOptions = NiceModal.create(
                                 }
                                 onCodeChange={(idx, value) => {
                                   const newOptions = [...options];
-                                  newOptions[idx].code = value
-                                    .toLowerCase()
-                                    .replace(/[^a-z]/g, "")
-                                    .substring(0, 2);
+                                  newOptions[idx] = {
+                                    ...newOptions[idx],
+                                    code: value
+                                      .toLowerCase()
+                                      .replace(/[^a-z]/g, "")
+                                      .substring(0, 2)
+                                  };
                                   setOptions(newOptions);
                                 }}
                                 onDescriptionChange={(idx, value) => {
                                   const newOptions = [...options];
-                                  newOptions[idx].description = value;
+                                  newOptions[idx] = {
+                                    ...newOptions[idx],
+                                    description: value
+                                  };
                                   setOptions(newOptions);
                                 }}
                                 onCountableChange={(idx, checked) => {
                                   const newOptions = [...options];
-                                  newOptions[idx].isCountable = checked;
+                                  newOptions[idx] = {
+                                    ...newOptions[idx],
+                                    isCountable: checked
+                                  };
                                   setOptions(newOptions);
                                 }}
                                 onDefaultChange={(idx, checked) => {
@@ -582,7 +591,10 @@ const UpdateCongregationOptions = NiceModal.create(
                                       ...deletedOptions,
                                       option.code
                                     ]);
-                                    newOptions[idx].isDeleted = true;
+                                    newOptions[idx] = {
+                                      ...newOptions[idx],
+                                      isDeleted: true
+                                    };
                                   }
                                   setOptions(newOptions);
                                 }}
