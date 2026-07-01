@@ -132,9 +132,6 @@ function useGeolocation({
   const isSupported =
     typeof navigator !== "undefined" && !!navigator.geolocation;
 
-  /**
-   * Request location manually
-   */
   const requestLocation =
     useCallback(async (): Promise<latlongInterface | null> => {
       if (!isSupported) return null;
@@ -158,9 +155,6 @@ function useGeolocation({
       }
     }, [isSupported, watchOptions]);
 
-  /**
-   * Start watching position
-   */
   const startWatching = useCallback(() => {
     if (!isSupported || watchIdRef.current !== null) return;
 
@@ -211,9 +205,6 @@ function useGeolocation({
     );
   }, [isSupported, watchOptions]);
 
-  /**
-   * Stop watching position
-   */
   const stopWatching = () => {
     if (watchIdRef.current !== null) {
       navigator.geolocation.clearWatch(watchIdRef.current);
@@ -221,9 +212,6 @@ function useGeolocation({
     }
   };
 
-  /**
-   * Clear error state
-   */
   const clearError = () => {
     setLocationError(null);
   };

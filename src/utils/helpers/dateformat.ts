@@ -1,6 +1,4 @@
-/**
- * Formats a date in the "en-GB" locale, e.g. "Tue, 21/09/21, 10:30 AM".
- */
+// e.g. "Tue, 21/09/21, 10:30 AM"
 const formatDate = (dateString: number | string | Date): string => {
   return new Date(dateString).toLocaleString("en-GB", {
     weekday: "short",

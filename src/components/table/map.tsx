@@ -471,7 +471,6 @@ const MainTable = ({
 
     const floorMap = new Map<number, unitDetails[]>();
 
-    // Single pass to group by floor and track maxUnitLength
     for (const address of addresses.values()) {
       const { floor, number } = address;
       maxUnitLength = Math.max(maxUnitLength, number.length);

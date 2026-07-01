@@ -68,7 +68,6 @@ const ChangeMapGeolocation = NiceModal.create(
     const [recenterTrigger, setRecenterTrigger] = useState(0);
     const hasInitiallyRecentered = useRef(false);
 
-    // Use universal map centering hook to get device location
     const { currentLocation: deviceLocation, center: initialCenter } =
       useGeolocation({
         coordinates,

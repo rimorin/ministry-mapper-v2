@@ -359,7 +359,6 @@ const ConfigureTerritoryCoordinates = NiceModal.create(
       }
     };
 
-    // Use universal map centering hook
     const { center: initialCenter, currentLocation } = useGeolocation({
       coordinates
     });
