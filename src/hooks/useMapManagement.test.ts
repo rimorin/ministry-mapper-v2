@@ -4,17 +4,27 @@ import { renderHook, act, waitFor } from "@testing-library/react";
 import { useState } from "react";
 
 // Mock dependencies
+const { notifyWarningMock } = vi.hoisted(() => ({
+  notifyWarningMock: vi.fn()
+}));
+
 vi.mock("./useNotification", () => ({
   default: () => ({
     notifyError: vi.fn(),
     notifySuccess: vi.fn(),
-    notifyWarning: vi.fn()
+    notifyWarning: notifyWarningMock
   })
 }));
 
+const { localStorageOverrides } = vi.hoisted(() => ({
+  localStorageOverrides: {} as Record<string, unknown>
+}));
+
 vi.mock("./useLocalStorage", () => ({
-  default: (key: string, initialValue: boolean) => {
-    const [value, setValue] = useState(initialValue);
+  default: (key: string, initialValue: unknown) => {
+    const [value, setValue] = useState(
+      key in localStorageOverrides ? localStorageOverrides[key] : initialValue
+    );
     return [value, setValue];
   }
 }));
@@ -49,6 +59,9 @@ const { deleteDataById, callFunction, getList } =
 describe("useMapManagement", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    for (const key of Object.keys(localStorageOverrides)) {
+      delete localStorageOverrides[key];
+    }
   });
 
   describe("initialization", () => {
@@ -237,7 +250,8 @@ describe("useMapManagement", () => {
         },
         name: "Test Building",
         coordinates: { lat: 1.23, lng: 4.56 },
-        sequence: 1
+        sequence: 1,
+        hasLocation: true
       });
     });
 
@@ -543,6 +557,79 @@ describe("useMapManagement", () => {
       });
 
       expect(result.current.isMapView).toBe(true);
+    });
+  });
+
+  describe("sort mode", () => {
+    const buildMap = (id: string, value: number) =>
+      ({
+        id,
+        name: id,
+        type: "PRIVATE",
+        location: "",
+        aggregates: { display: `${value}%`, value, notDone: 0, notHome: 0 },
+        coordinates: { lat: 0, lng: 0 },
+        sequence: value,
+        hasLocation: true,
+        assigneeDetailsList: [],
+        personalDetailsList: [],
+        floors: []
+      }) as any;
+
+    it("should default to sequence order", () => {
+      const { result } = renderHook(() => useMapManagement());
+      expect(result.current.sortMode).toBe("sequence");
+    });
+
+    it("should derive displayAddressList by ascending progress when sortMode is progress, leaving sortedAddressList untouched", async () => {
+      const { result } = renderHook(() => useMapManagement());
+
+      act(() => {
+        result.current.setSortedAddressList([
+          buildMap("a", 75),
+          buildMap("b", 10)
+        ]);
+      });
+
+      await act(async () => {
+        await result.current.handleSortModeChange("progress");
+      });
+
+      expect(result.current.sortMode).toBe("progress");
+      expect(result.current.displayAddressList.map((m) => m.id)).not.toEqual(
+        result.current.sortedAddressList.map((m) => m.id)
+      );
+      expect(result.current.sortedAddressList.map((m) => m.id)).toEqual([
+        "a",
+        "b"
+      ]);
+    });
+
+    it("should warn and keep previous mode when proximity is unsupported", async () => {
+      const { result } = renderHook(() => useMapManagement());
+
+      await act(async () => {
+        await result.current.handleSortModeChange("proximity");
+      });
+
+      expect(result.current.sortMode).toBe("sequence");
+      expect(notifyWarningMock).toHaveBeenCalledWith(
+        "Could not get your location. Check location permissions and try again."
+      );
+    });
+
+    it("should fall back to sequence when a persisted proximity mode can't get a location on mount", async () => {
+      localStorageOverrides.mapListSortMode = "proximity";
+
+      const { result } = renderHook(() => useMapManagement());
+      expect(result.current.sortMode).toBe("proximity");
+
+      await waitFor(() => {
+        expect(result.current.sortMode).toBe("sequence");
+      });
+      expect(notifyWarningMock).toHaveBeenCalledWith(
+        "Could not get your location. Check location permissions and try again."
+      );
     });
   });
 });

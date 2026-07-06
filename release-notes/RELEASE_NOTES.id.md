@@ -1,5 +1,18 @@
 # Catatan Rilis (Bahasa Indonesia)
 
+## 2026-07-06
+
+[NEW] Urutkan daftar peta Anda.
+  Admin dan Pengurus kini dapat mengurutkan daftar peta mereka. Ketuk ikon urutkan di sebelah pengalih tampilan daftar/peta untuk memilih cara peta wilayah diurutkan.
+
+  - Urutan — urutan yang sudah ada, sama seperti sebelumnya (default).
+  - Kemajuan — peta yang paling sedikit selesai ditampilkan lebih dulu, agar Anda dapat melihat area yang masih perlu dicakup.
+  - Kedekatan — peta terdekat ditampilkan lebih dulu, berdasarkan lokasi perangkat Anda. Setiap peta menampilkan jaraknya dari Anda (mis., "450 m" atau "3.9 km"). Browser Anda mungkin meminta izin lokasi pada penggunaan pertama.
+
+  Pilihan Anda akan diingat di perangkat ini.
+
+---
+
 ## 2026-06-15
 
 [NEW] Tampilan baru yang segar.

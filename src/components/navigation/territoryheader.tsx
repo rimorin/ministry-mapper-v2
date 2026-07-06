@@ -1,13 +1,48 @@
-import { List, Map, Plus, Zap } from "lucide-react";
+import {
+  GripVertical,
+  List,
+  LocateFixed,
+  Map,
+  Plus,
+  TrendingUp,
+  Zap
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Spinner } from "@/components/ui/spinner";
 import { useTranslation } from "react-i18next";
 import ComponentAuthorizer from "./authorizer";
+import { GenericDropdownButton } from "./dropdownbutton";
+import {
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem
+} from "@/components/ui/dropdown-menu";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
-import { territoryHeaderProp } from "../../utils/interface";
+import { MapSortMode, territoryHeaderProp } from "../../utils/interface";
 import * as m from "motion/react-m";
 import { fadeSlideDown } from "@/lib/motion";
+
+const SORT_MODE_META: Record<
+  MapSortMode,
+  { icon: typeof GripVertical; labelKey: string; fallback: string }
+> = {
+  sequence: {
+    icon: GripVertical,
+    labelKey: "navigation.sortSequence",
+    fallback: "Sequence"
+  },
+  progress: {
+    icon: TrendingUp,
+    labelKey: "navigation.sortProgress",
+    fallback: "Progress"
+  },
+  proximity: {
+    icon: LocateFixed,
+    labelKey: "navigation.sortProximity",
+    fallback: "Proximity"
+  }
+};
+const SORT_MODES = Object.keys(SORT_MODE_META) as MapSortMode[];
 
 const TerritoryHeader = ({
   name,
@@ -17,11 +52,23 @@ const TerritoryHeader = ({
   userAccessLevel,
   onToggleView,
   onGenerateLink,
-  onCreateMap
+  onCreateMap,
+  sortMode,
+  onSortModeChange,
+  isLoadingLocation
 }: territoryHeaderProp) => {
   const { t } = useTranslation();
 
   if (!name) return null;
+
+  const sortModeLabels = Object.fromEntries(
+    SORT_MODES.map((mode) => [
+      mode,
+      t(SORT_MODE_META[mode].labelKey, SORT_MODE_META[mode].fallback)
+    ])
+  ) as Record<MapSortMode, string>;
+  const currentSortMode = sortMode ?? "sequence";
+  const SortIcon = SORT_MODE_META[currentSortMode].icon;
 
   const showCreateMapAction = hasSelectedTerritory && !!onCreateMap;
 
@@ -58,6 +105,38 @@ const TerritoryHeader = ({
                 <Map className="size-4" />
               </ToggleGroupItem>
             </ToggleGroup>
+          )}
+          {onSortModeChange && !isMapView && (
+            <GenericDropdownButton
+              align="start"
+              variant="outline"
+              size="sm"
+              label={
+                <>
+                  {isLoadingLocation ? (
+                    <Spinner data-icon="inline-start" aria-hidden="true" />
+                  ) : (
+                    <SortIcon className="size-4" />
+                  )}
+                  <span className="sr-only sm:not-sr-only sm:inline">
+                    {sortModeLabels[currentSortMode]}
+                  </span>
+                </>
+              }
+            >
+              <DropdownMenuRadioGroup
+                value={currentSortMode}
+                onValueChange={(value) =>
+                  onSortModeChange(value as MapSortMode)
+                }
+              >
+                {SORT_MODES.map((mode) => (
+                  <DropdownMenuRadioItem key={mode} value={mode} closeOnClick>
+                    {sortModeLabels[mode]}
+                  </DropdownMenuRadioItem>
+                ))}
+              </DropdownMenuRadioGroup>
+            </GenericDropdownButton>
           )}
         </div>
         <div className="flex items-center gap-2">

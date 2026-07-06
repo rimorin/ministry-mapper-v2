@@ -24,6 +24,7 @@ import { useModalManagement } from "../../hooks/useModalManagement";
 import useConfirm from "../../hooks/useConfirm";
 import AggregationBadge from "./aggrbadge";
 import GenericButton from "./button";
+import { formatDistance } from "../../utils/helpers/maphelpers";
 import {
   GenericDropdownButton,
   GenericDropdownItem,
@@ -105,6 +106,11 @@ function MapRow({
           >
             {mapName}
           </span>
+          {addressElement.distanceMeters != null && (
+            <span className="ml-3 shrink-0 whitespace-nowrap text-xs text-muted-foreground">
+              {formatDistance(addressElement.distanceMeters)}
+            </span>
+          )}
           {(notDoneCount > 0 || notHomeCount > 0) && (
             <span className="ml-3 grid shrink-0 grid-cols-[auto_auto] gap-x-2 whitespace-nowrap text-xs leading-tight text-muted-foreground">
               {notDoneCount > 0 && (

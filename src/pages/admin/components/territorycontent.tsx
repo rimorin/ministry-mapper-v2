@@ -9,7 +9,8 @@ import GettingStarted from "../../../components/statics/gettingstarted";
 import {
   addressDetails,
   territoryDetails,
-  HHOptionProps
+  HHOptionProps,
+  MapSortMode
 } from "../../../utils/interface";
 import { Policy } from "../../../utils/policies";
 import { USER_ACCESS_LEVELS } from "../../../utils/constants";
@@ -32,6 +33,9 @@ interface TerritoryContentProps {
   isAssignmentLoading: boolean;
   onToggleMapView: () => void;
   onGenerateLink: () => void;
+  sortMode: MapSortMode;
+  onSortModeChange: (mode: MapSortMode) => void;
+  isLoadingLocation: boolean;
   sortedAddressList: Array<addressDetails>;
   accordionKeys: Array<string>;
   setAccordionKeys: React.Dispatch<React.SetStateAction<Array<string>>>;
@@ -66,6 +70,9 @@ export default function TerritoryContent({
   isAssignmentLoading,
   onToggleMapView,
   onGenerateLink,
+  sortMode,
+  onSortModeChange,
+  isLoadingLocation,
   sortedAddressList,
   accordionKeys,
   setAccordionKeys,
@@ -143,6 +150,9 @@ export default function TerritoryContent({
             onToggleView={onToggleMapView}
             onGenerateLink={onGenerateLink}
             onCreateMap={onCreateMap}
+            sortMode={sortMode}
+            onSortModeChange={onSortModeChange}
+            isLoadingLocation={isLoadingLocation}
           />
           {isMapView ? (
             <MapView

@@ -1,5 +1,18 @@
 # Notas de versión (Español)
 
+## 2026-07-06
+
+[NEW] Ordena tu lista de mapas.
+  Los administradores y conductores ahora pueden ordenar su listado de mapas. Toca el icono de ordenar junto al selector de lista/mapa para elegir cómo se ordenan los mapas del territorio.
+
+  - Secuencia — el orden habitual, igual que antes (predeterminado).
+  - Progreso — los mapas menos completos aparecen primero, para que veas qué necesita más cobertura.
+  - Proximidad — el mapa más cercano primero, según la ubicación de tu dispositivo. Cada mapa muestra su distancia hasta ti (por ejemplo, "450 m" o "3.9 km"). Tu navegador puede pedirte permiso de ubicación la primera vez.
+
+  Tu elección se recuerda en este dispositivo.
+
+---
+
 ## 2026-06-15
 
 [NEW] Un aspecto nuevo y fresco.

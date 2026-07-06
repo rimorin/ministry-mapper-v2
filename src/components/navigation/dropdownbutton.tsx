@@ -14,7 +14,7 @@ import {
 
 const GenericDropdownButton = ({
   label,
-  className = "inline-block m-1",
+  className = "m-1",
   align = "end",
   variant = "outline",
   size = "sm",
@@ -45,7 +45,7 @@ const GenericDropdownButton = ({
       </DropdownMenuTrigger>
       <DropdownMenuContent
         align={align === "end" ? "end" : "start"}
-        className="w-auto min-w-[10rem]"
+        className="w-auto"
       >
         {children}
       </DropdownMenuContent>

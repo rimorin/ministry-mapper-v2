@@ -95,8 +95,11 @@ function Admin({ user }: adminProps) {
 
   const {
     processingMap,
-    sortedAddressList,
     setSortedAddressList,
+    displayAddressList,
+    sortMode,
+    handleSortModeChange,
+    isLoadingLocation,
     accordionKeys,
     setAccordionKeys,
     mapViews,
@@ -765,7 +768,10 @@ function Admin({ user }: adminProps) {
                 isAssignmentLoading={isAssignmentLoading}
                 onToggleMapView={() => setIsMapView(!isMapView)}
                 onGenerateLink={handleGenerateTerritoryMap}
-                sortedAddressList={sortedAddressList}
+                sortedAddressList={displayAddressList}
+                sortMode={sortMode}
+                onSortModeChange={handleSortModeChange}
+                isLoadingLocation={isLoadingLocation}
                 accordionKeys={accordionKeys}
                 setAccordionKeys={setAccordionKeys}
                 mapViews={mapViews}

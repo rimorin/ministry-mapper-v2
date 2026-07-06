@@ -188,6 +188,7 @@
     "clickToSelectLocation": "Click to select location",
     "selectLocation": "Please select a location",
     "deleteSuccess": "Deleted address, {{name}}.",
+    "locationUnavailable": "Could not get your location. Check location permissions and try again.",
     "updateMapSequence": "Update Map Sequence",
     "createMapDescription": "Configure and add a new map to this territory.",
     "dragToReorder": "Drag and drop the cards to reorder the sequence"
@@ -336,6 +337,9 @@
     "countNotHome_other": "{{count}} not home",
     "listView": "List View",
     "mapView": "Map View",
+    "sortSequence": "Sequence",
+    "sortProgress": "Progress",
+    "sortProximity": "Proximity",
     "viewToggle": "View toggle",
     "direction": "Direction",
     "backToTop": "Back to top",

@@ -188,6 +188,7 @@
     "clickToSelectLocation": "Haz clic para seleccionar la ubicación",
     "selectLocation": "Por favor, selecciona una ubicación",
     "deleteSuccess": "Dirección eliminada, {{name}}.",
+    "locationUnavailable": "No se pudo obtener tu ubicación. Verifica los permisos de ubicación e inténtalo de nuevo.",
     "updateMapSequence": "Actualizar secuencia del mapa",
     "createMapDescription": "Configura y agrega un nuevo mapa a este territorio.",
     "dragToReorder": "Arrastra y suelta las tarjetas para reordenar la secuencia"
@@ -336,6 +337,9 @@
     "countNotHome_other": "{{count}} no en casa",
     "listView": "Vista de lista",
     "mapView": "Vista de mapa",
+    "sortSequence": "Secuencia",
+    "sortProgress": "Progreso",
+    "sortProximity": "Proximidad",
     "viewToggle": "Cambiar vista",
     "direction": "Dirección",
     "backToTop": "Volver arriba",

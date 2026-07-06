@@ -1,5 +1,18 @@
 # Nota Pelepasan (Bahasa Melayu)
 
+## 2026-07-06
+
+[NEW] Susun senarai peta anda.
+  Pentadbir dan Konduktor kini boleh menyusun senarai peta mereka. Ketik ikon susun di sebelah togol paparan senarai/peta untuk memilih cara peta wilayah disusun.
+
+  - Urutan — susunan sedia ada, sama seperti sebelum ini (lalai).
+  - Kemajuan — peta yang paling kurang lengkap dipaparkan dahulu, supaya anda dapat melihat kawasan yang masih memerlukan liputan.
+  - Kedekatan — peta terdekat dipaparkan dahulu, berdasarkan lokasi peranti anda. Setiap peta memaparkan jaraknya dari anda (cth., "450 m" atau "3.9 km"). Pelayar anda mungkin meminta kebenaran lokasi buat kali pertama.
+
+  Pilihan anda akan diingati pada peranti ini.
+
+---
+
 ## 2026-06-15
 
 [NEW] Penampilan baharu yang segar.
