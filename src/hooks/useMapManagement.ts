@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   addressDetails,
+  MapSortMode,
   territoryDetails,
   valuesDetails
 } from "../utils/interface";
@@ -19,7 +20,10 @@ import {
 import { useTranslation } from "react-i18next";
 import useNotification from "./useNotification";
 import { resolveLocalized } from "../utils/resolveLocalized";
+import { isValidCoordinate } from "../utils/helpers/maphelpers";
 import useLocalStorage from "./useLocalStorage";
+import useGeolocation from "./useGeolocation";
+import { sortByProgress, sortByProximity } from "../utils/helpers/sorthelpers";
 
 export default function useMapManagement() {
   const { t, i18n } = useTranslation();
@@ -34,6 +38,12 @@ export default function useMapManagement() {
   const [accordionKeys, setAccordionKeys] = useState<Array<string>>([]);
   const [mapViews, setMapViews] = useState<Map<string, boolean>>(new Map());
   const [isMapView, setIsMapView] = useLocalStorage("mapView", false);
+  const [sortMode, setSortMode] = useLocalStorage<MapSortMode>(
+    "mapListSortMode",
+    "sequence"
+  );
+  const { currentLocation, isLoadingLocation, requestLocation } =
+    useGeolocation({ skipGeolocation: true });
 
   const deleteMap = async (
     mapId: string,
@@ -103,7 +113,8 @@ export default function useMapManagement() {
       },
       name: resolveLocalized(mapRecord.description, i18n.language),
       coordinates: mapRecord.coordinates || DEFAULT_COORDINATES.Singapore,
-      sequence: mapRecord.sequence
+      sequence: mapRecord.sequence,
+      hasLocation: isValidCoordinate(mapRecord.coordinates)
     } as addressDetails;
   };
 
@@ -163,10 +174,55 @@ export default function useMapManagement() {
     }
   };
 
+  const notifyLocationUnavailable = () => {
+    notifyWarning(
+      t(
+        "map.locationUnavailable",
+        "Could not get your location. Check location permissions and try again."
+      )
+    );
+  };
+
+  const handleSortModeChange = async (mode: MapSortMode) => {
+    if (mode === "proximity") {
+      const location = await requestLocation();
+      if (!location) {
+        notifyLocationUnavailable();
+        return;
+      }
+    }
+    setSortMode(mode);
+  };
+
+  useEffect(() => {
+    if (sortMode !== "proximity") return;
+    let cancelled = false;
+    requestLocation().then((location) => {
+      if (cancelled || location) return;
+      notifyLocationUnavailable();
+      setSortMode("sequence");
+    });
+    return () => {
+      cancelled = true;
+    };
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- run once on mount to recover a persisted proximity mode
+  }, []);
+
+  let displayAddressList = sortedAddressList;
+  if (sortMode === "progress") {
+    displayAddressList = sortByProgress(sortedAddressList);
+  } else if (sortMode === "proximity") {
+    displayAddressList = sortByProximity(sortedAddressList, currentLocation);
+  }
+
   return {
     processingMap,
     sortedAddressList,
     setSortedAddressList,
+    displayAddressList,
+    sortMode,
+    handleSortModeChange,
+    isLoadingLocation,
     accordionKeys,
     setAccordionKeys,
     mapViews,

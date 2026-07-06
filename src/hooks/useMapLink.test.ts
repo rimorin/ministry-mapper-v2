@@ -355,7 +355,8 @@ describe("useMapLink", () => {
         assigneeDetailsList: [],
         personalDetailsList: [],
         floors: [],
-        sequence: 1
+        sequence: 1,
+        hasLocation: true
       };
 
       act(() => {

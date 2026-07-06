@@ -164,7 +164,11 @@ export interface addressDetails extends nameInterface, coordinatesInterface {
   location?: string;
   aggregates: AggregatesProps;
   sequence: number;
+  hasLocation: boolean;
+  distanceMeters?: number;
 }
+
+export type MapSortMode = "sequence" | "progress" | "proximity";
 
 export interface FormProps {
   handleChange?: (event: React.ChangeEvent<HTMLElement>) => void;
@@ -254,6 +258,9 @@ export interface territoryHeaderProp {
   onToggleView?: () => void;
   onGenerateLink?: () => void;
   onCreateMap?: () => void;
+  sortMode?: MapSortMode;
+  onSortModeChange?: (mode: MapSortMode) => void;
+  isLoadingLocation?: boolean;
 }
 
 export interface backToTopProp {

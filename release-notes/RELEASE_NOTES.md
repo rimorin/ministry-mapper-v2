@@ -109,6 +109,21 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ---
 
+## 2026-07-06
+
+[NEW] Sort your map list.
+  Admins and conductors can now sort their map listing. Tap the sort icon next to the list/map toggle to choose how territory maps are ordered.
+
+  - Sequence — the existing order, same as before (default).
+  - Progress — least complete maps shown first, so you can see what still needs coverage.
+  - Proximity — nearest map first, based on your device's location. Each map shows its distance from you (e.g. "450 m" or "3.9 km"). Your browser may ask for location permission the first time.
+
+  Your choice is remembered on this device.
+
+![Sort menu showing Sequence, Progress, and Proximity options](https://assets.ministry-mapper.com/release-notes/2026-07-06/sort-menu.png)
+
+---
+
 ## 2026-06-15
 
 [NEW] A fresh new look.
