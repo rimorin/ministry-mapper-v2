@@ -109,6 +109,21 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ---
 
+## 2026-07-27
+
+[FIX] Install Ministry Mapper as an app.
+  Admins and conductors can now install Ministry Mapper to your home screen, just like a regular app.
+
+  This was previously turned off because caching could leave the installed app stuck on an outdated version. That has been fixed, so installing is available again.
+
+  Installing is entirely optional. We still recommend using Ministry Mapper in a web browser such as Safari or Chrome.
+
+  Open Ministry Mapper in your browser, then look for "Add to Home Screen" or "Install app" in the browser menu.
+
+  Once installed, it opens in its own window with its own icon, just like any other app on your device.
+
+---
+
 ## 2026-07-06
 
 [NEW] Sort your map list.

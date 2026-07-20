@@ -524,12 +524,6 @@
     "week_one": "{{count}} week",
     "month_one": "{{count}} month"
   },
-  "pwa": {
-    "unsupported": {
-      "title": "不支持的访问方式 📱",
-      "message": "此应用不支持以已安装应用（PWA）方式打开。请直接在您的网络浏览器中打开它。"
-    }
-  },
   "location": {
     "arrivedAtDestination": "您已到达目的地"
   },

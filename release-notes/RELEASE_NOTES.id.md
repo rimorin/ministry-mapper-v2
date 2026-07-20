@@ -1,5 +1,20 @@
 # Catatan Rilis (Bahasa Indonesia)
 
+## 2026-07-27
+
+[FIX] Pasang Ministry Mapper sebagai aplikasi.
+  Admin dan Pengurus kini dapat memasang Ministry Mapper ke layar utama, seperti aplikasi biasa.
+
+  Sebelumnya fitur ini dimatikan karena penyimpanan cache bisa membuat aplikasi yang terpasang tertahan di versi lama. Masalah itu sudah diperbaiki, jadi pemasangan tersedia kembali.
+
+  Pemasangan ini sepenuhnya opsional. Kami tetap menyarankan penggunaan Ministry Mapper melalui peramban web seperti Safari atau Chrome.
+
+  Buka Ministry Mapper di browser Anda, lalu cari "Tambahkan ke Layar Utama" atau "Instal aplikasi" di menu browser.
+
+  Setelah terpasang, aplikasi akan terbuka di jendelanya sendiri dengan ikonnya sendiri, seperti aplikasi lain di perangkat Anda.
+
+---
+
 ## 2026-07-06
 
 [NEW] Urutkan daftar peta Anda.

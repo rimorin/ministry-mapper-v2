@@ -3,6 +3,7 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { initAnalytics } from "./utils/analytics";
 import { isAbortError } from "./utils/pocketbase";
+import { checkForNewVersion } from "./utils/versionCheck";
 import { initLaunchDarkly } from "./lib/launchdarkly";
 import Main from "./pages/index";
 
@@ -37,6 +38,31 @@ if ("serviceWorker" in navigator) {
       .catch(() => {});
   });
 }
+
+// Backstop for the SW check above: a frozen/suspended standalone window may
+// never fire reg.update() or controllerchange, so check version.json directly.
+let lastVersionCheck = 0;
+let versionStale = false;
+const checkFreshness = (bypassThrottle = false) => {
+  if (!navigator.onLine || versionStale) return;
+  const now = Date.now();
+  if (!bypassThrottle && now - lastVersionCheck < 5 * 60 * 1000) return;
+  lastVersionCheck = now;
+  checkForNewVersion().then((stale) => {
+    if (stale && !versionStale) {
+      versionStale = true;
+      window.dispatchEvent(new CustomEvent("mm-sw-update"));
+    }
+  });
+};
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") checkFreshness();
+});
+// persisted=true means this is a bfcache/app-switcher resume, not a fresh
+// navigation — bypass the throttle since this is the moment staleness must be caught.
+window.addEventListener("pageshow", (event) => {
+  if (event.persisted) checkFreshness(true);
+});
 
 // Reload once when a chunk fails to load after a fresh deployment (stale hash).
 // The sessionStorage flag prevents an infinite reload loop when the chunk is

@@ -172,3 +172,10 @@ fs.writeFileSync(
   path.join(__dirname, "../public/changelog.json"),
   JSON.stringify(buildChangelog(), null, 2)
 );
+
+// Regenerated every build so running clients can detect staleness against
+// their compiled-in VITE_APP_VERSION (see src/utils/versionCheck.ts).
+fs.writeFileSync(
+  path.join(__dirname, "../public/version.json"),
+  JSON.stringify({ version: packageJson.version }, null, 2)
+);
