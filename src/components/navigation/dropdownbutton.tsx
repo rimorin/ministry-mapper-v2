@@ -22,12 +22,7 @@ const GenericDropdownButton = ({
   children
 }: GenericDropdownButtonProps) => {
   type ButtonVariant =
-    | "default"
-    | "outline"
-    | "secondary"
-    | "destructive"
-    | "ghost"
-    | "link";
+    "default" | "outline" | "secondary" | "destructive" | "ghost" | "link";
 
   return (
     <DropdownMenu>

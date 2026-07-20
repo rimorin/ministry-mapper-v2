@@ -121,8 +121,7 @@ export default function useAdminData({
       );
       congregationTerritoriesRef.current[cong.id] = sortByCode(
         (cong.expand?.territories_via_congregation as
-          | RecordModel[]
-          | undefined) ?? []
+          RecordModel[] | undefined) ?? []
       );
     });
     setUserCongregationAccesses(congregationAccesses);
