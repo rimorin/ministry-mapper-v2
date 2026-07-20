@@ -524,12 +524,6 @@
     "week_one": "{{count}} week",
     "month_one": "{{count}} month"
   },
-  "pwa": {
-    "unsupported": {
-      "title": "非対応のアクセス方法 📱",
-      "message": "このアプリはインストール済みアプリ（PWA）として開くことに対応していません。ウェブブラウザから直接開いてください。"
-    }
-  },
   "location": {
     "arrivedAtDestination": "目的地に到着しました"
   },

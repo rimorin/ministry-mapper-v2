@@ -4,7 +4,6 @@ import "../css/common.css";
 import "@/index.css";
 import { FC, ReactNode } from "react";
 import MaintenanceMiddleware from "../components/middlewares/maintenance";
-import PwaMiddleware from "../components/middlewares/pwa";
 import MainMiddleware from "../components/middlewares/main";
 import ThemeMiddleware from "../components/middlewares/theme";
 import { Provider as NiceModelMiddleware } from "@ebay/nice-modal-react";
@@ -29,11 +28,9 @@ const CombinedMiddleware: FC<CombinedMiddlewareProps> = ({ children }) => (
             <Toaster />
             <SwUpdatePrompt />
             <MaintenanceMiddleware>
-              <PwaMiddleware>
-                <NiceModelMiddleware>
-                  <ReleaseNotesProvider>{children}</ReleaseNotesProvider>
-                </NiceModelMiddleware>
-              </PwaMiddleware>
+              <NiceModelMiddleware>
+                <ReleaseNotesProvider>{children}</ReleaseNotesProvider>
+              </NiceModelMiddleware>
             </MaintenanceMiddleware>
           </ThemeMiddleware>
         </LanguageProvider>

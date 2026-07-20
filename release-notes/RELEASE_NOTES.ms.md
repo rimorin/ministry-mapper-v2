@@ -1,5 +1,20 @@
 # Nota Pelepasan (Bahasa Melayu)
 
+## 2026-07-27
+
+[FIX] Pasang Ministry Mapper sebagai aplikasi.
+  Pentadbir dan Konduktor kini boleh memasang Ministry Mapper pada skrin utama anda, sama seperti aplikasi biasa.
+
+  Sebelum ini ciri ini dimatikan kerana cache boleh menyebabkan aplikasi yang dipasang kekal pada versi lama. Masalah itu telah diperbaiki, jadi pemasangan tersedia semula.
+
+  Pemasangan ini pilihan sepenuhnya. Kami masih mengesyorkan penggunaan Ministry Mapper melalui pelayar web seperti Safari atau Chrome.
+
+  Buka Ministry Mapper dalam pelayar anda, kemudian cari "Tambah ke Skrin Utama" atau "Pasang aplikasi" dalam menu pelayar.
+
+  Selepas dipasang, ia akan dibuka dalam tetingkap tersendiri dengan ikonnya sendiri, sama seperti aplikasi lain pada peranti anda.
+
+---
+
 ## 2026-07-06
 
 [NEW] Susun senarai peta anda.
