@@ -1,5 +1,16 @@
 # Notas de versión (Español)
 
+## 2026-07-20
+
+[FIX] Instala Ministry Mapper como una app.
+  Los administradores y conductores ahora pueden instalar Ministry Mapper en su pantalla de inicio, igual que una app normal.
+
+  Abre Ministry Mapper en tu navegador y busca "Añadir a pantalla de inicio" o "Instalar app" en el menú del navegador.
+
+  Una vez instalada, se abre en su propia ventana con su propio icono, igual que cualquier otra app en tu dispositivo.
+
+---
+
 ## 2026-07-06
 
 [NEW] Ordena tu lista de mapas.
