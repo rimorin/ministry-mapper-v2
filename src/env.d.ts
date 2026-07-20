@@ -4,10 +4,7 @@ interface ImportMetaEnv {
   readonly VITE_APP_TITLE: string;
   readonly VITE_APP_VERSION: string;
   readonly VITE_SYSTEM_ENVIRONMENT:
-    | "local"
-    | "development"
-    | "staging"
-    | "production";
+    "local" | "development" | "staging" | "production";
   readonly VITE_POCKETBASE_URL: string;
   readonly VITE_GEOAPIFY_API_KEY: string;
   readonly VITE_PRIVACY_URL: string;

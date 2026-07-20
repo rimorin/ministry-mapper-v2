@@ -215,8 +215,7 @@ describe("useGeolocation", () => {
 
     it("should update currentLocation on position updates", async () => {
       let positionCallback:
-        | ((position: GeolocationPosition) => void)
-        | undefined;
+        ((position: GeolocationPosition) => void) | undefined;
       mockGeolocation.watchPosition.mockImplementation((success) => {
         positionCallback = success;
         return 1;
@@ -299,8 +298,7 @@ describe("useGeolocation", () => {
 
     it("should set locationError on watch error", async () => {
       let errorCallback:
-        | ((error: GeolocationPositionError) => void)
-        | undefined;
+        ((error: GeolocationPositionError) => void) | undefined;
       mockGeolocation.watchPosition.mockImplementation((success, error) => {
         errorCallback = error;
         return 1;
@@ -379,8 +377,7 @@ describe("useGeolocation", () => {
   describe("error handling", () => {
     it("should clear error state with clearError", async () => {
       let errorCallback:
-        | ((error: GeolocationPositionError) => void)
-        | undefined;
+        ((error: GeolocationPositionError) => void) | undefined;
       mockGeolocation.watchPosition.mockImplementation((success, error) => {
         errorCallback = error;
         return 1;
