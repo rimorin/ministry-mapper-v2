@@ -80,8 +80,7 @@ export default function useTerritoryManagement() {
           name: territory["description"],
           aggregates: territory["progress"],
           coordinates: territory["coordinates"] as
-            | TerritoryPolygonCoordinate
-            | undefined
+            TerritoryPolygonCoordinate | undefined
         });
       }
     } catch (error) {

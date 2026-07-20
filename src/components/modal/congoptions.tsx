@@ -124,8 +124,7 @@ const SortableOptionRow = ({
     transition,
     opacity: isDragging ? 0.4 : 1,
     pointerEvents: (isAnyDragging && !isDragging ? "none" : undefined) as
-      | "none"
-      | undefined
+      "none" | undefined
   };
 
   return (

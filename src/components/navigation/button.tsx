@@ -3,12 +3,7 @@ import { cn } from "@/lib/utils";
 import { GenericButtonProps } from "../../utils/interface";
 
 type ButtonVariant =
-  | "default"
-  | "destructive"
-  | "outline"
-  | "secondary"
-  | "ghost"
-  | "link";
+  "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
 
 type ButtonSize = "sm" | "default" | "lg" | "icon";
 
