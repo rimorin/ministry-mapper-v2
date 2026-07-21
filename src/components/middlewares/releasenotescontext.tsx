@@ -5,10 +5,14 @@ import {
   type FC,
   type ReactNode
 } from "react";
+import { useLocation } from "wouter";
 import {
   useReleaseNotes,
   type ReleaseEntry
 } from "../../hooks/useReleaseNotes";
+
+// Publisher map links are the only route outside the admin app shell.
+export const isPublisherRoute = (path: string) => path.startsWith("/map/");
 
 interface ReleaseNotesContextValue {
   hasNewReleases: boolean;
@@ -25,8 +29,10 @@ const ReleaseNotesContext = createContext<ReleaseNotesContextValue | null>(
 export const ReleaseNotesProvider: FC<{ children: ReactNode }> = ({
   children
 }) => {
+  const [location] = useLocation();
+  const audience = isPublisherRoute(location) ? "publisher" : "admin";
   const { hasNewReleases, newReleases, allReleases, isLoading, markAsSeen } =
-    useReleaseNotes();
+    useReleaseNotes(audience);
   const contextValue = useMemo(
     () => ({ hasNewReleases, newReleases, allReleases, isLoading, markAsSeen }),
     [hasNewReleases, newReleases, allReleases, isLoading, markAsSeen]

@@ -2,22 +2,34 @@
 
 ## 2026-07-27
 
-[FIX] Pasang Ministry Mapper sebagai aplikasi.
-  Pentadbir dan Konduktor kini boleh memasang Ministry Mapper pada skrin utama anda, sama seperti aplikasi biasa.
+[FIX:ADMIN] Pasang Ministry Mapper sebagai aplikasi.
+  Pentadbir dan Konduktor kini boleh menambah Ministry Mapper pada skrin utama, seperti aplikasi lain.
 
-  Sebelum ini ciri ini dimatikan kerana cache boleh menyebabkan aplikasi yang dipasang kekal pada versi lama. Masalah itu telah diperbaiki, jadi pemasangan tersedia semula.
+  Sebelum ini kami matikan ciri ini kerana aplikasi boleh terus menunjukkan versi lama. Ia sudah diperbaiki.
 
-  Pemasangan ini pilihan sepenuhnya. Kami masih mengesyorkan penggunaan Ministry Mapper melalui pelayar web seperti Safari atau Chrome.
+  Anda tidak perlu memasangnya. Ministry Mapper masih paling baik digunakan dalam pelayar seperti Safari atau Chrome.
 
-  Buka Ministry Mapper dalam pelayar anda, kemudian cari "Tambah ke Skrin Utama" atau "Pasang aplikasi" dalam menu pelayar.
+  Pada iPhone atau iPad (Safari):
+  - Buka Ministry Mapper dalam Safari.
+  - Ketik butang Kongsi (segi empat dengan anak panah ke atas).
+  - Tatal ke bawah dan ketik "Tambah ke Skrin Utama".
+  - Ketik "Tambah" di kanan atas.
 
-  Selepas dipasang, ia akan dibuka dalam tetingkap tersendiri dengan ikonnya sendiri, sama seperti aplikasi lain pada peranti anda.
+  Tidak jumpa? Ketik ••• (lagi) dahulu.
+
+  Pada Android (Chrome):
+  - Buka Ministry Mapper dalam Chrome.
+  - Ketik menu tiga titik di kanan atas.
+  - Ketik "Pasang aplikasi" (atau "Tambah ke skrin utama").
+  - Ketik "Pasang" untuk mengesahkan.
+
+  Aplikasi akan dibuka dalam tetingkapnya sendiri, dengan ikonnya sendiri pada skrin utama.
 
 ---
 
 ## 2026-07-06
 
-[NEW] Susun senarai peta anda.
+[NEW:ADMIN] Susun senarai peta anda.
   Pentadbir dan Konduktor kini boleh menyusun senarai peta mereka. Ketik ikon susun di sebelah togol paparan senarai/peta untuk memilih cara peta wilayah disusun.
 
   - Urutan — susunan sedia ada, sama seperti sebelum ini (lalai).

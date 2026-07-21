@@ -3,10 +3,13 @@ import { useLocalStorage } from "./useLocalStorage";
 
 export type LocalizedString = string | Record<string, string>;
 
+export type ReleaseAudience = "admin" | "publisher";
+
 interface ReleaseItem {
   type: "new" | "fix" | "improved" | "announcement";
   text: LocalizedString;
   description?: LocalizedString;
+  audience?: ReleaseAudience;
 }
 
 export interface ReleaseEntry {
@@ -24,10 +27,12 @@ interface UseReleaseNotesReturn {
   markAsSeen: () => void;
 }
 
-export function useReleaseNotes(): UseReleaseNotesReturn {
+export function useReleaseNotes(
+  audience: ReleaseAudience
+): UseReleaseNotesReturn {
   const [lastSeenReleaseId, setLastSeenReleaseId] = useLocalStorage<
     string | null
-  >("lastSeenReleaseId", null);
+  >(`lastSeenReleaseId:${audience}`, null);
   const lastSeenRef = useRef(lastSeenReleaseId);
   const [newReleases, setNewReleases] = useState<ReleaseEntry[]>([]);
   const [allReleases, setAllReleases] = useState<ReleaseEntry[]>([]);
@@ -43,11 +48,20 @@ export function useReleaseNotes(): UseReleaseNotesReturn {
         const contentType = response.headers.get("content-type");
         if (!contentType?.includes("application/json")) return;
         const data: { releases: ReleaseEntry[] } = await response.json();
-        if (!data.releases.length) return;
 
-        if (!ignore) setAllReleases(data.releases);
+        const releases = data.releases
+          .map((release) => ({
+            ...release,
+            items: release.items.filter(
+              (item) => !item.audience || item.audience === audience
+            )
+          }))
+          .filter((release) => release.items.length > 0);
+        if (!releases.length) return;
 
-        const latestId = data.releases[0].id;
+        if (!ignore) setAllReleases(releases);
+
+        const latestId = releases[0].id;
         const seenId = lastSeenRef.current;
 
         if (seenId === latestId) return;
@@ -55,8 +69,8 @@ export function useReleaseNotes(): UseReleaseNotesReturn {
         // Returning users see all releases since their last visit;
         // first-time users see only the latest entry.
         const filtered = seenId
-          ? data.releases.filter((r) => r.id > seenId)
-          : [data.releases[0]];
+          ? releases.filter((r) => r.id > seenId)
+          : [releases[0]];
         if (filtered.length > 0 && !ignore) setNewReleases(filtered);
       } catch {
         // Silent fail — no noise for offline or missing file.
@@ -69,7 +83,7 @@ export function useReleaseNotes(): UseReleaseNotesReturn {
     return () => {
       ignore = true;
     };
-  }, []);
+  }, [audience]);
 
   const markAsSeen = useCallback(() => {
     setNewReleases((prev) => {

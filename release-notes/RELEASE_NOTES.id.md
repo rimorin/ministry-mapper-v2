@@ -2,22 +2,34 @@
 
 ## 2026-07-27
 
-[FIX] Pasang Ministry Mapper sebagai aplikasi.
-  Admin dan Pengurus kini dapat memasang Ministry Mapper ke layar utama, seperti aplikasi biasa.
+[FIX:ADMIN] Pasang Ministry Mapper sebagai aplikasi.
+  Admin dan Pengurus kini dapat menambahkan Ministry Mapper ke layar utama, seperti aplikasi lain.
 
-  Sebelumnya fitur ini dimatikan karena penyimpanan cache bisa membuat aplikasi yang terpasang tertahan di versi lama. Masalah itu sudah diperbaiki, jadi pemasangan tersedia kembali.
+  Sebelumnya kami menonaktifkan ini karena aplikasi bisa terus menampilkan versi lama. Sekarang sudah diperbaiki.
 
-  Pemasangan ini sepenuhnya opsional. Kami tetap menyarankan penggunaan Ministry Mapper melalui peramban web seperti Safari atau Chrome.
+  Anda tidak harus memasangnya. Ministry Mapper tetap paling baik dibuka di peramban seperti Safari atau Chrome.
 
-  Buka Ministry Mapper di browser Anda, lalu cari "Tambahkan ke Layar Utama" atau "Instal aplikasi" di menu browser.
+  Di iPhone atau iPad (Safari):
+  - Buka Ministry Mapper di Safari.
+  - Ketuk tombol Bagikan (kotak dengan panah ke atas).
+  - Gulir ke bawah, lalu ketuk "Tambahkan ke Layar Utama".
+  - Ketuk "Tambahkan" di kanan atas.
 
-  Setelah terpasang, aplikasi akan terbuka di jendelanya sendiri dengan ikonnya sendiri, seperti aplikasi lain di perangkat Anda.
+  Tidak menemukannya? Ketuk ••• (lainnya) dulu.
+
+  Di Android (Chrome):
+  - Buka Ministry Mapper di Chrome.
+  - Ketuk menu tiga titik di kanan atas.
+  - Ketuk "Instal aplikasi" (atau "Tambahkan ke layar utama").
+  - Ketuk "Instal" untuk mengonfirmasi.
+
+  Aplikasi akan terbuka di jendelanya sendiri, dengan ikonnya sendiri di layar utama.
 
 ---
 
 ## 2026-07-06
 
-[NEW] Urutkan daftar peta Anda.
+[NEW:ADMIN] Urutkan daftar peta Anda.
   Admin dan Pengurus kini dapat mengurutkan daftar peta mereka. Ketuk ikon urutkan di sebelah pengalih tampilan daftar/peta untuk memilih cara peta wilayah diurutkan.
 
   - Urutan — urutan yang sudah ada, sama seperti sebelumnya (default).

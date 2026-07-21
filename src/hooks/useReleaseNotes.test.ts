@@ -82,7 +82,7 @@ describe("useReleaseNotes", () => {
     mockLastSeenValue = "2026-02-19";
     mockFetch.mockResolvedValueOnce(mockJsonResponse(sampleChangelog));
 
-    const { result } = renderHook(() => useReleaseNotes());
+    const { result } = renderHook(() => useReleaseNotes("admin"));
 
     await act(async () => {});
 
@@ -93,7 +93,7 @@ describe("useReleaseNotes", () => {
     mockLastSeenValue = "2026-01-01";
     mockFetch.mockResolvedValueOnce(mockJsonResponse(sampleChangelog));
 
-    const { result } = renderHook(() => useReleaseNotes());
+    const { result } = renderHook(() => useReleaseNotes("admin"));
 
     await act(async () => {});
 
@@ -106,7 +106,7 @@ describe("useReleaseNotes", () => {
     mockLastSeenValue = "2026-02-13";
     mockFetch.mockRejectedValueOnce(new Error("Network error"));
 
-    const { result } = renderHook(() => useReleaseNotes());
+    const { result } = renderHook(() => useReleaseNotes("admin"));
 
     await act(async () => {});
 
@@ -118,7 +118,7 @@ describe("useReleaseNotes", () => {
     mockLastSeenValue = "2026-02-13";
     mockFetch.mockResolvedValueOnce({ ok: false });
 
-    const { result } = renderHook(() => useReleaseNotes());
+    const { result } = renderHook(() => useReleaseNotes("admin"));
 
     await act(async () => {});
 
@@ -129,7 +129,7 @@ describe("useReleaseNotes", () => {
     mockLastSeenValue = "2026-02-13";
     mockFetch.mockResolvedValueOnce(mockJsonResponse(sampleChangelog));
 
-    const { result } = renderHook(() => useReleaseNotes());
+    const { result } = renderHook(() => useReleaseNotes("admin"));
     await act(async () => {});
 
     expect(result.current.hasNewReleases).toBe(true);
@@ -146,7 +146,7 @@ describe("useReleaseNotes", () => {
     mockLastSeenValue = "2026-02-13";
     mockFetch.mockResolvedValueOnce(mockJsonResponse(sampleChangelog));
 
-    const { result } = renderHook(() => useReleaseNotes());
+    const { result } = renderHook(() => useReleaseNotes("admin"));
     await act(async () => {});
 
     // Only 2026-02-19 is newer than 2026-02-13
@@ -158,7 +158,7 @@ describe("useReleaseNotes", () => {
     mockLastSeenValue = "2026-02-13";
     mockFetch.mockResolvedValueOnce(mockJsonResponse(sampleChangelog));
 
-    const { result } = renderHook(() => useReleaseNotes());
+    const { result } = renderHook(() => useReleaseNotes("admin"));
     expect(result.current.isLoading).toBe(true);
 
     await act(async () => {});
@@ -169,7 +169,7 @@ describe("useReleaseNotes", () => {
     mockLastSeenValue = null;
     mockFetch.mockResolvedValueOnce(mockJsonResponse(localizedChangelog));
 
-    const { result } = renderHook(() => useReleaseNotes());
+    const { result } = renderHook(() => useReleaseNotes("admin"));
     await act(async () => {});
 
     expect(result.current.hasNewReleases).toBe(true);
@@ -183,5 +183,61 @@ describe("useReleaseNotes", () => {
       en: "Details here.",
       zh: "详情在此。"
     });
+  });
+
+  it("drops items meant for the other audience", async () => {
+    mockLastSeenValue = null;
+    mockFetch.mockResolvedValueOnce(
+      mockJsonResponse({
+        releases: [
+          {
+            id: "2026-03-01",
+            notice: null,
+            screenshot: null,
+            items: [
+              { type: "new", text: "admin only", audience: "admin" },
+              { type: "new", text: "publisher only", audience: "publisher" },
+              { type: "new", text: "everyone" }
+            ]
+          }
+        ]
+      })
+    );
+
+    const { result } = renderHook(() => useReleaseNotes("publisher"));
+    await act(async () => {});
+
+    expect(result.current.allReleases[0].items).toEqual([
+      { type: "new", text: "publisher only", audience: "publisher" },
+      { type: "new", text: "everyone" }
+    ]);
+  });
+
+  it("skips a release left with no items for the current audience", async () => {
+    mockLastSeenValue = null;
+    mockFetch.mockResolvedValueOnce(
+      mockJsonResponse({
+        releases: [
+          {
+            id: "2026-03-01",
+            notice: null,
+            screenshot: null,
+            items: [{ type: "new", text: "admin only", audience: "admin" }]
+          },
+          {
+            id: "2026-02-19",
+            notice: null,
+            screenshot: null,
+            items: [{ type: "new", text: "everyone" }]
+          }
+        ]
+      })
+    );
+
+    const { result } = renderHook(() => useReleaseNotes("publisher"));
+    await act(async () => {});
+
+    expect(result.current.allReleases).toHaveLength(1);
+    expect(result.current.allReleases[0].id).toBe("2026-02-19");
   });
 });
