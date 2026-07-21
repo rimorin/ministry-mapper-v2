@@ -50,6 +50,17 @@ Each item must start with a tag on its own line:
 [ANNOUNCEMENT] Important message for all users.
 ```
 
+### Audience
+
+By default, an item shows to everyone — administrators/conductors on the admin dashboard, and publishers on the map page. To restrict an item to one side, add `:ADMIN` or `:PUBLISHER` to the tag:
+
+```
+[NEW:ADMIN] Only shown on the admin dashboard.
+[NEW:PUBLISHER] Only shown on the publisher map page.
+```
+
+Use this when an item only makes sense for one audience (e.g. an admin-only setting, or a publisher-only map interaction). If a release ends up with no items for a given audience after filtering, the whole release is skipped for that audience. Notice banners and screenshots always show to both.
+
 ### Description body
 
 Add extra detail under any `[TAG]` item by indenting with **2 spaces**. Supports plain paragraphs and `- ` bullet lists. Blank lines between indented lines create paragraph breaks.
@@ -111,10 +122,22 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ## 2026-07-20
 
-[FIX] Install Ministry Mapper as an app.
+[FIX:ADMIN] Install Ministry Mapper as an app.
   Admins and conductors can now install Ministry Mapper to your home screen, just like a regular app.
 
-  Open Ministry Mapper in your browser, then look for "Add to Home Screen" or "Install app" in the browser menu.
+  On iPhone or iPad (Safari):
+  - Open Ministry Mapper in Safari.
+  - Tap the Share button (square with an arrow pointing up).
+  - Scroll down and tap "Add to Home Screen".
+  - Tap "Add" in the top-right corner.
+
+  Don't see Share or "Add to Home Screen"? Tap ••• (more) first, or tap "Edit Actions" to add it to the list.
+
+  On Android (Chrome):
+  - Open Ministry Mapper in Chrome.
+  - Tap the three-dot menu in the top-right corner.
+  - Tap "Install app" (wording may vary by Chrome version).
+  - Tap "Install" to confirm.
 
   Once installed, it opens in its own window with its own icon, just like any other app on your device.
 
@@ -122,7 +145,7 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ## 2026-07-06
 
-[NEW] Sort your map list.
+[NEW:ADMIN] Sort your map list.
   Admins and conductors can now sort their map listing. Tap the sort icon next to the list/map toggle to choose how territory maps are ordered.
 
   - Sequence — the existing order, same as before (default).

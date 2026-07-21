@@ -66,14 +66,15 @@ function parseReleaseNotesFile(filePath) {
       }
 
       const itemMatch = line.match(
-        /^\[(NEW|FIX|IMPROVED|ANNOUNCEMENT)\]\s+(.+)/
+        /^\[(NEW|FIX|IMPROVED|ANNOUNCEMENT)(?::(ADMIN|PUBLISHER))?\]\s+(.+)/
       );
       if (itemMatch) {
         flushDesc();
         currentItem = {
           type: TYPE_MAP[itemMatch[1]],
-          text: itemMatch[2].trim()
+          text: itemMatch[3].trim()
         };
+        if (itemMatch[2]) currentItem.audience = itemMatch[2].toLowerCase();
         items.push(currentItem);
         continue;
       }
@@ -157,6 +158,7 @@ function buildChangelog() {
 
       const item = { type: enItem.type, text: textMap };
       if (descMap) item.description = descMap;
+      if (enItem.audience) item.audience = enItem.audience;
       return item;
     });
 

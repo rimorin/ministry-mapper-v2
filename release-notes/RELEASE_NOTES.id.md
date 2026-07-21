@@ -2,10 +2,22 @@
 
 ## 2026-07-20
 
-[FIX] Pasang Ministry Mapper sebagai aplikasi.
+[FIX:ADMIN] Pasang Ministry Mapper sebagai aplikasi.
   Admin dan Pengurus kini dapat memasang Ministry Mapper ke layar utama, seperti aplikasi biasa.
 
-  Buka Ministry Mapper di browser Anda, lalu cari "Tambahkan ke Layar Utama" atau "Instal aplikasi" di menu browser.
+  Di iPhone atau iPad (Safari):
+  - Buka Ministry Mapper di Safari.
+  - Ketuk tombol Bagikan (kotak dengan panah ke atas).
+  - Gulir, lalu ketuk "Tambahkan ke Layar Utama".
+  - Ketuk "Tambahkan" di pojok kanan atas.
+
+  Tidak melihat Bagikan atau "Tambahkan ke Layar Utama"? Ketuk ••• (lainnya) dulu, atau ketuk "Edit Tindakan" untuk menambahkannya ke daftar.
+
+  Di Android (Chrome):
+  - Buka Ministry Mapper di Chrome.
+  - Ketuk menu titik tiga di pojok kanan atas.
+  - Ketuk "Instal aplikasi" (teksnya bisa berbeda tergantung versi Chrome).
+  - Ketuk "Instal" untuk konfirmasi.
 
   Setelah terpasang, aplikasi akan terbuka di jendelanya sendiri dengan ikonnya sendiri, seperti aplikasi lain di perangkat Anda.
 
@@ -13,7 +25,7 @@
 
 ## 2026-07-06
 
-[NEW] Urutkan daftar peta Anda.
+[NEW:ADMIN] Urutkan daftar peta Anda.
   Admin dan Pengurus kini dapat mengurutkan daftar peta mereka. Ketuk ikon urutkan di sebelah pengalih tampilan daftar/peta untuk memilih cara peta wilayah diurutkan.
 
   - Urutan — urutan yang sudah ada, sama seperti sebelumnya (default).

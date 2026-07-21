@@ -2,10 +2,22 @@
 
 ## 2026-07-20
 
-[FIX] Instala Ministry Mapper como una app.
+[FIX:ADMIN] Instala Ministry Mapper como una app.
   Los administradores y conductores ahora pueden instalar Ministry Mapper en su pantalla de inicio, igual que una app normal.
 
-  Abre Ministry Mapper en tu navegador y busca "Añadir a pantalla de inicio" o "Instalar app" en el menú del navegador.
+  En iPhone o iPad (Safari):
+  - Abre Ministry Mapper en Safari.
+  - Toca el botón Compartir (el cuadrado con una flecha hacia arriba).
+  - Desplázate y toca "Añadir a pantalla de inicio".
+  - Toca "Añadir" en la esquina superior derecha.
+
+  ¿No ves Compartir o "Añadir a pantalla de inicio"? Toca ••• (más) primero, o toca "Editar acciones" para añadirlo a la lista.
+
+  En Android (Chrome):
+  - Abre Ministry Mapper en Chrome.
+  - Toca el menú de tres puntos en la esquina superior derecha.
+  - Toca "Instalar app" (el texto puede variar según tu versión de Chrome).
+  - Toca "Instalar" para confirmar.
 
   Una vez instalada, se abre en su propia ventana con su propio icono, igual que cualquier otra app en tu dispositivo.
 
@@ -13,7 +25,7 @@
 
 ## 2026-07-06
 
-[NEW] Ordena tu lista de mapas.
+[NEW:ADMIN] Ordena tu lista de mapas.
   Los administradores y conductores ahora pueden ordenar su listado de mapas. Toca el icono de ordenar junto al selector de lista/mapa para elegir cómo se ordenan los mapas del territorio.
 
   - Secuencia — el orden habitual, igual que antes (predeterminado).
