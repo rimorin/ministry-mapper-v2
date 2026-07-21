@@ -2,22 +2,34 @@
 
 ## 2026-07-27
 
-[FIX] Instala Ministry Mapper como una app.
-  Los administradores y conductores ahora pueden instalar Ministry Mapper en su pantalla de inicio, igual que una app normal.
+[FIX:ADMIN] Instala Ministry Mapper como una app.
+  Los administradores y conductores ya pueden añadir Ministry Mapper a su pantalla de inicio, como cualquier otra app.
 
-  Antes esta opción estaba desactivada porque el almacenamiento en caché podía dejar la app instalada en una versión desactualizada. Eso ya está corregido, así que la instalación vuelve a estar disponible.
+  Antes lo desactivamos porque la app podía seguir mostrando una versión antigua. Ya está arreglado.
 
-  Instalarla es totalmente opcional. Seguimos recomendando usar Ministry Mapper en un navegador web como Safari o Chrome.
+  No hace falta instalarla. Ministry Mapper sigue funcionando mejor en un navegador como Safari o Chrome.
 
-  Abre Ministry Mapper en tu navegador y busca "Añadir a pantalla de inicio" o "Instalar app" en el menú del navegador.
+  En iPhone o iPad (Safari):
+  - Abre Ministry Mapper en Safari.
+  - Toca el botón Compartir (un cuadrado con una flecha hacia arriba).
+  - Baja y toca "Añadir a pantalla de inicio".
+  - Toca "Añadir" arriba a la derecha.
 
-  Una vez instalada, se abre en su propia ventana con su propio icono, igual que cualquier otra app en tu dispositivo.
+  ¿No lo encuentras? Toca ••• (más) primero.
+
+  En Android (Chrome):
+  - Abre Ministry Mapper en Chrome.
+  - Toca el menú de tres puntos arriba a la derecha.
+  - Toca "Instalar app" (o "Añadir a pantalla de inicio").
+  - Toca "Instalar" para confirmar.
+
+  La app se abre en su propia ventana, con su propio icono en la pantalla de inicio.
 
 ---
 
 ## 2026-07-06
 
-[NEW] Ordena tu lista de mapas.
+[NEW:ADMIN] Ordena tu lista de mapas.
   Los administradores y conductores ahora pueden ordenar su listado de mapas. Toca el icono de ordenar junto al selector de lista/mapa para elegir cómo se ordenan los mapas del territorio.
 
   - Secuencia — el orden habitual, igual que antes (predeterminado).
