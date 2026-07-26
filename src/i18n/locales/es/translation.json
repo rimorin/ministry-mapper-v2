@@ -105,6 +105,7 @@
     "accessDenied": "Acceso denegado. No tienes permiso para realizar esta acción.",
     "passwordAuthDisabled": "El inicio de sesión con contraseña no está habilitado para esta cuenta.",
     "oauthDisabled": "El inicio de sesión con Google no está habilitado para esta cuenta.",
+    "oauthFailed": "No se pudo completar el inicio de sesión con Google. Inténtalo de nuevo.",
     "otpDisabled": "El inicio de sesión con contraseña de un solo uso no está disponible.",
     "invalidOtp": "Código inválido o caducado. Por favor, solicita uno nuevo.",
     "invalidToken": "Este enlace es inválido o ha caducado. Por favor, solicita uno nuevo.",

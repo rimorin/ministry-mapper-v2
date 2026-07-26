@@ -105,6 +105,7 @@
     "accessDenied": "Access denied. You are not allowed to perform this action.",
     "passwordAuthDisabled": "Password sign-in is not enabled for this account.",
     "oauthDisabled": "Google sign-in is not enabled for this account.",
+    "oauthFailed": "Google sign-in could not be completed. Please try again.",
     "otpDisabled": "One-time password sign-in is not available.",
     "invalidOtp": "Invalid or expired code. Please request a new one.",
     "invalidToken": "This link is invalid or has expired. Please request a new one.",

@@ -105,6 +105,7 @@
     "accessDenied": "Akses ditolak. Anda tidak diizinkan untuk melakukan tindakan ini.",
     "passwordAuthDisabled": "Masuk dengan kata sandi tidak diaktifkan untuk akun ini.",
     "oauthDisabled": "Masuk dengan Google tidak diaktifkan untuk akun ini.",
+    "oauthFailed": "Masuk dengan Google tidak dapat diselesaikan. Silakan coba lagi.",
     "otpDisabled": "Masuk dengan kata sandi sekali pakai tidak tersedia.",
     "invalidOtp": "Kode tidak valid atau sudah kedaluwarsa. Silakan minta yang baru.",
     "invalidToken": "Tautan ini tidak valid atau sudah kedaluwarsa. Silakan minta yang baru.",

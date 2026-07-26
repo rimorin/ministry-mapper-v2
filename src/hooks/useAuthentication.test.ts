@@ -200,13 +200,7 @@ describe("useAuthentication", () => {
 
   describe("handleOAuthSignIn", () => {
     it("should initiate OAuth sign-in", async () => {
-      const mockAuthResponse: RecordAuthResponse<RecordModel> = {
-        record: { id: "user123" } as RecordModel,
-        token: "mock-token"
-      };
-      vi.spyOn(pocketbase, "authenticateOAuth2").mockResolvedValue(
-        mockAuthResponse
-      );
+      vi.spyOn(pocketbase, "startOAuth2Flow").mockResolvedValue(undefined);
 
       const { result } = renderHook(() => useAuthentication());
 
@@ -214,12 +208,12 @@ describe("useAuthentication", () => {
         result.current.handleOAuthSignIn("google");
       });
 
-      expect(pocketbase.authenticateOAuth2).toHaveBeenCalledWith("google");
+      expect(pocketbase.startOAuth2Flow).toHaveBeenCalledWith("google");
     });
 
     it("should handle OAuth errors", async () => {
       const error = new Error("OAuth failed");
-      vi.spyOn(pocketbase, "authenticateOAuth2").mockRejectedValue(error);
+      vi.spyOn(pocketbase, "startOAuth2Flow").mockRejectedValue(error);
 
       const { result } = renderHook(() => useAuthentication());
 
