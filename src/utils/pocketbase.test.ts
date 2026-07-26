@@ -289,6 +289,7 @@ describe("OAuth2 redirect flow", () => {
 
   const collection = () => pb.collection("users");
   const assign = vi.fn();
+  const realLocation = window.location;
 
   beforeEach(() => {
     localStorage.clear();
@@ -298,6 +299,13 @@ describe("OAuth2 redirect flow", () => {
     // jsdom's location cannot navigate; swap in a stub that records the target.
     Object.defineProperty(window, "location", {
       value: { origin: "https://app.test", assign },
+      writable: true
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, "location", {
+      value: realLocation,
       writable: true
     });
   });
@@ -375,10 +383,10 @@ describe("OAuth2 redirect flow", () => {
       expect(collection().authWithOAuth2Code).not.toHaveBeenCalled();
     });
 
-    it("rejects when no handshake was parked", async () => {
-      await expect(completeOAuth2Flow("code123", "state123")).rejects.toThrow(
-        "No sign-in is in progress."
-      );
+    it("resolves null when no handshake was parked", async () => {
+      await expect(
+        completeOAuth2Flow("code123", "state123")
+      ).resolves.toBeNull();
       expect(collection().authWithOAuth2Code).not.toHaveBeenCalled();
     });
   });

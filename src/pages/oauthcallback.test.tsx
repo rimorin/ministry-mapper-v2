@@ -56,16 +56,48 @@ describe("OAuthCallback", () => {
     expect(mocks.navigate).toHaveBeenCalledWith("/", { replace: true });
   });
 
-  it("reports the provider's error without attempting an exchange", async () => {
+  it("returns quietly when the user dismisses the provider's screen", async () => {
     await renderCallback("?error=access_denied");
 
     await waitFor(() => {
+      expect(mocks.navigate).toHaveBeenCalledWith("/", { replace: true });
+    });
+    expect(mocks.notifyError).not.toHaveBeenCalled();
+    expect(mocks.completeOAuth2Flow).not.toHaveBeenCalled();
+  });
+
+  it("reports other provider errors with a translated message", async () => {
+    await renderCallback("?error=server_error");
+
+    await waitFor(() => {
       expect(mocks.notifyError).toHaveBeenCalledWith(
-        expect.objectContaining({ message: "access_denied" })
+        "Google sign-in could not be completed. Please try again."
       );
     });
     expect(mocks.completeOAuth2Flow).not.toHaveBeenCalled();
     expect(mocks.navigate).toHaveBeenCalledWith("/", { replace: true });
+  });
+
+  it("returns quietly when no sign-in is in progress", async () => {
+    mocks.completeOAuth2Flow.mockResolvedValue(null);
+
+    await renderCallback("?code=code123&state=state123");
+
+    await waitFor(() => {
+      expect(mocks.navigate).toHaveBeenCalledWith("/", { replace: true });
+    });
+    expect(mocks.notifyError).not.toHaveBeenCalled();
+    expect(mocks.trackEvent).not.toHaveBeenCalled();
+  });
+
+  it("returns quietly on a direct visit with no query", async () => {
+    await renderCallback("");
+
+    await waitFor(() => {
+      expect(mocks.navigate).toHaveBeenCalledWith("/", { replace: true });
+    });
+    expect(mocks.notifyError).not.toHaveBeenCalled();
+    expect(mocks.completeOAuth2Flow).not.toHaveBeenCalled();
   });
 
   it("reports a failed exchange and still returns to the front page", async () => {

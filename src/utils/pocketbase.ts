@@ -228,12 +228,13 @@ const startOAuth2Flow = async (provider: string) => {
 
 /**
  * Exchanges the provider's authorization code for a session using the handshake
- * parked by startOAuth2Flow. Returns the provider name.
+ * parked by startOAuth2Flow. Returns the provider name, or null when no sign-in
+ * is in progress — revisiting the callback URL is not a failure.
  */
 const completeOAuth2Flow = async (code: string, state: string) => {
   const pending = localStorage.getItem(OAUTH2_PENDING_KEY);
+  if (!pending) return null;
   localStorage.removeItem(OAUTH2_PENDING_KEY);
-  if (!pending) throw new Error("No sign-in is in progress.");
   const {
     provider,
     state: expectedState,

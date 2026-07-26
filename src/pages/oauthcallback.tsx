@@ -26,20 +26,25 @@ const OAuthCallback = () => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const state = params.get("state");
+    const providerError = params.get("error");
     const exchange = async () => {
       try {
-        if (!code || !state) {
-          throw new Error(
-            params.get("error") ??
+        // Dismissing the provider's screen is a choice, not a failure. Anything
+        // else it reports is shown translated — the raw code means nothing here.
+        if (providerError) {
+          if (providerError !== "access_denied") {
+            notifyError(
               t(
                 "auth.oauthFailed",
                 "Google sign-in could not be completed. Please try again."
               )
-          );
+            );
+          }
+          return;
         }
-        trackEvent(ANALYTICS_EVENTS.LOGIN_OAUTH, {
-          provider: await completeOAuth2Flow(code, state)
-        });
+        if (!code || !state) return;
+        const provider = await completeOAuth2Flow(code, state);
+        if (provider) trackEvent(ANALYTICS_EVENTS.LOGIN_OAUTH, { provider });
       } catch (err: unknown) {
         notifyError(mapPbAuthError(err, t) ?? err);
       } finally {
