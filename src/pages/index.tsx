@@ -2,7 +2,8 @@ import "../css/variables.css";
 import "../css/main.css";
 import "../css/common.css";
 import "@/index.css";
-import { FC, ReactNode } from "react";
+import { FC, ReactNode, Suspense } from "react";
+import Loader from "../components/statics/loader";
 import MaintenanceMiddleware from "../components/middlewares/maintenance";
 import MainMiddleware from "../components/middlewares/main";
 import ThemeMiddleware from "../components/middlewares/theme";
@@ -20,23 +21,29 @@ interface CombinedMiddlewareProps {
 }
 
 const CombinedMiddleware: FC<CombinedMiddlewareProps> = ({ children }) => (
-  <LazyMotion features={domAnimation} strict>
-    <MotionConfig reducedMotion="user">
-      <MainMiddleware>
-        <LanguageProvider>
-          <ThemeMiddleware>
-            <Toaster />
-            <SwUpdatePrompt />
-            <MaintenanceMiddleware>
-              <NiceModelMiddleware>
-                <ReleaseNotesProvider>{children}</ReleaseNotesProvider>
-              </NiceModelMiddleware>
-            </MaintenanceMiddleware>
-          </ThemeMiddleware>
-        </LanguageProvider>
-      </MainMiddleware>
-    </MotionConfig>
-  </LazyMotion>
+  // The Suspense boundary covers the lazily-loaded translation chunk
+  // (i18next-resources-to-backend): useTranslation() consumers below suspend
+  // until it arrives. Without a boundary here the whole root suspends with
+  // no fallback, which React treats as an error.
+  <Suspense fallback={<Loader />}>
+    <LazyMotion features={domAnimation} strict>
+      <MotionConfig reducedMotion="user">
+        <MainMiddleware>
+          <LanguageProvider>
+            <ThemeMiddleware>
+              <Toaster />
+              <SwUpdatePrompt />
+              <MaintenanceMiddleware>
+                <NiceModelMiddleware>
+                  <ReleaseNotesProvider>{children}</ReleaseNotesProvider>
+                </NiceModelMiddleware>
+              </MaintenanceMiddleware>
+            </ThemeMiddleware>
+          </LanguageProvider>
+        </MainMiddleware>
+      </MotionConfig>
+    </LazyMotion>
+  </Suspense>
 );
 
 const Main: FC = () => {

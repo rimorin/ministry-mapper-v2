@@ -29,11 +29,14 @@ export const initLaunchDarkly = async () => {
 
   try {
     // bootstrap from localStorage so repeat loads resolve synchronously (no
-    // flicker); timeout rejects so a cold-start outage can't hang the app.
+    // flicker). On timeout asyncWithLDProvider does NOT reject — it resolves
+    // with a working provider and hydrates flags via the client's `ready`
+    // event, so a short timeout only bounds how long the loader shows on a
+    // cold cache; flags still arrive reactively afterwards.
     return await asyncWithLDProvider({
       clientSideID,
       context: ANONYMOUS_CONTEXT,
-      timeout: 3,
+      timeout: 1.5,
       options: {
         bootstrap: "localStorage",
         privateAttributes: ["email"],
