@@ -46,11 +46,17 @@ const InviteUser = NiceModal.create(
     );
     const [isSearching, setIsSearching] = React.useState(false);
     const abortControllerRef = React.useRef<AbortController | null>(null);
+    const searchDebounceRef = React.useRef<ReturnType<
+      typeof setTimeout
+    > | null>(null);
     const { modal, dialogProps, contentProps } = useBaseUiDialog();
 
     React.useEffect(() => {
       return () => {
         abortControllerRef.current?.abort();
+        if (searchDebounceRef.current !== null) {
+          clearTimeout(searchDebounceRef.current);
+        }
       };
     }, []);
 
@@ -126,19 +132,7 @@ const InviteUser = NiceModal.create(
       );
     };
 
-    const handleInputChange = async (
-      inputValue: string,
-      { reason }: { reason: string }
-    ) => {
-      if (reason === "item-press") return;
-
-      abortControllerRef.current?.abort();
-
-      if (!inputValue.trim()) {
-        setSearchResults([]);
-        return;
-      }
-
+    const searchUsers = async (inputValue: string) => {
       const controller = new AbortController();
       abortControllerRef.current = controller;
       setIsSearching(true);
@@ -147,7 +141,9 @@ const InviteUser = NiceModal.create(
         const users = await getPaginatedList("users", 1, 10, {
           filter: `(email~"${inputValue}%" || name~"${inputValue}%")`,
           fields: PB_FIELDS.USERS,
-          requestKey: `get-users-${inputValue}`
+          // Stable key: a newer search auto-cancels the in-flight one. A
+          // per-keystroke key would let every request run to completion.
+          requestKey: "invite-user-search"
         });
         if (controller.signal.aborted) return;
         const options: SelectProps[] = users.items.map((user: RecordModel) => ({
@@ -163,6 +159,29 @@ const InviteUser = NiceModal.create(
       } finally {
         if (!controller.signal.aborted) setIsSearching(false);
       }
+    };
+
+    const handleInputChange = (
+      inputValue: string,
+      { reason }: { reason: string }
+    ) => {
+      if (reason === "item-press") return;
+
+      abortControllerRef.current?.abort();
+      if (searchDebounceRef.current !== null) {
+        clearTimeout(searchDebounceRef.current);
+      }
+
+      if (!inputValue.trim()) {
+        setSearchResults([]);
+        return;
+      }
+
+      // Debounce so typing fires one request, not one per keystroke.
+      searchDebounceRef.current = setTimeout(() => {
+        searchDebounceRef.current = null;
+        void searchUsers(inputValue);
+      }, 300);
     };
 
     return (

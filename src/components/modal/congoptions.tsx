@@ -376,6 +376,7 @@ const UpdateCongregationOptions = NiceModal.create(
             }));
           await callFunction("options/update", {
             method: "POST",
+            requestKey: `options-update-${currentCongregation}`,
             body: { congregation: currentCongregation, options: optionsList }
           });
           notifyWarning(

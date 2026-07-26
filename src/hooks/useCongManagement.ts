@@ -75,6 +75,7 @@ export default function useCongregationManagement({
     await runAction(async () => {
       await callFunction("/report/generate", {
         method: "POST",
+        requestKey: `report-generate-${congregationCode}`,
         body: { congregation: congregationCode }
       });
       trackEvent(ANALYTICS_EVENTS.REPORT_GENERATED);

@@ -147,7 +147,7 @@ const ChangeTerritoryMapSequence = NiceModal.create(
         filter: `territory="${territoryId}"`,
         sort: "sequence",
         fields: PB_FIELDS.MAPS_SEQUENCE,
-        requestKey: null
+        requestKey: `territory-map-sequence-${territoryId}`
       })
         .then((response) => {
           if (!isCleaned) setMapList(response as unknown as MapItem[]);
@@ -182,6 +182,7 @@ const ChangeTerritoryMapSequence = NiceModal.create(
         async () => {
           await callFunction("/maps/sequence", {
             method: "POST",
+            requestKey: `maps-sequence-save-${territoryId}`,
             body: {
               territory_id: territoryId,
               map_ids: mapList.map((m) => m.id)

@@ -29,7 +29,7 @@ const useUnreadMessages = (mapId: string) => {
     const unreadMessages = await getList("messages", {
       filter: `map="${mapId}" && type!="${MESSAGE_TYPES.ADMIN}" && read=false`,
       fields: "id",
-      requestKey: null
+      requestKey: `unread-messages-${mapId}`
     });
     setUnreadIds(new Set(unreadMessages.map((r) => r.id)));
   };

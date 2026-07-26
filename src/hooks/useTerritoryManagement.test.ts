@@ -128,6 +128,7 @@ describe("useTerritoryManagement", () => {
         "/territory/delete",
         {
           method: "POST",
+          requestKey: "territory-delete-territory123",
           body: { territory: "territory123" }
         }
       );
@@ -172,6 +173,7 @@ describe("useTerritoryManagement", () => {
 
       expect(callFunctionSpy).toHaveBeenCalledWith("/territory/reset", {
         method: "POST",
+        requestKey: "territory-reset-territory123",
         body: {
           territory: "territory123"
         }

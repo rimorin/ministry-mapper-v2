@@ -47,6 +47,7 @@ export default function useTerritoryManagement() {
       async () => {
         await callFunction("/territory/delete", {
           method: "POST",
+          requestKey: `territory-delete-${selectedTerritory.id}`,
           body: { territory: selectedTerritory.id }
         });
         clearTerritorySelection();
@@ -61,6 +62,7 @@ export default function useTerritoryManagement() {
       () =>
         callFunction("/territory/reset", {
           method: "POST",
+          requestKey: `territory-reset-${selectedTerritory.id}`,
           body: { territory: selectedTerritory.id }
         }),
       { setLoading: setIsProcessingTerritory }

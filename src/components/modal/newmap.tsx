@@ -82,6 +82,7 @@ const NewMap = NiceModal.create(
         async () => {
           await callFunction("/map/add", {
             method: "POST",
+            requestKey: `map-add-${territoryCode}`,
             body: {
               name,
               sequence,
