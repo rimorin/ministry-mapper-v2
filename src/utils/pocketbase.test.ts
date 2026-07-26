@@ -14,13 +14,21 @@ vi.mock("pocketbase", () => {
       collection: vi.fn().mockReturnThis(),
       send: vi.fn(),
       beforeSend: null,
-      autoCancellation: vi.fn()
+      autoCancellation: vi.fn(),
+      listAuthMethods: vi.fn(),
+      authWithOAuth2Code: vi.fn()
     };
   };
   return { default: PocketBaseMock };
 });
 
-import { withRetry, pb } from "./pocketbase";
+import {
+  withRetry,
+  pb,
+  startOAuth2Flow,
+  completeOAuth2Flow
+} from "./pocketbase";
+import { OAUTH2_PENDING_KEY } from "./constants";
 
 describe("withRetry", () => {
   beforeEach(() => {
@@ -264,5 +272,114 @@ describe("afterSend interceptor", () => {
     const data = { items: [1, 2, 3] };
     const result = pb.afterSend!(fakeResponse(200), data, adminOptions);
     expect(result).toBe(data);
+  });
+});
+
+describe("OAuth2 redirect flow", () => {
+  const googleProvider = {
+    name: "google",
+    displayName: "Google",
+    state: "state123",
+    authURL:
+      "https://accounts.google.com/o/oauth2/auth?client_id=x&state=state123&redirect_uri=",
+    codeVerifier: "verifier123",
+    codeChallenge: "challenge123",
+    codeChallengeMethod: "S256"
+  };
+
+  const collection = () => pb.collection("users");
+  const assign = vi.fn();
+
+  beforeEach(() => {
+    localStorage.clear();
+    assign.mockClear();
+    vi.mocked(collection().listAuthMethods).mockReset();
+    vi.mocked(collection().authWithOAuth2Code).mockReset();
+    // jsdom's location cannot navigate; swap in a stub that records the target.
+    Object.defineProperty(window, "location", {
+      value: { origin: "https://app.test", assign },
+      writable: true
+    });
+  });
+
+  describe("startOAuth2Flow", () => {
+    it("parks the handshake and navigates to the provider", async () => {
+      vi.mocked(collection().listAuthMethods).mockResolvedValue({
+        oauth2: { enabled: true, providers: [googleProvider] }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+
+      await startOAuth2Flow("google");
+
+      expect(JSON.parse(localStorage.getItem(OAUTH2_PENDING_KEY)!)).toEqual({
+        provider: "google",
+        state: "state123",
+        codeVerifier: "verifier123",
+        redirectURL: "https://app.test/auth/callback"
+      });
+      expect(assign).toHaveBeenCalledWith(
+        `${googleProvider.authURL}https://app.test/auth/callback`
+      );
+    });
+
+    it("throws and navigates nowhere when the provider is not configured", async () => {
+      vi.mocked(collection().listAuthMethods).mockResolvedValue({
+        oauth2: { enabled: true, providers: [] }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+
+      await expect(startOAuth2Flow("google")).rejects.toThrow(
+        'Missing or invalid provider "google".'
+      );
+      expect(localStorage.getItem(OAUTH2_PENDING_KEY)).toBeNull();
+      expect(assign).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("completeOAuth2Flow", () => {
+    const park = () =>
+      localStorage.setItem(
+        OAUTH2_PENDING_KEY,
+        JSON.stringify({
+          provider: "google",
+          state: "state123",
+          codeVerifier: "verifier123",
+          redirectURL: "https://app.test/auth/callback"
+        })
+      );
+
+    it("exchanges the code with the parked verifier and clears the handshake", async () => {
+      park();
+
+      await expect(completeOAuth2Flow("code123", "state123")).resolves.toBe(
+        "google"
+      );
+
+      expect(collection().authWithOAuth2Code).toHaveBeenCalledWith(
+        "google",
+        "code123",
+        "verifier123",
+        "https://app.test/auth/callback",
+        undefined,
+        { requestKey: "oauth2-code" }
+      );
+      expect(localStorage.getItem(OAUTH2_PENDING_KEY)).toBeNull();
+    });
+
+    it("rejects a mismatched state without exchanging", async () => {
+      park();
+
+      await expect(completeOAuth2Flow("code123", "tampered")).rejects.toThrow(
+        "State parameters don't match."
+      );
+      expect(collection().authWithOAuth2Code).not.toHaveBeenCalled();
+    });
+
+    it("rejects when no handshake was parked", async () => {
+      await expect(completeOAuth2Flow("code123", "state123")).rejects.toThrow(
+        "No sign-in is in progress."
+      );
+      expect(collection().authWithOAuth2Code).not.toHaveBeenCalled();
+    });
   });
 });

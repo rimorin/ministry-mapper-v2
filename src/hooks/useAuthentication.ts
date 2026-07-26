@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import {
   authenticateEmailAndPassword,
   authenticateOTP,
-  authenticateOAuth2,
+  startOAuth2Flow,
   requestOTP
 } from "../utils/pocketbase";
 import useNotification from "./useNotification";
@@ -66,13 +66,9 @@ export default function useAuthentication() {
   };
 
   const handleOAuthSignIn = (provider: string) => {
-    runAction(
-      async () => {
-        await authenticateOAuth2(provider);
-        trackEvent(ANALYTICS_EVENTS.LOGIN_OAUTH, { provider });
-      },
-      { setLoading: setIsOAuthLoading }
-    );
+    runAction(() => startOAuth2Flow(provider), {
+      setLoading: setIsOAuthLoading
+    });
   };
 
   const clearOtpState = () => {

@@ -105,6 +105,7 @@
     "accessDenied": "Akses ditolak. Anda tidak dibenarkan untuk melakukan tindakan ini.",
     "passwordAuthDisabled": "Log masuk dengan kata laluan tidak diaktifkan untuk akaun ini.",
     "oauthDisabled": "Log masuk dengan Google tidak diaktifkan untuk akaun ini.",
+    "oauthFailed": "Log masuk dengan Google tidak dapat diselesaikan. Sila cuba lagi.",
     "otpDisabled": "Log masuk dengan kata laluan sekali tidak tersedia.",
     "invalidOtp": "Kod tidak sah atau telah tamat tempoh. Sila minta kod baru.",
     "invalidToken": "Pautan ini tidak sah atau telah tamat tempoh. Sila minta pautan baru.",

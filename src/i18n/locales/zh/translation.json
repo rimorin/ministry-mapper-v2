@@ -105,6 +105,7 @@
     "accessDenied": "访问被拒绝。您无权执行此操作。",
     "passwordAuthDisabled": "此账户未启用密码登录。",
     "oauthDisabled": "此账户未启用 Google 登录。",
+    "oauthFailed": "无法完成 Google 登录。请重试。",
     "otpDisabled": "一次性密码登录不可用。",
     "invalidOtp": "代码无效或已过期。请申请新代码。",
     "invalidToken": "此链接无效或已过期。请申请新链接。",

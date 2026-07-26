@@ -8,7 +8,11 @@ import PocketBase, {
   RecordSubscription,
   SendOptions
 } from "pocketbase";
-import { PB_SECURITY_HEADER_KEY } from "./constants";
+import {
+  OAUTH2_PENDING_KEY,
+  OAUTH2_REDIRECT_PATH,
+  PB_SECURITY_HEADER_KEY
+} from "./constants";
 
 const { VITE_POCKETBASE_URL } = import.meta.env;
 
@@ -192,8 +196,62 @@ const authenticateOTP = async (
   });
 };
 
-const authenticateOAuth2 = async (provider: string) => {
-  return pb.collection("users").authWithOAuth2({ provider });
+/**
+ * Starts the OAuth2 handshake and navigates the current window to the provider.
+ *
+ * Not the SDK's all-in-one authWithOAuth2(): that waits for the code on a
+ * realtime channel and aborts the login the moment it drops, which is every
+ * time iOS suspends a home screen web app behind the provider's sign-in UI.
+ */
+const startOAuth2Flow = async (provider: string) => {
+  const authMethods = await pb.collection("users").listAuthMethods({
+    requestKey: "auth-methods"
+  });
+  const providerInfo = authMethods.oauth2.providers.find(
+    (candidate) => candidate.name === provider
+  );
+  if (!providerInfo) {
+    throw new Error(`Missing or invalid provider "${provider}".`);
+  }
+  const redirectURL = window.location.origin + OAUTH2_REDIRECT_PATH;
+  localStorage.setItem(
+    OAUTH2_PENDING_KEY,
+    JSON.stringify({
+      provider: providerInfo.name,
+      state: providerInfo.state,
+      codeVerifier: providerInfo.codeVerifier,
+      redirectURL
+    })
+  );
+  window.location.assign(providerInfo.authURL + redirectURL);
+};
+
+/**
+ * Exchanges the provider's authorization code for a session using the handshake
+ * parked by startOAuth2Flow. Returns the provider name.
+ */
+const completeOAuth2Flow = async (code: string, state: string) => {
+  const pending = localStorage.getItem(OAUTH2_PENDING_KEY);
+  localStorage.removeItem(OAUTH2_PENDING_KEY);
+  if (!pending) throw new Error("No sign-in is in progress.");
+  const {
+    provider,
+    state: expectedState,
+    codeVerifier,
+    redirectURL
+  } = JSON.parse(pending) as {
+    provider: string;
+    state: string;
+    codeVerifier: string;
+    redirectURL: string;
+  };
+  if (state !== expectedState) throw new Error("State parameters don't match.");
+  await pb
+    .collection("users")
+    .authWithOAuth2Code(provider, code, codeVerifier, redirectURL, undefined, {
+      requestKey: "oauth2-code"
+    });
+  return provider;
 };
 
 const authListener = (callback: (model: AuthRecord) => void) => {
@@ -340,7 +398,8 @@ export {
   requestOTP,
   confirmVerification,
   authenticateOTP,
-  authenticateOAuth2,
+  startOAuth2Flow,
+  completeOAuth2Flow,
   authListener,
   configureHeader,
   clearHeader,

@@ -6,6 +6,7 @@ import * as m from "motion/react-m";
 import * as Sentry from "@sentry/react";
 import Loader from "../components/statics/loader";
 import ErrorBoundaryFallback from "../components/statics/errorboundary";
+import { OAUTH2_REDIRECT_PATH } from "../utils/constants";
 
 const LazyLoad = (
   Component: LazyExoticComponent<ComponentType>,
@@ -42,6 +43,7 @@ const FrontPage = lazy(() => import("./frontpage"));
 const SignupPage = lazy(() => import("./signup"));
 const ForgotPage = lazy(() => import("./forgot"));
 const UserManagement = lazy(() => import("./usrmgmt"));
+const OAuthCallback = lazy(() => import("./oauthcallback"));
 const NotFoundPage = lazy(() => import("../components/statics/notfound"));
 
 const Router: FC = () => {
@@ -81,6 +83,9 @@ const Router: FC = () => {
               <Route path="/map/:id">{LazyLoad(Map, "Map")}</Route>
               <Route path="/usermgmt">
                 {LazyLoad(UserManagement, "UserManagement")}
+              </Route>
+              <Route path={OAUTH2_REDIRECT_PATH}>
+                {LazyLoad(OAuthCallback, "OAuthCallback")}
               </Route>
               <Route path="*">{LazyLoad(NotFoundPage, "NotFound")}</Route>
             </Switch>

@@ -128,6 +128,11 @@ const REALTIME_DEBOUNCE_MS = 100;
 
 const PREFERRED_TRAVEL_MODE_KEY = "preferredTravelMode";
 
+// Provider, state and PKCE verifier parked across the redirect to the provider.
+const OAUTH2_PENDING_KEY = "pendingOAuth2";
+
+const OAUTH2_REDIRECT_PATH = "/auth/callback";
+
 export {
   UNSUPPORTED_BROWSER_MSG,
   STATUS_CODES,
@@ -157,5 +162,7 @@ export {
   DEFAULT_REPORT_ROLLING_DAYS,
   ADDRESS_CREATE_SOURCE,
   REALTIME_DEBOUNCE_MS,
-  PREFERRED_TRAVEL_MODE_KEY
+  PREFERRED_TRAVEL_MODE_KEY,
+  OAUTH2_PENDING_KEY,
+  OAUTH2_REDIRECT_PATH
 };
