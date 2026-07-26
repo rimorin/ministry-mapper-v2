@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { territoryMultiProps } from "../../utils/interface";
+import { floorDetails, territoryMultiProps } from "../../utils/interface";
+import type { Policy } from "../../utils/policies";
 import AddressStatus, { PendingSyncDot } from "./address";
 import {
   DEFAULT_AGGREGATES,
@@ -18,6 +19,93 @@ import {
   PAGE_ENTER_DELAY
 } from "@/lib/motion";
 
+interface FloorRowProps {
+  item: floorDetails;
+  rowIndex: number;
+  moreThanOneFloor: boolean;
+  aggregatesValue: number;
+  policy: Policy;
+  pendingAddressIds?: Set<string>;
+  handleUnitStatusUpdate: (event: React.MouseEvent<HTMLElement>) => void;
+  handleFloorDelete?: (event: React.MouseEvent<HTMLElement>) => void;
+}
+
+// One floor per component so the React Compiler can bail out of rows whose
+// floor object is unchanged (useFloorList keeps untouched floors referentially
+// stable). A realtime event then re-renders one row instead of the whole grid.
+const FloorRow = ({
+  item,
+  rowIndex,
+  moreThanOneFloor,
+  aggregatesValue,
+  policy,
+  pendingAddressIds,
+  handleUnitStatusUpdate,
+  handleFloorDelete
+}: FloorRowProps) => {
+  const { t } = useTranslation();
+  return (
+    <tr className="h-16">
+      <m.th
+        className="sticky-left-cell text-center align-middle text-xs text-muted-foreground tracking-wide"
+        scope="row"
+        custom={{ index: rowIndex }}
+        variants={rowHeader}
+        initial="hidden"
+        animate="show"
+      >
+        <div className="inline-flex items-center">
+          {moreThanOneFloor && (
+            <ComponentAuthorizer
+              requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
+              userPermission={policy?.userRole}
+            >
+              <GenericButton
+                size="sm"
+                variant="secondary"
+                className="me-1"
+                onClick={handleFloorDelete}
+                dataAttributes={{ floor: item.floor.toString() }}
+                label={t("table.deleteFloor", "🗑️")}
+              />
+            </ComponentAuthorizer>
+          )}
+          <span>{ZeroPad(item.floor.toString(), DEFAULT_FLOOR_PADDING)}</span>
+        </div>
+      </m.th>
+      {item.units.map((element, colIndex) => (
+        <m.td
+          key={`td-${item.floor}-${element.number}`}
+          className={cn(
+            "map-cell",
+            policy?.getUnitColor(element, aggregatesValue)
+          )}
+          onClick={handleUnitStatusUpdate}
+          data-id={element.id}
+          data-floor={item.floor}
+          data-unitno={element.number}
+          custom={{ row: rowIndex, col: colIndex }}
+          variants={diagonalCell}
+          initial="hidden"
+          animate="show"
+        >
+          <div className="relative w-full h-full">
+            {pendingAddressIds?.has(element.id) && <PendingSyncDot />}
+            <AddressStatus
+              key={`${element.status}-${element.nhcount}`}
+              type={element.type}
+              note={element.note}
+              status={element.status}
+              nhcount={element.nhcount}
+              defaultOption={policy?.defaultType}
+            />
+          </div>
+        </m.td>
+      ))}
+    </tr>
+  );
+};
+
 const PublicTerritoryTable = ({
   floors,
   addressDetails,
@@ -31,6 +119,8 @@ const PublicTerritoryTable = ({
   const { t } = useTranslation();
   const moreThanOneFloor = floors.length > 1;
   const floorDetails = floors[0];
+  const aggregatesValue =
+    addressDetails.aggregates?.value || DEFAULT_AGGREGATES.value;
   return (
     <div
       className={cn(
@@ -53,7 +143,7 @@ const PublicTerritoryTable = ({
             />
             {floorDetails?.units.map((item, index) => (
               <m.th
-                key={`th-${index}-${item.number}`}
+                key={`th-${item.number}`}
                 scope="col"
                 className="sticky-top-cell text-center align-middle text-xs text-muted-foreground tracking-wide uppercase"
                 custom={{ index }}
@@ -85,72 +175,17 @@ const PublicTerritoryTable = ({
         </thead>
         <tbody>
           {floors.map((item, rowIndex) => (
-            <tr key={`row-${rowIndex}-${item.floor}`} className="h-16">
-              <m.th
-                className="sticky-left-cell text-center align-middle text-xs text-muted-foreground tracking-wide"
-                scope="row"
-                custom={{ index: rowIndex }}
-                variants={rowHeader}
-                initial="hidden"
-                animate="show"
-              >
-                <div className="inline-flex items-center">
-                  {moreThanOneFloor && (
-                    <ComponentAuthorizer
-                      requiredPermission={
-                        USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
-                      }
-                      userPermission={policy?.userRole}
-                    >
-                      <GenericButton
-                        size="sm"
-                        variant="secondary"
-                        className="me-1"
-                        onClick={handleFloorDelete}
-                        dataAttributes={{ floor: item.floor.toString() }}
-                        label={t("table.deleteFloor", "🗑️")}
-                      />
-                    </ComponentAuthorizer>
-                  )}
-                  <span>
-                    {ZeroPad(item.floor.toString(), DEFAULT_FLOOR_PADDING)}
-                  </span>
-                </div>
-              </m.th>
-              {item.units.map((element, colIndex) => (
-                <m.td
-                  key={`td-${item.floor}-${element.number}`}
-                  className={cn(
-                    "map-cell",
-                    policy?.getUnitColor(
-                      element,
-                      addressDetails.aggregates?.value ||
-                        DEFAULT_AGGREGATES.value
-                    )
-                  )}
-                  onClick={handleUnitStatusUpdate}
-                  data-id={element.id}
-                  data-floor={item.floor}
-                  data-unitno={element.number}
-                  custom={{ row: rowIndex, col: colIndex }}
-                  variants={diagonalCell}
-                  initial="hidden"
-                  animate="show"
-                >
-                  <div className="relative w-full h-full">
-                    {pendingAddressIds?.has(element.id) && <PendingSyncDot />}
-                    <AddressStatus
-                      key={`${element.status}-${element.nhcount}`}
-                      type={element.type}
-                      note={element.note}
-                      status={element.status}
-                      nhcount={element.nhcount}
-                      defaultOption={policy?.defaultType}
-                    />
-                  </div>
-                </m.td>
-              ))}
-            </tr>
+            <FloorRow
+              key={`row-${item.floor}`}
+              item={item}
+              rowIndex={rowIndex}
+              moreThanOneFloor={moreThanOneFloor}
+              aggregatesValue={aggregatesValue}
+              policy={policy}
+              pendingAddressIds={pendingAddressIds}
+              handleUnitStatusUpdate={handleUnitStatusUpdate}
+              handleFloorDelete={handleFloorDelete}
+            />
           ))}
         </tbody>
       </table>

@@ -28,11 +28,7 @@ import useNotification from "../../hooks/useNotification";
 import useConfirm from "../../hooks/useConfirm";
 import MapPlaceholder from "../statics/placeholder";
 
-import {
-  callFunction,
-  ignoreAbort,
-  isAbortError
-} from "../../utils/pocketbase";
+import { callFunction, isAbortError } from "../../utils/pocketbase";
 import { getNextSequence } from "../../utils/helpers/maphelpers";
 import {
   applyAddressEvent,
@@ -105,11 +101,22 @@ function applyPendingOpsToAddressMap(
   }
 }
 
+// Window for coalescing realtime event bursts into a single state commit.
+const REALTIME_EVENT_BATCH_MS = 100;
+// Delay before persisting the address map to IndexedDB after a change.
+const CACHE_WRITE_DEBOUNCE_MS = 300;
+
+// Module-level default: an inline `new Set()` default parameter makes the
+// React Compiler bail out of compiling the entire hook ("NewExpression cannot
+// be safely reordered"), which would leave the returned mutators with
+// unstable identities and defeat row-level render bail-outs downstream.
+const EMPTY_PENDING_IDS: Set<string> = new Set();
+
 const useAddresses = (
   mapId: string,
   options: Map<string, HHOptionProps>,
   assignmentId?: string,
-  pendingAddressIds: Set<string> = new Set(),
+  pendingAddressIds: Set<string> = EMPTY_PENDING_IDS,
   preloadedAddresses?: mapAddressResponse[]
 ) => {
   const [addresses, setAddresses] = useState<Map<string, unitDetails>>(
@@ -119,13 +126,72 @@ const useAddresses = (
   const cacheKey = assignmentId ?? mapId;
   // Read inside the cache-persistence effect so a cacheKey change alone (e.g.
   // mapId switch) does not write the *old* map's data under the *new* key
-  // before the new fetch lands.
+  // before the new fetch lands. Updated in an effect (not during render) to
+  // stay within compiler rules; it is declared before the cache-persistence
+  // effect, so it always runs first within the same commit.
   const cacheKeyRef = useRef(cacheKey);
-  cacheKeyRef.current = cacheKey;
+  useEffect(() => {
+    cacheKeyRef.current = cacheKey;
+  });
 
   const optionCodeMap = new Map(
     [...options.entries()].map(([id, o]) => [id, o.code])
   );
+
+  // Coalesce realtime event bursts into as few state commits as possible.
+  // Bulk server operations (e.g. /map/reset) emit one SSE message per address
+  // and each message lands in its own macrotask, so React cannot batch them —
+  // without this, a 300-unit reset causes ~300 full re-renders of the unit
+  // grid. The first event of a burst applies immediately (single events stay
+  // instant); events arriving within the window are applied in one commit.
+  // Appliers are pure reducers, so reducing a batch inside a functional
+  // updater stays StrictMode-safe. Merge logic lives in addressReducers.ts.
+  //
+  // Ordering guarantees relative to direct setAddresses writes (matching the
+  // pre-batching behavior, where every event applied immediately):
+  // - Optimistic local writes flush the buffer first, so the user's write
+  //   always lands after any earlier-arrived event.
+  // - Full snapshots (fetch/cache) discard the buffer: events that arrived
+  //   before the snapshot are already reflected in it.
+  const pendingEventsRef = useRef<
+    Array<(prev: Map<string, unitDetails>) => Map<string, unitDetails>>
+  >([]);
+  const flushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const flushPendingEvents = () => {
+    const batch = pendingEventsRef.current;
+    if (batch.length === 0) return;
+    pendingEventsRef.current = [];
+    setAddresses((prev) => batch.reduce((acc, fn) => fn(acc), prev));
+  };
+
+  const discardPendingEvents = () => {
+    pendingEventsRef.current = [];
+  };
+
+  const applyEventBatched = (
+    apply: (prev: Map<string, unitDetails>) => Map<string, unitDetails>
+  ) => {
+    if (flushTimerRef.current !== null) {
+      pendingEventsRef.current.push(apply);
+      return;
+    }
+    setAddresses(apply);
+    flushTimerRef.current = setTimeout(() => {
+      flushTimerRef.current = null;
+      flushPendingEvents();
+    }, REALTIME_EVENT_BATCH_MS);
+  };
+
+  // Drop buffered events when the map changes or the component unmounts —
+  // queued appliers belong to the previous subscription's data.
+  useEffect(() => {
+    return () => {
+      if (flushTimerRef.current !== null) clearTimeout(flushTimerRef.current);
+      flushTimerRef.current = null;
+      pendingEventsRef.current = [];
+    };
+  }, [mapId]);
 
   const processAddressResponse = async (response: mapAddressResponse[]) => {
     const addressMap = new Map<string, unitDetails>();
@@ -154,10 +220,17 @@ const useAddresses = (
     // Ops are keyed by `mapId:addressId` so there is at most one op per address.
     const pendingOps = await getQueue(mapId);
     applyPendingOpsToAddressMap(addressMap, pendingOps, optionCodeMap);
+    // The snapshot supersedes any events buffered before it arrived —
+    // replaying them on top would regress fresher data.
+    discardPendingEvents();
     setAddresses(addressMap);
   };
 
-  const fetchAddressData = ignoreAbort(async () => {
+  // Plain async closure, not ignoreAbort-wrapped: passing a ref-touching
+  // closure to a non-hook function during render makes the React Compiler
+  // bail out of the whole hook. Aborts are swallowed with an early return
+  // instead (all call sites are fire-and-forget).
+  const fetchAddressData = async () => {
     if (!mapId) return;
     try {
       const response = (await callFunction("/map/addresses", {
@@ -169,7 +242,9 @@ const useAddresses = (
       await processAddressResponse(response);
       // Cache persistence is centralized in the effect below.
     } catch (error) {
-      if (isAbortError(error)) throw error;
+      // Abort means a newer fetch superseded this one — skip the cache
+      // fallback and let the newer request populate state.
+      if (isAbortError(error)) return;
       const cached = await loadAddressCache(cacheKey);
       if (cached) {
         // Re-apply pending ops on top of the cached snapshot so the user sees
@@ -177,17 +252,22 @@ const useAddresses = (
         const cachedMap = new Map(Object.entries(cached.data));
         const pendingOps = await getQueue(mapId);
         applyPendingOpsToAddressMap(cachedMap, pendingOps, optionCodeMap);
+        discardPendingEvents();
         setAddresses(cachedMap);
         return;
       }
     }
-  });
+  };
 
   const updateAddressOptimistically = (
     addressId: string,
     updateData: QueuedOp["updateData"],
     newTypes: Array<{ id: string; code: string; aoId?: string }>
   ) => {
+    // Apply buffered events first so the local write always lands last —
+    // a buffered event captured a pendingAddressIds set from before this
+    // write became pending and would otherwise clobber it.
+    flushPendingEvents();
     setAddresses((prev) => {
       const existing = prev.get(addressId);
       if (!existing) return prev;
@@ -208,6 +288,7 @@ const useAddresses = (
   };
 
   const addAddressOptimistically = (newUnit: unitDetails) => {
+    flushPendingEvents();
     setAddresses((prev) => {
       const next = new Map(prev);
       next.set(newUnit.id, newUnit);
@@ -215,16 +296,14 @@ const useAddresses = (
     });
   };
 
-  // Functional updater so bursts of events (e.g. reset-all) compose against
-  // the latest queued state, not a render-stale snapshot. Each event would
-  // otherwise read the same `prev` and the last setAddresses would win,
-  // dropping intermediate updates. Merge logic lives in addressReducers.ts.
   const handleSubscription = (data: RealtimeEvent) => {
-    setAddresses((prev) => applyAddressEvent(prev, data, pendingAddressIds));
+    applyEventBatched((prev) =>
+      applyAddressEvent(prev, data, pendingAddressIds)
+    );
   };
 
   const handleAddressOptionsSubscription = (data: RealtimeEvent) => {
-    setAddresses((prev) =>
+    applyEventBatched((prev) =>
       applyAddressOptionsEvent(prev, data, pendingAddressIds, options)
     );
   };
@@ -260,15 +339,20 @@ const useAddresses = (
       window.removeEventListener("mm-flush-complete", onFlushComplete);
   }, []);
 
-  // Persist `addresses` to IndexedDB whenever it changes. Centralizing the
-  // write here (instead of inline at every setAddresses call site) coalesces
-  // bursts of realtime events into a single write per render commit, and
-  // keeps setState updaters pure (StrictMode-safe). cacheKey is read via ref
-  // so that a mapId/assignmentId switch does not write the previous map's
-  // data under the new key before the new fetch lands.
+  // Persist `addresses` to IndexedDB whenever it changes, debounced so a
+  // burst of commits produces a single serialization + write instead of one
+  // per commit. cacheKey is captured at schedule time (via ref, so that a
+  // mapId/assignmentId switch does not write the previous map's data under
+  // the new key before the new fetch lands). An unmount inside the window
+  // drops one write — safe, because pending ops are overlaid on top of the
+  // cached snapshot on next load.
   useEffect(() => {
     if (addresses.size === 0) return;
-    void saveAddressCache(cacheKeyRef.current, Object.fromEntries(addresses));
+    const cacheWriteKey = cacheKeyRef.current;
+    const timer = setTimeout(() => {
+      void saveAddressCache(cacheWriteKey, Object.fromEntries(addresses));
+    }, CACHE_WRITE_DEBOUNCE_MS);
+    return () => clearTimeout(timer);
   }, [addresses]);
 
   useRealtimeSubscription(
@@ -309,6 +393,73 @@ const useAddresses = (
   return { addresses, updateAddressOptimistically, addAddressOptimistically };
 };
 
+const buildFloorList = (
+  addresses: Map<string, unitDetails>,
+  prevFloorList: floorDetails[]
+): { floorList: floorDetails[]; maxUnitLength: number } => {
+  if (addresses.size === 0) {
+    return { floorList: [], maxUnitLength: DEFAULT_UNIT_PADDING };
+  }
+
+  let maxUnitLength = DEFAULT_UNIT_PADDING;
+
+  const floorMap = new Map<number, unitDetails[]>();
+
+  for (const address of addresses.values()) {
+    const { floor, number } = address;
+    maxUnitLength = Math.max(maxUnitLength, number.length);
+
+    if (!floorMap.has(floor)) {
+      floorMap.set(floor, []);
+    }
+    floorMap.get(floor)!.push(address);
+  }
+
+  const prevByFloor = new Map(prevFloorList.map((f) => [f.floor, f]));
+
+  const floorList: floorDetails[] = Array.from(floorMap.entries())
+    .map(([floor, units]) => {
+      units.sort((a, b) => a.sequence - b.sequence);
+      // Reuse the previous floor object when its units are identical (the
+      // realtime reducers keep untouched unit objects referentially stable),
+      // so unchanged rows bail out of re-rendering under the React Compiler.
+      const prev = prevByFloor.get(floor);
+      if (
+        prev &&
+        prev.units.length === units.length &&
+        prev.units.every((unit, i) => unit === units[i])
+      ) {
+        return prev;
+      }
+      return { floor, units };
+    })
+    .sort((a, b) => b.floor - a.floor);
+
+  return { floorList, maxUnitLength };
+};
+
+// Derives the floor list from the address map with structural sharing.
+// Uses React's "adjusting state when props change" render-phase pattern so
+// the previous floor list is available without reading refs during render.
+const useFloorList = (addresses: Map<string, unitDetails>) => {
+  const [organized, setOrganized] = useState(() => ({
+    addresses,
+    ...buildFloorList(addresses, [])
+  }));
+
+  if (organized.addresses !== addresses) {
+    setOrganized({
+      addresses,
+      ...buildFloorList(addresses, organized.floorList)
+    });
+  }
+
+  return {
+    floorList: organized.floorList,
+    maxUnitLength: organized.maxUnitLength
+  };
+};
+
 const MainTable = ({
   policy,
   addressDetails,
@@ -338,6 +489,15 @@ const MainTable = ({
       pendingAddressIds,
       preloadedAddresses
     );
+  const { floorList, maxUnitLength } = useFloorList(addresses);
+
+  // Latest addresses for read-at-click-time handlers. Keeping `addresses`
+  // out of the handlers' closures keeps their identity stable across
+  // realtime commits, so unchanged table rows bail out of re-rendering.
+  const addressesRef = useRef(addresses);
+  useEffect(() => {
+    addressesRef.current = addresses;
+  });
 
   const onOpDiscarded = useEffectEvent((e: Event) => {
     const count = (e as CustomEvent<{ count: number }>).detail.count;
@@ -460,52 +620,18 @@ const MainTable = ({
     }
   };
 
-  const organizeAddresses = (
-    addresses: Map<string, unitDetails>
-  ): { floorList: floorDetails[]; maxUnitLength: number } => {
-    if (addresses.size === 0) {
-      return { floorList: [], maxUnitLength: DEFAULT_UNIT_PADDING };
-    }
-
-    let maxUnitLength = DEFAULT_UNIT_PADDING;
-
-    const floorMap = new Map<number, unitDetails[]>();
-
-    for (const address of addresses.values()) {
-      const { floor, number } = address;
-      maxUnitLength = Math.max(maxUnitLength, number.length);
-
-      if (!floorMap.has(floor)) {
-        floorMap.set(floor, []);
-      }
-      floorMap.get(floor)!.push(address);
-    }
-
-    const floorList: floorDetails[] = Array.from(floorMap.entries())
-      .map(([floor, units]) => ({
-        floor,
-        units: units.sort((a, b) => a.sequence - b.sequence)
-      }))
-      .sort((a, b) => b.floor - a.floor);
-
-    return { floorList, maxUnitLength };
-  };
-
   const handleHouseUpdate = (event: React.MouseEvent<HTMLElement>) => {
-    handleUpdateUnitStatus(getUnitDetails(event, addresses));
+    handleUpdateUnitStatus(getUnitDetails(event, addressesRef.current));
   };
 
   const handleAddMoreClick = () => {
-    const nextSequence = getNextSequence(
-      Array.from(addresses.values()).map((u) => u.sequence)
-    );
+    const units = Array.from(addressesRef.current.values());
+    const nextSequence = getNextSequence(units.map((u) => u.sequence));
     showModal(CreateAddress, {
       addressData: addressDetails,
       policy,
       sequence: nextSequence,
-      existingCodes: new Set(
-        Array.from(addresses.values()).map((u) => u.number)
-      ),
+      existingCodes: new Set(units.map((u) => u.number)),
       territoryId: territoryId,
       writeCreate,
       onOptimisticCreate: addAddressOptimistically
@@ -517,15 +643,9 @@ const MainTable = ({
     handleFloorDelete(Number(floor));
   };
 
-  const { floorList, maxUnitLength } = organizeAddresses(addresses);
-
   const handleUnitDeleteEvent = (event: React.MouseEvent<HTMLElement>) => {
     const { unitno } = event.currentTarget.dataset;
-    const totalUnits = floorList.reduce(
-      (sum, floor) => sum + floor.units.length,
-      0
-    );
-    if (totalUnits === 1) {
+    if (addressesRef.current.size === 1) {
       notifyWarning(t("unit.requireOneUnitValidation"));
       return;
     }
