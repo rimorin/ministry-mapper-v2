@@ -8,7 +8,11 @@ export async function fetchAddressOptionMap(
 ): Promise<Map<string, string>> {
   const serverOptions = await getList("address_options", {
     filter: `address="${addressId}" && map="${mapId}"`,
-    fields: "id,option"
+    fields: "id,option",
+    // Scoped key: the default cancel key ignores query params, so concurrent
+    // callers (flush loop vs direct-mode write) would cancel each other and
+    // the survivor would compute option deltas against an empty map.
+    requestKey: `ao-${mapId}-${addressId}`
   });
   return new Map(serverOptions.map((o) => [o.option as string, o.id]));
 }
@@ -29,6 +33,7 @@ export async function batchUpdateAddress({
 }): Promise<void> {
   await callFunction("/address/update", {
     method: "POST",
+    requestKey: `address-update-${addressId}`,
     body: {
       address_id: addressId,
       map_id: mapId,
@@ -60,6 +65,7 @@ export async function batchCreateAddress({
 }): Promise<void> {
   await callFunction("/address/add", {
     method: "POST",
+    requestKey: `address-add-${addressId}`,
     body: {
       address_id: addressId,
       map_id: mapId,

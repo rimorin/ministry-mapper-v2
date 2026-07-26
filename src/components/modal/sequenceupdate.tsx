@@ -138,6 +138,7 @@ const ChangeMapSequence = NiceModal.create(
       const fetchAddressList = async () => {
         const response = await callFunction("/map/codes", {
           method: "POST",
+          requestKey: `map-codes-${mapId}`,
           body: { map_id: mapId }
         });
         if (!isCleaned) setCodeList(response.codes || []);
@@ -171,6 +172,7 @@ const ChangeMapSequence = NiceModal.create(
         async () => {
           await callFunction("/map/codes/update", {
             method: "POST",
+            requestKey: `map-codes-update-${mapId}`,
             body: {
               map: mapId,
               codes: codeList.map((code, index) => ({

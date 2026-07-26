@@ -164,6 +164,7 @@ describe("useMapManagement", () => {
       await waitFor(() => {
         expect(callFunction).toHaveBeenCalledWith("/map/floor/add", {
           method: "POST",
+          requestKey: "map-floor-add-map-123",
           body: {
             map: "map-123",
             add_higher: false
@@ -185,6 +186,7 @@ describe("useMapManagement", () => {
       await waitFor(() => {
         expect(callFunction).toHaveBeenCalledWith("/map/floor/add", {
           method: "POST",
+          requestKey: "map-floor-add-map-123",
           body: {
             map: "map-123",
             add_higher: true
@@ -207,6 +209,7 @@ describe("useMapManagement", () => {
       await waitFor(() => {
         expect(callFunction).toHaveBeenCalledWith("/map/reset", {
           method: "POST",
+          requestKey: "map-reset-map-123",
           body: {
             map: "map-123"
           }
@@ -421,6 +424,7 @@ describe("useMapManagement", () => {
         expect(mockToggle).toHaveBeenCalled();
         expect(callFunction).toHaveBeenCalledWith("/map/territory/update", {
           method: "POST",
+          requestKey: "map-territory-update-map-123",
           body: {
             map: "map-123",
             new_territory: "new-terr-1",

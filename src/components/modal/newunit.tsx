@@ -45,6 +45,7 @@ const NewUnit = NiceModal.create(
         async () => {
           await callFunction("/map/code/add", {
             method: "POST",
+            requestKey: `map-code-add-${mapId}`,
             body: { map: mapId, codes: unitTags }
           });
           modal.hide();

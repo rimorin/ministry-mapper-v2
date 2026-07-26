@@ -543,6 +543,7 @@ const MainTable = ({
     await runAction(async () => {
       await callFunction("/map/floor/remove", {
         method: "POST",
+        requestKey: `map-floor-remove-${mapId}-${floor}`,
         body: { map: mapId, floor }
       });
     });
@@ -595,6 +596,7 @@ const MainTable = ({
     await runAction(async () => {
       await callFunction("/map/code/delete", {
         method: "POST",
+        requestKey: `map-code-delete-${mapId}-${unitNumber}`,
         body: { map: mapId, code: unitNumber }
       });
     });

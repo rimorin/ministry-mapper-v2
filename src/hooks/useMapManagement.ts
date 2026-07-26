@@ -72,6 +72,7 @@ export default function useMapManagement() {
     try {
       await callFunction("/map/floor/add", {
         method: "POST",
+        requestKey: `map-floor-add-${mapId}`,
         body: {
           map: mapId,
           add_higher: higherFloor
@@ -89,6 +90,7 @@ export default function useMapManagement() {
     try {
       await callFunction("/map/reset", {
         method: "POST",
+        requestKey: `map-reset-${mapId}`,
         body: {
           map: mapId
         }
@@ -153,6 +155,7 @@ export default function useMapManagement() {
       toggleAddressTerritoryListing();
       await callFunction("/map/territory/update", {
         method: "POST",
+        requestKey: `map-territory-update-${mapId}`,
         body: {
           map: mapId,
           new_territory: newTerritoryId,

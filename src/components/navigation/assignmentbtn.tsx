@@ -46,7 +46,7 @@ const useAssignments = (mapId: string) => {
     if (!mapId) return;
     const mapAssignments = await getList("assignments", {
       filter: `map='${mapId}'`,
-      requestKey: null,
+      requestKey: `assignments-${mapId}`,
       expand: "map,user",
       fields: PB_FIELDS.ASSIGNMENTS
     });

@@ -59,7 +59,7 @@ const useMessages = (mapId: string, assignmentId?: string) => {
     const feedbacks = await getList("messages", {
       filter: `map="${mapId}"`,
       sort: "pinned, created",
-      requestKey: null,
+      requestKey: `map-messages-${mapId}`,
       fields: PB_FIELDS.MESSAGES
     });
 

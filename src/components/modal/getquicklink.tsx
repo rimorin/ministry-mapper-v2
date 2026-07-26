@@ -112,6 +112,7 @@ const QuickLinkModal = NiceModal.create(
 
           const linkData = await callFunction("/territory/link", {
             method: "POST",
+            requestKey: `territory-link-${territoryId}`,
             body: {
               territory: territoryId,
               publisher: publisher.trim(),
