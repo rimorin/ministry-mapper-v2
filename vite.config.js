@@ -7,7 +7,7 @@ import babel from "@rolldown/plugin-babel";
 import { visualizer } from "rollup-plugin-visualizer";
 import { sentryVitePlugin } from "@sentry/vite-plugin";
 import { VitePWA } from "vite-plugin-pwa";
-import packageJson from "./package.json";
+import packageJson from "./package.json" with { type: "json" };
 
 const __dirname = fileURLToPath(new URL(".", import.meta.url));
 
