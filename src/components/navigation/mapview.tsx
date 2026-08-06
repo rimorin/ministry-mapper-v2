@@ -34,7 +34,11 @@ const RING_LEGEND = [
   { color: "var(--mm-progress)", labelKey: "navigation.progressRing" }
 ] as const;
 
-const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
+const MapView: React.FC<MapViewProps> = ({
+  sortedAddressList,
+  policy,
+  territoryName
+}) => {
   const { t } = useTranslation();
   const { currentLocation } = useGeolocation();
   const [center, setCenter] = useState<latlongInterface>();
@@ -198,6 +202,7 @@ const MapView: React.FC<MapViewProps> = ({ sortedAddressList, policy }) => {
                     addressElement={selectedAddress}
                     policy={policy}
                     userId={getUser("id") as string}
+                    territoryName={territoryName}
                   />
                 </div>
               </ComponentAuthorizer>

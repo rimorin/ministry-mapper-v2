@@ -377,7 +377,9 @@
   "links": {
     "personal": "個人",
     "assignment": "割当",
-    "view": "表示"
+    "view": "表示",
+    "copyLink": "リンクをコピー",
+    "linkCopied": "リンクをコピーしました"
   },
   "greetings": {
     "morning": "おはよう",
@@ -416,7 +418,10 @@
     "confirmRegularTitle": "{{addressName}}のスリップ詳細確認",
     "publisherNameLabel": "伝道者名",
     "publisherNamePlaceholder": "割り当てられた伝道者の名前",
-    "confirmButton": "確認"
+    "confirmButton": "確認",
+    "linkReadyTitle": "マップのリンクが準備できました",
+    "alreadyAssigned": "すでに割り当て済み",
+    "moreAssignees": "他{{count}}名"
   },
   "password": {
     "number": "パスワードには数字を含める必要があります。",

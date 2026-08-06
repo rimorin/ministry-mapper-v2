@@ -2,6 +2,9 @@ import * as React from "react";
 
 const MOBILE_BREAKPOINT = 768;
 
+export const getIsMobile = () =>
+  window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`).matches;
+
 export function useIsMobile() {
   const [isMobile, setIsMobile] = React.useState<boolean | undefined>(
     undefined

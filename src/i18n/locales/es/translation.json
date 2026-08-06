@@ -377,7 +377,9 @@
   "links": {
     "personal": "Personal",
     "assignment": "Asignar",
-    "view": "Ver"
+    "view": "Ver",
+    "copyLink": "Copiar enlace",
+    "linkCopied": "Enlace copiado"
   },
   "greetings": {
     "morning": "os días",
@@ -416,7 +418,10 @@
     "confirmRegularTitle": "Confirmar detalles de tarjeta para {{addressName}}",
     "publisherNameLabel": "Nombre de publicadores",
     "publisherNamePlaceholder": "Nombres de los publicadores asignados",
-    "confirmButton": "Confirmar"
+    "confirmButton": "Confirmar",
+    "linkReadyTitle": "El enlace del mapa está listo",
+    "alreadyAssigned": "Ya asignado",
+    "moreAssignees": "+{{count}} más"
   },
   "password": {
     "number": "La contraseña debe contener números.",

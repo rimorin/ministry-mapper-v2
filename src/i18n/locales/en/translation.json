@@ -377,7 +377,9 @@
   "links": {
     "personal": "Personal",
     "assignment": "Assign",
-    "view": "View"
+    "view": "View",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied"
   },
   "greetings": {
     "morning": "Morning",
@@ -416,7 +418,10 @@
     "confirmRegularTitle": "Confirm slip details for {{addressName}}",
     "publisherNameLabel": "Publishers Name",
     "publisherNamePlaceholder": "Names of the assigned publishers",
-    "confirmButton": "Confirm"
+    "confirmButton": "Confirm",
+    "linkReadyTitle": "Map link is ready",
+    "alreadyAssigned": "Already assigned",
+    "moreAssignees": "+{{count}} more"
   },
   "password": {
     "number": "Password must contain numbers.",

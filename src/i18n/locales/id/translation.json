@@ -377,7 +377,9 @@
   "links": {
     "personal": "Pribadi",
     "assignment": "Penugasan",
-    "view": "Lihat"
+    "view": "Lihat",
+    "copyLink": "Salin tautan",
+    "linkCopied": "Tautan disalin"
   },
   "greetings": {
     "morning": "Pagi",
@@ -416,7 +418,10 @@
     "confirmRegularTitle": "Konfirmasi detail slip untuk {{addressName}}",
     "publisherNameLabel": "Nama Penerbit",
     "publisherNamePlaceholder": "Nama penerbit yang ditugaskan",
-    "confirmButton": "Konfirmasi"
+    "confirmButton": "Konfirmasi",
+    "linkReadyTitle": "Tautan peta siap",
+    "alreadyAssigned": "Sudah ditugaskan",
+    "moreAssignees": "+{{count}} lainnya"
   },
   "password": {
     "number": "Kata sandi harus mengandung angka.",

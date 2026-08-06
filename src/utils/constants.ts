@@ -73,8 +73,6 @@ const MIN_START_FLOOR = 1;
 const MAX_TOP_FLOOR = 50;
 const ADDRESS_CREATE_SOURCE = "app";
 
-const UNSUPPORTED_BROWSER_MSG = "Browser doesn't support this feature.";
-
 const TERRITORY_TYPES = {
   SINGLE_STORY: "single",
   MULTIPLE_STORIES: "multi"
@@ -134,7 +132,6 @@ const OAUTH2_PENDING_KEY = "pendingOAuth2";
 const OAUTH2_REDIRECT_PATH = "/auth/callback";
 
 export {
-  UNSUPPORTED_BROWSER_MSG,
   STATUS_CODES,
   DEFAULT_FLOOR_PADDING,
   DEFAULT_SELF_DESTRUCT_HOURS,

@@ -69,6 +69,13 @@ export default defineConfig(() => {
                 test: /node_modules\/@base-ui\/utils\/|node_modules\/@base-ui\/react\/(esm\/)?(toast|internals|utils|button|merge-props|use-render)\/|node_modules\/@base-ui\/react\/(esm\/)?floating-ui-react\/utils|node_modules\/@floating-ui\/utils\//,
                 priority: 80
               },
+              // Base UI drawer subtree — only mobile bottom-sheets render it, so it
+              // must not ride in vendor-base-ui, which every dialog open downloads
+              {
+                name: "vendor-base-ui-drawer",
+                test: /node_modules\/@base-ui\/react\/(esm\/)?drawer\//,
+                priority: 75
+              },
               // Base UI + floating-ui — lazy (only loads when first modal/dialog opens)
               {
                 name: "vendor-base-ui",

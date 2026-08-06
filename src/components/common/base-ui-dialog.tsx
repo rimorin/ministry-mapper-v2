@@ -21,21 +21,20 @@ export function useBaseUiDialog(options: UseBaseUiDialogOptions = {}) {
   const { size = "default", staticBackdrop = false, onClose } = options;
   const modal = useModal();
 
-  // Always remove from registry after hiding so state doesn't persist on reopen
-  const hide = () => {
-    modal.hide();
-    setTimeout(() => modal.remove(), 300);
-  };
-
   const dialogProps = {
     open: modal.visible,
     onOpenChange: (open: boolean) => {
       if (!open) {
         onClose?.();
         if (!staticBackdrop) {
-          hide();
+          modal.hide();
         }
       }
+    },
+    // Remove from the NiceModal registry once the exit animation finishes so
+    // state doesn't persist on reopen.
+    onOpenChangeComplete: (open: boolean) => {
+      if (!open) modal.remove();
     }
   };
 
@@ -47,7 +46,5 @@ export function useBaseUiDialog(options: UseBaseUiDialogOptions = {}) {
     })
   };
 
-  // Override modal.hide so callers that call modal.hide() directly
-  // still get the remove() cleanup, not just hide().
-  return { modal: { ...modal, hide }, hide, dialogProps, contentProps };
+  return { modal, hide: modal.hide, dialogProps, contentProps };
 }

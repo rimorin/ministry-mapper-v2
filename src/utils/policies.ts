@@ -131,6 +131,7 @@ export class LinkSession {
     this.id = linkData?.id || "";
     this.key = key || "";
     this.userId = linkData.user;
+    this.linkType = linkData.type || LINK_TYPES.ASSIGNMENT;
     this.tokenCreatetime = new Date(linkData.created).getTime();
     this.name = resolveLocalized(
       linkData.expand?.map.description,

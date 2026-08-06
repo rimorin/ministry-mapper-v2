@@ -64,6 +64,7 @@ function MapRow({
   userAccessLevel,
   dropDirections,
   territoryId,
+  territoryName,
   handlers,
   t
 }: RowComponentProps<MapRowProps>) {
@@ -164,6 +165,7 @@ function MapRow({
               addressElement={addressElement}
               policy={policy}
               userId={getUser("id") as string}
+              territoryName={territoryName}
             />
             <GenericButton
               size="sm"
@@ -307,7 +309,8 @@ const MapListing: React.FC<MapListingProps> = ({
   accordionKeys,
   setAccordionKeys,
   isReadonly,
-  territoryId
+  territoryId,
+  territoryName
 }) => {
   const { t } = useTranslation();
   const { showModal } = useModalManagement();
@@ -537,6 +540,7 @@ const MapListing: React.FC<MapListingProps> = ({
     isReadonly,
     dropDirections,
     territoryId,
+    territoryName,
     handlers: {
       handleDropdownDirection,
       handleToggleMapView,

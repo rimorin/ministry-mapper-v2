@@ -463,9 +463,12 @@ export interface NewUnitModalProps
 export type UpdateProfileModalProps = userInterface;
 
 export interface ConfirmSlipDetailsModalProps {
-  addressName: string;
-  userAccessLevel: string | undefined;
+  addressElement: addressDetails;
+  policy: Policy;
+  userId: string;
   isPersonalSlip: boolean;
+  territoryName?: string;
+  existingLinks: LinkSession[];
 }
 
 export interface UpdateAddressFeedbackModalProps
@@ -586,6 +589,7 @@ export interface MapListingProps {
   setAccordionKeys: React.Dispatch<React.SetStateAction<string[]>>;
   isReadonly: boolean;
   territoryId: string;
+  territoryName?: string;
 }
 
 export interface MapRowProps {
@@ -598,6 +602,7 @@ export interface MapRowProps {
   isReadonly: boolean;
   dropDirections: DropDirections;
   territoryId: string;
+  territoryName?: string;
   handlers: {
     handleDropdownDirection: (
       event: React.MouseEvent<HTMLElement, globalThis.MouseEvent>,
@@ -664,6 +669,7 @@ export interface GenericButtonProps {
 export interface MapViewProps {
   sortedAddressList: addressDetails[];
   policy: Policy;
+  territoryName?: string;
 }
 
 export interface MissingSetupPageProps {

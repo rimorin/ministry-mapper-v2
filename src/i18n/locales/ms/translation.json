@@ -377,7 +377,9 @@
   "links": {
     "personal": "Peribadi",
     "assignment": "Tugasan",
-    "view": "Lihat"
+    "view": "Lihat",
+    "copyLink": "Salin pautan",
+    "linkCopied": "Pautan disalin"
   },
   "greetings": {
     "morning": "Pagi",
@@ -416,7 +418,10 @@
     "confirmRegularTitle": "Sahkan butiran slip untuk {{addressName}}",
     "publisherNameLabel": "Nama Penerbit",
     "publisherNamePlaceholder": "Nama penerbit yang ditugaskan",
-    "confirmButton": "Sahkan"
+    "confirmButton": "Sahkan",
+    "linkReadyTitle": "Pautan peta sedia",
+    "alreadyAssigned": "Sudah ditugaskan",
+    "moreAssignees": "+{{count}} lagi"
   },
   "password": {
     "number": "Kata laluan mesti mengandungi nombor.",
