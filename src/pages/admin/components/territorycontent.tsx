@@ -159,6 +159,7 @@ export default function TerritoryContent({
               key={`mapview-${selectedTerritory.id}`}
               sortedAddressList={sortedAddressList}
               policy={policy}
+              territoryName={selectedTerritory.name}
             />
           ) : (
             <MapListing
@@ -181,6 +182,7 @@ export default function TerritoryContent({
               processingMap={processingMap}
               toggleAddressTerritoryListing={toggleAddressTerritoryListing}
               territoryId={selectedTerritory.id}
+              territoryName={selectedTerritory.name}
             />
           )}
         </m.div>

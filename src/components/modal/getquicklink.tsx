@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
+import MapProgressStats from "@/components/common/map-progress-stats";
 import {
   Dialog,
   DialogContent,
@@ -18,7 +19,6 @@ import { useTranslation } from "react-i18next";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker } from "react-leaflet";
 import {
-  UNSUPPORTED_BROWSER_MSG,
   DEFAULT_COORDINATES,
   PREFERRED_TRAVEL_MODE_KEY
 } from "../../utils/constants";
@@ -35,7 +35,8 @@ import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import TravelModeButtons from "../map/travelmodebtn";
 import CustomControl from "../map/customcontrol";
 import RoutingService from "../map/routingservice";
-import { callFunction, isAbortError } from "../../utils/pocketbase";
+import { callFunction } from "../../utils/pocketbase";
+import useShareLink from "../../hooks/useShareLink";
 import { MapController } from "../map/mapcontroller";
 import useGeolocation from "../../hooks/useGeolocation";
 import { ThemedTileLayer } from "../map/themedtilelayer";
@@ -73,10 +74,10 @@ const QuickLinkModal = NiceModal.create(
       skipGeolocation: true
     });
 
+    const { shareLink, isSharing, shareButtonLabel } = useShareLink();
     const [isInputMode, setIsInputMode] = useState(true);
     const [publisher, setPublisher] = useState("");
     const [isLoading, setIsLoading] = useState(false);
-    const [isSharing, setIsSharing] = useState(false);
     const [mapData, setMapData] = useState<MapDataType | null>(null);
 
     const [currentCenter, setCurrentCenter] = useState<latlongInterface>(
@@ -129,34 +130,20 @@ const QuickLinkModal = NiceModal.create(
       );
     };
 
-    const shareTimedLink = async (linkId: string, body: string) => {
-      if (!navigator.share) {
-        notifyWarning(UNSUPPORTED_BROWSER_MSG);
-        return;
-      }
-      await navigator.share({
-        text: `${body}
-${new URL(`map/${linkId}`, window.location.href).toString()}`
-      });
-    };
-
     const handleAssign = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!mapData || !publisher.trim()) return;
 
-      setIsSharing(true);
       try {
-        await shareTimedLink(
-          mapData.linkId,
-          assignmentMessage(mapData.mapName, publisher)
-        );
+        const result = await shareLink({
+          linkId: mapData.linkId,
+          message: assignmentMessage(mapData.mapName, publisher)
+        });
+        if (result === "cancelled") return;
         trackEvent(ANALYTICS_EVENTS.QUICK_LINK_SHARED);
         modal.remove();
       } catch (error) {
-        if (isAbortError(error)) return;
         notifyError(error);
-      } finally {
-        setIsSharing(false);
       }
     };
 
@@ -292,32 +279,11 @@ ${new URL(`map/${linkId}`, window.location.href).toString()}`
                         <p className="text-sm font-semibold text-center mb-2 truncate">
                           {mapData.mapName}
                         </p>
-                        <div className="flex justify-center gap-4">
-                          <div className="text-center">
-                            <div className="text-xl font-bold text-amber-500 tabular-nums">
-                              {mapData.not_done}
-                            </div>
-                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">
-                              {t("territory.notDone")}
-                            </p>
-                          </div>
-                          <div className="text-center border-l pl-4">
-                            <div className="text-xl font-bold text-sky-500 tabular-nums">
-                              {mapData.not_home}
-                            </div>
-                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">
-                              {t("territory.notHome")}
-                            </p>
-                          </div>
-                          <div className="text-center border-l pl-4">
-                            <div className="text-xl font-bold text-emerald-500 tabular-nums">
-                              {mapData.progress}%
-                            </div>
-                            <p className="text-[10px] uppercase tracking-wide text-muted-foreground mt-0.5">
-                              {t("territory.completed")}
-                            </p>
-                          </div>
-                        </div>
+                        <MapProgressStats
+                          notDone={mapData.not_done}
+                          notHome={mapData.not_home}
+                          progress={`${mapData.progress}%`}
+                        />
 
                         {mapData.assignees.length > 0 && (
                           <div className="border-t pt-2 mt-2">
@@ -368,7 +334,7 @@ ${new URL(`map/${linkId}`, window.location.href).toString()}`
                       {isSharing && (
                         <Spinner data-icon="inline-start" aria-hidden="true" />
                       )}
-                      {t("generatedMap.share")}
+                      {shareButtonLabel}
                     </Button>
                   </DialogFooter>
                 )}

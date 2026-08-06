@@ -377,7 +377,9 @@
   "links": {
     "personal": "个人",
     "assignment": "分配",
-    "view": "查看"
+    "view": "查看",
+    "copyLink": "复制链接",
+    "linkCopied": "链接已复制"
   },
   "greetings": {
     "morning": "早上",
@@ -416,7 +418,10 @@
     "confirmRegularTitle": "确认 {{addressName}} 的单据详情",
     "publisherNameLabel": "发布者姓名",
     "publisherNamePlaceholder": "指定发布者的姓名",
-    "confirmButton": "确认"
+    "confirmButton": "确认",
+    "linkReadyTitle": "地图链接已就绪",
+    "alreadyAssigned": "已有分配",
+    "moreAssignees": "还有 {{count}} 人"
   },
   "password": {
     "number": "密码必须包含数字。",

@@ -377,7 +377,9 @@
   "links": {
     "personal": "개인",
     "assignment": "할당",
-    "view": "보기"
+    "view": "보기",
+    "copyLink": "링크 복사",
+    "linkCopied": "링크가 복사되었습니다"
   },
   "greetings": {
     "morning": "아침",
@@ -416,7 +418,10 @@
     "confirmRegularTitle": "{{addressName}}의 슬립 세부정보 확인",
     "publisherNameLabel": "출판자 이름",
     "publisherNamePlaceholder": "할당된 출판자의 이름",
-    "confirmButton": "확인"
+    "confirmButton": "확인",
+    "linkReadyTitle": "지도 링크가 준비되었습니다",
+    "alreadyAssigned": "이미 할당됨",
+    "moreAssignees": "외 {{count}}명"
   },
   "password": {
     "number": "비밀번호에는 숫자가 포함되어야 합니다.",

@@ -377,7 +377,9 @@
   "links": {
     "personal": "தனிப்பட்ட",
     "assignment": "நியமிக்க",
-    "view": "காண்பி"
+    "view": "காண்பி",
+    "copyLink": "இணைப்பை நகலெடு",
+    "linkCopied": "இணைப்பு நகலெடுக்கப்பட்டது"
   },
   "greetings": {
     "morning": "காலை",
@@ -416,7 +418,10 @@
     "confirmRegularTitle": "{{addressName}} க்கான சீட்டு விவரங்களை உறுதிப்படுத்தவும்",
     "publisherNameLabel": "வெளியீட்டாளர்களின் பெயர்",
     "publisherNamePlaceholder": "நியமிக்கப்பட்ட வெளியீட்டாளர்களின் பெயர்கள்",
-    "confirmButton": "உறுதிப்படுத்தவும்"
+    "confirmButton": "உறுதிப்படுத்தவும்",
+    "linkReadyTitle": "வரைபட இணைப்பு தயாராக உள்ளது",
+    "alreadyAssigned": "ஏற்கனவே நியமிக்கப்பட்டுள்ளது",
+    "moreAssignees": "மேலும் {{count}}"
   },
   "password": {
     "number": "கடவுச்சொல்லில் எண்கள் இருக்க வேண்டும்.",

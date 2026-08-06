@@ -1,10 +1,8 @@
 import { lazy, useEffect, useState, FC } from "react";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
 import CountBadge from "./countbadge";
 import { useTranslation } from "react-i18next";
 import {
-  UNSUPPORTED_BROWSER_MSG,
   LINK_TYPES,
   USER_ACCESS_LEVELS,
   PB_FIELDS,
@@ -14,11 +12,9 @@ import { addressDetails } from "../../utils/interface";
 import { LinkSession, Policy } from "../../utils/policies";
 import useNotification from "../../hooks/useNotification";
 
-import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import ComponentAuthorizer from "./authorizer";
-import addHours from "../../utils/helpers/addhours";
 import { RecordModel } from "pocketbase";
-import { getList, createData, isAbortError } from "../../utils/pocketbase";
+import { getList } from "../../utils/pocketbase";
 import useRealtimeSubscription from "../../hooks/useRealtime";
 import { useModalManagement } from "../../hooks/useModalManagement";
 const ConfirmSlipDetails = lazy(
@@ -31,6 +27,7 @@ interface PersonalButtonGroupProps {
   addressElement: addressDetails;
   policy: Policy;
   userId: string;
+  territoryName?: string;
 }
 
 const useAssignments = (mapId: string) => {
@@ -120,87 +117,24 @@ const useAssignments = (mapId: string) => {
 const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
   addressElement,
   policy,
-  userId
+  userId,
+  territoryName
 }) => {
   const { t } = useTranslation();
-  const { notifyError, notifyWarning } = useNotification();
   const { showModal } = useModalManagement();
-  const [isSettingPersonalLink, setIsSettingPersonalLink] = useState(false);
-  const [isSettingNormalLink, setIsSettingNormalLink] = useState(false);
   const mapId = addressElement.id;
 
   const { personalLinks, normalLinks } = useAssignments(mapId);
 
-  const handleButtonClick = async (linkType: string) => {
-    if (!navigator.share) {
-      notifyWarning(UNSUPPORTED_BROWSER_MSG);
-      return;
-    }
-    try {
-      const linkReturn = await showModal(ConfirmSlipDetails, {
-        addressName: addressElement.name,
-        userAccessLevel: policy.userRole,
-        isPersonalSlip: linkType === LINK_TYPES.PERSONAL
-      });
-
-      const linkObject = linkReturn as Record<string, unknown>;
-      if (!linkObject) return;
-      const expiryHrs = (
-        linkType === LINK_TYPES.PERSONAL
-          ? linkObject.linkExpiryHrs
-          : policy.defaultExpiryHours
-      ) as number;
-      await shareTimedLink(
-        linkType,
-        assignmentMessage(
-          addressElement.name,
-          linkObject.publisherName as string,
-          expiryHrs,
-          linkType
-        ),
-        expiryHrs,
-        linkObject.publisherName as string
-      );
-    } catch (error) {
-      notifyError(error);
-    } finally {
-      setIsSettingNormalLink(false);
-      setIsSettingPersonalLink(false);
-    }
-  };
-
-  const shareTimedLink = async (
-    linktype: string,
-    body: string,
-    hours: number,
-    publisherName = ""
-  ) => {
-    try {
-      if (linktype === LINK_TYPES.ASSIGNMENT) setIsSettingNormalLink(true);
-      if (linktype === LINK_TYPES.PERSONAL) setIsSettingPersonalLink(true);
-      const linkRecord = await createData(
-        "assignments",
-        {
-          map: mapId,
-          user: userId,
-          type: linktype,
-          expiry_date: addHours(hours),
-          publisher: publisherName,
-          congregation: policy.congregation
-        },
-        {
-          requestKey: `create-assignment-${mapId}-${userId}`
-        }
-      );
-      const linkId = linkRecord.id;
-      const absoluteUrl = new URL(`map/${linkId}`, window.location.href);
-      await navigator.share({
-        text: `${body}\n${absoluteUrl.toString()}`
-      });
-    } catch (error) {
-      if (isAbortError(error)) return;
-      notifyError(error, true);
-    }
+  const handleButtonClick = (linkType: string) => {
+    showModal(ConfirmSlipDetails, {
+      addressElement,
+      policy,
+      userId,
+      isPersonalSlip: linkType === LINK_TYPES.PERSONAL,
+      territoryName,
+      existingLinks: [...personalLinks.values(), ...normalLinks.values()]
+    });
   };
 
   const handleAssignmentsButtonClick = (linkType: string) => {
@@ -225,35 +159,17 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
             size="sm"
             variant={personalLinks.size > 0 ? "default" : "outline"}
             onClick={() => handleButtonClick(LINK_TYPES.PERSONAL)}
-            className={
-              personalLinks.size > 0 || isSettingPersonalLink
-                ? "rounded-r-none"
-                : undefined
-            }
+            className={personalLinks.size > 0 ? "rounded-r-none" : undefined}
           >
             {t("links.personal", "Personal")}
           </Button>
-          {isSettingPersonalLink ? (
-            <Button
-              size="sm"
-              variant="outline"
-              className="rounded-l-none px-3"
-              disabled
-              aria-label={t("links.personal", "Personal")}
-            >
-              <Spinner data-icon="inline-start" aria-hidden="true" />
-            </Button>
-          ) : (
-            personalLinks.size > 0 && (
-              <CountBadge
-                tone="active"
-                count={personalLinks.size}
-                onClick={() =>
-                  handleAssignmentsButtonClick(LINK_TYPES.PERSONAL)
-                }
-                ariaLabel={t("assignments.assignments", "Assignments")}
-              />
-            )
+          {personalLinks.size > 0 && (
+            <CountBadge
+              tone="active"
+              count={personalLinks.size}
+              onClick={() => handleAssignmentsButtonClick(LINK_TYPES.PERSONAL)}
+              ariaLabel={t("assignments.assignments", "Assignments")}
+            />
           )}
         </div>
       </ComponentAuthorizer>
@@ -267,35 +183,19 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
             size="sm"
             variant={normalLinks.size > 0 ? "default" : "outline"}
             onClick={() => handleButtonClick(LINK_TYPES.ASSIGNMENT)}
-            className={
-              normalLinks.size > 0 || isSettingNormalLink
-                ? "rounded-r-none"
-                : undefined
-            }
+            className={normalLinks.size > 0 ? "rounded-r-none" : undefined}
           >
             {t("links.assignment", "Assign")}
           </Button>
-          {isSettingNormalLink ? (
-            <Button
-              size="sm"
-              variant="outline"
-              className="rounded-l-none px-3"
-              disabled
-              aria-label={t("links.assignment", "Assign")}
-            >
-              <Spinner data-icon="inline-start" aria-hidden="true" />
-            </Button>
-          ) : (
-            normalLinks.size > 0 && (
-              <CountBadge
-                tone="active"
-                count={normalLinks.size}
-                onClick={() =>
-                  handleAssignmentsButtonClick(LINK_TYPES.ASSIGNMENT)
-                }
-                ariaLabel={t("assignments.assignments", "Assignments")}
-              />
-            )
+          {normalLinks.size > 0 && (
+            <CountBadge
+              tone="active"
+              count={normalLinks.size}
+              onClick={() =>
+                handleAssignmentsButtonClick(LINK_TYPES.ASSIGNMENT)
+              }
+              ariaLabel={t("assignments.assignments", "Assignments")}
+            />
           )}
         </div>
       </ComponentAuthorizer>
