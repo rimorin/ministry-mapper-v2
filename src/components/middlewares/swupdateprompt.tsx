@@ -1,18 +1,19 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 
 const SwUpdatePrompt = () => {
   const { t } = useTranslation();
 
   useEffect(() => {
     const handleSwUpdate = () => {
-      toast(t("update.title", "Update Available"), {
+      toast.add({
+        id: "sw-update",
+        title: t("update.title", "Update Available"),
         description: t("update.message", "Reload to get the latest updates."),
-        duration: Infinity,
-        dismissible: false,
-        action: {
-          label: t("update.reload", "Reload"),
+        timeout: 0,
+        actionProps: {
+          children: t("update.reload", "Reload"),
           onClick: () => window.location.reload()
         }
       });
