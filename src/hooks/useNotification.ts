@@ -1,4 +1,4 @@
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import * as Sentry from "@sentry/react";
 import { isAbortError } from "../utils/pocketbase";
 
@@ -71,26 +71,19 @@ export const useNotification = () => {
           ? messageOrError
           : formatErrorMessage(messageOrError);
 
-      toast.error(errorMessage, { id: "app-error", duration: Infinity });
+      toast.add({
+        id: "app-error",
+        title: errorMessage,
+        type: "error",
+        timeout: 0
+      });
     } else {
       const message =
         typeof messageOrError === "string"
           ? messageOrError
           : String(messageOrError);
 
-      const opts = title ? { description: title } : undefined;
-
-      switch (type) {
-        case "success":
-          toast.success(message, opts);
-          break;
-        case "warning":
-          toast.warning(message, opts);
-          break;
-        case "info":
-          toast.info(message, opts);
-          break;
-      }
+      toast.add({ title: message, description: title, type });
     }
   };
 

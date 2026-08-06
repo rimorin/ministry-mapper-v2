@@ -4,14 +4,12 @@ import { useNotification } from "./useNotification";
 
 const { mockToast } = vi.hoisted(() => ({
   mockToast: {
-    success: vi.fn(),
-    error: vi.fn(),
-    warning: vi.fn(),
-    info: vi.fn()
+    add: vi.fn(),
+    close: vi.fn()
   }
 }));
 
-vi.mock("sonner", () => ({
+vi.mock("@/components/ui/toast", () => ({
   toast: mockToast
 }));
 
@@ -26,37 +24,42 @@ describe("useNotification", () => {
   });
 
   describe("notifySuccess", () => {
-    it("should call toast.success with message", () => {
+    it("should call toast.add with message", () => {
       const { result } = renderHook(() => useNotification());
 
       result.current.notifySuccess("Operation successful");
 
-      expect(mockToast.success).toHaveBeenCalledWith(
-        "Operation successful",
-        undefined
-      );
+      expect(mockToast.add).toHaveBeenCalledWith({
+        title: "Operation successful",
+        description: undefined,
+        type: "success"
+      });
     });
 
-    it("should call toast.success with message and description when title provided", () => {
+    it("should call toast.add with message and description when title provided", () => {
       const { result } = renderHook(() => useNotification());
 
       result.current.notifySuccess("Operation successful", "Success");
 
-      expect(mockToast.success).toHaveBeenCalledWith("Operation successful", {
-        description: "Success"
+      expect(mockToast.add).toHaveBeenCalledWith({
+        title: "Operation successful",
+        description: "Success",
+        type: "success"
       });
     });
   });
 
   describe("notifyError", () => {
-    it("should call toast.error with string message and no auto-dismiss", () => {
+    it("should call toast.add with string message and no auto-dismiss", () => {
       const { result } = renderHook(() => useNotification());
 
       result.current.notifyError("Something went wrong");
 
-      expect(mockToast.error).toHaveBeenCalledWith("Something went wrong", {
+      expect(mockToast.add).toHaveBeenCalledWith({
         id: "app-error",
-        duration: Infinity
+        title: "Something went wrong",
+        type: "error",
+        timeout: 0
       });
     });
 
@@ -66,7 +69,7 @@ describe("useNotification", () => {
 
       result.current.notifyError(error);
 
-      expect(mockToast.error).toHaveBeenCalled();
+      expect(mockToast.add).toHaveBeenCalled();
     });
 
     it("should not show notification when silent is true", () => {
@@ -74,7 +77,7 @@ describe("useNotification", () => {
 
       result.current.notifyError("Error message", true);
 
-      expect(mockToast.error).not.toHaveBeenCalled();
+      expect(mockToast.add).not.toHaveBeenCalled();
     });
 
     it("should handle abort errors silently", () => {
@@ -83,7 +86,7 @@ describe("useNotification", () => {
 
       result.current.notifyError(abortError);
 
-      expect(mockToast.error).not.toHaveBeenCalled();
+      expect(mockToast.add).not.toHaveBeenCalled();
     });
 
     it("should format validation errors from API", () => {
@@ -101,8 +104,8 @@ describe("useNotification", () => {
 
       result.current.notifyError(apiError);
 
-      expect(mockToast.error).toHaveBeenCalled();
-      const errorMessage = mockToast.error.mock.calls[0][0];
+      expect(mockToast.add).toHaveBeenCalled();
+      const errorMessage = mockToast.add.mock.calls[0][0].title;
       expect(errorMessage).toContain("Validation failed");
       expect(errorMessage).toContain("email: Email is required");
       expect(errorMessage).toContain(
@@ -112,44 +115,53 @@ describe("useNotification", () => {
   });
 
   describe("notifyWarning", () => {
-    it("should call toast.warning with message", () => {
+    it("should call toast.add with message", () => {
       const { result } = renderHook(() => useNotification());
 
       result.current.notifyWarning("This is a warning");
 
-      expect(mockToast.warning).toHaveBeenCalledWith(
-        "This is a warning",
-        undefined
-      );
+      expect(mockToast.add).toHaveBeenCalledWith({
+        title: "This is a warning",
+        description: undefined,
+        type: "warning"
+      });
     });
 
-    it("should call toast.warning with description when title provided", () => {
+    it("should call toast.add with description when title provided", () => {
       const { result } = renderHook(() => useNotification());
 
       result.current.notifyWarning("This is a warning", "Warning");
 
-      expect(mockToast.warning).toHaveBeenCalledWith("This is a warning", {
-        description: "Warning"
+      expect(mockToast.add).toHaveBeenCalledWith({
+        title: "This is a warning",
+        description: "Warning",
+        type: "warning"
       });
     });
   });
 
   describe("notifyInfo", () => {
-    it("should call toast.info with message", () => {
+    it("should call toast.add with message", () => {
       const { result } = renderHook(() => useNotification());
 
       result.current.notifyInfo("This is info");
 
-      expect(mockToast.info).toHaveBeenCalledWith("This is info", undefined);
+      expect(mockToast.add).toHaveBeenCalledWith({
+        title: "This is info",
+        description: undefined,
+        type: "info"
+      });
     });
 
-    it("should call toast.info with description when title provided", () => {
+    it("should call toast.add with description when title provided", () => {
       const { result } = renderHook(() => useNotification());
 
       result.current.notifyInfo("This is info", "Information");
 
-      expect(mockToast.info).toHaveBeenCalledWith("This is info", {
-        description: "Information"
+      expect(mockToast.add).toHaveBeenCalledWith({
+        title: "This is info",
+        description: "Information",
+        type: "info"
       });
     });
   });
@@ -160,10 +172,11 @@ describe("useNotification", () => {
 
       result.current.handleNotification("success", "Success message");
 
-      expect(mockToast.success).toHaveBeenCalledWith(
-        "Success message",
-        undefined
-      );
+      expect(mockToast.add).toHaveBeenCalledWith({
+        title: "Success message",
+        description: undefined,
+        type: "success"
+      });
     });
 
     it("should handle error type", () => {
@@ -171,9 +184,11 @@ describe("useNotification", () => {
 
       result.current.handleNotification("error", "Error message");
 
-      expect(mockToast.error).toHaveBeenCalledWith("Error message", {
+      expect(mockToast.add).toHaveBeenCalledWith({
         id: "app-error",
-        duration: Infinity
+        title: "Error message",
+        type: "error",
+        timeout: 0
       });
     });
 
@@ -182,10 +197,11 @@ describe("useNotification", () => {
 
       result.current.handleNotification("warning", "Warning message");
 
-      expect(mockToast.warning).toHaveBeenCalledWith(
-        "Warning message",
-        undefined
-      );
+      expect(mockToast.add).toHaveBeenCalledWith({
+        title: "Warning message",
+        description: undefined,
+        type: "warning"
+      });
     });
 
     it("should handle info type", () => {
@@ -193,7 +209,11 @@ describe("useNotification", () => {
 
       result.current.handleNotification("info", "Info message");
 
-      expect(mockToast.info).toHaveBeenCalledWith("Info message", undefined);
+      expect(mockToast.add).toHaveBeenCalledWith({
+        title: "Info message",
+        description: undefined,
+        type: "info"
+      });
     });
   });
 });

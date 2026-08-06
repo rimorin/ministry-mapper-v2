@@ -61,14 +61,15 @@ export default defineConfig(() => {
                 test: /nice-modal-react/,
                 priority: 80
               },
-              // Sonner toast — tiny (~6 KB), separated for cache granularity
+              // Base UI toast subtree + the shared helpers it imports — the Toaster
+              // is mounted at app entry, so this must stay separate from the big
+              // vendor-base-ui chunk to keep it off the initial preload path
               {
-                name: "vendor-sonner",
-                test: /node_modules\/sonner\//,
+                name: "vendor-base-ui-toast",
+                test: /node_modules\/@base-ui\/utils\/|node_modules\/@base-ui\/react\/(esm\/)?(toast|internals|utils|button|merge-props|use-render)\/|node_modules\/@base-ui\/react\/(esm\/)?floating-ui-react\/utils|node_modules\/@floating-ui\/utils\//,
                 priority: 80
               },
-              // Base UI + floating-ui — fully lazy (only loads when first modal/dialog opens)
-              // Toast has been migrated to Sonner so this chunk is no longer on the critical path
+              // Base UI + floating-ui — lazy (only loads when first modal/dialog opens)
               {
                 name: "vendor-base-ui",
                 test: /@base-ui\/react|@base-ui\/utils|@floating-ui/,

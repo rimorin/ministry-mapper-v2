@@ -12,7 +12,7 @@ import { LazyMotion, domAnimation, MotionConfig } from "motion/react";
 import Router from "./router";
 import "../i18n";
 import { LanguageProvider } from "../i18n/LanguageContext";
-import { Toaster } from "@/components/ui/sonner";
+import { Toaster } from "@/components/ui/toast";
 import { ReleaseNotesProvider } from "../components/middlewares/releasenotescontext";
 import SwUpdatePrompt from "../components/middlewares/swupdateprompt";
 
