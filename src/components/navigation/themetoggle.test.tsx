@@ -46,7 +46,8 @@ describe("ThemeToggle", () => {
     const icon = container.querySelector("svg.lucide-palette");
     expect(icon).toBeInTheDocument();
     expect(icon).toHaveAttribute("aria-hidden", "true");
-    expect(icon).toHaveStyle({ width: "1.25em", height: "1.25em" });
+    expect((icon as SVGElement).style.width).toBe("1.25em");
+    expect((icon as SVGElement).style.height).toBe("1.25em");
   });
 
   it("renders the palette icon when theme is light", () => {
@@ -54,7 +55,8 @@ describe("ThemeToggle", () => {
     const icon = container.querySelector("svg.lucide-palette");
     expect(icon).toBeInTheDocument();
     expect(icon).toHaveAttribute("aria-hidden", "true");
-    expect(icon).toHaveStyle({ width: "1.25em", height: "1.25em" });
+    expect((icon as SVGElement).style.width).toBe("1.25em");
+    expect((icon as SVGElement).style.height).toBe("1.25em");
   });
 
   it("opens theme settings modal on click", async () => {

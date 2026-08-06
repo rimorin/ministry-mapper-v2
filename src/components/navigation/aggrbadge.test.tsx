@@ -81,13 +81,13 @@ describe("AggregationBadge", () => {
     it("should use default width of 3rem", () => {
       render(<AggregationBadge aggregate={50} />);
 
-      expect(screen.getByText("50%")).toHaveStyle({ width: "3rem" });
+      expect(screen.getByText("50%").style.width).toBe("3rem");
     });
 
     it("should use custom width when provided", () => {
-      render(<AggregationBadge aggregate={50} width="3rem" />);
+      render(<AggregationBadge aggregate={50} width="4rem" />);
 
-      expect(screen.getByText("50%")).toHaveStyle({ width: "3rem" });
+      expect(screen.getByText("50%").style.width).toBe("4rem");
     });
 
     it("should have margin around badge", () => {
