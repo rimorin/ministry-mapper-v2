@@ -8,7 +8,7 @@ import "../../css/networkstatus.css";
 // status-pulse (CSS) handles the steady-state opacity pulse; Motion owns the
 // enter/exit opacity + slide. The 0.3s overlap on mount/unmount is acceptable.
 const networkStatusIndicatorClassName =
-  "fixed bottom-[max(0.5rem,env(safe-area-inset-bottom))] right-[max(0.5rem,env(safe-area-inset-right))] z-[1030] inline-flex max-w-[calc(100vw-1rem-env(safe-area-inset-right))] items-center gap-1 whitespace-nowrap rounded-full bg-[var(--mm-danger)] px-2 py-[0.2rem] text-xs text-white select-none [animation:status-pulse_2s_ease-in-out_infinite] motion-reduce:[animation:none]";
+  "fixed bottom-[max(0.5rem,env(safe-area-inset-bottom))] right-[max(0.5rem,env(safe-area-inset-right))] z-[1030] inline-flex max-w-[calc(100vw-1rem-env(safe-area-inset-right))] items-center gap-1 whitespace-nowrap rounded-full bg-destructive px-2 py-[0.2rem] text-xs text-destructive-foreground select-none [animation:status-pulse_2s_ease-in-out_infinite] motion-reduce:[animation:none]";
 
 const bannerMotion = {
   initial: { opacity: 0, y: 12 },

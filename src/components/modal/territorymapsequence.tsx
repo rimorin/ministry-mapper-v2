@@ -87,7 +87,7 @@ const SortableItem = ({
           "sortable-item flex touch-none select-none items-center gap-2 rounded-lg border px-3 py-2 transition-[transform,opacity] duration-200 ease-in",
           isDragging
             ? "cursor-grabbing border-dashed border-primary/50 bg-background/40 opacity-40 shadow-none"
-            : "cursor-grab border-[#e0e0e0] bg-background shadow-[0_2px_4px_rgba(0,0,0,0.075)]"
+            : "cursor-grab border-border bg-background shadow-[0_2px_4px_rgba(0,0,0,0.075)]"
         )}
         {...attributes}
         {...listeners}
@@ -111,7 +111,7 @@ const DragOverlayItem = ({
   label: string;
   index: number;
 }) => (
-  <div className="sortable-item sortable-item-dragging flex cursor-grabbing touch-none select-none items-center gap-2 rounded-lg border border-[#e0e0e0] bg-background px-3 py-2 shadow-[0_2px_4px_rgba(0,0,0,0.075)]">
+  <div className="sortable-item sortable-item-dragging flex cursor-grabbing touch-none select-none items-center gap-2 rounded-lg border border-border bg-background px-3 py-2 shadow-[0_2px_4px_rgba(0,0,0,0.075)]">
     <GripVertical className="h-4 w-4 shrink-0 text-muted-foreground/40" />
     <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-xs font-semibold leading-none text-primary-foreground">
       {index + 1}
