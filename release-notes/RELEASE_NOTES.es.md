@@ -1,5 +1,31 @@
 # Notas de versión (Español)
 
+## 2026-08-07-colors
+
+[NEW] Nuevos temas de color.
+  Además del modo claro y oscuro, ahora puedes elegir un color para la app: Clásico, Mandarina, Perpetuidad, Noche cósmica o Mousse de moca.
+
+  Cómo usarlo:
+  - Abre Configuración de tema: el icono de paleta en tu pantalla.
+  - En Color, toca un círculo.
+  - Tu elección se guarda en este dispositivo.
+
+---
+
+## 2026-08-07-share
+
+[FIX:ADMIN] Asignar un mapa ahora se hace en dos pasos, para que la ventana de compartir se abra siempre, en cualquier navegador.
+  Por qué este cambio:
+  - A veces, al tocar Asignar se creaba el enlace, pero la ventana de compartir nunca aparecía — y no se podía enviar el enlace a los publicadores.
+  - Después de un toque, el navegador solo da unos segundos para abrir la ventana de compartir. Crear el enlace necesita internet — con una conexión lenta tardaba más que eso, y el navegador bloqueaba la ventana sin avisar. Por eso ocurría solo a veces, sobre todo en Chrome en iPhone.
+
+  El nuevo flujo:
+  - Toca Asignar o Personal y confirma los detalles de la tarjeta, como antes.
+  - La pantalla "El enlace del mapa está listo" muestra los detalles de la asignación, con un aviso si el mapa ya está asignado a otra persona.
+  - Toca Compartir para enviar el enlace — ya está creado, así que la ventana se abre siempre. Si tu navegador no puede compartir, el enlace se copia para que lo pegues donde quieras.
+
+---
+
 ## 2026-07-27
 
 [FIX:ADMIN] Instala Ministry Mapper como una app.
