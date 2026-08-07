@@ -66,11 +66,14 @@ export function useReleaseNotes(
 
         if (seenId === latestId) return;
 
-        // Returning users see all releases since their last visit;
-        // first-time users see only the latest entry.
+        // Returning users: everything since their last visit. First-time
+        // users: the latest day only — including date-suffixed siblings
+        // (e.g. 2026-08-10-theme).
         const filtered = seenId
           ? releases.filter((r) => r.id > seenId)
-          : [releases[0]];
+          : releases.filter(
+              (r) => r.id.substring(0, 10) === latestId.substring(0, 10)
+            );
         if (filtered.length > 0 && !ignore) setNewReleases(filtered);
       } catch {
         // Silent fail — no noise for offline or missing file.

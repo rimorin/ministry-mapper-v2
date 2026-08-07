@@ -213,6 +213,71 @@ describe("useReleaseNotes", () => {
     ]);
   });
 
+  it("shows all same-day entries to a first-time visitor", async () => {
+    mockLastSeenValue = null;
+    mockFetch.mockResolvedValueOnce(
+      mockJsonResponse({
+        releases: [
+          {
+            id: "2026-08-10-theme",
+            notice: null,
+            screenshot: null,
+            items: [{ type: "new", text: "color themes" }]
+          },
+          {
+            id: "2026-08-10",
+            notice: null,
+            screenshot: null,
+            items: [{ type: "improved", text: "assignment flow" }]
+          },
+          {
+            id: "2026-07-27",
+            notice: null,
+            screenshot: null,
+            items: [{ type: "fix", text: "older release" }]
+          }
+        ]
+      })
+    );
+
+    const { result } = renderHook(() => useReleaseNotes("admin"));
+    await act(async () => {});
+
+    expect(result.current.newReleases.map((r) => r.id)).toEqual([
+      "2026-08-10-theme",
+      "2026-08-10"
+    ]);
+  });
+
+  it("shows only the suffixed entry when the plain same-day id was seen", async () => {
+    mockLastSeenValue = "2026-08-10";
+    mockFetch.mockResolvedValueOnce(
+      mockJsonResponse({
+        releases: [
+          {
+            id: "2026-08-10-theme",
+            notice: null,
+            screenshot: null,
+            items: [{ type: "new", text: "color themes" }]
+          },
+          {
+            id: "2026-08-10",
+            notice: null,
+            screenshot: null,
+            items: [{ type: "improved", text: "assignment flow" }]
+          }
+        ]
+      })
+    );
+
+    const { result } = renderHook(() => useReleaseNotes("admin"));
+    await act(async () => {});
+
+    expect(result.current.newReleases.map((r) => r.id)).toEqual([
+      "2026-08-10-theme"
+    ]);
+  });
+
   it("skips a release left with no items for the current audience", async () => {
     mockLastSeenValue = null;
     mockFetch.mockResolvedValueOnce(
