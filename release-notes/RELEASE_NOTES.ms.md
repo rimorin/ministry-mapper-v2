@@ -26,6 +26,13 @@
 
 ---
 
+## 2026-08-07-clipboard
+
+[NEW:ADMIN] Salin pautan peta yang ditugaskan dengan satu ketikan.
+  Semasa melihat pautan aktif sesebuah peta, setiap pautan kini mempunyai butang salin di sebelah butang padam. Ketik untuk menyalin pautan — berguna apabila penyiar perlu dihantar pautannya semula.
+
+---
+
 ## 2026-07-27
 
 [FIX:ADMIN] Pasang Ministry Mapper sebagai aplikasi.

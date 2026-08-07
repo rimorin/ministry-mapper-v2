@@ -26,6 +26,13 @@
 
 ---
 
+## 2026-08-07-clipboard
+
+[NEW:ADMIN] Copia el enlace de un mapa asignado con un solo toque.
+  Al ver los enlaces activos de un mapa, cada enlace ahora tiene un botón de copiar junto al botón de eliminar. Tócalo para copiar el enlace — útil cuando un publicador necesita que le envíen su enlace de nuevo.
+
+---
+
 ## 2026-07-27
 
 [FIX:ADMIN] Instala Ministry Mapper como una app.

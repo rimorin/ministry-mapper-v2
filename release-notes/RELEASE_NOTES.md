@@ -150,6 +150,13 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ---
 
+## 2026-08-07-clipboard
+
+[NEW:ADMIN] Copy an assigned map link with one tap.
+  When viewing a map's active links, each link now has a copy button beside the delete button. Tap it to copy the link — handy when a publisher needs their link sent again.
+
+---
+
 ## 2026-07-27
 
 [FIX:ADMIN] Install Ministry Mapper as an app.

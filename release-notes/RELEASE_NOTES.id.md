@@ -26,6 +26,13 @@
 
 ---
 
+## 2026-08-07-clipboard
+
+[NEW:ADMIN] Salin tautan peta yang ditugaskan dengan satu ketukan.
+  Saat melihat tautan aktif sebuah peta, setiap tautan kini memiliki tombol salin di samping tombol hapus. Ketuk untuk menyalin tautan — berguna saat penerbit perlu dikirimi tautannya lagi.
+
+---
+
 ## 2026-07-27
 
 [FIX:ADMIN] Pasang Ministry Mapper sebagai aplikasi.
