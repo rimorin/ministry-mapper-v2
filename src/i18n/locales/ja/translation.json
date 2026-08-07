@@ -448,7 +448,15 @@
     "systemDescription": "デバイスの設定に従います",
     "theme": "テーマ",
     "settingsShort": "テーマ",
-    "description": "お好みのテーマを選択するか、システム設定に従ってください"
+    "description": "お好みのテーマを選択するか、システム設定に従ってください",
+    "colors": {
+      "title": "カラー",
+      "default": "クラシック",
+      "tangerine": "タンジェリン",
+      "perpetuity": "パーペチュイティ",
+      "cosmic": "コズミックナイト",
+      "mocha": "モカムース"
+    }
   },
   "error": {
     "boundary": {

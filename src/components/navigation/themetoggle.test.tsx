@@ -29,7 +29,15 @@ describe("ThemeToggle", () => {
     actualTheme: "light" | "dark" = "light"
   ) => {
     return render(
-      <ThemeContext value={{ theme, actualTheme, setTheme: vi.fn() }}>
+      <ThemeContext
+        value={{
+          theme,
+          actualTheme,
+          setTheme: vi.fn(),
+          colorTheme: "default",
+          setColorTheme: vi.fn()
+        }}
+      >
         <ThemeToggle />
       </ThemeContext>
     );
@@ -70,7 +78,13 @@ describe("ThemeToggle", () => {
   it("applies custom className when provided", () => {
     render(
       <ThemeContext
-        value={{ theme: "light", actualTheme: "light", setTheme: vi.fn() }}
+        value={{
+          theme: "light",
+          actualTheme: "light",
+          setTheme: vi.fn(),
+          colorTheme: "default",
+          setColorTheme: vi.fn()
+        }}
       >
         <ThemeToggle className="custom-class" />
       </ThemeContext>

@@ -448,7 +448,15 @@
     "systemDescription": "Mengikuti pengaturan perangkat Anda",
     "theme": "Tema",
     "settingsShort": "Tema",
-    "description": "Pilih tema yang Anda inginkan atau ikuti pengaturan sistem Anda"
+    "description": "Pilih tema yang Anda inginkan atau ikuti pengaturan sistem Anda",
+    "colors": {
+      "title": "Warna",
+      "default": "Klasik",
+      "tangerine": "Jeruk Keprok",
+      "perpetuity": "Abadi",
+      "cosmic": "Malam Kosmik",
+      "mocha": "Mousse Moka"
+    }
   },
   "error": {
     "boundary": {

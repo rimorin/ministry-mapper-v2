@@ -3,12 +3,27 @@
   <head>
     <script>
       (function () {
-        var theme = localStorage.getItem("mm-theme");
+        // useLocalStorage stores JSON, so values arrive quoted
+        var read = function (key) {
+          var value = localStorage.getItem(key);
+          if (!value) return null;
+          try {
+            return JSON.parse(value);
+          } catch (e) {
+            return value;
+          }
+        };
+        var theme = read("mm-theme");
         if (
           theme === "dark" ||
-          (!theme && window.matchMedia("(prefers-color-scheme: dark)").matches)
+          ((!theme || theme === "system") &&
+            window.matchMedia("(prefers-color-scheme: dark)").matches)
         ) {
           document.documentElement.classList.add("dark");
+        }
+        var colorTheme = read("mm-color-theme");
+        if (colorTheme && colorTheme !== "default") {
+          document.documentElement.setAttribute("data-theme", colorTheme);
         }
       })();
     </script>
@@ -25,6 +40,16 @@
     <meta
       name="description"
       content="A digital territory platform created for real-time collaboration in the ministry."
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content="#ffffff"
+    />
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content="#0a0a0a"
     />
     <link rel="preconnect" href="https://assets.ministry-mapper.com" />
     <link rel="dns-prefetch" href="https://assets.ministry-mapper.com" />

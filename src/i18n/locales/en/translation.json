@@ -448,7 +448,15 @@
     "system": "System",
     "systemDescription": "Follows your device settings",
     "theme": "Theme",
-    "description": "Choose your preferred theme or follow your system settings"
+    "description": "Choose your preferred theme or follow your system settings",
+    "colors": {
+      "title": "Color",
+      "default": "Classic",
+      "tangerine": "Tangerine",
+      "perpetuity": "Perpetuity",
+      "cosmic": "Cosmic Night",
+      "mocha": "Mocha Mousse"
+    }
   },
   "error": {
     "boundary": {

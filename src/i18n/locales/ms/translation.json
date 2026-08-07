@@ -448,7 +448,15 @@
     "system": "Sistem",
     "systemDescription": "Mengikut tetapan peranti anda",
     "theme": "Tema",
-    "description": "Pilih tema pilihan anda atau ikut tetapan sistem anda"
+    "description": "Pilih tema pilihan anda atau ikut tetapan sistem anda",
+    "colors": {
+      "title": "Warna",
+      "default": "Klasik",
+      "tangerine": "Limau Mandarin",
+      "perpetuity": "Abadi",
+      "cosmic": "Malam Kosmik",
+      "mocha": "Mousse Moka"
+    }
   },
   "error": {
     "boundary": {

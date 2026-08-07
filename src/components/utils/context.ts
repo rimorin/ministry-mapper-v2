@@ -4,7 +4,9 @@ import { ThemeContextType } from "../../utils/interface";
 const ThemeContext = React.createContext<ThemeContextType>({
   theme: "system",
   setTheme: () => {},
-  actualTheme: "light"
+  actualTheme: "light",
+  colorTheme: "default",
+  setColorTheme: () => {}
 });
 
 export { ThemeContext };

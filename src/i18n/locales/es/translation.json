@@ -448,7 +448,15 @@
     "system": "Sistema",
     "systemDescription": "Sigue la configuración de tu dispositivo",
     "theme": "Tema",
-    "description": "Elige tu tema preferido o sigue la configuración de tu sistema"
+    "description": "Elige tu tema preferido o sigue la configuración de tu sistema",
+    "colors": {
+      "title": "Color",
+      "default": "Clásico",
+      "tangerine": "Mandarina",
+      "perpetuity": "Perpetuidad",
+      "cosmic": "Noche cósmica",
+      "mocha": "Mousse de moca"
+    }
   },
   "error": {
     "boundary": {

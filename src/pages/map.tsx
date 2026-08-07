@@ -197,7 +197,7 @@ const Map = () => {
   }
 
   const navItemClass =
-    "flex min-w-0 flex-1 cursor-pointer select-none flex-col items-center gap-1.5 px-2 py-3 text-center text-xs transition-[background-color,box-shadow,border-radius] duration-200 ease-in motion-reduce:transition-none hover:rounded-[5px] hover:bg-[var(--mm-success-light)] hover:shadow-[0_0_0_5px_var(--mm-success-light-alpha-50)] focus-visible:rounded-[5px]";
+    "flex min-w-0 flex-1 cursor-pointer select-none flex-col items-center gap-1.5 px-2 py-3 text-center text-xs transition-[background-color,box-shadow,border-radius] duration-200 ease-in motion-reduce:transition-none hover:rounded-[5px] hover:bg-primary/10 hover:ring-[5px] hover:ring-primary/10 focus-visible:rounded-[5px]";
 
   const isSingleStory = mapDetails?.type === TERRITORY_TYPES.SINGLE_STORY;
 

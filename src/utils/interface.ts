@@ -729,10 +729,15 @@ export interface CongregationManagementOptions {
 
 export type ThemeMode = "light" | "dark" | "system";
 
+export type ColorTheme =
+  "default" | "tangerine" | "perpetuity" | "cosmic" | "mocha";
+
 export interface ThemeContextType {
   theme: ThemeMode;
   setTheme: (theme: ThemeMode) => void;
   actualTheme: "light" | "dark";
+  colorTheme: ColorTheme;
+  setColorTheme: (colorTheme: ColorTheme) => void;
 }
 
 export interface MapSequenceUpdateModalProps
