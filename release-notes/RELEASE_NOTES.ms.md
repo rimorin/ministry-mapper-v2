@@ -1,5 +1,31 @@
 # Nota Pelepasan (Bahasa Melayu)
 
+## 2026-08-07-colors
+
+[NEW] Tema warna baharu.
+  Selain mod cerah dan gelap, kini anda boleh memilih warna untuk aplikasi: Klasik, Limau Mandarin, Abadi, Malam Kosmik, atau Mousse Moka.
+
+  Cara menggunakan:
+  - Buka Tetapan Tema — ikon palet pada skrin anda.
+  - Di bahagian Warna, ketik bulatan warna.
+  - Pilihan anda disimpan pada peranti ini.
+
+---
+
+## 2026-08-07-share
+
+[FIX:ADMIN] Menugaskan peta kini dua langkah, supaya tetingkap kongsi sentiasa terbuka pada semua pelayar.
+  Sebab perubahan ini:
+  - Kadangkala, mengetik Tugasan mencipta pautan, tetapi tetingkap kongsi tidak muncul — jadi pautan tidak dapat dihantar kepada penyiar.
+  - Selepas ketikan, pelayar hanya memberi beberapa saat untuk membuka tetingkap kongsi. Mencipta pautan memerlukan internet — pada sambungan perlahan ia mengambil masa lebih lama daripada itu, dan pelayar menyekatnya secara senyap. Itulah sebabnya masalah ini hanya kadang-kadang berlaku, paling kerap di Chrome di iPhone.
+
+  Aliran baharu:
+  - Ketik Tugasan atau Peribadi dan sahkan butiran slip, seperti sebelum ini.
+  - Skrin "Pautan peta sedia" memaparkan butiran tugasan, dengan amaran jika peta sudah ditugaskan kepada orang lain.
+  - Ketik Kongsi untuk menghantar pautan — pautan sudah siap dicipta, jadi tetingkap kongsi sentiasa terbuka. Jika pelayar anda tidak boleh berkongsi, pautan akan disalin supaya anda boleh menampalnya di mana-mana.
+
+---
+
 ## 2026-07-27
 
 [FIX:ADMIN] Pasang Ministry Mapper sebagai aplikasi.

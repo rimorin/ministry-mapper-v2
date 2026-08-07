@@ -1,5 +1,31 @@
 # Catatan Rilis (Bahasa Indonesia)
 
+## 2026-08-07-colors
+
+[NEW] Tema warna baru.
+  Selain mode terang dan gelap, kini Anda dapat memilih warna untuk aplikasi: Klasik, Jeruk Keprok, Abadi, Malam Kosmik, atau Mousse Moka.
+
+  Cara menggunakan:
+  - Buka Pengaturan Tema — ikon palet di layar Anda.
+  - Di bagian Warna, ketuk lingkaran warna.
+  - Pilihan Anda tersimpan di perangkat ini.
+
+---
+
+## 2026-08-07-share
+
+[FIX:ADMIN] Menugaskan peta kini dilakukan dalam dua langkah, agar jendela berbagi selalu terbuka di semua peramban.
+  Mengapa perubahan ini:
+  - Kadang-kadang, mengetuk Penugasan membuat tautan, tetapi jendela berbagi tidak pernah muncul — sehingga tautan tidak bisa dikirim kepada penerbit.
+  - Setelah ketukan, peramban hanya memberi waktu beberapa detik untuk membuka jendela berbagi. Membuat tautan memerlukan internet — pada koneksi lambat prosesnya lebih lama dari itu, dan peramban diam-diam memblokirnya. Itulah mengapa masalah ini hanya kadang terjadi, paling sering di Chrome di iPhone.
+
+  Alur baru:
+  - Ketuk Penugasan atau Pribadi dan konfirmasi detail slip, seperti sebelumnya.
+  - Layar "Tautan peta siap" menampilkan detail penugasan, dengan peringatan jika peta sudah ditugaskan kepada orang lain.
+  - Ketuk Bagikan untuk mengirim tautan — tautan sudah dibuat, jadi jendela berbagi selalu terbuka. Jika peramban Anda tidak bisa berbagi, tautan akan disalin agar dapat Anda tempel di mana saja.
+
+---
+
 ## 2026-07-27
 
 [FIX:ADMIN] Pasang Ministry Mapper sebagai aplikasi.

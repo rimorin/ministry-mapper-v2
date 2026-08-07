@@ -107,7 +107,7 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
   - At the end of the address list, tap the + card.
   - Enter the property number and any visit details, then tap Create.
 
-![Add address on the fly](https://assets.ministry-mapper.com/release-notes/2026-04-08/image.png)
+![Add address on the fly](https://assets.ministry-mapper.com/release-notes/2026-04-08/linkready.png)
 
 ---
 
@@ -117,6 +117,36 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 [ANNOUNCEMENT] We upgraded our systems. Please make sure your app is on version 1.32 or above.
 ```
+
+---
+
+## 2026-08-07-colors
+
+[NEW] New color themes.
+  Besides light and dark mode, you can now choose a color for the app: Classic, Tangerine, Perpetuity, Cosmic Night, or Mocha Mousse.
+
+  How to use:
+  - Open Theme Settings — the palette icon on your screen.
+  - Under Color, tap a swatch.
+  - Your choice is saved on this device.
+
+![Color theme selector](https://assets.ministry-mapper.com/release-notes/2026-08-10/theme-selector.png)
+
+---
+
+## 2026-08-07-share
+
+[FIX:ADMIN] Assigning a map now takes two steps, so the share popup opens reliably on every browser.
+  Why this change:
+  - Sometimes tapping Assign created the link, but the share popup never appeared — so the link could not be sent to publishers.
+  - After a tap, a browser gives the app only a few seconds to open the share popup. Creating the link needs the internet — on a slow connection it took longer than that, and the browser quietly blocked the popup. That is why it happened only sometimes, mostly on Chrome on iPhone.
+
+  The new flow:
+  - Tap Assign or Personal and confirm the slip details, as before.
+  - A "Map link is ready" screen shows the assignment details, with a warning if the map is already assigned to someone else.
+  - Tap Share to send the link — it is already created, so the popup opens every time. If your browser can't share, the link is copied so you can paste it anywhere.
+
+![Map link is ready](https://assets.ministry-mapper.com/release-notes/2026-08-10/linkready.png)
 
 ---
 
