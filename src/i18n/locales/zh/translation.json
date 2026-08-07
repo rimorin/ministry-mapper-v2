@@ -448,7 +448,15 @@
     "systemDescription": "跟随您的设备设置",
     "theme": "主题",
     "settingsShort": "主题",
-    "description": "选择您偏好的主题，或跟随系统设置"
+    "description": "选择您偏好的主题，或跟随系统设置",
+    "colors": {
+      "title": "颜色",
+      "default": "经典",
+      "tangerine": "蜜橘",
+      "perpetuity": "恒久青",
+      "cosmic": "宇宙之夜",
+      "mocha": "摩卡慕斯"
+    }
   },
   "error": {
     "boundary": {

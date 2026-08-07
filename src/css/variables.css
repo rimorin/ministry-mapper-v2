@@ -17,12 +17,10 @@
 
   /* Brand semantic colours (no matching shadcn token) */
   --mm-success: #28a745;
-  --mm-success-light: #e0f0e0;
   --mm-warning: #ff6b35;
   --mm-progress: #3b82f6; /* blue-500 */
 
   --mm-success-alpha-10: rgba(40, 167, 69, 0.08);
-  --mm-success-light-alpha-50: rgba(224, 240, 224, 0.5);
   --mm-warning-alpha-60: rgba(255, 107, 53, 0.6);
 }
 

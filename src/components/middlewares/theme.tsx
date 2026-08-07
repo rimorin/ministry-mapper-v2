@@ -1,11 +1,19 @@
 import { FC, ReactNode, useEffect, useMemo, useState } from "react";
 import { ThemeContext } from "../utils/context";
-import { ThemeMode } from "../../utils/interface";
+import { ColorTheme, ThemeMode } from "../../utils/interface";
 import { useLocalStorage } from "../../hooks/useLocalStorage";
 
 interface ThemeMiddlewareProps {
   children: ReactNode;
 }
+
+const VALID_COLOR_THEMES: ColorTheme[] = [
+  "default",
+  "tangerine",
+  "perpetuity",
+  "cosmic",
+  "mocha"
+];
 
 const resolveActualTheme = (mode: ThemeMode): "light" | "dark" =>
   mode === "system"
@@ -16,9 +24,18 @@ const resolveActualTheme = (mode: ThemeMode): "light" | "dark" =>
 
 const ThemeMiddleware: FC<ThemeMiddlewareProps> = ({ children }) => {
   const [theme, setTheme] = useLocalStorage<ThemeMode>("mm-theme", "system");
+  const [colorTheme, setColorTheme] = useLocalStorage<ColorTheme>(
+    "mm-color-theme",
+    "default"
+  );
   const [actualTheme, setActualTheme] = useState<"light" | "dark">(() =>
     resolveActualTheme(theme)
   );
+
+  // Stored value may predate a renamed/removed theme — fall back to default.
+  const activeColorTheme = VALID_COLOR_THEMES.includes(colorTheme)
+    ? colorTheme
+    : "default";
 
   useEffect(() => {
     const applyTheme = (newTheme: "light" | "dark") => {
@@ -38,9 +55,23 @@ const ThemeMiddleware: FC<ThemeMiddlewareProps> = ({ children }) => {
     }
   }, [theme]);
 
+  useEffect(() => {
+    if (activeColorTheme === "default") {
+      delete document.documentElement.dataset.theme;
+    } else {
+      document.documentElement.dataset.theme = activeColorTheme;
+    }
+  }, [activeColorTheme]);
+
   const contextValue = useMemo(
-    () => ({ theme, setTheme, actualTheme }),
-    [theme, setTheme, actualTheme]
+    () => ({
+      theme,
+      setTheme,
+      actualTheme,
+      colorTheme: activeColorTheme,
+      setColorTheme
+    }),
+    [theme, setTheme, actualTheme, activeColorTheme, setColorTheme]
   );
 
   return (

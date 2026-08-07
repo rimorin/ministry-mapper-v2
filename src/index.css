@@ -49,6 +49,7 @@
 }
 
 :root {
+  color-scheme: light;
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -76,10 +77,11 @@
   --sidebar-accent: hsl(240 4.8% 95.9%);
   --sidebar-accent-foreground: hsl(240 5.9% 10%);
   --sidebar-border: hsl(220 13% 91%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar-ring: var(--ring);
 }
 
 .dark {
+  color-scheme: dark;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -106,7 +108,63 @@
   --sidebar-accent: hsl(240 3.7% 15.9%);
   --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
   --sidebar-border: hsl(240 3.7% 15.9%);
-  --sidebar-ring: hsl(217.2 91.2% 59.8%);
+  --sidebar-ring: var(--ring);
+}
+
+/* Color themes override tokens on <html> via data-theme. Every variable in a
+   light block must be mirrored in the .dark[data-theme] block — that selector
+   is what beats the light block in dark mode. */
+[data-theme="tangerine"] {
+  --primary: oklch(0.585 0.172 36.442);
+  --primary-foreground: oklch(1 0 0);
+  --ring: oklch(0.585 0.172 36.442);
+}
+
+.dark[data-theme="tangerine"] {
+  --primary: oklch(0.75 0.16 36.442);
+  --primary-foreground: oklch(0.22 0.03 36.442);
+  --ring: oklch(0.75 0.16 36.442);
+}
+
+[data-theme="perpetuity"] {
+  --primary: oklch(0.557 0.095 203.276);
+  --primary-foreground: oklch(1 0 0);
+  --ring: oklch(0.557 0.095 203.276);
+}
+
+.dark[data-theme="perpetuity"] {
+  --primary: oklch(0.852 0.127 195.035);
+  --primary-foreground: oklch(0.207 0.025 224.453);
+  --ring: oklch(0.852 0.127 195.035);
+}
+
+[data-theme="cosmic"] {
+  --primary: oklch(0.542 0.179 288.033);
+  --primary-foreground: oklch(1 0 0);
+  --ring: oklch(0.542 0.179 288.033);
+}
+
+.dark[data-theme="cosmic"] {
+  --primary: oklch(0.716 0.16 290.396);
+  --primary-foreground: oklch(0.174 0.023 283.8);
+  --ring: oklch(0.716 0.16 290.396);
+}
+
+[data-theme="mocha"] {
+  --primary: oklch(0.568 0.062 44.359);
+  --primary-foreground: oklch(1 0 0);
+  --ring: oklch(0.568 0.062 44.359);
+}
+
+.dark[data-theme="mocha"] {
+  --primary: oklch(0.727 0.054 52.332);
+  --primary-foreground: oklch(0.272 0.014 48.178);
+  --ring: oklch(0.727 0.054 52.332);
+}
+
+/* var()-driven, so one block serves both light and dark for every theme */
+:root[data-theme] {
+  --sidebar-accent: color-mix(in oklch, var(--primary) 10%, var(--sidebar));
 }
 
 @layer base {
@@ -128,6 +186,10 @@
     @apply bg-background text-foreground;
     height: 100%;
     overscroll-behavior: none;
+  }
+  ::selection {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
   }
   #root {
     height: 100dvh;

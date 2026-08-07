@@ -448,7 +448,15 @@
     "systemDescription": "기기 설정을 따릅니다",
     "theme": "테마",
     "settingsShort": "테마",
-    "description": "선호하는 테마를 선택하거나 시스템 설정을 따르세요"
+    "description": "선호하는 테마를 선택하거나 시스템 설정을 따르세요",
+    "colors": {
+      "title": "색상",
+      "default": "클래식",
+      "tangerine": "탠저린",
+      "perpetuity": "퍼페추이티",
+      "cosmic": "코스믹 나이트",
+      "mocha": "모카 무스"
+    }
   },
   "error": {
     "boundary": {
