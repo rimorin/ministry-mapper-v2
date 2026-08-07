@@ -155,6 +155,8 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 [NEW:ADMIN] Copy an assigned map link with one tap.
   When viewing a map's active links, each link now has a copy button beside the delete button. Tap it to copy the link — handy when a publisher needs their link sent again.
 
+![Copy link button](https://assets.ministry-mapper.com/release-notes/2026-08-07/copylink.png)
+
 ---
 
 ## 2026-07-27
