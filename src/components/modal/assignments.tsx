@@ -2,6 +2,7 @@ import NiceModal from "@ebay/nice-modal-react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
+  Copy,
   ExternalLink,
   Trash2,
   Clock,
@@ -27,7 +28,9 @@ import LinkDateFormatter from "../../utils/helpers/linkdateformatter";
 import type { LinkSession } from "../../utils/policies";
 import type { AssignmentModalProps } from "../../utils/interface";
 import { deleteDataById } from "../../utils/pocketbase";
+import buildMapLink from "../../utils/helpers/maplink";
 import useNotification from "../../hooks/useNotification";
+import useShareLink from "../../hooks/useShareLink";
 
 const GetAssignments = NiceModal.create(
   ({
@@ -38,6 +41,7 @@ const GetAssignments = NiceModal.create(
     const { modal, dialogProps, contentProps } = useBaseUiDialog();
     const { t } = useTranslation();
     const { runAction } = useNotification();
+    const { copyText } = useShareLink();
 
     const [currentAssignments, setCurrentAssignments] =
       useState<LinkSession[]>(assignments);
@@ -91,7 +95,7 @@ const GetAssignments = NiceModal.create(
                   <div className="flex-1 min-w-0 space-y-2">
                     <div className="flex items-center gap-2">
                       <a
-                        href={`map/${assignment.id}`}
+                        href={buildMapLink(assignment.id)}
                         target="_blank"
                         rel="noreferrer"
                         className="flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
@@ -152,22 +156,35 @@ const GetAssignments = NiceModal.create(
                     </div>
                   </div>
 
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="size-8 shrink-0 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                    onClick={async () => {
-                      await runAction(async () => {
-                        await deleteAssignment(assignment.id);
-                        setCurrentAssignments((prev) =>
-                          prev.filter((a) => a.id !== assignment.id)
-                        );
-                      });
-                    }}
-                    aria-label={t("common.delete", "Delete")}
-                  >
-                    <Trash2 className="size-4" />
-                  </Button>
+                  <div className="flex shrink-0 gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 text-muted-foreground hover:text-foreground"
+                      onClick={() =>
+                        runAction(() => copyText(buildMapLink(assignment.id)))
+                      }
+                      aria-label={t("links.copyLink", "Copy link")}
+                    >
+                      <Copy className="size-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="size-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      onClick={() =>
+                        runAction(async () => {
+                          await deleteAssignment(assignment.id);
+                          setCurrentAssignments((prev) =>
+                            prev.filter((a) => a.id !== assignment.id)
+                          );
+                        })
+                      }
+                      aria-label={t("common.delete", "Delete")}
+                    >
+                      <Trash2 className="size-4" />
+                    </Button>
+                  </div>
                 </li>
               ))}
             </ul>
