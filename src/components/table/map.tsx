@@ -19,6 +19,7 @@ import {
   HHOptionProps,
   QueuedOp,
   territoryTableProps,
+  unitColumn,
   unitDetails,
   mapAddressResponse
 } from "../../utils/interface";
@@ -399,11 +400,11 @@ const useAddresses = (
 const buildFloorList = (
   addresses: Map<string, unitDetails>,
   prevFloorList: floorDetails[],
-  prevColumns: string[]
+  prevColumns: unitColumn[]
 ): {
   floorList: floorDetails[];
   maxUnitLength: number;
-  columns: string[];
+  columns: unitColumn[];
 } => {
   if (addresses.size === 0) {
     return {
@@ -416,18 +417,20 @@ const buildFloorList = (
   let maxUnitLength = DEFAULT_UNIT_PADDING;
 
   const floorMap = new Map<number, unitDetails[]>();
-  // The column order is the union of unit numbers across every floor, not one
-  // floor's list. A floor that orders or omits a unit differently must not be
-  // able to shift its neighbours' cells under the wrong header.
-  const columnSequence = new Map<string, number>();
+  // The column order is the union of units across every floor, not one floor's
+  // list. A floor that orders or omits a unit differently must not be able to
+  // shift its neighbours' cells under the wrong header. Keyed on
+  // sequence+number so a map carrying the same unit number twice keeps both
+  // columns instead of collapsing them into one.
+  const columnSlots = new Map<string, { number: string; sequence: number }>();
 
   for (const address of addresses.values()) {
     const { floor, number, sequence } = address;
     maxUnitLength = Math.max(maxUnitLength, number.length);
 
-    const seen = columnSequence.get(number);
-    if (seen === undefined || sequence < seen) {
-      columnSequence.set(number, sequence);
+    const slot = `${sequence} ${number}`;
+    if (!columnSlots.has(slot)) {
+      columnSlots.set(slot, { number, sequence });
     }
 
     if (!floorMap.has(floor)) {
@@ -436,15 +439,25 @@ const buildFloorList = (
     floorMap.get(floor)!.push(address);
   }
 
-  const nextColumns = Array.from(columnSequence.keys()).sort((a, b) => {
-    const bySequence = columnSequence.get(a)! - columnSequence.get(b)!;
-    return bySequence !== 0 ? bySequence : compareUnitNumbers(a, b);
-  });
+  const occurrences = new Map<string, number>();
+  const nextColumns: unitColumn[] = Array.from(columnSlots.values())
+    .sort((a, b) => {
+      const bySequence = a.sequence - b.sequence;
+      return bySequence !== 0
+        ? bySequence
+        : compareUnitNumbers(a.number, b.number);
+    })
+    .map(({ number }) => {
+      const occurrence = occurrences.get(number) ?? 0;
+      occurrences.set(number, occurrence + 1);
+      return { key: `${number}#${occurrence}`, number, occurrence };
+    });
+
   // Reuse the previous array when the columns are unchanged so FloorRow keeps
   // bailing out of re-renders on realtime commits.
   const columns =
     prevColumns.length === nextColumns.length &&
-    prevColumns.every((code, i) => code === nextColumns[i])
+    prevColumns.every((column, i) => column.key === nextColumns[i].key)
       ? prevColumns
       : nextColumns;
 

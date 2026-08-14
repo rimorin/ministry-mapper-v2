@@ -1,6 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
-import { floorDetails, territoryMultiProps } from "../../utils/interface";
+import {
+  floorDetails,
+  territoryMultiProps,
+  unitColumn,
+  unitDetails
+} from "../../utils/interface";
 import type { Policy } from "../../utils/policies";
 import AddressStatus, { PendingSyncDot } from "./address";
 import {
@@ -21,7 +26,7 @@ import {
 
 interface FloorRowProps {
   item: floorDetails;
-  columns: string[];
+  columns: unitColumn[];
   rowIndex: number;
   moreThanOneFloor: boolean;
   aggregatesValue: number;
@@ -46,7 +51,17 @@ const FloorRow = ({
   handleFloorDelete
 }: FloorRowProps) => {
   const { t } = useTranslation();
-  const unitsByNumber = new Map(item.units.map((unit) => [unit.number, unit]));
+  // Grouped rather than keyed one-to-one: a map may legitimately carry the
+  // same unit number twice, and each copy needs its own column.
+  const unitsByNumber = new Map<string, unitDetails[]>();
+  for (const unit of item.units) {
+    const copies = unitsByNumber.get(unit.number);
+    if (copies) {
+      copies.push(unit);
+    } else {
+      unitsByNumber.set(unit.number, [unit]);
+    }
+  }
   return (
     <tr className="h-16">
       <m.th
@@ -76,17 +91,17 @@ const FloorRow = ({
           <span>{ZeroPad(item.floor.toString(), DEFAULT_FLOOR_PADDING)}</span>
         </div>
       </m.th>
-      {columns.map((unitNumber, colIndex) => {
+      {columns.map((column, colIndex) => {
         // Look the unit up by its number rather than taking whatever sits at
         // this position in the floor's own list. Position-based rendering put
         // cells under the wrong header whenever a floor ordered its units
         // differently from the floor the headers were read from.
-        const element = unitsByNumber.get(unitNumber);
+        const element = unitsByNumber.get(column.number)?.[column.occurrence];
 
         if (!element) {
           return (
             <td
-              key={`td-${item.floor}-${unitNumber}`}
+              key={`td-${item.floor}-${column.key}`}
               className="map-cell"
               aria-hidden="true"
             />
@@ -95,7 +110,7 @@ const FloorRow = ({
 
         return (
           <m.td
-            key={`td-${item.floor}-${unitNumber}`}
+            key={`td-${item.floor}-${column.key}`}
             className={cn(
               "map-cell",
               policy?.getUnitColor(element, aggregatesValue)
@@ -162,9 +177,9 @@ const PublicTerritoryTable = ({
                 delay: PAGE_ENTER_DELAY
               }}
             />
-            {columns.map((unitNumber, index) => (
+            {columns.map((column, index) => (
               <m.th
-                key={`th-${unitNumber}`}
+                key={`th-${column.key}`}
                 scope="col"
                 className="sticky-top-cell text-center align-middle text-xs text-muted-foreground tracking-wide uppercase"
                 custom={{ index }}
@@ -184,11 +199,11 @@ const PublicTerritoryTable = ({
                       variant="secondary"
                       className="me-1"
                       onClick={handleUnitDelete}
-                      dataAttributes={{ unitno: unitNumber }}
+                      dataAttributes={{ unitno: column.number }}
                       label={t("table.deleteUnit", "🗑️")}
                     />
                   </ComponentAuthorizer>
-                  <span>{ZeroPad(unitNumber, maxUnitLength)}</span>
+                  <span>{ZeroPad(column.number, maxUnitLength)}</span>
                 </div>
               </m.th>
             ))}

@@ -6,8 +6,19 @@ import { STATUS_CODES, DEFAULT_AGGREGATES } from "../../utils/constants";
 import type {
   addressDetails,
   floorDetails,
+  unitColumn,
   unitDetails
 } from "../../utils/interface";
+
+/** Column list as map.tsx derives it: one entry per copy of a unit number. */
+const cols = (...numbers: string[]): unitColumn[] => {
+  const seen = new Map<string, number>();
+  return numbers.map((number) => {
+    const occurrence = seen.get(number) ?? 0;
+    seen.set(number, occurrence + 1);
+    return { key: `${number}#${occurrence}`, number, occurrence };
+  });
+};
 
 const unit = (
   number: string,
@@ -39,7 +50,7 @@ const addressDetails = {
   coordinates: { lat: 0, lng: 0 }
 } as unknown as addressDetails;
 
-const renderTable = (floors: floorDetails[], columns: string[]) =>
+const renderTable = (floors: floorDetails[], columns: unitColumn[]) =>
   render(
     <PublicTerritoryTable
       floors={floors}
@@ -52,10 +63,14 @@ const renderTable = (floors: floorDetails[], columns: string[]) =>
   );
 
 /** The cell rendered under the column headed `unitNumber`, on the given row. */
-const cellUnder = (rowIndex: number, unitNumber: string, columns: string[]) => {
+const cellUnder = (
+  rowIndex: number,
+  unitNumber: string,
+  columns: unitColumn[]
+) => {
   const row = screen.getAllByRole("row")[rowIndex + 1]; // +1 skips the header
   const cells = row.querySelectorAll("td");
-  return cells[columns.indexOf(unitNumber)];
+  return cells[columns.findIndex((column) => column.number === unitNumber)];
 };
 
 describe("PublicTerritoryTable", () => {
@@ -64,7 +79,7 @@ describe("PublicTerritoryTable", () => {
   // differ in status - listed them the opposite way round from floor 13, which
   // is where the headers used to be read from.
   it("puts each unit under its own header when a floor orders a tied pair differently", () => {
-    const columns = ["4299", "4301", "4303", "4305"];
+    const columns = cols("4299", "4301", "4303", "4305");
     const floors: floorDetails[] = [
       {
         floor: 13,
@@ -101,7 +116,7 @@ describe("PublicTerritoryTable", () => {
   });
 
   it("renders headers from the column list, not from one floor", () => {
-    const columns = ["10", "12", "14"];
+    const columns = cols("10", "12", "14");
     const floors: floorDetails[] = [
       {
         floor: 2,
@@ -124,7 +139,7 @@ describe("PublicTerritoryTable", () => {
 
   // A floor missing a unit used to shift every cell after it one column left.
   it("leaves a gap when a floor is missing a unit", () => {
-    const columns = ["10", "12", "14"];
+    const columns = cols("10", "12", "14");
     const floors: floorDetails[] = [
       {
         floor: 2,
@@ -148,5 +163,31 @@ describe("PublicTerritoryTable", () => {
     expect(cellUnder(1, "10", columns)).toHaveAttribute("data-unitno", "10");
     expect(cellUnder(1, "12", columns)).not.toHaveAttribute("data-unitno");
     expect(cellUnder(1, "14", columns)).toHaveAttribute("data-unitno", "14");
+  });
+});
+
+describe("PublicTerritoryTable duplicate unit numbers", () => {
+  // BLK 215C carries unit 703 twice on every floor, at two sequences, with
+  // real work recorded against both.
+  it("renders a column for each copy of a repeated unit number", () => {
+    const columns = cols("701", "703", "703", "705");
+    const floors: floorDetails[] = [
+      {
+        floor: 16,
+        units: [
+          unit("701", 3, STATUS_CODES.DEFAULT, 16),
+          unit("703", 4, STATUS_CODES.DONE, 16),
+          { ...unit("703", 5, STATUS_CODES.NOT_HOME, 16), id: "16-703-b" },
+          unit("705", 6, STATUS_CODES.DEFAULT, 16)
+        ]
+      }
+    ];
+
+    renderTable(floors, columns);
+
+    const cells = screen.getAllByRole("row")[1].querySelectorAll("td");
+    expect(cells).toHaveLength(4);
+    expect(cells[1]).toHaveAttribute("data-id", "16-703");
+    expect(cells[2]).toHaveAttribute("data-id", "16-703-b");
   });
 });

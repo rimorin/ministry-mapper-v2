@@ -280,10 +280,21 @@ export interface territoryTableProps {
   handleFloorDelete?: (event: React.MouseEvent<HTMLElement>) => void;
 }
 
+/**
+ * One column of the multi-story table. A unit number can legitimately appear
+ * more than once in a map, so `occurrence` distinguishes the copies and the
+ * pair (number, occurrence) — not position — is what binds a cell to a header.
+ */
+export interface unitColumn {
+  key: string;
+  number: string;
+  occurrence: number;
+}
+
 export interface territoryMultiProps {
   floors: floorDetails[];
   /** Canonical column order: every unit number across all floors. */
-  columns: string[];
+  columns: unitColumn[];
   addressDetails: addressDetails;
   policy: Policy;
   maxUnitLength: number;
