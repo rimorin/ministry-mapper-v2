@@ -282,6 +282,8 @@ export interface territoryTableProps {
 
 export interface territoryMultiProps {
   floors: floorDetails[];
+  /** Canonical column order: every unit number across all floors. */
+  columns: string[];
   addressDetails: addressDetails;
   policy: Policy;
   maxUnitLength: number;

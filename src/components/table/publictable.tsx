@@ -21,6 +21,7 @@ import {
 
 interface FloorRowProps {
   item: floorDetails;
+  columns: string[];
   rowIndex: number;
   moreThanOneFloor: boolean;
   aggregatesValue: number;
@@ -35,6 +36,7 @@ interface FloorRowProps {
 // stable). A realtime event then re-renders one row instead of the whole grid.
 const FloorRow = ({
   item,
+  columns,
   rowIndex,
   moreThanOneFloor,
   aggregatesValue,
@@ -44,6 +46,7 @@ const FloorRow = ({
   handleFloorDelete
 }: FloorRowProps) => {
   const { t } = useTranslation();
+  const unitsByNumber = new Map(item.units.map((unit) => [unit.number, unit]));
   return (
     <tr className="h-16">
       <m.th
@@ -73,41 +76,60 @@ const FloorRow = ({
           <span>{ZeroPad(item.floor.toString(), DEFAULT_FLOOR_PADDING)}</span>
         </div>
       </m.th>
-      {item.units.map((element, colIndex) => (
-        <m.td
-          key={`td-${item.floor}-${element.number}`}
-          className={cn(
-            "map-cell",
-            policy?.getUnitColor(element, aggregatesValue)
-          )}
-          onClick={handleUnitStatusUpdate}
-          data-id={element.id}
-          data-floor={item.floor}
-          data-unitno={element.number}
-          custom={{ row: rowIndex, col: colIndex }}
-          variants={diagonalCell}
-          initial="hidden"
-          animate="show"
-        >
-          <div className="relative w-full h-full">
-            {pendingAddressIds?.has(element.id) && <PendingSyncDot />}
-            <AddressStatus
-              key={`${element.status}-${element.nhcount}`}
-              type={element.type}
-              note={element.note}
-              status={element.status}
-              nhcount={element.nhcount}
-              defaultOption={policy?.defaultType}
+      {columns.map((unitNumber, colIndex) => {
+        // Look the unit up by its number rather than taking whatever sits at
+        // this position in the floor's own list. Position-based rendering put
+        // cells under the wrong header whenever a floor ordered its units
+        // differently from the floor the headers were read from.
+        const element = unitsByNumber.get(unitNumber);
+
+        if (!element) {
+          return (
+            <td
+              key={`td-${item.floor}-${unitNumber}`}
+              className="map-cell"
+              aria-hidden="true"
             />
-          </div>
-        </m.td>
-      ))}
+          );
+        }
+
+        return (
+          <m.td
+            key={`td-${item.floor}-${unitNumber}`}
+            className={cn(
+              "map-cell",
+              policy?.getUnitColor(element, aggregatesValue)
+            )}
+            onClick={handleUnitStatusUpdate}
+            data-id={element.id}
+            data-floor={item.floor}
+            data-unitno={element.number}
+            custom={{ row: rowIndex, col: colIndex }}
+            variants={diagonalCell}
+            initial="hidden"
+            animate="show"
+          >
+            <div className="relative w-full h-full">
+              {pendingAddressIds?.has(element.id) && <PendingSyncDot />}
+              <AddressStatus
+                key={`${element.status}-${element.nhcount}`}
+                type={element.type}
+                note={element.note}
+                status={element.status}
+                nhcount={element.nhcount}
+                defaultOption={policy?.defaultType}
+              />
+            </div>
+          </m.td>
+        );
+      })}
     </tr>
   );
 };
 
 const PublicTerritoryTable = ({
   floors,
+  columns,
   addressDetails,
   policy,
   maxUnitLength,
@@ -118,7 +140,6 @@ const PublicTerritoryTable = ({
 }: territoryMultiProps) => {
   const { t } = useTranslation();
   const moreThanOneFloor = floors.length > 1;
-  const floorDetails = floors[0];
   const aggregatesValue =
     addressDetails.aggregates?.value || DEFAULT_AGGREGATES.value;
   return (
@@ -141,9 +162,9 @@ const PublicTerritoryTable = ({
                 delay: PAGE_ENTER_DELAY
               }}
             />
-            {floorDetails?.units.map((item, index) => (
+            {columns.map((unitNumber, index) => (
               <m.th
-                key={`th-${item.number}`}
+                key={`th-${unitNumber}`}
                 scope="col"
                 className="sticky-top-cell text-center align-middle text-xs text-muted-foreground tracking-wide uppercase"
                 custom={{ index }}
@@ -163,11 +184,11 @@ const PublicTerritoryTable = ({
                       variant="secondary"
                       className="me-1"
                       onClick={handleUnitDelete}
-                      dataAttributes={{ unitno: item.number }}
+                      dataAttributes={{ unitno: unitNumber }}
                       label={t("table.deleteUnit", "🗑️")}
                     />
                   </ComponentAuthorizer>
-                  <span>{ZeroPad(item.number, maxUnitLength)}</span>
+                  <span>{ZeroPad(unitNumber, maxUnitLength)}</span>
                 </div>
               </m.th>
             ))}
@@ -178,6 +199,7 @@ const PublicTerritoryTable = ({
             <FloorRow
               key={`row-${item.floor}`}
               item={item}
+              columns={columns}
               rowIndex={rowIndex}
               moreThanOneFloor={moreThanOneFloor}
               aggregatesValue={aggregatesValue}

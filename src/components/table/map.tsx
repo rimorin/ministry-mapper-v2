@@ -29,7 +29,10 @@ import useConfirm from "../../hooks/useConfirm";
 import MapPlaceholder from "../statics/placeholder";
 
 import { callFunction, isAbortError } from "../../utils/pocketbase";
-import { getNextSequence } from "../../utils/helpers/maphelpers";
+import {
+  compareUnitNumbers,
+  getNextSequence
+} from "../../utils/helpers/maphelpers";
 import {
   applyAddressEvent,
   applyAddressOptionsEvent,
@@ -395,19 +398,37 @@ const useAddresses = (
 
 const buildFloorList = (
   addresses: Map<string, unitDetails>,
-  prevFloorList: floorDetails[]
-): { floorList: floorDetails[]; maxUnitLength: number } => {
+  prevFloorList: floorDetails[],
+  prevColumns: string[]
+): {
+  floorList: floorDetails[];
+  maxUnitLength: number;
+  columns: string[];
+} => {
   if (addresses.size === 0) {
-    return { floorList: [], maxUnitLength: DEFAULT_UNIT_PADDING };
+    return {
+      floorList: [],
+      maxUnitLength: DEFAULT_UNIT_PADDING,
+      columns: []
+    };
   }
 
   let maxUnitLength = DEFAULT_UNIT_PADDING;
 
   const floorMap = new Map<number, unitDetails[]>();
+  // The column order is the union of unit numbers across every floor, not one
+  // floor's list. A floor that orders or omits a unit differently must not be
+  // able to shift its neighbours' cells under the wrong header.
+  const columnSequence = new Map<string, number>();
 
   for (const address of addresses.values()) {
-    const { floor, number } = address;
+    const { floor, number, sequence } = address;
     maxUnitLength = Math.max(maxUnitLength, number.length);
+
+    const seen = columnSequence.get(number);
+    if (seen === undefined || sequence < seen) {
+      columnSequence.set(number, sequence);
+    }
 
     if (!floorMap.has(floor)) {
       floorMap.set(floor, []);
@@ -415,11 +436,28 @@ const buildFloorList = (
     floorMap.get(floor)!.push(address);
   }
 
+  const nextColumns = Array.from(columnSequence.keys()).sort((a, b) => {
+    const bySequence = columnSequence.get(a)! - columnSequence.get(b)!;
+    return bySequence !== 0 ? bySequence : compareUnitNumbers(a, b);
+  });
+  // Reuse the previous array when the columns are unchanged so FloorRow keeps
+  // bailing out of re-renders on realtime commits.
+  const columns =
+    prevColumns.length === nextColumns.length &&
+    prevColumns.every((code, i) => code === nextColumns[i])
+      ? prevColumns
+      : nextColumns;
+
   const prevByFloor = new Map(prevFloorList.map((f) => [f.floor, f]));
 
   const floorList: floorDetails[] = Array.from(floorMap.entries())
     .map(([floor, units]) => {
-      units.sort((a, b) => a.sequence - b.sequence);
+      units.sort((a, b) => {
+        const bySequence = a.sequence - b.sequence;
+        return bySequence !== 0
+          ? bySequence
+          : compareUnitNumbers(a.number, b.number);
+      });
       // Reuse the previous floor object when its units are identical (the
       // realtime reducers keep untouched unit objects referentially stable),
       // so unchanged rows bail out of re-rendering under the React Compiler.
@@ -435,7 +473,7 @@ const buildFloorList = (
     })
     .sort((a, b) => b.floor - a.floor);
 
-  return { floorList, maxUnitLength };
+  return { floorList, maxUnitLength, columns };
 };
 
 // Derives the floor list from the address map with structural sharing.
@@ -444,19 +482,20 @@ const buildFloorList = (
 const useFloorList = (addresses: Map<string, unitDetails>) => {
   const [organized, setOrganized] = useState(() => ({
     addresses,
-    ...buildFloorList(addresses, [])
+    ...buildFloorList(addresses, [], [])
   }));
 
   if (organized.addresses !== addresses) {
     setOrganized({
       addresses,
-      ...buildFloorList(addresses, organized.floorList)
+      ...buildFloorList(addresses, organized.floorList, organized.columns)
     });
   }
 
   return {
     floorList: organized.floorList,
-    maxUnitLength: organized.maxUnitLength
+    maxUnitLength: organized.maxUnitLength,
+    columns: organized.columns
   };
 };
 
@@ -489,7 +528,7 @@ const MainTable = ({
       pendingAddressIds,
       preloadedAddresses
     );
-  const { floorList, maxUnitLength } = useFloorList(addresses);
+  const { floorList, maxUnitLength, columns } = useFloorList(addresses);
 
   // Latest addresses for read-at-click-time handlers. Keeping `addresses`
   // out of the handlers' closures keeps their identity stable across
@@ -680,6 +719,7 @@ const MainTable = ({
   ) : (
     <PublicTerritoryTable
       floors={floorList}
+      columns={columns}
       policy={policy}
       addressDetails={addressDetails}
       maxUnitLength={maxUnitLength}

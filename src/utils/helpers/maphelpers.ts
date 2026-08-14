@@ -4,6 +4,20 @@ import { DEFAULT_COORDINATES } from "../constants";
 export const getNextSequence = (sequences: number[]): number =>
   Math.max(0, ...sequences) + 1;
 
+const unitNumberCollator = new Intl.Collator(undefined, {
+  numeric: true,
+  sensitivity: "base"
+});
+
+/**
+ * Orders unit numbers the way a person reads a door number, so "9" precedes
+ * "10" and "10" precedes "10A". Used only to break ties between units sharing
+ * a sequence, so the column order stays stable instead of following whatever
+ * order the server happened to return.
+ */
+export const compareUnitNumbers = (a: string, b: string): number =>
+  unitNumberCollator.compare(a, b);
+
 export const isValidCoordinate = (
   coord: unknown
 ): coord is latlongInterface => {

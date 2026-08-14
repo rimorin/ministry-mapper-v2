@@ -5,6 +5,7 @@ import {
   isValidCoordinate,
   getDefaultMapCenter,
   getNextSequence,
+  compareUnitNumbers,
   formatDistance,
   formatDuration
 } from "./maphelpers";
@@ -294,5 +295,33 @@ describe("getNextSequence", () => {
 
   it("handles gaps in sequence values", () => {
     expect(getNextSequence([1, 5, 10])).toBe(11);
+  });
+});
+
+describe("compareUnitNumbers", () => {
+  it("orders numerically rather than lexically", () => {
+    expect(compareUnitNumbers("9", "10")).toBeLessThan(0);
+    expect(compareUnitNumbers("4301", "4303")).toBeLessThan(0);
+  });
+
+  it("places a bare number before its suffixed neighbour", () => {
+    expect(compareUnitNumbers("10", "10A")).toBeLessThan(0);
+    expect(compareUnitNumbers("10A", "10B")).toBeLessThan(0);
+  });
+
+  it("ignores leading zeros", () => {
+    expect(compareUnitNumbers("05", "7")).toBeLessThan(0);
+  });
+
+  it("returns zero for equal unit numbers", () => {
+    expect(compareUnitNumbers("4301", "4301")).toBe(0);
+  });
+
+  it("sorts a tied column group deterministically", () => {
+    expect(["4305", "4303", "4301"].sort(compareUnitNumbers)).toEqual([
+      "4301",
+      "4303",
+      "4305"
+    ]);
   });
 });
