@@ -1,5 +1,25 @@
 # Catatan Rilis (Bahasa Indonesia)
 
+## 2026-08-21
+
+[NEW] Simpan lokasi rumah saat Anda berada di sana.
+  Ponsel Anda sudah tahu di mana Anda berada. Sekarang Anda bisa memakainya untuk menyimpan lokasi alamat dengan satu ketukan, tanpa perlu mencari titiknya di peta.
+
+  Ini untuk peta rumah. Apartemen dan gedung lain memakai satu lokasi yang sama, jadi tidak memerlukannya.
+
+  Cara menggunakan:
+  - Buka sebuah alamat dan cari Koordinat.
+  - Ketuk "Gunakan lokasi saya".
+  - Untuk memilih titiknya sendiri, ketuk "Di peta".
+
+  Alamat yang belum punya lokasi kini menampilkan "Belum ditandai", sehingga Anda bisa melihat mana yang masih perlu ditandai.
+
+  Di Tampilan Peta, alamat tanpa lokasi tidak muncul di peta sama sekali, jadi mudah terlewat. Kini muncul pesan di bagian bawah yang memuat alamat-alamat itu, dan mengetuknya akan membuka yang pertama.
+
+  Ini berfungsi tanpa internet. Ponsel Anda menemukan lokasi sendiri, dan perubahan Anda dikirim setelah Anda kembali online.
+
+---
+
 ## 2026-08-07-colors
 
 [NEW] Tema warna baru.

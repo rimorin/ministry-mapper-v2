@@ -1,5 +1,25 @@
 # Nota Pelepasan (Bahasa Melayu)
 
+## 2026-08-21
+
+[NEW] Simpan lokasi rumah semasa anda berada di sana.
+  Telefon anda sudah tahu di mana anda berada. Kini anda boleh menggunakannya untuk menyimpan lokasi alamat dengan satu ketikan, tanpa perlu mencari tempatnya pada peta.
+
+  Ini untuk peta rumah. Pangsapuri dan bangunan lain berkongsi satu lokasi, jadi ia tidak diperlukan.
+
+  Cara menggunakan:
+  - Buka sesuatu alamat dan cari Koordinat.
+  - Ketik "Guna lokasi saya".
+  - Untuk memilih tempatnya sendiri, ketik "Pada peta".
+
+  Alamat yang belum ada lokasi kini memaparkan "Belum ditanda", jadi anda boleh lihat yang mana masih memerlukannya.
+
+  Dalam Paparan Peta, alamat tanpa lokasi langsung tidak muncul pada peta, jadi mudah terlepas pandang. Kini satu mesej muncul di bahagian bawah menyenaraikan alamat tersebut, dan mengetiknya akan membuka yang pertama.
+
+  Ini berfungsi tanpa internet. Telefon anda mencari lokasi dengan sendirinya, dan perubahan anda dihantar apabila anda kembali dalam talian.
+
+---
+
 ## 2026-08-07-colors
 
 [NEW] Tema warna baharu.

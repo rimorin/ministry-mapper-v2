@@ -120,6 +120,28 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ---
 
+## 2026-08-21
+
+[NEW] Save a house's location while you are standing there.
+  Your phone already knows where you are. You can now use that to save an address location with one tap, instead of finding the spot on a map yourself.
+
+  This is for maps of houses. Flats and other buildings share one location, so they do not need it.
+
+  How to use:
+  - Open an address and look for Coordinates.
+  - Tap "Use my location".
+  - To choose the spot yourself instead, tap "On map".
+
+  Addresses with no location saved now show "No pin set", so you can see which ones still need one.
+
+  In Map View, an address with no location does not appear on the map at all, so it is easy to miss. A message now appears at the bottom listing those addresses, and tapping it opens the first one.
+
+  This works without internet. Your phone finds your location on its own, and your change is sent once you are back online.
+
+![Saving a house location from your phone](https://assets.ministry-mapper.com/release-notes/2026-08-21/pin-capture.png)
+
+---
+
 ## 2026-08-07-colors
 
 [NEW] New color themes.
