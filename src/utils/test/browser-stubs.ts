@@ -18,6 +18,14 @@ export const setNavigatorClipboard = (impl: unknown) => {
   });
 };
 
+export const setNavigatorGeolocation = (impl: unknown) => {
+  Object.defineProperty(window.navigator, "geolocation", {
+    value: impl,
+    configurable: true,
+    writable: true
+  });
+};
+
 export const setViewport = (isMobile: boolean) => {
   window.matchMedia = vi.fn(() => ({
     matches: isMobile,
@@ -31,5 +39,6 @@ export const setViewport = (isMobile: boolean) => {
 export const restoreBrowserStubs = () => {
   delete (window.navigator as { share?: unknown }).share;
   delete (window.navigator as { clipboard?: unknown }).clipboard;
+  delete (window.navigator as { geolocation?: unknown }).geolocation;
   window.matchMedia = originalMatchMedia;
 };

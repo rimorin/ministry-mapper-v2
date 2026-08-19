@@ -224,14 +224,19 @@
     "propertyNumber": "Property Number",
     "createAddress": "Tambah harta ke {{name}}",
     "notesInformation": "Nota hartanah sahaja. Tiada maklumat peribadi.",
-    "clickToSelectOnMap": "Klik untuk pilih pada peta",
-    "coordinatesDescription": "Latitud dan longitud alamat.",
     "deleteFloorWarning": "Tingkat {{floor}} dan semua unitnya akan dipadam secara kekal daripada \"{{name}}\".\nAnda tidak boleh membatalkannya.",
     "deleteWarning": "Peta \"{{name}}\" akan dipadam secara kekal.\nAnda tidak boleh membatalkannya.",
     "duplicateCode": "Alamat {{code}} sudah wujud dalam peta wilayah ini.",
     "propertyNumberPlaceholder": "cth., 1, 2A, B3",
     "resetWarning": "Semua status hartanah dalam \"{{name}}\" akan ditetapkan semula kepada keadaan lalai.\nAnda tidak boleh membatalkannya.",
-    "deletePropertyWarning": "Hartanah \"{{number}}\" akan dipadam secara kekal daripada \"{{name}}\".\nAnda tidak boleh membatalkannya."
+    "deletePropertyWarning": "Hartanah \"{{number}}\" akan dipadam secara kekal daripada \"{{name}}\".\nAnda tidak boleh membatalkannya.",
+    "useMyLocation": "Guna lokasi saya",
+    "gettingLocation": "Mendapatkan lokasi…",
+    "onMap": "Pada peta",
+    "unpinnedCount_one": "{{count}} alamat perlu ditanda",
+    "unpinnedCount_other": "{{count}} alamat perlu ditanda",
+    "unpinnedHint": "Ketik untuk menanda yang pertama — {{units}}",
+    "noPinSet": "Belum ditanda"
   },
   "household": {
     "household": "Isi Rumah",

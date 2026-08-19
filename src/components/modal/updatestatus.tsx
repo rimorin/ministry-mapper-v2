@@ -13,10 +13,8 @@ import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
-import { MapPin } from "lucide-react";
 import {
   USER_ACCESS_LEVELS,
   STATUS_CODES,
@@ -37,6 +35,7 @@ import HHStatusField from "../form/status";
 import GenericTextAreaField from "../form/textarea";
 import ModalUnitTitle from "../form/title";
 import HHTypeField from "../form/household";
+import AddressCoordinatesField from "../form/coordinates";
 import ComponentAuthorizer from "../navigation/authorizer";
 import DateFormat from "../../utils/helpers/dateformat";
 import { callFunction } from "../../utils/pocketbase";
@@ -265,6 +264,13 @@ const UpdateUnitStatus = NiceModal.create(
                     : undefined
                 }
               />
+              {isSingleStory && (
+                <AddressCoordinatesField
+                  coordinates={coordinates}
+                  onChange={setCoordinates}
+                  onSelectOnMap={handleMapCoordinatesClick}
+                />
+              )}
               <GenericTextAreaField
                 label={t("address.notes", "Notes")}
                 name="note"
@@ -277,37 +283,6 @@ const UpdateUnitStatus = NiceModal.create(
                   "Property notes only. No personal information."
                 )}
               />
-              {isSingleStory && (
-                <div className="flex flex-col gap-1.5">
-                  <Label>
-                    {t("address.coordinates", "Address Coordinates")}
-                  </Label>
-                  <Button
-                    variant="outline"
-                    type="button"
-                    className="w-full justify-start font-normal"
-                    onClick={handleMapCoordinatesClick}
-                  >
-                    <MapPin className="size-4 text-muted-foreground shrink-0" />
-                    <span
-                      className={coordinates ? "" : "text-muted-foreground"}
-                    >
-                      {coordinates
-                        ? `${coordinates.lat}, ${coordinates.lng}`
-                        : t(
-                            "address.clickToSelectOnMap",
-                            "Click to select on map"
-                          )}
-                    </span>
-                  </Button>
-                  <p className="text-xs text-muted-foreground">
-                    {t(
-                      "address.coordinatesDescription",
-                      "Latitude and Longitude of the address."
-                    )}
-                  </p>
-                </div>
-              )}
             </div>
             <div className="flex flex-col gap-2 pt-1">
               {unitDetails?.updated && unitDetails?.updatedBy && (

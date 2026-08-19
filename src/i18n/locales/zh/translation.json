@@ -224,14 +224,19 @@
     "dncCustom": "自定义",
     "dncPickDate": "选择日期",
     "notesInformation": "仅限房产备注。请勿填写个人信息。",
-    "clickToSelectOnMap": "点击以在地图上选择",
-    "coordinatesDescription": "该地址的纬度和经度。",
     "deleteFloorWarning": "楼层 {{floor}} 及其所有单元将从“{{name}}”中永久删除。\n此操作无法撤销。",
     "deleteWarning": "地图“{{name}}”将被永久删除。\n此操作无法撤销。",
     "duplicateCode": "地址 {{code}} 已存在于此区域地图中。",
     "propertyNumberPlaceholder": "例如：1、2A、B3",
     "resetWarning": "“{{name}}”中的所有房产状态都将重置为默认状态。\n此操作无法撤销。",
-    "deletePropertyWarning": "物业\"{{number}}\"将从\"{{name}}\"中永久删除。\n此操作无法撤销。"
+    "deletePropertyWarning": "物业\"{{number}}\"将从\"{{name}}\"中永久删除。\n此操作无法撤销。",
+    "useMyLocation": "使用我的位置",
+    "gettingLocation": "正在获取位置…",
+    "onMap": "在地图上",
+    "unpinnedCount_one": "{{count}} 个地址需要标记",
+    "unpinnedCount_other": "{{count}} 个地址需要标记",
+    "unpinnedHint": "点击标记第一个 — {{units}}",
+    "noPinSet": "未标记"
   },
   "household": {
     "household": "家庭",

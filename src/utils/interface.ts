@@ -396,6 +396,12 @@ export interface latlongInterface {
   lng: number;
 }
 
+export interface AddressCoordinatesFieldProps {
+  coordinates?: latlongInterface;
+  onChange: (coordinates: latlongInterface) => void;
+  onSelectOnMap: () => void;
+}
+
 interface coordinatesInterface {
   coordinates: latlongInterface;
 }
