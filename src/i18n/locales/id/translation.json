@@ -198,14 +198,19 @@
     "dncCustom": "Kustom",
     "dncPickDate": "Pilih tanggal",
     "notesInformation": "Hanya catatan properti. Jangan masukkan informasi pribadi.",
-    "clickToSelectOnMap": "Klik untuk memilih di peta",
-    "coordinatesDescription": "Garis lintang dan bujur alamat.",
     "deleteFloorWarning": "Lantai {{floor}} beserta semua unitnya akan dihapus permanen dari \"{{name}}\".\nTindakan ini tidak dapat dibatalkan.",
     "deleteWarning": "Peta \"{{name}}\" akan dihapus permanen.\nTindakan ini tidak dapat dibatalkan.",
     "duplicateCode": "Alamat {{code}} sudah ada di peta wilayah ini.",
     "propertyNumberPlaceholder": "mis. 1, 2A, B3",
     "resetWarning": "Semua status properti di \"{{name}}\" akan direset ke status bawaan.\nTindakan ini tidak dapat dibatalkan.",
-    "deletePropertyWarning": "Properti \"{{number}}\" akan dihapus permanen dari \"{{name}}\".\nTindakan ini tidak dapat dibatalkan."
+    "deletePropertyWarning": "Properti \"{{number}}\" akan dihapus permanen dari \"{{name}}\".\nTindakan ini tidak dapat dibatalkan.",
+    "useMyLocation": "Gunakan lokasi saya",
+    "gettingLocation": "Mendapatkan lokasi…",
+    "onMap": "Di peta",
+    "unpinnedCount_one": "{{count}} alamat perlu ditandai",
+    "unpinnedCount_other": "{{count}} alamat perlu ditandai",
+    "unpinnedHint": "Ketuk untuk menandai yang pertama — {{units}}",
+    "noPinSet": "Belum ditandai"
   },
   "household": {
     "household": "Rumah Tangga",

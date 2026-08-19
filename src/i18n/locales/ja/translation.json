@@ -224,14 +224,19 @@
     "dncCustom": "カスタム",
     "dncPickDate": "日付を選択",
     "notesInformation": "物件に関するメモのみ。個人情報は含めないでください。",
-    "clickToSelectOnMap": "地図をクリックして選択",
-    "coordinatesDescription": "住所の緯度と経度です。",
     "deleteFloorWarning": "「{{name}}」から{{floor}}階とそのすべてのユニットが完全に削除されます。\n元に戻すことはできません。",
     "deleteWarning": "マップ「{{name}}」は完全に削除されます。\n元に戻すことはできません。",
     "duplicateCode": "住所 {{code}} はこの区域マップにすでに存在します。",
     "propertyNumberPlaceholder": "例: 1, 2A, B3",
     "resetWarning": "「{{name}}」内のすべての物件ステータスが初期状態にリセットされます。\n元に戻すことはできません。",
-    "deletePropertyWarning": "「{{name}}」から物件「{{number}}」が完全に削除されます。\n元に戻すことはできません。"
+    "deletePropertyWarning": "「{{name}}」から物件「{{number}}」が完全に削除されます。\n元に戻すことはできません。",
+    "useMyLocation": "現在地を使用",
+    "gettingLocation": "現在地を取得中…",
+    "onMap": "地図で選択",
+    "unpinnedCount_one": "{{count}} 件の住所にピンが必要です",
+    "unpinnedCount_other": "{{count}} 件の住所にピンが必要です",
+    "unpinnedHint": "タップして最初の住所を設定 — {{units}}",
+    "noPinSet": "ピンなし"
   },
   "household": {
     "household": "世帯",

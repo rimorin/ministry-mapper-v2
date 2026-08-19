@@ -224,14 +224,19 @@
     "propertyNumber": "Property Number",
     "createAddress": "Add property to {{name}}",
     "notesInformation": "Property notes only. No personal information.",
-    "clickToSelectOnMap": "Click to select on map",
-    "coordinatesDescription": "Latitude and Longitude of the address.",
     "deleteFloorWarning": "Floor {{floor}} and all its units will be permanently deleted from \"{{name}}\".\nYou cannot undo this.",
     "deleteWarning": "Map \"{{name}}\" will be permanently deleted.\nYou cannot undo this.",
     "duplicateCode": "Address {{code}} already exists in this territory map.",
     "propertyNumberPlaceholder": "e.g. 1, 2A, B3",
     "resetWarning": "All property statuses in \"{{name}}\" will be reset to their default state.\nYou cannot undo this.",
-    "deletePropertyWarning": "Property \"{{number}}\" will be permanently deleted from \"{{name}}\".\nYou cannot undo this."
+    "deletePropertyWarning": "Property \"{{number}}\" will be permanently deleted from \"{{name}}\".\nYou cannot undo this.",
+    "useMyLocation": "Use my location",
+    "gettingLocation": "Getting location…",
+    "onMap": "On map",
+    "unpinnedCount_one": "{{count}} address needs a pin",
+    "unpinnedCount_other": "{{count}} addresses need a pin",
+    "unpinnedHint": "Tap to set the first — {{units}}",
+    "noPinSet": "No pin set"
   },
   "household": {
     "household": "Household",

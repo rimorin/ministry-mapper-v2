@@ -224,14 +224,19 @@
     "propertyNumber": "Property Number",
     "createAddress": "Agregar propiedad a {{name}}",
     "notesInformation": "Solo notas de la propiedad. No información personal.",
-    "clickToSelectOnMap": "Haz clic para seleccionar en el mapa",
-    "coordinatesDescription": "Latitud y longitud de la dirección.",
     "deleteFloorWarning": "El piso {{floor}} y todas sus unidades se eliminarán permanentemente de \"{{name}}\".\nNo puedes deshacer esto.",
     "deleteWarning": "El mapa \"{{name}}\" se eliminará permanentemente.\nNo puedes deshacer esto.",
     "duplicateCode": "La dirección {{code}} ya existe en este mapa de territorio.",
     "propertyNumberPlaceholder": "p. ej., 1, 2A, B3",
     "resetWarning": "Todos los estados de las propiedades de \"{{name}}\" se restablecerán a su estado predeterminado.\nNo puedes deshacer esto.",
-    "deletePropertyWarning": "La propiedad \"{{number}}\" se eliminará permanentemente de \"{{name}}\".\nNo puedes deshacer esto."
+    "deletePropertyWarning": "La propiedad \"{{number}}\" se eliminará permanentemente de \"{{name}}\".\nNo puedes deshacer esto.",
+    "useMyLocation": "Usar mi ubicación",
+    "gettingLocation": "Obteniendo ubicación…",
+    "onMap": "En el mapa",
+    "unpinnedCount_one": "{{count}} dirección necesita un marcador",
+    "unpinnedCount_other": "{{count}} direcciones necesitan un marcador",
+    "unpinnedHint": "Toca para marcar la primera — {{units}}",
+    "noPinSet": "Sin marcador"
   },
   "household": {
     "household": "Hogar",

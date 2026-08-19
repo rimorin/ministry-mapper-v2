@@ -29,6 +29,7 @@ import type {
 } from "../../utils/interface";
 import DncDateField from "../form/dncdate";
 import GenericInputField from "../form/input";
+import AddressCoordinatesField from "../form/coordinates";
 import HHNotHomeField from "../form/nothome";
 import HHStatusField from "../form/status";
 import GenericTextAreaField from "../form/textarea";
@@ -55,7 +56,6 @@ const CreateAddress = NiceModal.create(
 
     const mapId = addressData.id;
     const addressName = addressData.name;
-    const addressType = addressData.type;
 
     const [isSaving, setIsSaving] = useState(false);
     const [hhType, setHhtype] = useState<typeInterface[] | undefined>(
@@ -240,6 +240,11 @@ const CreateAddress = NiceModal.create(
                     value: option.id
                   }))}
                 />
+                <AddressCoordinatesField
+                  coordinates={coordinates}
+                  onChange={setCoordinates}
+                  onSelectOnMap={handleMapCoordinatesClick}
+                />
                 <GenericTextAreaField
                   label={t("address.notes", "Notes")}
                   name="note"
@@ -250,28 +255,6 @@ const CreateAddress = NiceModal.create(
                     "Property notes only. No personal information."
                   )}
                 />
-                {addressType && (
-                  <GenericInputField
-                    label={t("address.coordinates", "Address Coordinates")}
-                    name="location"
-                    placeholder={t(
-                      "address.clickToSelectOnMap",
-                      "Click to select on map"
-                    )}
-                    handleClick={handleMapCoordinatesClick}
-                    changeValue={
-                      coordinates
-                        ? `${coordinates.lat}, ${coordinates.lng}`
-                        : ""
-                    }
-                    information={t(
-                      "address.coordinatesDescription",
-                      "Latitude and Longitude of the address."
-                    )}
-                    readOnly={true}
-                    autoComplete="off"
-                  />
-                )}
               </div>
             </ScrollArea>
             <DialogFooter>
