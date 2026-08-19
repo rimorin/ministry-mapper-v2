@@ -1,5 +1,25 @@
 # Notas de versión (Español)
 
+## 2026-08-21
+
+[NEW] Guarda la ubicación de una casa mientras estás allí.
+  Tu teléfono ya sabe dónde estás. Ahora puedes usar eso para guardar la ubicación de una dirección con un toque, en lugar de buscar el punto en un mapa.
+
+  Esto es para mapas de casas. Los pisos y otros edificios comparten una sola ubicación, así que no lo necesitan.
+
+  Cómo usarlo:
+  - Abre una dirección y busca Coordenadas.
+  - Toca "Usar mi ubicación".
+  - Para elegir el punto tú mismo, toca "En el mapa".
+
+  Las direcciones sin ubicación guardada ahora muestran "Sin marcador", así puedes ver cuáles todavía la necesitan.
+
+  En Vista de mapa, una dirección sin ubicación no aparece en el mapa, y es fácil pasarla por alto. Ahora aparece un mensaje abajo con esas direcciones, y al tocarlo se abre la primera.
+
+  Esto funciona sin internet. Tu teléfono encuentra tu ubicación por sí solo, y tu cambio se envía cuando vuelvas a estar en línea.
+
+---
+
 ## 2026-08-07-colors
 
 [NEW] Nuevos temas de color.
