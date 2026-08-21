@@ -424,6 +424,72 @@ describe("Policy class", () => {
     });
   });
 
+  describe("isAvailable / getMarkerColor", () => {
+    let policy: Policy;
+
+    beforeEach(() => {
+      policy = new Policy("", mockOptions);
+    });
+
+    const unitWith = (status: string, typeId = "1"): unitDetails => ({
+      id: "unit1",
+      number: "1",
+      note: "",
+      dnctime: 0,
+      status,
+      type: typeId ? [{ id: typeId, code: "type" }] : [],
+      nhcount: "0",
+      floor: 0,
+      sequence: 0
+    });
+
+    it("should treat a countable, incomplete unit as available", () => {
+      expect(policy.isAvailable(unitWith(STATUS_CODES.DEFAULT))).toBe(true);
+    });
+
+    it("should not treat a completed unit as available", () => {
+      expect(policy.isAvailable(unitWith(STATUS_CODES.DONE))).toBe(false);
+    });
+
+    it("should not treat a non-countable type as available", () => {
+      expect(policy.isAvailable(unitWith(STATUS_CODES.DEFAULT, "2"))).toBe(
+        false
+      );
+    });
+
+    it("should not treat a unit with no type as available", () => {
+      expect(policy.isAvailable(unitWith(STATUS_CODES.DEFAULT, ""))).toBe(
+        false
+      );
+    });
+
+    it("should return empty string for units needing no call", () => {
+      expect(policy.getMarkerColor(unitWith(STATUS_CODES.DONE), 50)).toBe("");
+    });
+
+    it("should return 'marker-available' below the endgame threshold", () => {
+      const unit = unitWith(STATUS_CODES.DEFAULT);
+      expect(policy.getMarkerColor(unit, 50)).toBe("marker-available");
+      expect(policy.getMarkerColor(unit, 89)).toBe("marker-available");
+    });
+
+    it("should add 'marker-endgame' from the threshold upwards", () => {
+      const unit = unitWith(STATUS_CODES.DEFAULT);
+      expect(policy.getMarkerColor(unit, 90)).toBe(
+        "marker-available marker-endgame"
+      );
+      expect(policy.getMarkerColor(unit, 95)).toBe(
+        "marker-available marker-endgame"
+      );
+    });
+
+    it("should never emit the table's cell classes", () => {
+      expect(
+        policy.getMarkerColor(unitWith(STATUS_CODES.DEFAULT), 95)
+      ).not.toContain("cell-highlight");
+    });
+  });
+
   describe("isFromAdmin", () => {
     it("should return true for TERRITORY_SERVANT role", () => {
       const policy = new Policy(

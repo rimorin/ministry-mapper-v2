@@ -29,7 +29,7 @@ const SVG_BASE =
 
 const STATIC_ICON_HTML: Partial<Record<string, string>> = {
   [STATUS_CODES.DONE]: `<svg ${SVG_BASE} class="size-5 text-green-600 stroke-[2.5]"><path d="M20 6 9 17l-5-5"/></svg>`,
-  [STATUS_CODES.DO_NOT_CALL]: `<svg ${SVG_BASE} class="size-5 text-destructive"><circle cx="12" cy="12" r="10"/><path d="M4.929 4.929 19.07 19.071"/></svg>`,
+  [STATUS_CODES.DO_NOT_CALL]: `<svg ${SVG_BASE} class="size-5 text-red-600"><circle cx="12" cy="12" r="10"/><path d="M4.929 4.929 19.07 19.071"/></svg>`,
   [STATUS_CODES.INVALID]: `<svg ${SVG_BASE} class="size-5 text-violet-500"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`
 };
 
@@ -76,7 +76,7 @@ const TerritoryMapView = ({
         const houseType =
           element.type?.map((type) => type.code).join(", ") || "";
         const className =
-          policy?.getUnitColor(
+          policy?.getMarkerColor(
             element,
             aggregates?.value || DEFAULT_AGGREGATES.value
           ) || "";
