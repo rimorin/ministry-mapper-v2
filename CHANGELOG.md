@@ -1,3 +1,9 @@
+## [2.6.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.6.0...v2.6.1) (2026-08-21)
+
+### Bug Fixes
+
+* **ci:** call the Coolify deploy webhook with POST ([92346d0](https://github.com/rimorin/ministry-mapper-v2/commit/92346d00d5e898a91e0bb1105e4165c5613696ff))
+
 ## [2.6.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.5.0...v2.6.0) (2026-08-21)
 
 ### Features
