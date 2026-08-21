@@ -127,14 +127,15 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
   This is for maps of houses. Flats and other buildings share one location, so they do not need it.
 
-  How to use:
+  How to save a location:
   - Open an address and look for Coordinates.
   - Tap "Use my location".
   - To choose the spot yourself instead, tap "On map".
 
-  Addresses with no location saved now show "No pin set", so you can see which ones still need one.
-
-  In Map View, an address with no location does not appear on the map at all, so it is easy to miss. A message now appears at the bottom listing those addresses, and tapping it opens the first one.
+  Seeing which ones still need it:
+  - An address with no location saved shows "No pin set".
+  - In Map View those addresses do not show on the map at all, so they are easy to walk past.
+  - A note at the bottom says "3 addresses need a pin" and lists their numbers. Tap it to open the first one.
 
   This works without internet. Your phone finds your location on its own, and your change is sent once you are back online.
 

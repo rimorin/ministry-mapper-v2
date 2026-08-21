@@ -7,14 +7,15 @@
 
   Esto es para mapas de casas. Los pisos y otros edificios comparten una sola ubicación, así que no lo necesitan.
 
-  Cómo usarlo:
+  Cómo guardar una ubicación:
   - Abre una dirección y busca Coordenadas.
   - Toca "Usar mi ubicación".
   - Para elegir el punto tú mismo, toca "En el mapa".
 
-  Las direcciones sin ubicación guardada ahora muestran "Sin marcador", así puedes ver cuáles todavía la necesitan.
-
-  En Vista de mapa, una dirección sin ubicación no aparece en el mapa, y es fácil pasarla por alto. Ahora aparece un mensaje abajo con esas direcciones, y al tocarlo se abre la primera.
+  Cómo ver cuáles todavía la necesitan:
+  - Una dirección sin ubicación guardada muestra "Sin marcador".
+  - En Vista de mapa esas direcciones no aparecen en el mapa, así que es fácil pasarlas por alto.
+  - Un aviso abajo dice "3 direcciones necesitan un marcador" y lista sus números. Tócalo para abrir la primera.
 
   Esto funciona sin internet. Tu teléfono encuentra tu ubicación por sí solo, y tu cambio se envía cuando vuelvas a estar en línea.
 

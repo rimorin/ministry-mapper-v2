@@ -7,14 +7,15 @@
 
   Ini untuk peta rumah. Apartemen dan gedung lain memakai satu lokasi yang sama, jadi tidak memerlukannya.
 
-  Cara menggunakan:
+  Cara menyimpan lokasi:
   - Buka sebuah alamat dan cari Koordinat.
   - Ketuk "Gunakan lokasi saya".
   - Untuk memilih titiknya sendiri, ketuk "Di peta".
 
-  Alamat yang belum punya lokasi kini menampilkan "Belum ditandai", sehingga Anda bisa melihat mana yang masih perlu ditandai.
-
-  Di Tampilan Peta, alamat tanpa lokasi tidak muncul di peta sama sekali, jadi mudah terlewat. Kini muncul pesan di bagian bawah yang memuat alamat-alamat itu, dan mengetuknya akan membuka yang pertama.
+  Cara melihat mana yang masih perlu:
+  - Alamat yang belum punya lokasi menampilkan "Belum ditandai".
+  - Di Tampilan Peta alamat itu tidak muncul di peta sama sekali, jadi mudah terlewat.
+  - Pesan di bagian bawah berbunyi "3 alamat perlu ditandai" dan memuat nomornya. Ketuk untuk membuka yang pertama.
 
   Ini berfungsi tanpa internet. Ponsel Anda menemukan lokasi sendiri, dan perubahan Anda dikirim setelah Anda kembali online.
 
