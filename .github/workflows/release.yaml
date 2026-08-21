@@ -55,10 +55,12 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_ACCESS_TOKEN }}
         run: npx semantic-release
 
-      # Without --fail-with-body curl exits 0 on 4xx/5xx, so a stale token would
-      # report success and deploy nothing.
+      # POST, not GET: the endpoint answers GET with 405 "This endpoint has
+      # changed to a POST request", though the Coolify docs still show GET.
+      # Without --fail-with-body curl exits 0 on 4xx/5xx, so that 405 reported
+      # success and deployed nothing.
       - name: Deploy to Coolify
         run: |
           curl --fail-with-body --silent --show-error \
-            --request GET '${{ secrets.COOLIFY_WEBHOOK }}' \
+            --request POST '${{ secrets.COOLIFY_WEBHOOK }}' \
             --header 'Authorization: Bearer ${{ secrets.COOLIFY_TOKEN }}'
