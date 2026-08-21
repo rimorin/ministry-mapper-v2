@@ -1,3 +1,15 @@
+## [2.6.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.5.0...v2.6.0) (2026-08-21)
+
+### Features
+
+* capture address coordinates from the device location ([8722e11](https://github.com/rimorin/ministry-mapper-v2/commit/8722e11ddc421cbecfd5b1fa0870962cbc65440d))
+
+### Bug Fixes
+
+* make map markers legible and show which houses still need a call ([db828c5](https://github.com/rimorin/ministry-mapper-v2/commit/db828c5476d84277e90ade412dd3cde0256b48a8))
+* rebuild map view markers so their states are readable ([cb5e525](https://github.com/rimorin/ministry-mapper-v2/commit/cb5e525fd65c4998d65f77e4120a8cfd6204efae))
+* **release:** declare the changelog preset semantic-release actually needs ([7eece7b](https://github.com/rimorin/ministry-mapper-v2/commit/7eece7b40c9bfee521bfcc62212f5cec736a69cc))
+
 ## [2.5.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.4.0...v2.5.0) (2026-08-07)
 
 ## [2.4.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.3.0...v2.4.0) (2026-07-26)
