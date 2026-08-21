@@ -7,14 +7,15 @@
 
   Ini untuk peta rumah. Pangsapuri dan bangunan lain berkongsi satu lokasi, jadi ia tidak diperlukan.
 
-  Cara menggunakan:
+  Cara menyimpan lokasi:
   - Buka sesuatu alamat dan cari Koordinat.
   - Ketik "Guna lokasi saya".
   - Untuk memilih tempatnya sendiri, ketik "Pada peta".
 
-  Alamat yang belum ada lokasi kini memaparkan "Belum ditanda", jadi anda boleh lihat yang mana masih memerlukannya.
-
-  Dalam Paparan Peta, alamat tanpa lokasi langsung tidak muncul pada peta, jadi mudah terlepas pandang. Kini satu mesej muncul di bahagian bawah menyenaraikan alamat tersebut, dan mengetiknya akan membuka yang pertama.
+  Cara melihat yang mana masih memerlukannya:
+  - Alamat yang belum ada lokasi memaparkan "Belum ditanda".
+  - Dalam Paparan Peta alamat itu langsung tidak muncul pada peta, jadi mudah terlepas pandang.
+  - Mesej di bahagian bawah menyatakan "3 alamat perlu ditanda" dan menyenaraikan nombornya. Ketik untuk membuka yang pertama.
 
   Ini berfungsi tanpa internet. Telefon anda mencari lokasi dengan sendirinya, dan perubahan anda dihantar apabila anda kembali dalam talian.
 
