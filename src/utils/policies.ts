@@ -13,19 +13,7 @@ import {
 } from "./constants";
 import { HHOptionProps, unitDetails } from "./interface";
 
-const AVAILABLE_STYLE_CLASS = "available";
-
-const processAvailableColour = (
-  completedUnit = false,
-  countableUnit = true,
-  addressProgress = 0
-) => {
-  if (!countableUnit || completedUnit) return "";
-  if (addressProgress < ENDGAME_PROGRESS_THRESHOLD)
-    return AVAILABLE_STYLE_CLASS;
-
-  return `${AVAILABLE_STYLE_CLASS} cell-highlight`;
-};
+const isEndgame = (progress: number) => progress >= ENDGAME_PROGRESS_THRESHOLD;
 
 export class Policy {
   userName: string;
@@ -79,12 +67,19 @@ export class Policy {
       (unit.status === STATUS_CODES.NOT_HOME && tries >= this.maxTries)
     );
   }
+  isAvailable(unit: unitDetails): boolean {
+    return this.isCountable(unit) && !this.isCompleted(unit);
+  }
   getUnitColor(unit: unitDetails, progress: number): string {
-    return processAvailableColour(
-      this.isCompleted(unit),
-      this.isCountable(unit),
-      progress
-    );
+    if (!this.isAvailable(unit)) return "";
+    return isEndgame(progress) ? "available cell-highlight" : "available";
+  }
+  // Markers sit on tiles, not on an opaque cell, so they carry their own classes.
+  getMarkerColor(unit: unitDetails, progress: number): string {
+    if (!this.isAvailable(unit)) return "";
+    return isEndgame(progress)
+      ? "marker-available marker-endgame"
+      : "marker-available";
   }
   isFromAdmin(): boolean {
     return (
