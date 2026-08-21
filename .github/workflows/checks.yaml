@@ -6,38 +6,35 @@ on:
       - master
       - staging
 
+permissions:
+  contents: read # for checkout
+
 jobs:
   test-and-build:
     name: Test and Build Application
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the code
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
-      # Step 2: Setup Node.js environment
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
+          cache: npm
 
-      # Step 3: Install dependencies
       - name: Install dependencies
         run: npm ci
 
-      # Step 4: Check formatting
       - name: Check formatting
         run: npm run prettier
 
-      # Step 5: Lint
       - name: Lint
         run: npm run lint
 
-      # Step 6: Run tests
       - name: Run tests
         run: npm test
 
-      # Step 7: Build the project
       - name: Build the project
         run: npm run build
