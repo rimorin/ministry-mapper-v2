@@ -142,6 +142,27 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ---
 
+## 2026-08-21-markers
+
+[IMPROVED:ADMIN] Map markers are easier to read.
+  In Map View, each marker showed three things as coloured rings around one circle. The rings sat close together and were hard to tell apart.
+
+  How to read a marker now:
+  - The blue ring shows how much of the map is done.
+  - A green dot on top means the map is assigned.
+  - An orange dot below means it has a personal link.
+  - No dots means no active links.
+
+  The part still to do is now grey instead of nearly white, so you can see what is left without reading the number.
+
+  A selected marker has a grey outline instead of an orange one. Orange now means a personal link and nothing else.
+
+  The Marker Guide, top right, shows the same dots and ring.
+
+![Map markers showing progress, assignment and personal link](https://assets.ministry-mapper.com/release-notes/2026-08-21/markers.png)
+
+---
+
 ## 2026-08-07-colors
 
 [NEW] New color themes.

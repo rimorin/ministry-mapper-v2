@@ -20,6 +20,25 @@
 
 ---
 
+## 2026-08-21-markers
+
+[IMPROVED:ADMIN] Penanda peta lebih mudah dibaca.
+  Dalam Paparan Peta, setiap penanda menunjukkan tiga perkara sebagai gelang berwarna di sekeliling satu bulatan. Gelang-gelang itu berdekatan dan sukar dibezakan.
+
+  Cara membaca penanda sekarang:
+  - Gelang biru menunjukkan berapa banyak peta yang sudah siap.
+  - Titik hijau di atas bermakna peta itu telah ditugaskan.
+  - Titik oren di bawah bermakna ia mempunyai pautan peribadi.
+  - Tiada titik bermakna tiada pautan aktif.
+
+  Bahagian yang belum siap kini kelabu, bukan hampir putih, jadi anda nampak apa yang tinggal tanpa membaca nombor.
+
+  Penanda yang dipilih kini bergaris kelabu, bukan oren. Oren kini bermakna pautan peribadi sahaja.
+
+  Panduan Penanda di kanan atas menunjukkan titik dan gelang yang sama.
+
+---
+
 ## 2026-08-07-colors
 
 [NEW] Tema warna baharu.

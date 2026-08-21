@@ -20,6 +20,25 @@
 
 ---
 
+## 2026-08-21-markers
+
+[IMPROVED:ADMIN] Los marcadores del mapa son más fáciles de leer.
+  En Vista de mapa, cada marcador mostraba tres cosas como anillos de color alrededor de un mismo círculo. Los anillos estaban muy juntos y costaba distinguirlos.
+
+  Cómo leer un marcador ahora:
+  - El anillo azul muestra cuánto del mapa está hecho.
+  - Un punto verde arriba significa que el mapa está asignado.
+  - Un punto naranja abajo significa que tiene un enlace personal.
+  - Sin puntos, no hay enlaces activos.
+
+  La parte que falta ahora es gris en lugar de casi blanca, así ves lo que queda sin leer el número.
+
+  El marcador seleccionado tiene un contorno gris en lugar de naranja. El naranja ahora significa un enlace personal y nada más.
+
+  La Guía de Marcadores, arriba a la derecha, muestra los mismos puntos y anillo.
+
+---
+
 ## 2026-08-07-colors
 
 [NEW] Nuevos temas de color.

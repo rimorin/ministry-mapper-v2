@@ -20,6 +20,25 @@
 
 ---
 
+## 2026-08-21-markers
+
+[IMPROVED:ADMIN] Penanda peta lebih mudah dibaca.
+  Di Tampilan Peta, setiap penanda menampilkan tiga hal sebagai lingkaran berwarna di sekeliling satu lingkaran. Lingkaran-lingkaran itu berdekatan dan sulit dibedakan.
+
+  Cara membaca penanda sekarang:
+  - Lingkaran biru menunjukkan seberapa banyak peta yang sudah selesai.
+  - Titik hijau di atas berarti peta sudah ditugaskan.
+  - Titik oranye di bawah berarti ada tautan pribadi.
+  - Tanpa titik berarti tidak ada tautan aktif.
+
+  Bagian yang belum selesai kini abu-abu, bukan hampir putih, jadi Anda bisa melihat sisanya tanpa membaca angka.
+
+  Penanda yang dipilih kini bergaris abu-abu, bukan oranye. Oranye sekarang berarti tautan pribadi dan tidak lebih.
+
+  Panduan Penanda di kanan atas menampilkan titik dan lingkaran yang sama.
+
+---
+
 ## 2026-08-07-colors
 
 [NEW] Tema warna baru.
