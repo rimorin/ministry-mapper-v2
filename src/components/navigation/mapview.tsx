@@ -28,10 +28,24 @@ import {
   PopoverTrigger
 } from "@/components/ui/popover";
 
-const RING_LEGEND = [
-  { color: "var(--mm-success)", labelKey: "navigation.normalRing" },
-  { color: "var(--mm-warning)", labelKey: "navigation.personalRing" },
-  { color: "var(--mm-progress)", labelKey: "navigation.progressRing" }
+// A key should look like the thing it describes: assignment and personal are
+// solid dials on the marker face, progress is the ring around it.
+const MARKER_LEGEND = [
+  {
+    color: "var(--mm-success)",
+    shape: "dial",
+    labelKey: "navigation.normalRing"
+  },
+  {
+    color: "var(--mm-warning)",
+    shape: "dial",
+    labelKey: "navigation.personalRing"
+  },
+  {
+    color: "var(--mm-progress)",
+    shape: "ring",
+    labelKey: "navigation.progressRing"
+  }
 ] as const;
 
 const MapView: React.FC<MapViewProps> = ({
@@ -127,11 +141,11 @@ const MapView: React.FC<MapViewProps> = ({
                 className="flex flex-col items-center gap-[3px]"
                 aria-hidden="true"
               >
-                {RING_LEGEND.map(({ color }) => (
+                {MARKER_LEGEND.map(({ color, labelKey }) => (
                   <span
-                    key={color}
-                    className="block size-[5px] rounded-full border-[1.5px]"
-                    style={{ borderColor: color }}
+                    key={labelKey}
+                    className="block size-[5px] rounded-full"
+                    style={{ backgroundColor: color }}
                   />
                 ))}
               </span>
@@ -148,11 +162,18 @@ const MapView: React.FC<MapViewProps> = ({
                 </p>
               </div>
               <div className="px-3 py-2 flex flex-col gap-2">
-                {RING_LEGEND.map(({ color, labelKey }) => (
-                  <div key={color} className="flex items-center gap-2.5">
+                {MARKER_LEGEND.map(({ color, shape, labelKey }) => (
+                  <div key={labelKey} className="flex items-center gap-2.5">
                     <div
-                      className="size-3 shrink-0 rounded-full border-2"
-                      style={{ borderColor: color }}
+                      className="size-3 shrink-0 rounded-full"
+                      style={
+                        shape === "ring"
+                          ? { border: `2px solid ${color}` }
+                          : {
+                              backgroundColor: color,
+                              boxShadow: "inset 0 0 0 1px rgb(0 0 0 / 0.38)"
+                            }
+                      }
                     />
                     <span className="text-xs text-foreground whitespace-nowrap">
                       {t(labelKey)}

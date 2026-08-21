@@ -9,8 +9,11 @@
   /* Pinned, not theme-aware: the tile layer is light in both themes, so a dark
      marker surface would read as a hole in the map. */
   --mm-marker-surface: #ffffff;
-  --mm-marker-edge: rgb(0 0 0 / 0.18);
+  --mm-marker-edge: rgb(0 0 0 / 0.28);
   --mm-marker-endgame: #d97706; /* amber-600, pinned to the light value */
+  --mm-marker-ink: #171717;
+  --mm-marker-track: rgb(0 0 0 / 0.22);
+  --mm-marker-selected: rgb(23 23 23 / 0.55);
   --mm-marker-label-bg: rgba(0, 0, 0, 0.5);
 
   /* Brand semantic colours (no matching shadcn token) */
@@ -19,10 +22,8 @@
   --mm-progress: #3b82f6; /* blue-500 */
 
   --mm-success-alpha-10: rgba(40, 167, 69, 0.08);
-  --mm-warning-alpha-60: rgba(255, 107, 53, 0.6);
 }
 
 .dark {
   --mm-highlight-amber: #fbbf24; /* amber-400 — brighter on dark */
-  --mm-progress: #60a5fa; /* blue-400 — brighter on dark */
 }

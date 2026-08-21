@@ -42,103 +42,92 @@
   background: rgba(255, 255, 255, 0.2);
 }
 
-.circular-progress-container {
+/* Progress marker, built like a chronograph face: the ring carries progress,
+   two inset dials at 12 and 6 carry assignment and personal. Palette is pinned
+   — the tile layer is light in both themes. */
+.map-progress {
   position: relative;
-  display: inline-block;
-  width: 55px;
-  height: 55px;
-  border-radius: 50%;
-  background-color: var(--background);
-  contain: layout style;
-  box-shadow:
-    0 2px 8px rgba(0, 0, 0, 0.28),
-    0 0 0 1.5px rgba(0, 0, 0, 0.1);
-}
-
-.circular-progress {
-  width: 100%;
-  height: 100%;
-}
-
-.circular-progress-background,
-.circular-progress-highlight,
-.circular-progress-assignments,
-.circular-progress-personal,
-.selected-marker-ring {
-  fill: none;
-}
-
-.circular-progress-background {
-  opacity: 0.5;
-  stroke: var(--muted-foreground);
-  stroke-width: 3;
-}
-
-.circular-progress-highlight {
-  stroke: var(--mm-progress);
-  stroke-width: 3;
-  /* Single -90deg rotation starts arc at 12 o'clock */
-  transform: rotate(-0.25turn);
-  transform-origin: center;
-  transition: stroke-dashoffset 0.35s ease;
-}
-
-.circular-progress-center {
-  position: absolute;
-  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
-  font-weight: 900;
-  color: var(--foreground);
-  text-shadow:
-    -1px -1px 0 color-mix(in oklch, var(--background) 90%, transparent),
-    1px -1px 0 color-mix(in oklch, var(--background) 90%, transparent),
-    -1px 1px 0 color-mix(in oklch, var(--background) 90%, transparent),
-    1px 1px 0 color-mix(in oklch, var(--background) 90%, transparent);
-}
-
-.circular-progress-assignments,
-.circular-progress-personal {
-  display: none;
-}
-
-/* Static — animating opacity here pinned a GPU layer per marker (battery
-   drain on older iOS); colour + drop-shadow still convey the state. */
-.marker-has-assignments .circular-progress-assignments {
-  display: block;
-  opacity: 0.9;
-  stroke: var(--mm-success);
-  stroke-width: 3.5;
-  stroke-linecap: round;
-  filter: drop-shadow(0 0 3px var(--mm-success));
-}
-
-.marker-has-personal .circular-progress-personal {
-  display: block;
-  opacity: 0.9;
-  stroke: var(--mm-warning);
-  stroke-width: 3.5;
-  stroke-linecap: round;
-  filter: drop-shadow(0 0 3px var(--mm-warning));
-}
-
-.selected-marker {
-  border: 2px solid var(--mm-warning);
+  width: 55px;
+  height: 55px;
   border-radius: 50%;
-  box-shadow: 0 0 15px var(--mm-warning-alpha-60);
+  background-color: var(--mm-marker-surface);
+  contain: layout style;
+  box-shadow:
+    0 0 0 1px var(--mm-marker-edge),
+    0 1px 3px rgb(0 0 0 / 0.3);
 }
 
-.selected-marker-ring {
+/* Selection is interaction state, not territory data, so it uses a neutral
+   halo — green, orange and blue keep their domain meanings. */
+.marker-selected .map-progress {
+  box-shadow:
+    0 0 0 1px var(--mm-marker-edge),
+    0 0 0 2px var(--mm-marker-surface),
+    0 0 0 6px var(--mm-marker-selected),
+    0 1px 3px rgb(0 0 0 / 0.3);
+}
+
+/* Conic gradient with a hard stop, masked down to a ring. */
+.map-progress-track {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(
+    var(--mm-progress) calc(var(--progress) * 1%),
+    var(--mm-marker-track) 0
+  );
+  mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 0);
+}
+
+/* Flat fills at the extremes — see trackFill in marker.tsx. */
+.map-progress-track[data-fill="full"] {
+  background: var(--mm-progress);
+}
+
+.map-progress-track[data-fill="empty"] {
+  background: var(--mm-marker-track);
+}
+
+.map-progress-value {
+  position: relative;
+  font-size: 14px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--mm-marker-ink);
+}
+
+/* Hidden until its state applies, so a dial on screen always means something.
+   The rim is inset so it carries the boundary without enlarging the dial — the
+   personal orange measures 2.84:1 on white, under the 3:1 minimum. */
+.map-progress-dial {
+  position: absolute;
+  left: 50%;
+  translate: -50% 0;
   display: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.38);
 }
 
-.marker-selected .selected-marker-ring {
+.map-progress-dial[data-dial="assignment"] {
+  top: 6px;
+  background-color: var(--mm-success);
+}
+
+.map-progress-dial[data-dial="personal"] {
+  bottom: 6px;
+  background-color: var(--mm-warning);
+}
+
+/* Position is the accessible channel here: the two fills sit 1.10:1 apart in
+   luminance, so hue alone does not separate them. */
+.marker-has-assignments .map-progress-dial[data-dial="assignment"],
+.marker-has-personal .map-progress-dial[data-dial="personal"] {
   display: block;
-  stroke: var(--mm-warning);
-  stroke-width: 3;
-  filter: drop-shadow(0 0 8px var(--mm-warning-alpha-60));
 }
 
 @media (max-width: 768px) {

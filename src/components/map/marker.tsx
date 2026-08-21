@@ -14,10 +14,36 @@ interface AddressMarkerProps {
 }
 
 const ICON_SIZE = 55;
-const STROKE_WIDTH = 3;
-const CENTER = ICON_SIZE / 2;
-const RADIUS = (ICON_SIZE - STROKE_WIDTH) / 2;
-const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
+
+// At 0 and 100 the gradient's stops collapse onto the 0deg/360deg seam and
+// browsers paint a hairline there, reading as an unclosed ring. Neither case has
+// a remainder to draw, so both get a flat fill instead.
+const trackFill = (progress: number) =>
+  progress >= 100 ? "full" : progress <= 0 ? "empty" : "partial";
+
+// Progress rides in as a custom property because Tailwind cannot generate a
+// class from a runtime value. Dials precede the value so the number paints over
+// them; CSS hides each until its wrapper class applies.
+export const buildProgressMarkerHtml = (display: string, progress: number) =>
+  `<div class="map-progress" style="--progress:${progress}">` +
+  `<span class="map-progress-track" data-fill="${trackFill(progress)}"></span>` +
+  `<span class="map-progress-dial" data-dial="assignment"></span>` +
+  `<span class="map-progress-dial" data-dial="personal"></span>` +
+  `<span class="map-progress-value">${display}</span>` +
+  `</div>`;
+
+export const buildMarkerClasses = (
+  isSelected: boolean,
+  hasAssignments: boolean,
+  hasPersonal: boolean
+) =>
+  [
+    isSelected && "marker-selected",
+    hasAssignments && "marker-has-assignments",
+    hasPersonal && "marker-has-personal"
+  ]
+    .filter(Boolean)
+    .join(" ");
 
 const AddressMarker: React.FC<AddressMarkerProps> = ({
   addressElement,
@@ -73,33 +99,14 @@ const AddressMarker: React.FC<AddressMarkerProps> = ({
     !!mapId
   );
 
-  const wrapperClasses = [
-    isSelected && "marker-selected",
-    hasAssignments && "marker-has-assignments",
-    hasPersonal && "marker-has-personal"
-  ]
-    .filter(Boolean)
-    .join(" ");
-
-  const offset = CIRCUMFERENCE * (1 - addressElement.aggregates.value / 100);
-  const innerRadius1 = RADIUS - STROKE_WIDTH - 2;
-  const innerRadius2 = RADIUS - STROKE_WIDTH - 6;
-  const outerRadius = RADIUS + STROKE_WIDTH + 2;
-
   const markerIcon = divIcon({
-    html: `<div class="circular-progress-container">
-      <svg class="circular-progress" width="${ICON_SIZE}" height="${ICON_SIZE}">
-        <circle class="circular-progress-background" cx="${CENTER}" cy="${CENTER}" r="${RADIUS}"/>
-        <circle class="circular-progress-highlight" cx="${CENTER}" cy="${CENTER}" r="${RADIUS}" style="stroke-dasharray:${CIRCUMFERENCE};stroke-dashoffset:${offset}"/>
-        <circle class="circular-progress-assignments" cx="${CENTER}" cy="${CENTER}" r="${innerRadius1}"/>
-        <circle class="circular-progress-personal" cx="${CENTER}" cy="${CENTER}" r="${innerRadius2}"/>
-        <circle class="selected-marker-ring" cx="${CENTER}" cy="${CENTER}" r="${outerRadius}"/>
-      </svg>
-      <div class="circular-progress-center">${addressElement.aggregates.display}</div>
-    </div>`,
-    className: wrapperClasses,
+    html: buildProgressMarkerHtml(
+      addressElement.aggregates.display,
+      addressElement.aggregates.value
+    ),
+    className: buildMarkerClasses(isSelected, hasAssignments, hasPersonal),
     iconSize: [ICON_SIZE, ICON_SIZE],
-    iconAnchor: [CENTER, CENTER]
+    iconAnchor: [ICON_SIZE / 2, ICON_SIZE / 2]
   });
 
   return (
