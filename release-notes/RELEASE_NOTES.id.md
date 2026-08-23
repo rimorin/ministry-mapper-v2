@@ -1,5 +1,22 @@
 # Catatan Rilis (Bahasa Indonesia)
 
+## 2026-08-24
+
+[NEW] Langsung menuju alamat berikutnya yang masih perlu dikunjungi.
+  Setelah sebuah peta melewati 90%, hanya tersisa beberapa alamat, dan letaknya terpencar. Mencarinya berarti menggulir naik turun mencari yang berwarna hijau.
+
+  Kini sebuah tombol di sudut bawah daftar alamat melakukannya untuk Anda. Tombol itu menunjukkan berapa yang tersisa, dan setiap ketukan membawa Anda ke alamat berikutnya.
+
+  Cara memakainya:
+  - Ketuk "X tersisa" untuk menuju alamat berikutnya yang masih perlu dikunjungi.
+  - Terus ketuk untuk melewati semuanya. Setelah yang terakhir, tombol kembali ke awal.
+  - Sebuah bingkai menandai alamat yang dituju.
+  - Bila tidak ada lagi yang tersisa, tombol itu hilang.
+
+  Di bangunan bertingkat, angka kecil di samping lantai menunjukkan berapa alamat di lantai itu yang masih perlu dikunjungi.
+
+---
+
 ## 2026-08-21
 
 [NEW] Simpan lokasi rumah saat Anda berada di sana.

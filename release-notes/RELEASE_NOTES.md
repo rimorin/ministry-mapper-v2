@@ -120,6 +120,25 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ---
 
+## 2026-08-24
+
+[NEW] Jump to the next address that still needs a call.
+  Once a map is more than 90% done, only a few addresses are left, and they are spread out. Finding them means scrolling up and down looking for the green ones.
+
+  A button in the bottom corner of the address list now does that for you. It shows how many are left, and each tap takes you to the next one.
+
+  How to use it:
+  - Tap "X to go" to move to the next address that still needs a call.
+  - Keep tapping to work through all of them. After the last one it starts again from the top.
+  - A ring marks the address it took you to.
+  - When none are left, the button disappears.
+
+  In buildings with more than one floor, a small number beside the floor shows how many addresses on that floor still need a call.
+
+![Jumping to the next address that still needs a call](https://assets.ministry-mapper.com/release-notes/2026-08-24/next-address.png)
+
+---
+
 ## 2026-08-21
 
 [NEW] Save a house's location while you are standing there.

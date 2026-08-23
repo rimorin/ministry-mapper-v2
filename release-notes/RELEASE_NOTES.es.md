@@ -1,5 +1,22 @@
 # Notas de versión (Español)
 
+## 2026-08-24
+
+[NEW] Ve directo a la siguiente dirección que aún necesita visita.
+  Cuando un mapa pasa del 90% completado, solo quedan unas pocas direcciones, y están repartidas. Encontrarlas obliga a subir y bajar buscando las verdes.
+
+  Ahora un botón en la esquina inferior de la lista lo hace por ti. Muestra cuántas quedan, y cada toque te lleva a la siguiente.
+
+  Cómo usarlo:
+  - Toca "Quedan X" para ir a la siguiente dirección que aún necesita visita.
+  - Sigue tocando para recorrerlas todas. Después de la última vuelve a empezar por arriba.
+  - Un borde marca la dirección a la que te llevó.
+  - Cuando no queda ninguna, el botón desaparece.
+
+  En edificios de varios pisos, un número pequeño junto al piso indica cuántas direcciones de ese piso aún necesitan visita.
+
+---
+
 ## 2026-08-21
 
 [NEW] Guarda la ubicación de una casa mientras estás allí.
