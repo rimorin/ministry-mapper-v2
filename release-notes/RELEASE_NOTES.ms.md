@@ -1,5 +1,22 @@
 # Nota Pelepasan (Bahasa Melayu)
 
+## 2026-08-24
+
+[NEW] Terus ke alamat seterusnya yang masih perlu dikunjungi.
+  Apabila sesuatu peta melepasi 90%, hanya tinggal beberapa alamat, dan ia bertaburan. Untuk mencarinya anda perlu menatal ke atas dan ke bawah mencari yang berwarna hijau.
+
+  Kini satu butang di sudut bawah senarai alamat melakukannya untuk anda. Ia menunjukkan berapa yang tinggal, dan setiap ketikan membawa anda ke alamat seterusnya.
+
+  Cara menggunakannya:
+  - Ketik "X lagi" untuk ke alamat seterusnya yang masih perlu dikunjungi.
+  - Terus ketik untuk melalui kesemuanya. Selepas yang terakhir, ia bermula semula dari atas.
+  - Satu bingkai menandakan alamat yang dituju.
+  - Apabila tiada lagi yang tinggal, butang itu hilang.
+
+  Dalam bangunan bertingkat, nombor kecil di sebelah tingkat menunjukkan berapa alamat di tingkat itu yang masih perlu dikunjungi.
+
+---
+
 ## 2026-08-21
 
 [NEW] Simpan lokasi rumah semasa anda berada di sana.
