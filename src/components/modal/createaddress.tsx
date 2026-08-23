@@ -69,9 +69,15 @@ const CreateAddress = NiceModal.create(
       latlongInterface | undefined
     >(undefined);
     const [propertyNumber, setPropertyNumber] = useState("");
+    const [showHhTypeError, setShowHhTypeError] = useState(false);
 
     const isNotHome = unitStatus === STATUS_CODES.NOT_HOME;
     const isDnc = unitStatus === STATUS_CODES.DO_NOT_CALL;
+
+    // An address with no type is uncountable, so it never shows as still
+    // needing a call — on the grid or on the map.
+    const hasOptions = policy.options.length > 0;
+    const isHhTypeValid = !hasOptions || (hhType?.length ?? 0) > 0;
 
     const handleSubmitClick = async (event: FormEvent<HTMLElement>) => {
       event.preventDefault();
@@ -84,6 +90,11 @@ const CreateAddress = NiceModal.create(
             { code: propertyNumber }
           )
         );
+        return;
+      }
+
+      if (!isHhTypeValid) {
+        setShowHhTypeError(true);
         return;
       }
 
@@ -176,6 +187,7 @@ const CreateAddress = NiceModal.create(
     };
 
     const handleHHTypeChange = (option: SelectProps[]) => {
+      setShowHhTypeError(false);
       setHhtype(
         option.map((opt: SelectProps) => ({ id: opt.value, code: opt.label }))
       );
@@ -239,6 +251,14 @@ const CreateAddress = NiceModal.create(
                     label: option.description,
                     value: option.id
                   }))}
+                  error={
+                    showHhTypeError
+                      ? t(
+                          "household.required",
+                          "Please select at least one household type."
+                        )
+                      : undefined
+                  }
                 />
                 <AddressCoordinatesField
                   coordinates={coordinates}
