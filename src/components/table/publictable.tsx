@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import { floorDetails, territoryMultiProps } from "../../utils/interface";
 import type { Policy } from "../../utils/policies";
 import AddressStatus, { PendingSyncDot } from "./address";
@@ -18,6 +19,8 @@ import {
   rowHeader,
   PAGE_ENTER_DELAY
 } from "@/lib/motion";
+import useNextAvailable from "../../hooks/useNextAvailable";
+import NextAvailable from "./nextavailable";
 
 interface FloorRowProps {
   item: floorDetails;
@@ -26,6 +29,7 @@ interface FloorRowProps {
   aggregatesValue: number;
   policy: Policy;
   pendingAddressIds?: Set<string>;
+  targetId?: string;
   handleUnitStatusUpdate: (event: React.MouseEvent<HTMLElement>) => void;
   handleFloorDelete?: (event: React.MouseEvent<HTMLElement>) => void;
 }
@@ -40,10 +44,14 @@ const FloorRow = ({
   aggregatesValue,
   policy,
   pendingAddressIds,
+  targetId,
   handleUnitStatusUpdate,
   handleFloorDelete
 }: FloorRowProps) => {
   const { t } = useTranslation();
+  const availableCount = item.units.filter((unit) =>
+    policy.isAvailable(unit)
+  ).length;
   return (
     <tr className="h-16">
       <m.th
@@ -71,6 +79,19 @@ const FloorRow = ({
             </ComponentAuthorizer>
           )}
           <span>{ZeroPad(item.floor.toString(), DEFAULT_FLOOR_PADDING)}</span>
+          {moreThanOneFloor && availableCount > 0 && (
+            <Badge
+              variant="outline"
+              className="ms-1 px-1.5 tabular-nums"
+              aria-label={t(
+                "navigation.floorRemaining",
+                "{{count}} still to call on this floor",
+                { count: availableCount }
+              )}
+            >
+              {availableCount}
+            </Badge>
+          )}
         </div>
       </m.th>
       {item.units.map((element, colIndex) => (
@@ -78,7 +99,8 @@ const FloorRow = ({
           key={`td-${item.floor}-${element.number}`}
           className={cn(
             "map-cell",
-            policy?.getUnitColor(element, aggregatesValue)
+            policy?.getUnitColor(element, aggregatesValue),
+            element.id === targetId && "map-target-ring"
           )}
           onClick={handleUnitStatusUpdate}
           data-id={element.id}
@@ -121,74 +143,83 @@ const PublicTerritoryTable = ({
   const floorDetails = floors[0];
   const aggregatesValue =
     addressDetails.aggregates?.value || DEFAULT_AGGREGATES.value;
+  const { containerRef, remaining, targetId, goToNext } = useNextAvailable(
+    floors.flatMap((floor) => floor.units),
+    policy
+  );
   return (
-    <div
-      className={cn(
-        policy.isFromAdmin() ? "map-body-admin" : "h-full map-body"
-      )}
-    >
-      <table className="sticky-table w-full text-sm">
-        <thead>
-          <tr className="h-16">
-            <m.th
-              scope="col"
-              className="sticky-top-cell sticky-left-cell sticky-corner"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{
-                duration: 0.25,
-                ease: "linear",
-                delay: PAGE_ENTER_DELAY
-              }}
-            />
-            {floorDetails?.units.map((item, index) => (
+    <div className={cn("relative", !policy.isFromAdmin() && "h-full")}>
+      <div
+        ref={containerRef}
+        className={cn(
+          policy.isFromAdmin() ? "map-body-admin" : "h-full map-body"
+        )}
+      >
+        <table className="sticky-table w-full text-sm">
+          <thead>
+            <tr className="h-16">
               <m.th
-                key={`th-${item.number}`}
                 scope="col"
-                className="sticky-top-cell text-center align-middle text-xs text-muted-foreground tracking-wide uppercase"
-                custom={{ index }}
-                variants={columnHeader}
-                initial="hidden"
-                animate="show"
-              >
-                <div className="inline-flex items-center">
-                  <ComponentAuthorizer
-                    requiredPermission={
-                      USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
-                    }
-                    userPermission={policy?.userRole}
-                  >
-                    <GenericButton
-                      size="sm"
-                      variant="secondary"
-                      className="me-1"
-                      onClick={handleUnitDelete}
-                      dataAttributes={{ unitno: item.number }}
-                      label={t("table.deleteUnit", "🗑️")}
-                    />
-                  </ComponentAuthorizer>
-                  <span>{ZeroPad(item.number, maxUnitLength)}</span>
-                </div>
-              </m.th>
+                className="sticky-top-cell sticky-left-cell sticky-corner"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{
+                  duration: 0.25,
+                  ease: "linear",
+                  delay: PAGE_ENTER_DELAY
+                }}
+              />
+              {floorDetails?.units.map((item, index) => (
+                <m.th
+                  key={`th-${item.number}`}
+                  scope="col"
+                  className="sticky-top-cell text-center align-middle text-xs text-muted-foreground tracking-wide uppercase"
+                  custom={{ index }}
+                  variants={columnHeader}
+                  initial="hidden"
+                  animate="show"
+                >
+                  <div className="inline-flex items-center">
+                    <ComponentAuthorizer
+                      requiredPermission={
+                        USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
+                      }
+                      userPermission={policy?.userRole}
+                    >
+                      <GenericButton
+                        size="sm"
+                        variant="secondary"
+                        className="me-1"
+                        onClick={handleUnitDelete}
+                        dataAttributes={{ unitno: item.number }}
+                        label={t("table.deleteUnit", "🗑️")}
+                      />
+                    </ComponentAuthorizer>
+                    <span>{ZeroPad(item.number, maxUnitLength)}</span>
+                  </div>
+                </m.th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {floors.map((item, rowIndex) => (
+              <FloorRow
+                key={`row-${item.floor}`}
+                item={item}
+                rowIndex={rowIndex}
+                moreThanOneFloor={moreThanOneFloor}
+                aggregatesValue={aggregatesValue}
+                policy={policy}
+                pendingAddressIds={pendingAddressIds}
+                targetId={targetId}
+                handleUnitStatusUpdate={handleUnitStatusUpdate}
+                handleFloorDelete={handleFloorDelete}
+              />
             ))}
-          </tr>
-        </thead>
-        <tbody>
-          {floors.map((item, rowIndex) => (
-            <FloorRow
-              key={`row-${item.floor}`}
-              item={item}
-              rowIndex={rowIndex}
-              moreThanOneFloor={moreThanOneFloor}
-              aggregatesValue={aggregatesValue}
-              policy={policy}
-              pendingAddressIds={pendingAddressIds}
-              handleUnitStatusUpdate={handleUnitStatusUpdate}
-              handleFloorDelete={handleFloorDelete}
-            />
-          ))}
-        </tbody>
-      </table>
+          </tbody>
+        </table>
+      </div>
+      <NextAvailable remaining={remaining} onClick={goToNext} />
     </div>
   );
 };

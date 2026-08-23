@@ -363,3 +363,24 @@
   color: #ffffff;
   border-radius: 2px;
 }
+
+/* Marks the address the "next address" button jumped to, and clears when the
+   next tap moves on. Inset so the cell keeps its exact footprint, and so the
+   ring follows whatever rounding the element already has. */
+.map-target-ring {
+  box-shadow: inset 0 0 0 3px var(--primary);
+  animation: map-target-settle 0.45s ease-out;
+}
+
+/* Closes inward as the grid scrolls the address into view. Ends on the resting
+   state the class sets, so reduced motion collapses to the ring rather than
+   losing the mark. */
+@keyframes map-target-settle {
+  from {
+    box-shadow: inset 0 0 0 14px
+      color-mix(in oklch, var(--primary) 22%, transparent);
+  }
+  to {
+    box-shadow: inset 0 0 0 3px var(--primary);
+  }
+}
