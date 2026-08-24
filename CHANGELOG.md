@@ -1,3 +1,9 @@
+## [2.7.2](https://github.com/rimorin/ministry-mapper-v2/compare/v2.7.1...v2.7.2) (2026-08-24)
+
+### Bug Fixes
+
+* hold the per-floor counts back until the endgame too ([2f3f989](https://github.com/rimorin/ministry-mapper-v2/commit/2f3f989f726cfe7bfbdad06a87bbdad743e3f7bc))
+
 ## [2.7.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.7.0...v2.7.1) (2026-08-24)
 
 ### Bug Fixes
