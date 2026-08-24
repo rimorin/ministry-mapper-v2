@@ -44,12 +44,12 @@ const PrivateTerritoryTable = ({
               >
                 <Card
                   className={cn(
-                    "overflow-visible gap-0 py-0",
+                    "h-full overflow-visible gap-0 py-0",
                     element.id === targetId && "map-target-ring"
                   )}
                 >
                   <CardContent
-                    className="relative p-0 text-center transition-colors duration-200"
+                    className="relative flex flex-1 flex-col p-0 text-center transition-colors duration-200"
                     onClick={handleHouseUpdate}
                     data-id={element.id}
                     data-unitno={element.number}
@@ -70,7 +70,7 @@ const PrivateTerritoryTable = ({
                     </div>
                     <div
                       className={cn(
-                        "flex h-12 flex-wrap items-center justify-center gap-[0.15rem] overflow-hidden p-[0.2rem] font-bold fluid-text transition-colors duration-200 border-t border-border",
+                        "flex min-h-12 flex-1 flex-wrap items-center justify-center gap-[0.15rem] p-[0.2rem] font-bold fluid-text transition-colors duration-200 border-t border-border",
                         policy?.getUnitColor(
                           element,
                           aggregates?.value || DEFAULT_AGGREGATES.value
