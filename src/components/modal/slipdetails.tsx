@@ -6,7 +6,7 @@ import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
 import MapProgressStats from "@/components/common/map-progress-stats";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../common/submit-button";
 import {
   ResponsiveDialog,
   ResponsiveDialogContent,
@@ -221,12 +221,9 @@ const ConfirmSlipDetails = NiceModal.create(
                   <Button variant="outline" type="button" onClick={modal.hide}>
                     {t("common.cancel", "Cancel")}
                   </Button>
-                  <Button type="submit" disabled={isSharing}>
-                    {isSharing && (
-                      <Spinner data-icon="inline-start" aria-hidden="true" />
-                    )}
+                  <SubmitButton pending={isSharing}>
                     {shareButtonLabel}
-                  </Button>
+                  </SubmitButton>
                 </ResponsiveDialogFooter>
               </form>
             </>
@@ -279,12 +276,9 @@ const ConfirmSlipDetails = NiceModal.create(
                     requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
                     userPermission={policy.userRole}
                   >
-                    <Button type="submit" disabled={isCreating}>
-                      {isCreating && (
-                        <Spinner data-icon="inline-start" aria-hidden="true" />
-                      )}
+                    <SubmitButton pending={isCreating}>
                       {t("slip.confirmButton")}
-                    </Button>
+                    </SubmitButton>
                   </ComponentAuthorizer>
                 </ResponsiveDialogFooter>
               </form>

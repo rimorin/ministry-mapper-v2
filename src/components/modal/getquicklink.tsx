@@ -14,7 +14,7 @@ import {
   DialogTitle
 } from "@/components/ui/dialog";
 import { XIcon } from "lucide-react";
-import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../common/submit-button";
 import { useTranslation } from "react-i18next";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker } from "react-leaflet";
@@ -180,12 +180,9 @@ const QuickLinkModal = NiceModal.create(
                   >
                     {t("common.cancel", "Cancel")}
                   </Button>
-                  <Button type="submit" disabled={isLoading}>
-                    {isLoading && (
-                      <Spinner data-icon="inline-start" aria-hidden="true" />
-                    )}
+                  <SubmitButton pending={isLoading}>
                     {t("admin.confirm")}
-                  </Button>
+                  </SubmitButton>
                 </DialogFooter>
               </form>
             </>
@@ -330,12 +327,9 @@ const QuickLinkModal = NiceModal.create(
                     >
                       {t("common.cancel", "Cancel")}
                     </Button>
-                    <Button type="submit" disabled={isSharing}>
-                      {isSharing && (
-                        <Spinner data-icon="inline-start" aria-hidden="true" />
-                      )}
+                    <SubmitButton pending={isSharing}>
                       {shareButtonLabel}
-                    </Button>
+                    </SubmitButton>
                   </DialogFooter>
                 )}
               </form>

@@ -14,7 +14,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
-import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../common/submit-button";
 import {
   USER_ACCESS_LEVELS,
   STATUS_CODES,
@@ -306,12 +306,9 @@ const UpdateUnitStatus = NiceModal.create(
                   requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
                   userPermission={policy.userRole}
                 >
-                  <Button type="submit" className="flex-1" disabled={isSaving}>
-                    {isSaving && (
-                      <Spinner data-icon="inline-start" aria-hidden="true" />
-                    )}
+                  <SubmitButton className="flex-1" pending={isSaving}>
                     {t("common.save")}
-                  </Button>
+                  </SubmitButton>
                 </ComponentAuthorizer>
               </div>
               {isSingleStory && (

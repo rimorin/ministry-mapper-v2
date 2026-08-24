@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../common/submit-button";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import { UserModalProps } from "../../utils/interface";
@@ -106,12 +106,9 @@ const UpdateUser = NiceModal.create(
                   requiredPermission={footerSaveAcl}
                   userPermission={footerSaveAcl}
                 >
-                  <Button type="submit" disabled={form.formState.isSubmitting}>
-                    {form.formState.isSubmitting && (
-                      <Spinner data-icon="inline-start" aria-hidden="true" />
-                    )}
+                  <SubmitButton pending={form.formState.isSubmitting}>
                     {t("common.save")}
-                  </Button>
+                  </SubmitButton>
                 </ComponentAuthorizer>
               </DialogFooter>
             </form>

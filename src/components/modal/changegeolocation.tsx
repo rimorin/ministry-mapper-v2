@@ -13,7 +13,7 @@ import {
   DialogTitle
 } from "@/components/ui/dialog";
 import { XIcon } from "lucide-react";
-import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../common/submit-button";
 import { useTranslation } from "react-i18next";
 import "leaflet/dist/leaflet.css";
 import { MapContainer, Marker, useMapEvents } from "react-leaflet";
@@ -197,14 +197,11 @@ const ChangeMapGeolocation = NiceModal.create(
               <Button variant="secondary" type="button" onClick={modal.hide}>
                 {t("common.cancel", "Cancel")}
               </Button>
-              <Button type="submit" disabled={isSaving}>
-                {isSaving && (
-                  <Spinner data-icon="inline-start" aria-hidden="true" />
-                )}
+              <SubmitButton pending={isSaving}>
                 {isSelectOnly
                   ? t("common.select", "Select")
                   : t("common.save", "Save")}
-              </Button>
+              </SubmitButton>
             </DialogFooter>
           </form>
         </DialogContent>

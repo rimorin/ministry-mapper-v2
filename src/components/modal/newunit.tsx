@@ -10,7 +10,7 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../common/submit-button";
 import { USER_ACCESS_LEVELS, TERRITORY_TYPES } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import { NewUnitModalProps } from "../../utils/interface";
@@ -85,12 +85,9 @@ const NewUnit = NiceModal.create(
                 requiredPermission={footerSaveAcl}
                 userPermission={footerSaveAcl}
               >
-                <Button type="submit" disabled={isSaving}>
-                  {isSaving && (
-                    <Spinner data-icon="inline-start" aria-hidden="true" />
-                  )}
+                <SubmitButton pending={isSaving}>
                   {t("common.save", "Save")}
-                </Button>
+                </SubmitButton>
               </ComponentAuthorizer>
             </DialogFooter>
           </form>

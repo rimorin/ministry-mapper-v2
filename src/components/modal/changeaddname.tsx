@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../common/submit-button";
 import useNotification from "../../hooks/useNotification";
 import ComponentAuthorizer from "../navigation/authorizer";
 import { ChangeAddressNameModalProps } from "../../utils/interface";
@@ -94,12 +94,9 @@ const ChangeAddressName = NiceModal.create(
                   requiredPermission={footerSaveAcl}
                   userPermission={footerSaveAcl}
                 >
-                  <Button type="submit" disabled={form.formState.isSubmitting}>
-                    {form.formState.isSubmitting && (
-                      <Spinner data-icon="inline-start" aria-hidden="true" />
-                    )}
+                  <SubmitButton pending={form.formState.isSubmitting}>
                     {t("common.save")}
-                  </Button>
+                  </SubmitButton>
                 </ComponentAuthorizer>
               </DialogFooter>
             </form>

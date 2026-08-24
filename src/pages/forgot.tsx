@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Redirect, useLocation } from "wouter";
-import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../components/common/submit-button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -70,12 +70,9 @@ const ForgotComponent = () => {
           </p>
         </div>
 
-        <Button type="submit" className="w-full" disabled={isProcessing}>
-          {isProcessing && (
-            <Spinner data-icon="inline-start" aria-hidden="true" />
-          )}
+        <SubmitButton className="w-full" pending={isProcessing}>
           {t("auth.continue", "Continue")}
-        </Button>
+        </SubmitButton>
 
         <Divider text={t("auth.or", "Or")} />
 

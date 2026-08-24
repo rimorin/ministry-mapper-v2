@@ -21,7 +21,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../common/submit-button";
 import {
   DEFAULT_CONGREGATION_MAX_TRIES,
   DEFAULT_SELF_DESTRUCT_HOURS
@@ -188,12 +188,9 @@ const UpdateCongregationSettings = NiceModal.create(
                 >
                   {t("common.cancel")}
                 </Button>
-                <Button type="submit" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting && (
-                    <Spinner data-icon="inline-start" aria-hidden="true" />
-                  )}
+                <SubmitButton pending={form.formState.isSubmitting}>
                   {t("common.save")}
-                </Button>
+                </SubmitButton>
               </DialogFooter>
             </form>
           </Form>

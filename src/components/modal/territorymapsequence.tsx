@@ -17,7 +17,7 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
-import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../common/submit-button";
 import { getList, callFunction, isAbortError } from "../../utils/pocketbase";
 import "../../css/sortable.css";
 import {
@@ -253,12 +253,9 @@ const ChangeTerritoryMapSequence = NiceModal.create(
                 requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
                 userPermission={footerSaveAcl}
               >
-                <Button type="submit" disabled={isSaving}>
-                  {isSaving && (
-                    <Spinner data-icon="inline-start" aria-hidden="true" />
-                  )}
+                <SubmitButton pending={isSaving}>
                   {t("common.save", "Save")}
-                </Button>
+                </SubmitButton>
               </ComponentAuthorizer>
             </DialogFooter>
           </form>
