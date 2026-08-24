@@ -1,9 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 
-export function useLocalStorage<T = string | boolean>(
-  key: string,
-  initialValue: T
-) {
+function useLocalStorage<T = string | boolean>(key: string, initialValue: T) {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
       const item = window.localStorage.getItem(key);

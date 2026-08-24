@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { useConfirm } from "./useConfirm";
+import useConfirm from "./useConfirm";
 
 // Mock the modal management hook
 const mockShowModal = vi.fn();

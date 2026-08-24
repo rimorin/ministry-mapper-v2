@@ -240,10 +240,6 @@ export interface aggregateBadgeProp {
   size?: "sm" | "md" | "lg";
 }
 
-export interface floorHeaderProp extends floorInterface {
-  index: number;
-}
-
 export interface tableHeaderProp {
   floors: Array<floorDetails>;
   maxUnitNumber: number;
@@ -692,18 +688,6 @@ export interface TravelModeButtonsProps {
   travelMode: TravelMode;
   onTravelModeChange: (travelMode: TravelMode) => void;
   isLoading?: boolean;
-}
-
-export interface CircularProgressProps {
-  size: number;
-  progress: number;
-  strokeWidth: number;
-  highlightColor: string;
-  backgroundColor: string;
-  hasAssignments: boolean;
-  hasPersonal: boolean;
-  isSelected?: boolean;
-  children?: React.ReactNode;
 }
 
 export interface AssignmentStatus {

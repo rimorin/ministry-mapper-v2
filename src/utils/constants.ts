@@ -83,8 +83,7 @@ const DEFAULT_AGGREGATES = {
   display: "0%"
 };
 
-//eslint-disable-next-line
-const SPECIAL_CHARACTERS = /[`!@#$%^&()_+\=\[\]{};':"\\|,.<>\/?~]/;
+const SPECIAL_CHARACTERS = /[`!@#$%^&()_+=[\]{};':"\\|,.<>/?~]/;
 const ALPHANUMERIC_HYPHEN = /^[a-zA-Z0-9-]+$/;
 
 const MINIMUM_PASSWORD_LENGTH = 6;

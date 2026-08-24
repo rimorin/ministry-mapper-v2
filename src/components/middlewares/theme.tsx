@@ -1,7 +1,7 @@
 import { FC, ReactNode, useEffect, useMemo, useState } from "react";
 import { ThemeContext } from "../utils/context";
 import { ColorTheme, ThemeMode } from "../../utils/interface";
-import { useLocalStorage } from "../../hooks/useLocalStorage";
+import useLocalStorage from "../../hooks/useLocalStorage";
 
 interface ThemeMiddlewareProps {
   children: ReactNode;
