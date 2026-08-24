@@ -25,9 +25,9 @@ import {
   TERRITORY_TYPES,
   MESSAGE_TYPES,
   PB_SECURITY_HEADER_KEY,
-  PB_FIELDS,
-  ENDGAME_PROGRESS_THRESHOLD
+  PB_FIELDS
 } from "../utils/constants";
+import { isEndgame } from "../utils/policies";
 import useLocalStorage from "../hooks/useLocalStorage";
 import { useParams } from "wouter";
 import { LanguageContext } from "../i18n/LanguageContext";
@@ -203,10 +203,9 @@ const Map = () => {
 
   const notDoneCount = mapDetails?.aggregates.notDone ?? 0;
   const notHomeCount = mapDetails?.aggregates.notHome ?? 0;
-  // Surface the breakdown once the map enters its endgame, matching the cell
-  // highlighting threshold (processAvailableColour in policies.ts).
-  const showBreakdown =
-    (mapDetails?.aggregates.value ?? 0) >= ENDGAME_PROGRESS_THRESHOLD;
+  // Surface the breakdown once the map enters its endgame, the same point the
+  // cells start highlighting.
+  const showBreakdown = isEndgame(mapDetails?.aggregates.value ?? 0);
 
   const currentLanguageLabel =
     languageOptions.find((opt) => currentLanguage.startsWith(opt.value))

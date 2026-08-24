@@ -1,18 +1,28 @@
 import { useTranslation } from "react-i18next";
 import { ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { isEndgame } from "../../utils/policies";
 
 interface NextAvailableProps {
   remaining: number;
+  progress: number;
   onClick: () => void;
 }
 
 // The floating map controls sit on tiles and need an opaque bg-background to
 // stay legible. This one sits on the grid, which already is bg-background, so
 // it lifts to the secondary surface — the tone the sticky headers use.
-const NextAvailable = ({ remaining, onClick }: NextAvailableProps) => {
+const NextAvailable = ({
+  remaining,
+  progress,
+  onClick
+}: NextAvailableProps) => {
   const { t } = useTranslation();
-  if (remaining === 0) return null;
+
+  // Early on nearly every address still needs a call, so the next one is
+  // whatever is already on screen. The button only earns its place once what
+  // is left is scattered, which is the same point the cells start highlighting.
+  if (remaining === 0 || !isEndgame(progress)) return null;
 
   return (
     <Button

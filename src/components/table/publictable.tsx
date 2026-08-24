@@ -219,7 +219,11 @@ const PublicTerritoryTable = ({
           </tbody>
         </table>
       </div>
-      <NextAvailable remaining={remaining} onClick={goToNext} />
+      <NextAvailable
+        remaining={remaining}
+        progress={aggregatesValue}
+        onClick={goToNext}
+      />
     </div>
   );
 };
