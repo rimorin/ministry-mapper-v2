@@ -109,7 +109,11 @@ const PrivateTerritoryTable = ({
           </ComponentAuthorizer>
         </div>
       </div>
-      <NextAvailable remaining={remaining} onClick={goToNext} />
+      <NextAvailable
+        remaining={remaining}
+        progress={aggregates?.value || DEFAULT_AGGREGATES.value}
+        onClick={goToNext}
+      />
     </div>
   );
 };

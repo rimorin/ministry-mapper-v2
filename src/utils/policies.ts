@@ -13,7 +13,8 @@ import {
 } from "./constants";
 import { HHOptionProps, unitDetails } from "./interface";
 
-const isEndgame = (progress: number) => progress >= ENDGAME_PROGRESS_THRESHOLD;
+export const isEndgame = (progress: number) =>
+  progress >= ENDGAME_PROGRESS_THRESHOLD;
 
 export class Policy {
   userName: string;
