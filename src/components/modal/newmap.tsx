@@ -18,11 +18,7 @@ import { Separator } from "@/components/ui/separator";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import SubmitButton from "../common/submit-button";
-import {
-  USER_ACCESS_LEVELS,
-  TERRITORY_TYPES,
-  MIN_START_FLOOR
-} from "../../utils/constants";
+import { TERRITORY_TYPES, MIN_START_FLOOR } from "../../utils/constants";
 import isValidMapSequence from "../../utils/helpers/checkvalidseq";
 import useNotification from "../../hooks/useNotification";
 import type {
@@ -35,15 +31,9 @@ import TagField from "../form/tagfield";
 import ChangeMapGeolocation from "./changegeolocation";
 import { callFunction } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
-import ComponentAuthorizer from "../navigation/authorizer";
 
 const NewMap = NiceModal.create(
-  ({
-    footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE,
-    congregation,
-    territoryCode,
-    origin
-  }: NewPrivateAddressModalProps) => {
+  ({ congregation, territoryCode, origin }: NewPrivateAddressModalProps) => {
     const { modal, dialogProps, contentProps } = useBaseUiDialog({
       size: "lg"
     });
@@ -232,14 +222,9 @@ const NewMap = NiceModal.create(
               <Button variant="outline" type="button" onClick={modal.hide}>
                 {t("common.cancel", "Cancel")}
               </Button>
-              <ComponentAuthorizer
-                requiredPermission={footerSaveAcl}
-                userPermission={footerSaveAcl}
-              >
-                <SubmitButton pending={isSaving}>
-                  {t("common.create")}
-                </SubmitButton>
-              </ComponentAuthorizer>
+              <SubmitButton pending={isSaving}>
+                {t("common.create")}
+              </SubmitButton>
             </DialogFooter>
           </form>
         </DialogContent>
