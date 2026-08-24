@@ -1,3 +1,9 @@
+## [2.7.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.7.0...v2.7.1) (2026-08-24)
+
+### Bug Fixes
+
+* only offer the next address once a map is near done ([9a52b0d](https://github.com/rimorin/ministry-mapper-v2/commit/9a52b0d97cf26e6290864f1959613282d37ea103))
+
 ## [2.7.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.6.1...v2.7.0) (2026-08-24)
 
 ### Features
