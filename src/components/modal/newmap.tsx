@@ -17,7 +17,7 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Separator } from "@/components/ui/separator";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../common/submit-button";
 import {
   USER_ACCESS_LEVELS,
   TERRITORY_TYPES,
@@ -236,12 +236,9 @@ const NewMap = NiceModal.create(
                 requiredPermission={footerSaveAcl}
                 userPermission={footerSaveAcl}
               >
-                <Button type="submit" disabled={isSaving}>
-                  {isSaving && (
-                    <Spinner data-icon="inline-start" aria-hidden="true" />
-                  )}
+                <SubmitButton pending={isSaving}>
                   {t("common.create")}
-                </Button>
+                </SubmitButton>
               </ComponentAuthorizer>
             </DialogFooter>
           </form>

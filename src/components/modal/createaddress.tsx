@@ -12,7 +12,7 @@ import {
   DialogTitle
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../common/submit-button";
 import {
   USER_ACCESS_LEVELS,
   STATUS_CODES,
@@ -289,12 +289,9 @@ const CreateAddress = NiceModal.create(
                 requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
                 userPermission={policy.userRole}
               >
-                <Button type="submit" disabled={isSaving}>
-                  {isSaving && (
-                    <Spinner data-icon="inline-start" aria-hidden="true" />
-                  )}
+                <SubmitButton pending={isSaving}>
                   {t("common.create", "Create")}
-                </Button>
+                </SubmitButton>
               </ComponentAuthorizer>
             </DialogFooter>
           </form>

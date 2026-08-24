@@ -18,6 +18,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../common/submit-button";
 import { USER_ACCESS_LEVELS, PB_FIELDS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import { UserModalProps, SelectProps } from "../../utils/interface";
@@ -297,12 +298,9 @@ const InviteUser = NiceModal.create(
                 requiredPermission={footerSaveAcl}
                 userPermission={footerSaveAcl}
               >
-                <Button type="submit" disabled={isSaving}>
-                  {isSaving && (
-                    <Spinner data-icon="inline-start" aria-hidden="true" />
-                  )}
+                <SubmitButton pending={isSaving}>
                   {t("user.invite", "Invite")}
-                </Button>
+                </SubmitButton>
               </ComponentAuthorizer>
             </DialogFooter>
           </form>

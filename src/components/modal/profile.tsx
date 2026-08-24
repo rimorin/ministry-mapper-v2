@@ -20,7 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Spinner } from "@/components/ui/spinner";
+import SubmitButton from "../common/submit-button";
 import useNotification from "../../hooks/useNotification";
 import { UpdateProfileModalProps } from "../../utils/interface";
 import { updateDataById } from "../../utils/pocketbase";
@@ -90,12 +90,9 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
               >
                 {t("common.cancel")}
               </Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
-                {form.formState.isSubmitting && (
-                  <Spinner data-icon="inline-start" aria-hidden="true" />
-                )}
+              <SubmitButton pending={form.formState.isSubmitting}>
                 {t("profile.updateButton")}
-              </Button>
+              </SubmitButton>
             </DialogFooter>
           </form>
         </Form>
