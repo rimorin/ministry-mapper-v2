@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { useNotification } from "./useNotification";
+import useNotification from "./useNotification";
 
 const { mockToast } = vi.hoisted(() => ({
   mockToast: {

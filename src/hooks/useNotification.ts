@@ -44,7 +44,7 @@ export const formatErrorMessage = (error: unknown): string => {
   return message ? `${status}: ${message}` : String(error);
 };
 
-export const useNotification = () => {
+const useNotification = () => {
   const handleNotification = (
     type: NotificationType,
     messageOrError: string | Error | unknown,

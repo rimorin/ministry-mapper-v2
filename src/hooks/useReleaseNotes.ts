@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
-import { useLocalStorage } from "./useLocalStorage";
+import useLocalStorage from "./useLocalStorage";
 
 export type LocalizedString = string | Record<string, string>;
 

@@ -10,7 +10,7 @@ const mockSetLastSeen = vi.fn();
 let mockLastSeenValue: string | null = null;
 
 vi.mock("./useLocalStorage", () => ({
-  useLocalStorage: vi.fn(() => [mockLastSeenValue, mockSetLastSeen, vi.fn()])
+  default: vi.fn(() => [mockLastSeenValue, mockSetLastSeen, vi.fn()])
 }));
 
 import { useReleaseNotes } from "./useReleaseNotes";

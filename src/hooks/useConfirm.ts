@@ -4,7 +4,7 @@ import { ConfirmDialogProps } from "../utils/interface";
 
 const ConfirmDialog = lazy(() => import("../components/modal/confirmdialog"));
 
-export function useConfirm() {
+function useConfirm() {
   const { showModal } = useModalManagement();
 
   const confirm = async ({
