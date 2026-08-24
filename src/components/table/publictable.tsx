@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { floorDetails, territoryMultiProps } from "../../utils/interface";
-import type { Policy } from "../../utils/policies";
+import { isEndgame, type Policy } from "../../utils/policies";
 import AddressStatus, { PendingSyncDot } from "./address";
 import {
   DEFAULT_AGGREGATES,
@@ -52,6 +52,10 @@ const FloorRow = ({
   const availableCount = item.units.filter((unit) =>
     policy.isAvailable(unit)
   ).length;
+  // Same rule as the next-address button: before the endgame almost every
+  // floor has something left, so a count on each one says nothing.
+  const showTally =
+    moreThanOneFloor && availableCount > 0 && isEndgame(aggregatesValue);
   return (
     <tr className="h-16">
       <m.th
@@ -79,7 +83,7 @@ const FloorRow = ({
             </ComponentAuthorizer>
           )}
           <span>{ZeroPad(item.floor.toString(), DEFAULT_FLOOR_PADDING)}</span>
-          {moreThanOneFloor && availableCount > 0 && (
+          {showTally && (
             <Badge
               variant="outline"
               className="ms-1 px-1.5 tabular-nums"
