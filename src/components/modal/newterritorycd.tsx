@@ -22,7 +22,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import SubmitButton from "../common/submit-button";
-import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import IsValidTerritoryCode from "../../utils/helpers/checkterritorycd";
 import {
@@ -31,7 +30,6 @@ import {
 } from "../../utils/interface";
 import { createData, getFirstItemOfList } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
-import ComponentAuthorizer from "../navigation/authorizer";
 
 type FormValues = { code: string; name: string };
 
@@ -40,11 +38,7 @@ const ConfigureTerritoryCoordinates = lazy(
 );
 
 const NewTerritoryCode = NiceModal.create(
-  ({
-    footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE,
-    congregation,
-    origin
-  }: NewTerritoryCodeModalProps) => {
+  ({ congregation, origin }: NewTerritoryCodeModalProps) => {
     const { t } = useTranslation();
     const { notifyWarning, runAction } = useNotification();
     const { showModal } = useModalManagement();
@@ -255,14 +249,9 @@ const NewTerritoryCode = NiceModal.create(
                 >
                   {t("common.cancel")}
                 </Button>
-                <ComponentAuthorizer
-                  requiredPermission={footerSaveAcl}
-                  userPermission={footerSaveAcl}
-                >
-                  <SubmitButton pending={form.formState.isSubmitting}>
-                    {t("common.save")}
-                  </SubmitButton>
-                </ComponentAuthorizer>
+                <SubmitButton pending={form.formState.isSubmitting}>
+                  {t("common.save")}
+                </SubmitButton>
               </DialogFooter>
             </form>
           </Form>

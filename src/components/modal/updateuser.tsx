@@ -19,16 +19,10 @@ import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import { UserModalProps } from "../../utils/interface";
 import UserRoleField from "../form/role";
-import ComponentAuthorizer from "../navigation/authorizer";
 import { deleteDataById, updateDataById } from "../../utils/pocketbase";
 
 const UpdateUser = NiceModal.create(
-  ({
-    uid,
-    name,
-    role = USER_ACCESS_LEVELS.NO_ACCESS.CODE,
-    footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE
-  }: UserModalProps) => {
+  ({ uid, name, role = USER_ACCESS_LEVELS.NO_ACCESS.CODE }: UserModalProps) => {
     const { t } = useTranslation();
     const { runAction } = useNotification();
     const form = useForm<{ role: string }>({
@@ -102,14 +96,9 @@ const UpdateUser = NiceModal.create(
                 >
                   {t("common.cancel")}
                 </Button>
-                <ComponentAuthorizer
-                  requiredPermission={footerSaveAcl}
-                  userPermission={footerSaveAcl}
-                >
-                  <SubmitButton pending={form.formState.isSubmitting}>
-                    {t("common.save")}
-                  </SubmitButton>
-                </ComponentAuthorizer>
+                <SubmitButton pending={form.formState.isSubmitting}>
+                  {t("common.save")}
+                </SubmitButton>
               </DialogFooter>
             </form>
           </Form>

@@ -11,19 +11,14 @@ import {
   DialogTitle
 } from "@/components/ui/dialog";
 import SubmitButton from "../common/submit-button";
-import { USER_ACCESS_LEVELS, TERRITORY_TYPES } from "../../utils/constants";
+import { TERRITORY_TYPES } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import { NewUnitModalProps } from "../../utils/interface";
 import TagField from "../form/tagfield";
 import { callFunction } from "../../utils/pocketbase";
-import ComponentAuthorizer from "../navigation/authorizer";
 
 const NewUnit = NiceModal.create(
-  ({
-    footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE,
-    mapId,
-    addressData
-  }: NewUnitModalProps) => {
+  ({ mapId, addressData }: NewUnitModalProps) => {
     const { t } = useTranslation();
     const { notifyWarning, runAction } = useNotification();
     const [unitTags, setUnitTags] = useState<string[]>([]);
@@ -81,14 +76,9 @@ const NewUnit = NiceModal.create(
               <Button variant="outline" type="button" onClick={modal.hide}>
                 {t("common.cancel", "Cancel")}
               </Button>
-              <ComponentAuthorizer
-                requiredPermission={footerSaveAcl}
-                userPermission={footerSaveAcl}
-              >
-                <SubmitButton pending={isSaving}>
-                  {t("common.save", "Save")}
-                </SubmitButton>
-              </ComponentAuthorizer>
+              <SubmitButton pending={isSaving}>
+                {t("common.save", "Save")}
+              </SubmitButton>
             </DialogFooter>
           </form>
         </DialogContent>

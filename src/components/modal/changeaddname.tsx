@@ -21,17 +21,11 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import SubmitButton from "../common/submit-button";
 import useNotification from "../../hooks/useNotification";
-import ComponentAuthorizer from "../navigation/authorizer";
 import { ChangeAddressNameModalProps } from "../../utils/interface";
-import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import { updateDataById } from "../../utils/pocketbase";
 
 const ChangeAddressName = NiceModal.create(
-  ({
-    name,
-    footerSaveAcl = USER_ACCESS_LEVELS.READ_ONLY.CODE,
-    mapId
-  }: ChangeAddressNameModalProps) => {
+  ({ name, mapId }: ChangeAddressNameModalProps) => {
     const { t } = useTranslation();
     const { runAction } = useNotification();
     const form = useForm<{ name: string }>({
@@ -90,14 +84,9 @@ const ChangeAddressName = NiceModal.create(
                 >
                   {t("common.cancel")}
                 </Button>
-                <ComponentAuthorizer
-                  requiredPermission={footerSaveAcl}
-                  userPermission={footerSaveAcl}
-                >
-                  <SubmitButton pending={form.formState.isSubmitting}>
-                    {t("common.save")}
-                  </SubmitButton>
-                </ComponentAuthorizer>
+                <SubmitButton pending={form.formState.isSubmitting}>
+                  {t("common.save")}
+                </SubmitButton>
               </DialogFooter>
             </form>
           </Form>
