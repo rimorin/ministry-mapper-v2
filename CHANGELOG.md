@@ -1,3 +1,14 @@
+## [2.7.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.6.1...v2.7.0) (2026-08-24)
+
+### Features
+
+* jump to the next address that still needs a call ([ff9c58f](https://github.com/rimorin/ministry-mapper-v2/commit/ff9c58fbb873e6006f945fa3252a8f1e8ce5a2b4))
+
+### Bug Fixes
+
+* require a household type when adding an address ([6ac4807](https://github.com/rimorin/ministry-mapper-v2/commit/6ac4807879cd90619fbce2f7c58007b3591f8867))
+* stop clipping busy cells on single-story maps ([a793694](https://github.com/rimorin/ministry-mapper-v2/commit/a793694490f97752347c6ab96a43374b250ed089))
+
 ## [2.6.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.6.0...v2.6.1) (2026-08-21)
 
 ### Bug Fixes
