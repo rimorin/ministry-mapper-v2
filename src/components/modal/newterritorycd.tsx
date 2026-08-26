@@ -29,6 +29,7 @@ import {
   TerritoryPolygonCoordinate
 } from "../../utils/interface";
 import { createData, getFirstItemOfList } from "../../utils/pocketbase";
+import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 import { useModalManagement } from "../../hooks/useModalManagement";
 
 type FormValues = { code: string; name: string };
@@ -99,6 +100,7 @@ const NewTerritoryCode = NiceModal.create(
             requestKey: `create-territory-${congregation}-${values.code}`
           }
         );
+        trackEvent(ANALYTICS_EVENTS.TERRITORY_CREATED);
         notifyWarning(
           t("territory.createdSuccess", "Created territory, {{name}}.", {
             name: values.name

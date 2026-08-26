@@ -23,6 +23,7 @@ import { resolveLocalized } from "../utils/resolveLocalized";
 import { isValidCoordinate } from "../utils/helpers/maphelpers";
 import useLocalStorage from "./useLocalStorage";
 import useGeolocation from "./useGeolocation";
+import { ANALYTICS_EVENTS, trackEvent } from "../utils/analytics";
 import { sortByProgress, sortByProximity } from "../utils/helpers/sorthelpers";
 
 export default function useMapManagement() {
@@ -52,9 +53,11 @@ export default function useMapManagement() {
   ) => {
     setProcessingMap({ isProcessing: true, mapId: mapId });
     try {
-      await deleteDataById("maps", mapId, {
+      const deleted = await deleteDataById("maps", mapId, {
         requestKey: `map-del-${mapId}`
       });
+      // deleteDataById returns false on abort and 404 rather than throwing.
+      if (deleted) trackEvent(ANALYTICS_EVENTS.MAP_DELETED);
       if (showNotification) {
         notifySuccess(
           t("map.deleteSuccess", "Deleted address, {{name}}.", { name })

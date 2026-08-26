@@ -27,8 +27,9 @@ import useUIState from "../../hooks/useUIManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useAdminData from "../../hooks/useAdminData";
-import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 import useLaunchDarklyContext from "../../hooks/useLaunchDarklyContext";
+import useAnalyticsIdentity from "../../hooks/useAnalyticsIdentity";
 
 import TerritoryListing from "../../components/navigation/territorylist";
 import UserListing from "../../components/navigation/userlist";
@@ -143,6 +144,7 @@ function Admin({ user }: adminProps) {
   } = useCongregationManagement({ userId });
 
   useLaunchDarklyContext(userCongregationAccesses, congregationCode);
+  useAnalyticsIdentity(userCongregationAccesses, congregationCode);
 
   const {
     selectedTerritory,
@@ -180,7 +182,6 @@ function Admin({ user }: adminProps) {
   } = useUIState();
 
   const { showModal } = useModalManagement();
-  const { trackEvent } = useAnalytics();
   const { currentLanguage, changeLanguage, languageOptions } =
     use(LanguageContext);
 

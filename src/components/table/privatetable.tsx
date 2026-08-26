@@ -112,6 +112,7 @@ const PrivateTerritoryTable = ({
       <NextAvailable
         remaining={remaining}
         progress={aggregates?.value || DEFAULT_AGGREGATES.value}
+        surface="admin"
         onClick={goToNext}
       />
     </div>
