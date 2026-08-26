@@ -1,3 +1,13 @@
+## [2.8.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.7.2...v2.8.0) (2026-08-26)
+
+### Features
+
+* record the core work loop in analytics ([97cdd6d](https://github.com/rimorin/ministry-mapper-v2/commit/97cdd6d041845ddd6d60ffca637d85c6dfdf2db3))
+
+### Bug Fixes
+
+* stop analytics failures reaching the app ([66472be](https://github.com/rimorin/ministry-mapper-v2/commit/66472be425a9865aa024dae00dd6ec7bcd861094))
+
 ## [2.7.2](https://github.com/rimorin/ministry-mapper-v2/compare/v2.7.1...v2.7.2) (2026-08-24)
 
 ### Bug Fixes
