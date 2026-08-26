@@ -86,20 +86,35 @@ type PendingCall = (umami: Umami) => void;
 let pending: PendingCall[] | null = null;
 const MAX_PENDING_CALLS = 20;
 
+// The tracker is third-party code called from inside callFunction and from
+// click handlers, so a throw here would surface a committed mutation as a
+// failure or leave a button dead. Analytics never propagates.
+function invoke(call: PendingCall, umami: Umami): void {
+  try {
+    call(umami);
+  } catch (error) {
+    if (import.meta.env.MODE === "development") {
+      console.error("Analytics call failed:", error);
+    }
+  }
+}
+
 function flushPending(): void {
   const queued = pending;
   pending = null;
-  if (!queued || !window.umami) return;
-  for (const call of queued) call(window.umami);
+  const umami = window.umami;
+  if (!queued || !umami) return;
+  for (const call of queued) invoke(call, umami);
 }
 
 function send(call: PendingCall): void {
-  if (window.umami) {
-    flushPending();
-    call(window.umami);
+  const umami = window.umami;
+  if (!umami) {
+    if (pending && pending.length < MAX_PENDING_CALLS) pending.push(call);
     return;
   }
-  if (pending && pending.length < MAX_PENDING_CALLS) pending.push(call);
+  flushPending();
+  invoke(call, umami);
 }
 
 function trackEvent(event: EventName, data?: EventData): void {

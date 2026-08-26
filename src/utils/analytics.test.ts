@@ -34,6 +34,16 @@ describe("trackEvent", () => {
     expect(() => trackEvent(ANALYTICS_EVENTS.LOGIN)).not.toThrow();
     expect(mockTrack).not.toHaveBeenCalled();
   });
+
+  it("swallows a throwing tracker so callers are unaffected", () => {
+    withUmami();
+    mockTrack.mockImplementation(() => {
+      throw new Error("tracker blew up");
+    });
+
+    expect(() => trackEvent(ANALYTICS_EVENTS.LOGIN)).not.toThrow();
+    mockTrack.mockReset();
+  });
 });
 
 describe("trackRoute", () => {
@@ -78,6 +88,18 @@ describe("trackRoute", () => {
       ANALYTICS_EVENTS.ADDRESS_STATUS_UPDATED,
       undefined
     );
+  });
+
+  it("does not let a throwing tracker escape into the caller", () => {
+    withUmami();
+    mockTrack.mockImplementation(() => {
+      throw new Error("tracker blew up");
+    });
+
+    expect(() =>
+      trackRoute("/address/update", { status: "done" })
+    ).not.toThrow();
+    mockTrack.mockReset();
   });
 
   it("fires for a route path written without a leading slash", () => {
