@@ -30,7 +30,7 @@ import { latlongInterface, TravelMode } from "../../utils/interface";
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import GenericInputField from "../form/input";
 import useNotification from "../../hooks/useNotification";
-import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import TravelModeButtons from "../map/travelmodebtn";
 import CustomControl from "../map/customcontrol";
@@ -69,7 +69,6 @@ const QuickLinkModal = NiceModal.create(
     };
     const { t } = useTranslation();
     const { notifyError, notifyWarning, runAction } = useNotification();
-    const { trackEvent } = useAnalytics();
     const { requestLocation } = useGeolocation({
       skipGeolocation: true
     });

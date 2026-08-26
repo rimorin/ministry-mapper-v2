@@ -7,13 +7,12 @@ import {
   requestOTP
 } from "../utils/pocketbase";
 import useNotification from "./useNotification";
-import useAnalytics, { ANALYTICS_EVENTS } from "./useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../utils/analytics";
 import { mapPbAuthError } from "../utils/helpers/pbErrors";
 
 export default function useAuthentication() {
   const { t } = useTranslation();
   const { notifyError, notifyInfo, runAction } = useNotification();
-  const { trackEvent } = useAnalytics();
   const [isLogin, setIsLogin] = useState(false);
   const [isOAuthLoading, setIsOAuthLoading] = useState(false);
   const [otpSessionId, setOtpSessionId] = useState("");

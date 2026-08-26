@@ -14,8 +14,8 @@ vi.mock("../utils/pocketbase", () => ({
 vi.mock("../hooks/useNotification", () => ({
   default: () => ({ notifyError: mocks.notifyError })
 }));
-vi.mock("../hooks/useAnalytics", () => ({
-  default: () => ({ trackEvent: mocks.trackEvent }),
+vi.mock("../utils/analytics", () => ({
+  trackEvent: mocks.trackEvent,
   ANALYTICS_EVENTS: { LOGIN_OAUTH: "login-oauth" }
 }));
 vi.mock("wouter", () => ({

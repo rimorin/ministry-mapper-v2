@@ -35,7 +35,7 @@ import LanguageSelector from "../i18n/LanguageSelector";
 import { useModalManagement } from "../hooks/useModalManagement";
 import useRealtimeSubscription from "../hooks/useRealtime";
 import useMapLink from "../hooks/useMapLink";
-import useAnalytics, { ANALYTICS_EVENTS } from "../hooks/useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../utils/analytics";
 import { useSmartSync, SmartSyncProvider } from "../hooks/useSmartSync";
 import { Progress } from "@/components/ui/progress";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
@@ -57,7 +57,6 @@ const Map = () => {
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
 
   const { showModal } = useModalManagement();
-  const { trackEvent } = useAnalytics();
   const {
     isLinkExpired,
     tokenEndTime,

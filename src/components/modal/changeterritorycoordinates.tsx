@@ -33,7 +33,7 @@ import ModalSubmitButton from "../form/submit";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import CustomControl from "../map/customcontrol";
 import useNotification from "../../hooks/useNotification";
-import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 import { updateDataById } from "../../utils/pocketbase";
 import { SearchControl } from "../map/searchcontrol";
 import { MapController } from "../map/mapcontroller";
@@ -344,7 +344,6 @@ const ConfigureTerritoryCoordinates = NiceModal.create(
     });
     const { t } = useTranslation();
     const { runAction } = useNotification();
-    const { trackEvent } = useAnalytics();
 
     const handleClose = () => {
       modal.resolve(undefined);

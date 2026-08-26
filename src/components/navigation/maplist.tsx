@@ -44,7 +44,7 @@ import {
 } from "lucide-react";
 import { List, type RowComponentProps } from "react-window";
 import useScrollPersistence from "../../hooks/useScrollPersistence";
-import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 
 import "../../css/virtualmaps.css";
 const GetMapGeolocation = lazy(() => import("../modal/getlocation"));
@@ -315,7 +315,6 @@ const MapListing: React.FC<MapListingProps> = ({
   const { t } = useTranslation();
   const { showModal } = useModalManagement();
   const { confirm } = useConfirm();
-  const { trackEvent } = useAnalytics();
   const [dropDirections, setDropDirections] = useState<DropDirections>({});
   const [screenSize, setScreenSize] = useState<"xs" | "sm" | "md" | "lg">("lg");
   const { listRef, onScroll: handleScroll } = useScrollPersistence(territoryId);

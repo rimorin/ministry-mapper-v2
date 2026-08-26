@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ThemeContext } from "../utils/context";
 import { ColorTheme, ThemeMode } from "../../utils/interface";
-import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 
 interface ColorThemeOption {
   id: ColorTheme;
@@ -60,7 +60,6 @@ const ThemeSettingsModal = NiceModal.create(() => {
   const { t } = useTranslation();
   const { theme, setTheme, actualTheme, colorTheme, setColorTheme } =
     use(ThemeContext);
-  const { trackEvent } = useAnalytics();
 
   const handleThemeChange = (selectedTheme: ThemeMode) => {
     setTheme(selectedTheme);
