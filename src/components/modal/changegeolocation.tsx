@@ -22,7 +22,7 @@ import {
   addressMarkerIcon
 } from "../../utils/helpers/mapicons";
 import useNotification from "../../hooks/useNotification";
-import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 import {
   ConfigureAddressCoordinatesModalProps,
   latlongInterface
@@ -59,7 +59,6 @@ const ChangeMapGeolocation = NiceModal.create(
     });
     const { t } = useTranslation();
     const { runAction } = useNotification();
-    const { trackEvent } = useAnalytics();
     const [addressLocation, setAddressLocation] =
       useState<latlongInterface>(coordinates);
     const [isSaving, setIsSaving] = useState(false);

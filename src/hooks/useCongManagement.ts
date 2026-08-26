@@ -11,14 +11,13 @@ import useNotification from "./useNotification";
 import { callFunction } from "../utils/pocketbase";
 import getCongregationUsers from "../utils/helpers/getcongregationusers";
 import useLocalStorage from "./useLocalStorage";
-import useAnalytics, { ANALYTICS_EVENTS } from "./useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../utils/analytics";
 
 export default function useCongregationManagement({
   userId
 }: CongregationManagementOptions) {
   const { t } = useTranslation();
   const { notifyInfo, runAction } = useNotification();
-  const { trackEvent } = useAnalytics();
   const [congregationName, setCongregationName] = useState<string>("");
   const [congregationUsers, setCongregationUsers] = useState(
     new Map<string, userDetails>()

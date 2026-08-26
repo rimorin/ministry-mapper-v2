@@ -16,7 +16,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { MessageSquare, SendHorizontal } from "lucide-react";
 import useNotification from "../../hooks/useNotification";
-import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 import {
   Message,
   UpdateAddressFeedbackModalProps
@@ -120,7 +120,6 @@ const UpdateMapMessages = NiceModal.create(
     const { modal, dialogProps, contentProps } = useBaseUiDialog();
     const { t } = useTranslation();
     const { runAction } = useNotification();
-    const { trackEvent } = useAnalytics();
     const [feedback, setFeedback] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const isAdmin =

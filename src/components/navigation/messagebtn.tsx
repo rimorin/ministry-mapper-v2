@@ -11,7 +11,7 @@ import { useTranslation } from "react-i18next";
 
 import { MessageSquare } from "lucide-react";
 import CountBadge from "./countbadge";
-import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 import useRealtimeSubscription from "../../hooks/useRealtime";
 import { getList, ignoreAbort } from "../../utils/pocketbase";
 import { useModalManagement } from "../../hooks/useModalManagement";
@@ -77,7 +77,6 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
   const isAdmin = userRole === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE;
   const msgType = isAdmin ? MESSAGE_TYPES.ADMIN : MESSAGE_TYPES.CONDUCTOR;
   const { showModal } = useModalManagement();
-  const { trackEvent } = useAnalytics();
   const unreadMsgCount = useUnreadMessages(mapId);
   const { t } = useTranslation();
 

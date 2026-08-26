@@ -15,7 +15,7 @@ import { TerritoryListingProps } from "../../utils/interface";
 import AggregationBadge from "./aggrbadge";
 import { useTranslation } from "react-i18next";
 import useLocalStorage from "../../hooks/useLocalStorage";
-import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 import SuspenseComponent from "../utils/suspense";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
@@ -39,7 +39,6 @@ const TerritoryListing = ({
   congregationCode
 }: TerritoryListingProps) => {
   const { t } = useTranslation();
-  const { trackEvent } = useAnalytics();
 
   const [viewMode, setViewMode] = useLocalStorage<"list" | "map">(
     "territoryViewMode",

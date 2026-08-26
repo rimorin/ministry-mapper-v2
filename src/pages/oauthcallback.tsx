@@ -6,7 +6,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { completeOAuth2Flow } from "../utils/pocketbase";
 import { mapPbAuthError } from "../utils/helpers/pbErrors";
 import useNotification from "../hooks/useNotification";
-import useAnalytics, { ANALYTICS_EVENTS } from "../hooks/useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../utils/analytics";
 
 /**
  * Landing route for the OAuth2 provider redirect. Exchanges the code for a
@@ -15,7 +15,6 @@ import useAnalytics, { ANALYTICS_EVENTS } from "../hooks/useAnalytics";
 const OAuthCallback = () => {
   const { t } = useTranslation();
   const { notifyError } = useNotification();
-  const { trackEvent } = useAnalytics();
   const [, navigate] = useLocation();
   // The code is single-use, so guard against StrictMode's double effect.
   const hasExchanged = useRef(false);
@@ -52,7 +51,7 @@ const OAuthCallback = () => {
       }
     };
     exchange();
-  }, [navigate, notifyError, t, trackEvent]);
+  }, [navigate, notifyError, t]);
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-3">
