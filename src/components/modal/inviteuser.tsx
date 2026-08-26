@@ -28,6 +28,7 @@ import {
   getFirstItemOfList,
   getPaginatedList
 } from "../../utils/pocketbase";
+import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 
 const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
   const { t } = useTranslation();
@@ -114,6 +115,7 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
             requestKey: `create-role-${userId}-${congregation}`
           }
         );
+        trackEvent(ANALYTICS_EVENTS.USER_INVITED, { role: userRole });
 
         const roleName = getRoleDisplayName(userRole);
         notifyWarning(

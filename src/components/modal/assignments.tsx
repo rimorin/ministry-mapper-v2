@@ -28,6 +28,7 @@ import LinkDateFormatter from "../../utils/helpers/linkdateformatter";
 import type { LinkSession } from "../../utils/policies";
 import type { AssignmentModalProps } from "../../utils/interface";
 import { deleteDataById } from "../../utils/pocketbase";
+import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 import buildMapLink from "../../utils/helpers/maplink";
 import useNotification from "../../hooks/useNotification";
 import useShareLink from "../../hooks/useShareLink";
@@ -47,9 +48,11 @@ const GetAssignments = NiceModal.create(
       useState<LinkSession[]>(assignments);
 
     const deleteAssignment = async (linkid: string) => {
-      await deleteDataById("assignments", linkid, {
+      const deleted = await deleteDataById("assignments", linkid, {
         requestKey: `assignment-delete-${linkid}`
       });
+      // deleteDataById returns false on abort and 404 rather than throwing.
+      if (deleted) trackEvent(ANALYTICS_EVENTS.ASSIGNMENT_DELETED);
     };
 
     useEffect(() => {

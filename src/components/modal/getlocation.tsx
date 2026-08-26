@@ -37,7 +37,7 @@ import {
 import { MapCurrentTarget } from "../map/mapcurrenttarget";
 import TravelModeButtons from "../map/travelmodebtn";
 import useNotification from "../../hooks/useNotification";
-import useAnalytics, { ANALYTICS_EVENTS } from "../../hooks/useAnalytics";
+import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 import RoutingService from "../map/routingservice";
 import { MapController } from "../map/mapcontroller";
 import { calculateDistance } from "../../utils/helpers/calculatedistance";
@@ -55,7 +55,6 @@ const GetMapGeolocation = NiceModal.create(
     });
     const { t } = useTranslation();
     const { notifyWarning } = useNotification();
-    const { trackEvent } = useAnalytics();
     const [centerOverride, setCenterOverride] =
       useState<latlongInterface | null>(null);
     const [travelMode, setTravelMode] = useState<TravelMode>(() => {
@@ -226,7 +225,9 @@ const GetMapGeolocation = NiceModal.create(
                     aria-label={t("navigation.openMaps")}
                     className="flex min-h-[44px] min-w-[44px] items-center justify-center p-2.5 hover:bg-muted transition-colors"
                     onClick={() => {
-                      trackEvent(ANALYTICS_EVENTS.DIRECTIONS_OPENED);
+                      trackEvent(ANALYTICS_EVENTS.DIRECTIONS_OPENED, {
+                        provider: "google-maps"
+                      });
                       window.open(getDirection(coordinates), "_blank");
                     }}
                   >
@@ -241,7 +242,9 @@ const GetMapGeolocation = NiceModal.create(
                     aria-label="Waze"
                     className="flex min-h-[44px] min-w-[44px] items-center justify-center p-2.5 hover:bg-muted transition-colors"
                     onClick={() => {
-                      trackEvent(ANALYTICS_EVENTS.DIRECTIONS_OPENED);
+                      trackEvent(ANALYTICS_EVENTS.DIRECTIONS_OPENED, {
+                        provider: "waze"
+                      });
                       window.open(getWazeDirection(coordinates), "_blank");
                     }}
                   >

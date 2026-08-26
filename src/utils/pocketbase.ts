@@ -13,6 +13,7 @@ import {
   OAUTH2_REDIRECT_PATH,
   PB_SECURITY_HEADER_KEY
 } from "./constants";
+import { trackRoute } from "./analytics";
 
 const { VITE_POCKETBASE_URL } = import.meta.env;
 
@@ -283,7 +284,10 @@ const clearHeader = () => {
 };
 
 const callFunction = async (functionName: string, options: SendOptions) => {
-  return pb.send(functionName, options);
+  const result = await pb.send(functionName, options);
+  // After the await, so a throw or abort never fires an event.
+  trackRoute(functionName, options.body);
+  return result;
 };
 
 const createData = async (

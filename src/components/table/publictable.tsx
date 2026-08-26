@@ -226,6 +226,7 @@ const PublicTerritoryTable = ({
       <NextAvailable
         remaining={remaining}
         progress={aggregatesValue}
+        surface="publisher"
         onClick={goToNext}
       />
     </div>
