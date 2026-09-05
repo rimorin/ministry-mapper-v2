@@ -1,3 +1,9 @@
+## [2.8.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.8.0...v2.8.1) (2026-09-05)
+
+### Performance Improvements
+
+* lazy-load the toaster and remove dead hook code ([fe88570](https://github.com/rimorin/ministry-mapper-v2/commit/fe88570d46ddd3d3b8ed5b238837b621eb75eb00))
+
 ## [2.8.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.7.2...v2.8.0) (2026-08-26)
 
 ### Features
