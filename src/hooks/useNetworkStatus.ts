@@ -16,13 +16,11 @@ interface NetworkInformation extends EventTarget {
 }
 
 const HEALTH_ENDPOINT = `${import.meta.env.VITE_POCKETBASE_URL}/api/health`;
+// Same cadence with or without navigator.connection (absent on iOS/Firefox):
+// polling harder to compensate would keep the mobile radio awake (tail energy),
+// the dominant battery cost on those devices.
 const INTERVAL_FAST = 30_000;
 const INTERVAL_SLOW = 60_000;
-// navigator.connection is absent on iOS/Firefox. Match the API-path cadence
-// rather than polling harder — frequent health fetches keep the mobile radio
-// awake (tail energy), the dominant battery cost on these devices.
-const INTERVAL_FAST_NO_API = 30_000;
-const INTERVAL_SLOW_NO_API = 60_000;
 const MAX_RETRY_DELAY = 300_000;
 // Reduced from 10s: /api/health is a tiny payload; 5s is generous even on slow 3G
 const FETCH_TIMEOUT = 5_000;
@@ -33,10 +31,6 @@ const SLOW_CONFIRM_COUNT = 3;
 // vs 3 × 30s = ~90s. More false positives are acceptable here — queuing is
 // transparent to the user and a flush happens as soon as the connection recovers.
 const SLOW_CONFIRM_COUNT_NO_API = 2;
-// Exit slow mode after a single fast health probe. Two confirmations added
-// latency (up to 90s) that outweighs the rare cost of a premature flush attempt
-// on a marginal signal — the flush has exponential backoff and recovers cleanly.
-const FAST_CONFIRM_COUNT = 1;
 
 function isConnectionSlow(connection: NetworkInformation): boolean {
   if (
@@ -53,7 +47,7 @@ function isConnectionSlow(connection: NetworkInformation): boolean {
   return false;
 }
 
-// Symmetric to isConnectionSlow — used to pre-seed fast-confirm count on OS upgrade hint.
+// Symmetric to isConnectionSlow — used on an OS upgrade hint to drop the slow count.
 function isConnectionFast(connection: NetworkInformation): boolean {
   if (connection.effectiveType === "4g") return true;
   if (connection.rtt !== undefined && connection.rtt < 100) return true;
@@ -73,7 +67,6 @@ export function useNetworkStatus() {
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const retryDelayRef = useRef(INTERVAL_FAST);
   const slowCountRef = useRef(0);
-  const fastCountRef = useRef(0);
   // Sync mirror of status.isSlow so event callbacks can read the current slow
   // state without a stale closure.
   const isSlowRef = useRef(false);
@@ -89,26 +82,14 @@ export function useNetworkStatus() {
     const connection = (
       navigator as Navigator & { connection?: NetworkInformation }
     ).connection;
-    // When the API is absent (iOS Safari, Firefox), compensate with tighter
-    // polling: fewer confirmation samples and shorter intervals.
-    const hasNetworkInfo = !!connection;
-    const effectiveSlowConfirmCount = hasNetworkInfo
+    // When the API is absent (iOS Safari, Firefox), compensate with fewer
+    // confirmation samples.
+    const effectiveSlowConfirmCount = connection
       ? SLOW_CONFIRM_COUNT
       : SLOW_CONFIRM_COUNT_NO_API;
-    const effectiveIntervalFast = hasNetworkInfo
-      ? INTERVAL_FAST
-      : INTERVAL_FAST_NO_API;
-    const effectiveIntervalSlow = hasNetworkInfo
-      ? INTERVAL_SLOW
-      : INTERVAL_SLOW_NO_API;
-
-    // Seed the initial retry delay with the effective fast interval
-    // (the ref default was INTERVAL_FAST which may differ for no-API devices).
-    retryDelayRef.current = effectiveIntervalFast;
 
     const goOffline = () => {
       slowCountRef.current = 0;
-      fastCountRef.current = 0;
       isSlowRef.current = false;
       setStatus({ isOnline: false, isSlow: false });
     };
@@ -118,28 +99,22 @@ export function useNetworkStatus() {
     // hints where the signal is authoritative enough to skip polling confirmation.
     const markSlow = () => {
       slowCountRef.current = effectiveSlowConfirmCount;
-      fastCountRef.current = 0;
       isSlowRef.current = true;
       setStatus((prev) => ({ ...prev, isSlow: true }));
-      retryDelayRef.current = effectiveIntervalSlow;
+      retryDelayRef.current = INTERVAL_SLOW;
     };
 
-    // Relies on FAST_CONFIRM_COUNT === 1: any single fast response exits slow mode.
-    // Update this function if FAST_CONFIRM_COUNT ever increases.
+    // Any single fast response exits slow mode: requiring two confirmations
+    // added up to 90s of latency, which outweighs the rare cost of a premature
+    // flush attempt — the flush has exponential backoff and recovers cleanly.
     const recordSample = (
       isSampleSlow: boolean,
       isTimeout: boolean = false
     ) => {
-      if (isSampleSlow) {
-        slowCountRef.current += 1;
-        fastCountRef.current = 0;
-      } else {
-        fastCountRef.current += 1;
-        slowCountRef.current = 0;
-      }
+      slowCountRef.current = isSampleSlow ? slowCountRef.current + 1 : 0;
       // A timeout is a strong slow signal (enter immediately, no confirmation).
       // Stay slow while already slow with slow samples; enter slow once threshold
-      // is reached. Any fast sample exits slow (FAST_CONFIRM_COUNT === 1).
+      // is reached. Any fast sample exits slow.
       const newIsSlow = isSampleSlow
         ? isTimeout ||
           isSlowRef.current ||
@@ -151,8 +126,8 @@ export function useNetworkStatus() {
       // fast polling on first fast sample so recovery is confirmed quickly.
       retryDelayRef.current =
         slowCountRef.current >= effectiveSlowConfirmCount
-          ? effectiveIntervalSlow
-          : effectiveIntervalFast;
+          ? INTERVAL_SLOW
+          : INTERVAL_FAST;
       return newIsSlow;
     };
 
@@ -200,7 +175,7 @@ export function useNetworkStatus() {
           if (!newIsSlow) setLastHealthyAt(Date.now());
         } else {
           goOffline();
-          retryDelayRef.current = effectiveIntervalFast;
+          retryDelayRef.current = INTERVAL_FAST;
         }
         return true;
       } catch (error) {
@@ -215,7 +190,7 @@ export function useNetworkStatus() {
             // may not be ready for new connections yet. Suppress goOffline()
             // and reset to fast polling so the next scheduled check decides
             // the true connectivity state.
-            retryDelayRef.current = effectiveIntervalFast;
+            retryDelayRef.current = INTERVAL_FAST;
           } else {
             goOffline();
             retryDelayRef.current = Math.min(
@@ -261,15 +236,11 @@ export function useNetworkStatus() {
     // retryDelayRef before scheduleNextCheck() reads it (same reason as
     // handleConnectionChange), then restart the polling loop at the fast interval.
     const handleNetworkResume = async () => {
-      retryDelayRef.current = effectiveIntervalFast;
-      // Pre-seed fast count: an explicit network-recovery event (WiFi switch,
-      // SSE reconnect) is a strong signal — one confirming health check is
-      // enough to exit slow mode. The 2-poll requirement is for scheduled
-      // polling on marginal signals, not genuine network handoff events.
-      if (isSlowRef.current) {
-        fastCountRef.current = FAST_CONFIRM_COUNT - 1;
-        slowCountRef.current = 0;
-      }
+      retryDelayRef.current = INTERVAL_FAST;
+      // An explicit network-recovery event (WiFi switch, SSE reconnect) is a
+      // strong signal: drop the slow count so one confirming health check
+      // restores fast polling.
+      if (isSlowRef.current) slowCountRef.current = 0;
       await checkConnection();
       if (!document.hidden) scheduleNextCheck();
     };
@@ -286,9 +257,8 @@ export function useNetworkStatus() {
         // Preserve isOnline — a connection hint proves link quality, not reachability.
         markSlow();
       } else if (isSlowRef.current && isConnectionFast(connection)) {
-        // OS signals upgrade — pre-seed fast count so one confirming health check
-        // exits slow mode rather than needing FAST_CONFIRM_COUNT full polls.
-        fastCountRef.current = FAST_CONFIRM_COUNT - 1;
+        // OS signals upgrade — drop the slow count so one confirming health
+        // check restores fast polling.
         slowCountRef.current = 0;
       }
       // Await so recordSample() updates retryDelayRef before scheduleNextCheck()

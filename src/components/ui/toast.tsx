@@ -3,6 +3,7 @@ import { Toast as ToastPrimitive } from "@base-ui/react/toast";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/components/ui/toast-manager";
 import {
   XIcon,
   CircleCheckIcon,
@@ -11,8 +12,6 @@ import {
   OctagonXIcon,
   Loader2Icon
 } from "lucide-react";
-
-const toast = ToastPrimitive.createToastManager();
 
 function ToastProvider({ ...props }: ToastPrimitive.Provider.Props) {
   return <ToastPrimitive.Provider {...props} />;

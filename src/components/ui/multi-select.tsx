@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/dialog";
 import { useTranslation } from "react-i18next";
 
-export interface MultiSelectOption {
+interface MultiSelectOption {
   value: string;
   label: string;
 }

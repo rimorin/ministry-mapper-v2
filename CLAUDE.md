@@ -86,7 +86,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - User-facing text goes through `useTranslation` as `t("your.key", "Fallback")`. Add the key to `src/i18n/locales/en/translation.json` and the translation to `es`, `id`, `ja`, `ko`, `ms`, `ta`, `zh`; all eight files stay key-identical. Localised data fields may be `string` or `Record<string, string>`; use `resolveLocalized(value, locale)` rather than branching on `typeof`.
 - Colours come from the theme tokens in `src/css/variables.css` and the Tailwind theme, never hardcoded values in components.
 - `cn()` from `@/lib/utils` for conditional classes. Animation variants live in `src/lib/motion.ts`; animate with `import * as m from "motion/react-m"` and `AnimatePresence` from `motion/react`. Don't render elements from `motion/react`; it skips the lazy bundle.
-- Forms use React Hook Form without a schema resolver. Zod is not installed; the `zod` match in the Vite `advancedChunks` groups is inert. Validation lives in controller rules or dedicated utilities.
+- Forms use React Hook Form without a schema resolver; Zod is not installed. Validation lives in controller rules or dedicated utilities.
 - Modals: register with `NiceModal.create(...)`, open with `NiceModal.show(...)`, never inline in JSX. Base UI dialogs use `useBaseUiDialog` (`@/components/common/base-ui-dialog`) with its `onClose`/`size` options, not a custom `onOpenChange`.
 - Analytics (`src/utils/analytics.ts`) is fire-and-forget and swallows its own errors. Never await it or let it affect control flow.
 - Unused variables and parameters take a `_` prefix (ESLint `^_`). Don't drop a parameter that belongs to a public signature to silence the warning.

@@ -4,7 +4,7 @@ import { isAbortError } from "../utils/pocketbase";
 import buildMapLink from "../utils/helpers/maplink";
 import useNotification from "./useNotification";
 
-export type ShareLinkResult = "shared" | "copied" | "cancelled";
+type ShareLinkResult = "shared" | "copied" | "cancelled";
 
 interface ShareLinkOptions {
   linkId: string;

@@ -1,4 +1,4 @@
-import { toast } from "@/components/ui/toast";
+import { toast } from "@/components/ui/toast-manager";
 import * as Sentry from "@sentry/react";
 import { isAbortError } from "../utils/pocketbase";
 
@@ -127,7 +127,6 @@ const useNotification = () => {
   };
 
   return {
-    handleNotification,
     notifySuccess,
     notifyError,
     notifyWarning,

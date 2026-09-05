@@ -61,12 +61,17 @@ export default defineConfig(() => {
                 test: /nice-modal-react/,
                 priority: 80
               },
-              // Base UI toast subtree + the shared helpers it imports — the Toaster
-              // is mounted at app entry, so this must stay separate from the big
-              // vendor-base-ui chunk to keep it off the initial preload path
+              // Base UI helpers the Button, Input and toast manager need at app
+              // entry. Kept apart from vendor-base-ui so the initial preload path
+              // does not download the dialog/popover/toast subtrees. The negative
+              // lookaheads keep the popup machinery (positioning, swipe dismiss,
+              // composite lists, scroll lock) out; Rolldown resolves any chunk
+              // cycle by pulling modules back in, so a wrong exclusion only costs
+              // size, never correctness — check this chunk stays ~10 kB gzip and
+              // does not import vendor-base-ui after upgrading Base UI.
               {
-                name: "vendor-base-ui-toast",
-                test: /node_modules\/@base-ui\/utils\/|node_modules\/@base-ui\/react\/(esm\/)?(toast|internals|utils|button|merge-props|use-render)\/|node_modules\/@base-ui\/react\/(esm\/)?floating-ui-react\/utils|node_modules\/@floating-ui\/utils\//,
+                name: "vendor-base-ui-core",
+                test: /node_modules\/@base-ui\/utils\/(?!useScrollLock)|node_modules\/@base-ui\/react\/(esm\/)?(internals\/(?!composite|useAnchorPositioning)|utils\/(?!useSwipeDismiss|popups|FloatingPortalLite|usePositioner|useAnchoredPopupScrollLock|InternalBackdrop|scrollable)|button\/|merge-props\/|use-render\/|toast\/createToastManager|floating-ui-react\/utils)|node_modules\/@floating-ui\/utils\//,
                 priority: 80
               },
               // Base UI drawer subtree — only mobile bottom-sheets render it, so it
@@ -82,10 +87,10 @@ export default defineConfig(() => {
                 test: /@base-ui\/react|@base-ui\/utils|@floating-ui/,
                 priority: 70
               },
-              // Form validation stack — all form modals are React.lazy(), never on critical path
+              // Form stack — all form modals are React.lazy(), never on critical path
               {
                 name: "vendor-forms",
-                test: /node_modules\/(zod|react-hook-form|@hookform)\//,
+                test: /node_modules\/react-hook-form\//,
                 priority: 70
               },
               // Icons — own release cadence, tree-shaking confirmed working (~50 icons used)

@@ -9,7 +9,7 @@ const { mockToast } = vi.hoisted(() => ({
   }
 }));
 
-vi.mock("@/components/ui/toast", () => ({
+vi.mock("@/components/ui/toast-manager", () => ({
   toast: mockToast
 }));
 
@@ -166,11 +166,11 @@ describe("useNotification", () => {
     });
   });
 
-  describe("handleNotification", () => {
+  describe("notification types", () => {
     it("should handle success type", () => {
       const { result } = renderHook(() => useNotification());
 
-      result.current.handleNotification("success", "Success message");
+      result.current.notifySuccess("Success message");
 
       expect(mockToast.add).toHaveBeenCalledWith({
         title: "Success message",
@@ -182,7 +182,7 @@ describe("useNotification", () => {
     it("should handle error type", () => {
       const { result } = renderHook(() => useNotification());
 
-      result.current.handleNotification("error", "Error message");
+      result.current.notifyError("Error message");
 
       expect(mockToast.add).toHaveBeenCalledWith({
         id: "app-error",
@@ -195,7 +195,7 @@ describe("useNotification", () => {
     it("should handle warning type", () => {
       const { result } = renderHook(() => useNotification());
 
-      result.current.handleNotification("warning", "Warning message");
+      result.current.notifyWarning("Warning message");
 
       expect(mockToast.add).toHaveBeenCalledWith({
         title: "Warning message",
@@ -207,7 +207,7 @@ describe("useNotification", () => {
     it("should handle info type", () => {
       const { result } = renderHook(() => useNotification());
 
-      result.current.handleNotification("info", "Info message");
+      result.current.notifyInfo("Info message");
 
       expect(mockToast.add).toHaveBeenCalledWith({
         title: "Info message",

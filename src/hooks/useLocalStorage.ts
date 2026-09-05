@@ -31,15 +31,6 @@ function useLocalStorage<T = string | boolean>(key: string, initialValue: T) {
     [key, initialValue]
   );
 
-  const removeValue = useCallback(() => {
-    try {
-      window.localStorage.removeItem(key);
-      setStoredValue(initialValue);
-    } catch (error) {
-      console.error(`Error removing localStorage key "${key}":`, error);
-    }
-  }, [key, initialValue]);
-
   // Sync state across browser tabs
   useEffect(() => {
     const handleStorageChange = (e: StorageEvent) => {
@@ -58,7 +49,7 @@ function useLocalStorage<T = string | boolean>(key: string, initialValue: T) {
     return () => window.removeEventListener("storage", handleStorageChange);
   }, [key, initialValue]);
 
-  return [storedValue, setValue, removeValue] as const;
+  return [storedValue, setValue] as const;
 }
 
 export default useLocalStorage;

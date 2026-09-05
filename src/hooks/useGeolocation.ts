@@ -1,12 +1,4 @@
-import {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  type Dispatch,
-  type SetStateAction,
-  type RefObject
-} from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { latlongInterface } from "../utils/interface";
 import { getDefaultMapCenter } from "../utils/helpers/maphelpers";
 
@@ -79,41 +71,6 @@ const areCoordsEqual = (
   );
 };
 
-const createWatchHandlers = (
-  setCurrentLocation: Dispatch<SetStateAction<latlongInterface | null>>,
-  setCenter: Dispatch<SetStateAction<latlongInterface>>,
-  setLocationError: Dispatch<SetStateAction<GeolocationPositionError | null>>,
-  setIsLoadingLocation: Dispatch<SetStateAction<boolean>>,
-  lastErrorCodeRef: RefObject<number | null>
-): [PositionCallback, PositionErrorCallback] => {
-  const onSuccess: PositionCallback = (position) => {
-    const location = {
-      lat: position.coords.latitude,
-      lng: position.coords.longitude
-    };
-
-    setCurrentLocation((prev) =>
-      areCoordsEqual(prev, location) ? prev : location
-    );
-    setCenter((prev) => (areCoordsEqual(prev, location) ? prev : location));
-
-    setLocationError(null);
-    lastErrorCodeRef.current = null;
-    setIsLoadingLocation(false);
-  };
-
-  const onError: PositionErrorCallback = (error) => {
-    // Only update error state if error code changed
-    if (error.code !== lastErrorCodeRef.current) {
-      setLocationError(error);
-      lastErrorCodeRef.current = error.code;
-    }
-    setIsLoadingLocation(false);
-  };
-
-  return [onSuccess, onError];
-};
-
 interface UseGeolocationOptions {
   coordinates?: latlongInterface[] | latlongInterface;
   skipGeolocation?: boolean;
@@ -132,9 +89,6 @@ interface UseGeolocationReturn {
   locationError: GeolocationPositionError | null;
   isSupported: boolean;
   requestLocation: () => Promise<latlongInterface | null>;
-  startWatching: () => void;
-  stopWatching: () => void;
-  clearError: () => void;
 }
 
 /**
@@ -170,7 +124,6 @@ function useGeolocation({
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const [locationError, setLocationError] =
     useState<GeolocationPositionError | null>(null);
-  const watchIdRef = useRef<number | null>(null);
   const lastErrorCodeRef = useRef<number | null>(null);
   const isSupported =
     typeof navigator !== "undefined" && !!navigator.geolocation;
@@ -197,43 +150,6 @@ function useGeolocation({
         setIsLoadingLocation(false);
       }
     }, [isSupported, watchOptions]);
-
-  const startWatching = useCallback(() => {
-    if (!isSupported || watchIdRef.current !== null) return;
-
-    const options = mergePositionOptions(
-      WATCH_GEOLOCATION_OPTIONS,
-      watchOptions
-    );
-
-    setIsLoadingLocation(true);
-    setLocationError(null);
-
-    const [onSuccess, onError] = createWatchHandlers(
-      setCurrentLocation,
-      setCenter,
-      setLocationError,
-      setIsLoadingLocation,
-      lastErrorCodeRef
-    );
-
-    watchIdRef.current = navigator.geolocation.watchPosition(
-      onSuccess,
-      onError,
-      options
-    );
-  }, [isSupported, watchOptions]);
-
-  const stopWatching = () => {
-    if (watchIdRef.current !== null) {
-      navigator.geolocation.clearWatch(watchIdRef.current);
-      watchIdRef.current = null;
-    }
-  };
-
-  const clearError = () => {
-    setLocationError(null);
-  };
 
   // One-time fetch on mount (unless skipped)
   useEffect(() => {
@@ -276,28 +192,32 @@ function useGeolocation({
     setIsLoadingLocation(true);
     setLocationError(null);
 
-    const [onSuccess, onError] = createWatchHandlers(
-      setCurrentLocation,
-      setCenter,
-      setLocationError,
-      setIsLoadingLocation,
-      lastErrorCodeRef
-    );
-
     const watchId = navigator.geolocation.watchPosition(
-      onSuccess,
-      onError,
+      (position) => {
+        const location = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
+        setCurrentLocation((prev) =>
+          areCoordsEqual(prev, location) ? prev : location
+        );
+        setCenter((prev) => (areCoordsEqual(prev, location) ? prev : location));
+        setLocationError(null);
+        lastErrorCodeRef.current = null;
+        setIsLoadingLocation(false);
+      },
+      (error) => {
+        // Only update error state if error code changed
+        if (error.code !== lastErrorCodeRef.current) {
+          setLocationError(error);
+          lastErrorCodeRef.current = error.code;
+        }
+        setIsLoadingLocation(false);
+      },
       options
     );
 
-    watchIdRef.current = watchId;
-
-    return () => {
-      if (watchIdRef.current !== null) {
-        navigator.geolocation.clearWatch(watchIdRef.current);
-        watchIdRef.current = null;
-      }
-    };
+    return () => navigator.geolocation.clearWatch(watchId);
   }, [enableWatch, skipGeolocation, isSupported, watchOptions]);
 
   return {
@@ -306,10 +226,7 @@ function useGeolocation({
     isLoadingLocation,
     locationError,
     isSupported,
-    requestLocation,
-    startWatching,
-    stopWatching,
-    clearError
+    requestLocation
   };
 }
 

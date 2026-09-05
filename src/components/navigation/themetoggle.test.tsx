@@ -19,8 +19,7 @@ describe("ThemeToggle", () => {
   beforeEach(() => {
     mockShowModal.mockClear();
     vi.mocked(useModalManagement).mockReturnValue({
-      showModal: mockShowModal,
-      hideModal: vi.fn()
+      showModal: mockShowModal
     });
   });
 

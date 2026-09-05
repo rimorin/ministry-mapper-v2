@@ -4,13 +4,9 @@ import { lazy } from "react";
 
 // Mock NiceModal before imports
 vi.mock("@ebay/nice-modal-react", () => {
-  const mockShow = vi.fn();
-  const mockHide = vi.fn();
-
   return {
     default: {
-      show: mockShow,
-      hide: mockHide
+      show: vi.fn()
     }
   };
 });
@@ -61,29 +57,6 @@ describe("useModalManagement", () => {
       const MockComponent = () => null;
 
       const returnedPromise = result.current.showModal(MockComponent, {});
-
-      expect(returnedPromise).toBe(mockPromise);
-    });
-  });
-
-  describe("hideModal", () => {
-    it("should hide modal by id", () => {
-      const { result } = renderHook(() => useModalManagement());
-      const modalId = "test-modal-id";
-
-      result.current.hideModal(modalId);
-
-      expect(ModalManager.hide).toHaveBeenCalledWith(modalId);
-    });
-
-    it("should return hide promise", () => {
-      const mockPromise = Promise.resolve();
-      (ModalManager.hide as ReturnType<typeof vi.fn>).mockReturnValue(
-        mockPromise
-      );
-      const { result } = renderHook(() => useModalManagement());
-
-      const returnedPromise = result.current.hideModal("modal-id");
 
       expect(returnedPromise).toBe(mockPromise);
     });

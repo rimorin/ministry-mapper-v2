@@ -139,46 +139,6 @@ describe("useLocalStorage", () => {
     });
   });
 
-  describe("removeValue", () => {
-    it("should remove item and reset to initial value", () => {
-      const { result } = renderHook(() =>
-        useLocalStorage("testKey", "default")
-      );
-
-      act(() => {
-        result.current[1]("value");
-      });
-
-      expect(result.current[0]).toBe("value");
-
-      act(() => {
-        result.current[2](); // removeValue
-      });
-
-      expect(localStorage.getItem("testKey")).toBeNull();
-      expect(result.current[0]).toBe("default");
-    });
-
-    it("should be safe to call multiple times", () => {
-      const { result } = renderHook(() =>
-        useLocalStorage("testKey", "default")
-      );
-
-      act(() => {
-        result.current[1]("value");
-      });
-
-      act(() => {
-        result.current[2]();
-        result.current[2]();
-        result.current[2]();
-      });
-
-      expect(localStorage.getItem("testKey")).toBeNull();
-      expect(result.current[0]).toBe("default");
-    });
-  });
-
   describe("cross-tab synchronization", () => {
     it("should sync state when storage event fires", async () => {
       const { result } = renderHook(() =>
@@ -286,29 +246,6 @@ describe("useLocalStorage", () => {
 
       expect(consoleErrorSpy).toHaveBeenCalled();
       setItemSpy.mockRestore();
-      consoleErrorSpy.mockRestore();
-    });
-
-    it("should handle localStorage errors on remove", () => {
-      const consoleErrorSpy = vi
-        .spyOn(console, "error")
-        .mockImplementation(() => {});
-      const { result } = renderHook(() =>
-        useLocalStorage("testKey", "default")
-      );
-
-      const removeItemSpy = vi
-        .spyOn(Storage.prototype, "removeItem")
-        .mockImplementation(() => {
-          throw new Error("Storage error");
-        });
-
-      act(() => {
-        result.current[2]();
-      });
-
-      expect(consoleErrorSpy).toHaveBeenCalled();
-      removeItemSpy.mockRestore();
       consoleErrorSpy.mockRestore();
     });
   });

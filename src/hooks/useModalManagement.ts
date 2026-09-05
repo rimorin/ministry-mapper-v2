@@ -26,9 +26,5 @@ export function useModalManagement() {
     );
   };
 
-  const hideModal = (id: string) => {
-    return ModalManager.hide(id);
-  };
-
-  return { showModal, hideModal };
+  return { showModal };
 }
