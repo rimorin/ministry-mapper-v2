@@ -221,6 +221,17 @@
   background-color: var(--muted) !important;
 }
 
+/* Geoapify's dark basemaps drop addr:housenumber, so invert the light style
+   instead: tilePane only, so markers and routes keep their colours. The
+   background replaces Leaflet's #ddd, which flashes before tiles load. */
+.dark .leaflet-container {
+  background: var(--muted);
+}
+
+.dark .leaflet-tile-pane {
+  filter: invert(1) grayscale(1);
+}
+
 /* Hide zoom controls on touch/mobile devices */
 @media (hover: none) and (pointer: coarse) {
   .leaflet-control-zoom {

@@ -44,7 +44,7 @@
 
 /* Progress marker, built like a chronograph face: the ring carries progress,
    two inset dials at 12 and 6 carry assignment and personal. Palette is pinned
-   — the tile layer is light in both themes. */
+   — everything but the selection ring sits on the white surface. */
 .map-progress {
   position: relative;
   display: flex;
@@ -65,7 +65,7 @@
 .marker-selected .map-progress {
   box-shadow:
     0 0 0 1px var(--mm-marker-edge),
-    0 0 0 2px var(--mm-marker-surface),
+    0 0 0 2px var(--mm-marker-selected-gap),
     0 0 0 6px var(--mm-marker-selected),
     0 1px 3px rgb(0 0 0 / 0.3);
 }
