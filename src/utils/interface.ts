@@ -254,6 +254,7 @@ export interface territoryHeaderProp {
   onToggleView?: () => void;
   onGenerateLink?: () => void;
   onCreateMap?: () => void;
+  onSwitchTerritory: () => void;
   sortMode?: MapSortMode;
   onSortModeChange?: (mode: MapSortMode) => void;
   isLoadingLocation?: boolean;
