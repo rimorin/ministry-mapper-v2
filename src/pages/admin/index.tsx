@@ -773,6 +773,7 @@ function Admin({ user }: adminProps) {
                 sortMode={sortMode}
                 onSortModeChange={handleSortModeChange}
                 isLoadingLocation={isLoadingLocation}
+                onSwitchTerritory={toggleTerritoryListing}
                 accordionKeys={accordionKeys}
                 setAccordionKeys={setAccordionKeys}
                 mapViews={mapViews}

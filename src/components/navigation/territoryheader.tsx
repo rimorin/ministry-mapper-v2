@@ -1,4 +1,5 @@
 import {
+  ChevronDown,
   GripVertical,
   List,
   LocateFixed,
@@ -55,7 +56,8 @@ const TerritoryHeader = ({
   onCreateMap,
   sortMode,
   onSortModeChange,
-  isLoadingLocation
+  isLoadingLocation,
+  onSwitchTerritory
 }: territoryHeaderProp) => {
   const { t } = useTranslation();
 
@@ -79,7 +81,16 @@ const TerritoryHeader = ({
       initial="hidden"
       animate="show"
     >
-      <span className="font-extrabold text-center">{name}</span>
+      <Button
+        variant="secondary"
+        size="lg"
+        onClick={onSwitchTerritory}
+        aria-haspopup="dialog"
+        className="h-11 self-center bg-primary/10 font-bold text-primary hover:bg-primary/15"
+      >
+        {name}
+        <ChevronDown className="size-4" />
+      </Button>
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           {onToggleView && (
