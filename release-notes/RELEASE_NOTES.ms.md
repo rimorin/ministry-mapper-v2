@@ -1,5 +1,17 @@
 # Nota Pelepasan (Bahasa Melayu)
 
+## 2026-09-11
+
+[IMPROVED:ADMIN] Sentuh nama kawasan untuk menukar kawasan.
+  Nama kawasan di bahagian atas skrin kini sebuah butang. Sentuhnya untuk melihat semua kawasan anda dan pilih yang lain.
+
+  Anda tidak perlu lagi membuka menu untuk ini.
+
+[IMPROVED:ADMIN] Butang menu lebih mudah dicari.
+  Butang di penjuru kiri atas kini lebih besar, dengan ikon menu yang biasa.
+
+---
+
 ## 2026-08-24
 
 [NEW] Terus ke alamat seterusnya yang masih perlu dikunjungi.
