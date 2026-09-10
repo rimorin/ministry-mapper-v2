@@ -55,6 +55,7 @@ interface TerritoryContentProps {
   resetMap: (mapId: string) => Promise<void>;
   processingMap: { isProcessing: boolean; mapId: string | null };
   toggleAddressTerritoryListing: () => void;
+  onSwitchTerritory: () => void;
   congregationOptions: HHOptionProps[];
   territories: Map<string, territoryDetails>;
   onCreateOptions: () => void;
@@ -88,6 +89,7 @@ export default function TerritoryContent({
   resetMap,
   processingMap,
   toggleAddressTerritoryListing,
+  onSwitchTerritory,
   congregationOptions,
   territories,
   onCreateOptions,
@@ -153,6 +155,7 @@ export default function TerritoryContent({
             sortMode={sortMode}
             onSortModeChange={onSortModeChange}
             isLoadingLocation={isLoadingLocation}
+            onSwitchTerritory={onSwitchTerritory}
           />
           {isMapView ? (
             <MapView
