@@ -1,5 +1,17 @@
 # Catatan Rilis (Bahasa Indonesia)
 
+## 2026-09-11
+
+[IMPROVED:ADMIN] Sentuh nama wilayah untuk mengganti wilayah.
+  Nama wilayah di bagian atas layar kini menjadi tombol. Sentuh untuk melihat semua wilayah Anda dan pilih yang lain.
+
+  Anda tidak perlu lagi membuka menu untuk ini.
+
+[IMPROVED:ADMIN] Tombol menu lebih mudah ditemukan.
+  Tombol di kiri atas kini lebih besar, dengan ikon menu yang biasa.
+
+---
+
 ## 2026-08-24
 
 [NEW] Langsung menuju alamat berikutnya yang masih perlu dikunjungi.

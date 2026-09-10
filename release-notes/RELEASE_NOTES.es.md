@@ -1,5 +1,17 @@
 # Notas de versión (Español)
 
+## 2026-09-11
+
+[IMPROVED:ADMIN] Toca el nombre del territorio para cambiar de territorio.
+  El nombre del territorio en la parte superior de la pantalla ahora es un botón. Tócalo para ver todos tus territorios y elegir otro.
+
+  Ya no necesitas abrir el menú para esto.
+
+[IMPROVED:ADMIN] El botón del menú es más fácil de encontrar.
+  El botón de arriba a la izquierda ahora es más grande, con el icono de menú habitual.
+
+---
+
 ## 2026-08-24
 
 [NEW] Ve directo a la siguiente dirección que aún necesita visita.

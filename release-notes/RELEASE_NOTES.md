@@ -120,6 +120,18 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ---
 
+## 2026-09-11
+
+[IMPROVED:ADMIN] Tap the territory name to change territory.
+  The territory name at the top of the screen is now a button. Tap it to see all your territories and pick another one.
+
+  You do not need to open the menu for this anymore.
+
+[IMPROVED:ADMIN] The menu button is easier to find.
+  The button at the top left is now bigger, with the usual menu icon.
+
+---
+
 ## 2026-08-24
 
 [NEW] Jump to the next address that still needs a call.
