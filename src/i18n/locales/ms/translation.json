@@ -34,7 +34,8 @@
     "proceed": "Teruskan",
     "weakConnection": "Sambungan lemah",
     "selectLanguage": "Pilih Bahasa",
-    "clickToEdit": "Klik medan untuk mengedit."
+    "clickToEdit": "Klik medan untuk mengedit.",
+    "workspace": "Ruang Kerja"
   },
   "auth": {
     "signIn": "Log Masuk",

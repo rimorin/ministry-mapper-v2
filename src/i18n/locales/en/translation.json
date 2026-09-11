@@ -34,7 +34,8 @@
     "proceed": "Proceed",
     "weakConnection": "Weak connection",
     "selectLanguage": "Select Language",
-    "clickToEdit": "Click fields to edit."
+    "clickToEdit": "Click fields to edit.",
+    "workspace": "Workspace"
   },
   "auth": {
     "signIn": "Sign In",

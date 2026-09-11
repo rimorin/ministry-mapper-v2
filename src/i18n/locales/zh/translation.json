@@ -34,7 +34,8 @@
     "weakConnection": "网络信号弱",
     "noResults": "未找到结果。",
     "selectLanguage": "选择语言",
-    "clickToEdit": "点击字段可编辑。"
+    "clickToEdit": "点击字段可编辑。",
+    "workspace": "工作区"
   },
   "auth": {
     "signIn": "登录",
