@@ -1,3 +1,14 @@
+## [2.9.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.8.1...v2.9.0) (2026-09-11)
+
+### Features
+
+* follow the theme on the map basemap ([dc450ff](https://github.com/rimorin/ministry-mapper-v2/commit/dc450ffafa52481c31a5f7a42fbd628e0de8ce3b))
+* switch territory from the territory header ([3659829](https://github.com/rimorin/ministry-mapper-v2/commit/3659829d33e8d9540bd072bc54478ed7764b9a26))
+
+### Bug Fixes
+
+* add the missing common.workspace translation key ([2a5f30b](https://github.com/rimorin/ministry-mapper-v2/commit/2a5f30b1f937af2b29a48560e70e26b6dcb5c6c5))
+
 ## [2.8.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.8.0...v2.8.1) (2026-09-05)
 
 ### Performance Improvements
