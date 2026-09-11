@@ -34,7 +34,8 @@
     "weakConnection": "Koneksi lemah",
     "noResults": "Tidak ada hasil yang ditemukan.",
     "selectLanguage": "Pilih Bahasa",
-    "clickToEdit": "Klik kolom untuk mengedit."
+    "clickToEdit": "Klik kolom untuk mengedit.",
+    "workspace": "Ruang Kerja"
   },
   "auth": {
     "signIn": "Masuk",

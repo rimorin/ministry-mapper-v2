@@ -34,7 +34,8 @@
     "weakConnection": "接続が弱い",
     "noResults": "結果が見つかりません。",
     "selectLanguage": "言語を選択",
-    "clickToEdit": "項目をクリックして編集します。"
+    "clickToEdit": "項目をクリックして編集します。",
+    "workspace": "ワークスペース"
   },
   "auth": {
     "signIn": "ログイン",
