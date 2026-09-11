@@ -34,7 +34,8 @@
     "proceed": "Proceder",
     "weakConnection": "Conexión débil",
     "selectLanguage": "Seleccionar idioma",
-    "clickToEdit": "Haz clic en los campos para editar."
+    "clickToEdit": "Haz clic en los campos para editar.",
+    "workspace": "Espacio de trabajo"
   },
   "auth": {
     "signIn": "Iniciar sesión",
