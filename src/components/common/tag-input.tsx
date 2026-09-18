@@ -1,5 +1,6 @@
 import * as React from "react";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
@@ -23,6 +24,7 @@ export function TagInput({
   id,
   ...ariaProps
 }: TagInputProps) {
+  const { t } = useTranslation();
   const [inputValue, setInputValue] = React.useState("");
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -69,7 +71,7 @@ export function TagInput({
           <button
             type="button"
             tabIndex={-1}
-            aria-label={`Remove ${tag}`}
+            aria-label={t("tagfield.removeTag", "Remove {{tag}}", { tag })}
             className="ml-0.5 opacity-60 hover:opacity-100"
             onClick={(e) => {
               e.stopPropagation();

@@ -21,20 +21,20 @@ interface MultiSelectProps {
   options: MultiSelectOption[];
   value?: string[];
   onChange?: (values: string[]) => void;
-  placeholder?: string;
-  noOptionsMessage?: string;
+  placeholder: string;
+  noOptionsMessage: string;
   className?: string;
-  label?: string;
+  label: string;
 }
 
 export function MultiSelect({
   options,
   value = [],
   onChange,
-  placeholder = "Select...",
-  noOptionsMessage = "No options available.",
+  placeholder,
+  noOptionsMessage,
   className,
-  label = "Select options"
+  label
 }: MultiSelectProps) {
   const { t } = useTranslation();
   const [open, setOpen] = React.useState(false);

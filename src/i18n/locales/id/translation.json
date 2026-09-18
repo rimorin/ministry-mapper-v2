@@ -410,7 +410,8 @@
   "tagfield": {
     "invalidCharacters": "Hanya karakter alfanumerik dan tanda hubung yang diperbolehkan",
     "charactersSanitized": "Karakter tidak valid dihapus. Ditambahkan: \"{{value}}\"",
-    "duplicatesRemoved": "Entri duplikat dihapus"
+    "duplicatesRemoved": "Entri duplikat dihapus",
+    "removeTag": "Hapus {{tag}}"
   },
   "unit": {
     "requireOneUnitValidation": "Wilayah membutuhkan setidaknya 1 nomor unit.",

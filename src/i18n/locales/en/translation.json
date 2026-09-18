@@ -410,7 +410,8 @@
   "tagfield": {
     "invalidCharacters": "Only alphanumeric characters and hyphens are allowed",
     "charactersSanitized": "Invalid characters removed. Added: \"{{value}}\"",
-    "duplicatesRemoved": "Duplicate entries removed"
+    "duplicatesRemoved": "Duplicate entries removed",
+    "removeTag": "Remove {{tag}}"
   },
   "unit": {
     "placeholder": "Type and press Enter to add (e.g., 1A, 2B, 301, 302)",

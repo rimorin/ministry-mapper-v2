@@ -410,7 +410,8 @@
   "tagfield": {
     "invalidCharacters": "仅允许字母数字字符和连字符",
     "charactersSanitized": "无效字符已删除。已添加：\"{{value}}\"",
-    "duplicatesRemoved": "重复条目已删除"
+    "duplicatesRemoved": "重复条目已删除",
+    "removeTag": "移除 {{tag}}"
   },
   "unit": {
     "requireOneUnitValidation": "区域至少需要 1 个单元编号。",

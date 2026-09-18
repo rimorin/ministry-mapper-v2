@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Label } from "@/components/ui/label";
-import { MultiSelect } from "@/components/ui/multi-select";
+import { MultiSelect } from "@/components/common/multi-select";
 import type { HouseholdProps, SelectProps } from "../../utils/interface";
 
 const HouseholdField = ({
