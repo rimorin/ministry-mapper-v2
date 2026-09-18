@@ -290,8 +290,8 @@ const TerritoryMapView = ({
         {/* Territory count indicator */}
         {territoriesWithoutCoordinates > 0 && (
           <CustomControl position="bottomright">
-            <div className="mb-0 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 font-bold text-amber-900 shadow-[0_0.125rem_0.25rem_rgba(0,0,0,0.075)] dark:border-amber-800 dark:bg-amber-950 dark:text-amber-100">
-              <span className="font-semibold text-red-600 dark:text-red-400">
+            <div className="mb-0 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 font-bold text-warning shadow-[0_0.125rem_0.25rem_rgba(0,0,0,0.075)]">
+              <span className="font-semibold text-destructive">
                 {territoriesWithoutCoordinates}
               </span>{" "}
               {t("territory.withoutBoundaries", "without boundaries")}

@@ -254,10 +254,7 @@ const UserManagementComponent = () => {
       <Card className="w-full shadow-md">
         <CardContent className="flex flex-col items-center gap-4 pt-8 pb-6 text-center">
           {isSuccess ? (
-            <CheckCircle2
-              className="size-16 text-green-500"
-              aria-hidden="true"
-            />
+            <CheckCircle2 className="size-16 text-success" aria-hidden="true" />
           ) : (
             <XCircle className="size-16 text-destructive" aria-hidden="true" />
           )}

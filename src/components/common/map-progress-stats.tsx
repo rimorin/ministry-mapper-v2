@@ -18,17 +18,17 @@ const MapProgressStats = ({
   const stats = [
     {
       value: notDone,
-      tone: "text-amber-500",
+      tone: "text-status-notdone",
       label: t("territory.notDone", "Not Done")
     },
     {
       value: notHome,
-      tone: "text-sky-500",
+      tone: "text-status-nothome",
       label: t("territory.notHome", "Not Home")
     },
     {
       value: progress,
-      tone: "text-emerald-500",
+      tone: "text-status-done",
       label: t("territory.completed", "Completed")
     }
   ];

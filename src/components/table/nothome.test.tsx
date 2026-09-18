@@ -33,6 +33,8 @@ describe("NotHomeIcon", () => {
   it("renders envelope icon with orange styling", () => {
     const { container } = render(<NotHomeIcon />);
 
-    expect(container.querySelector("svg.text-orange-500")).toBeInTheDocument();
+    expect(
+      container.querySelector("svg.text-status-nothome")
+    ).toBeInTheDocument();
   });
 });

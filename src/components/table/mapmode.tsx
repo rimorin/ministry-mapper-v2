@@ -28,9 +28,9 @@ const SVG_BASE =
   'xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"';
 
 const STATIC_ICON_HTML: Partial<Record<string, string>> = {
-  [STATUS_CODES.DONE]: `<svg ${SVG_BASE} class="size-5 text-green-600 stroke-[2.5]"><path d="M20 6 9 17l-5-5"/></svg>`,
-  [STATUS_CODES.DO_NOT_CALL]: `<svg ${SVG_BASE} class="size-5 text-red-600"><circle cx="12" cy="12" r="10"/><path d="M4.929 4.929 19.07 19.071"/></svg>`,
-  [STATUS_CODES.INVALID]: `<svg ${SVG_BASE} class="size-5 text-violet-500"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`
+  [STATUS_CODES.DONE]: `<svg ${SVG_BASE} class="size-5 text-status-done stroke-[2.5]"><path d="M20 6 9 17l-5-5"/></svg>`,
+  [STATUS_CODES.DO_NOT_CALL]: `<svg ${SVG_BASE} class="size-5 text-status-dnc"><circle cx="12" cy="12" r="10"/><path d="M4.929 4.929 19.07 19.071"/></svg>`,
+  [STATUS_CODES.INVALID]: `<svg ${SVG_BASE} class="size-5 text-status-invalid"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>`
 };
 
 const hasPin = (
@@ -40,7 +40,7 @@ const hasPin = (
 
 const getStatusIconHtml = (status: string, nhcount: string): string => {
   if (status === STATUS_CODES.NOT_HOME) {
-    return `<span class="relative inline-flex items-center justify-center"><svg ${SVG_BASE} class="size-5 text-amber-500"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>${nhcount ? `<span class="absolute -right-1.5 -top-1.5 z-[9999] flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-0.5 text-[10px] font-bold leading-none bg-zinc-900 text-white border border-white shadow-sm">${nhcount}</span>` : ""}</span>`;
+    return `<span class="relative inline-flex items-center justify-center"><svg ${SVG_BASE} class="size-5 text-status-nothome"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>${nhcount ? `<span class="absolute -right-1.5 -top-1.5 z-[9999] flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-0.5 text-[10px] font-bold leading-none bg-zinc-900 text-white border border-white shadow-sm">${nhcount}</span>` : ""}</span>`;
   }
   return STATIC_ICON_HTML[status] ?? "";
 };
@@ -159,9 +159,9 @@ const TerritoryMapView = ({
             <button
               type="button"
               onClick={handleUnpinnedClick}
-              className="flex max-w-[16rem] items-center gap-2 rounded-lg border border-amber-500 bg-background/95 px-3 py-2 text-left shadow-md"
+              className="flex max-w-[16rem] items-center gap-2 rounded-lg border border-warning bg-background/95 px-3 py-2 text-left shadow-md"
             >
-              <MapPin className="size-4 shrink-0 text-amber-600 dark:text-amber-400" />
+              <MapPin className="size-4 shrink-0 text-warning" />
               <span className="min-w-0">
                 <span className="block text-xs font-semibold">
                   {t(

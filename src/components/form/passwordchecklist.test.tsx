@@ -3,7 +3,7 @@ import { render, screen } from "../../utils/test";
 import PasswordChecklist from "./passwordchecklist";
 
 const countValidIcons = (container: HTMLElement) =>
-  container.querySelectorAll("svg.text-green-500").length;
+  container.querySelectorAll("svg.text-success").length;
 
 const countInvalidIcons = (container: HTMLElement) =>
   container.querySelectorAll("svg.text-destructive").length;
@@ -173,7 +173,7 @@ describe("PasswordChecklist", () => {
       );
 
       expect(
-        container.querySelectorAll("svg.text-green-500").length
+        container.querySelectorAll("svg.text-success").length
       ).toBeGreaterThan(0);
     });
 

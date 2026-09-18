@@ -9,28 +9,31 @@ describe("AggregationBadge", () => {
 
       const badge = screen.getByText("50%");
       expect(badge).toHaveAttribute("data-slot", "badge");
-      expect(badge).toHaveClass("bg-green-600", "text-white");
+      expect(badge).toHaveClass("bg-success", "text-success-foreground");
     });
 
     it("should show success for exactly 70%", () => {
       render(<AggregationBadge aggregate={70} />);
 
-      expect(screen.getByText("70%")).toHaveClass("bg-green-600", "text-white");
+      expect(screen.getByText("70%")).toHaveClass(
+        "bg-success",
+        "text-success-foreground"
+      );
     });
 
     it("should show warning (yellow) for 71-90%", () => {
       render(<AggregationBadge aggregate={80} />);
 
       const badge = screen.getByText("80%");
-      expect(badge).toHaveClass("bg-yellow-500", "text-black");
+      expect(badge).toHaveClass("bg-warning", "text-warning-foreground");
     });
 
     it("should show warning for exactly 90%", () => {
       render(<AggregationBadge aggregate={90} />);
 
       expect(screen.getByText("90%")).toHaveClass(
-        "bg-yellow-500",
-        "text-black"
+        "bg-warning",
+        "text-warning-foreground"
       );
     });
 
@@ -52,22 +55,26 @@ describe("AggregationBadge", () => {
   });
 
   describe("text styling", () => {
-    it("should have dark text for warning badges", () => {
+    it("should pair warning badges with the warning foreground", () => {
       render(<AggregationBadge aggregate={85} />);
 
-      expect(screen.getByText("85%")).toHaveClass("text-black");
+      expect(screen.getByText("85%")).toHaveClass("text-warning-foreground");
     });
 
-    it("should not have dark text for success badges", () => {
+    it("should not use the warning foreground for success badges", () => {
       render(<AggregationBadge aggregate={50} />);
 
-      expect(screen.getByText("50%")).not.toHaveClass("text-black");
+      expect(screen.getByText("50%")).not.toHaveClass(
+        "text-warning-foreground"
+      );
     });
 
-    it("should not have dark text for danger badges", () => {
+    it("should not use the warning foreground for danger badges", () => {
       render(<AggregationBadge aggregate={95} />);
 
-      expect(screen.getByText("95%")).not.toHaveClass("text-black");
+      expect(screen.getByText("95%")).not.toHaveClass(
+        "text-warning-foreground"
+      );
     });
   });
 
@@ -104,7 +111,7 @@ describe("AggregationBadge", () => {
     it("should display 0% when no aggregate provided", () => {
       render(<AggregationBadge />);
 
-      expect(screen.getByText("0%")).toHaveClass("bg-green-600");
+      expect(screen.getByText("0%")).toHaveClass("bg-success");
     });
   });
 
@@ -112,7 +119,7 @@ describe("AggregationBadge", () => {
     it("should handle edge case at 71%", () => {
       render(<AggregationBadge aggregate={71} />);
 
-      expect(screen.getByText("71%")).toHaveClass("bg-yellow-500");
+      expect(screen.getByText("71%")).toHaveClass("bg-warning");
     });
 
     it("should handle edge case at 91%", () => {

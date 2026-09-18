@@ -14,7 +14,11 @@ const UserRoleBadge = ({ role }: UserRoleBadgeProps) => {
       return <Badge variant="secondary">{t("user.roles.readOnly")}</Badge>;
     case USER_ACCESS_LEVELS.CONDUCTOR.CODE:
       return (
-        <Badge className={cn("bg-green-600 text-white hover:bg-green-700")}>
+        <Badge
+          className={cn(
+            "bg-success text-success-foreground hover:bg-success/90"
+          )}
+        >
           {t("user.roles.conductor")}
         </Badge>
       );

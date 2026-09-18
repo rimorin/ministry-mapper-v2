@@ -9,7 +9,7 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.INVALID} type={[]} />
     );
 
-    expect(container.querySelector(".text-violet-500")).toBeInTheDocument();
+    expect(container.querySelector(".text-status-invalid")).toBeInTheDocument();
   });
 
   it("renders done status", () => {
@@ -17,7 +17,7 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.DONE} type={[]} />
     );
 
-    expect(container.querySelector(".text-green-500")).toBeInTheDocument();
+    expect(container.querySelector(".text-status-done")).toBeInTheDocument();
   });
 
   it("renders do not call status", () => {
@@ -25,7 +25,7 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.DO_NOT_CALL} type={[]} />
     );
 
-    expect(container.querySelector(".text-red-500")).toBeInTheDocument();
+    expect(container.querySelector(".text-status-dnc")).toBeInTheDocument();
   });
 
   it("renders not home icon when status is not home", () => {
@@ -44,7 +44,7 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.DONE} note="Test note" type={[]} />
     );
 
-    expect(container.querySelector(".text-amber-500")).toBeInTheDocument();
+    expect(container.querySelector(".text-warning")).toBeInTheDocument();
   });
 
   it("renders household type badges", () => {
@@ -136,8 +136,8 @@ describe("AddressStatus", () => {
       <AddressStatus status={STATUS_CODES.DONE} note="Test note" type={types} />
     );
 
-    expect(container.querySelector(".text-green-500")).toBeInTheDocument();
-    expect(container.querySelector(".text-amber-500")).toBeInTheDocument();
+    expect(container.querySelector(".text-status-done")).toBeInTheDocument();
+    expect(container.querySelector(".text-warning")).toBeInTheDocument();
     expect(screen.getByText("CH")).toBeInTheDocument();
   });
 });

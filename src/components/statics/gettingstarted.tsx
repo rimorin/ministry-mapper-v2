@@ -86,9 +86,7 @@ const StepCard = ({
         : undefined;
 
   const statusBadge = isComplete ? (
-    <Badge className="bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
-      {t("guide.completed")}
-    </Badge>
+    <Badge className="bg-success/15 text-success">{t("guide.completed")}</Badge>
   ) : isLocked ? (
     <Tooltip>
       <TooltipTrigger render={<span className="inline-flex" />}>
@@ -122,7 +120,7 @@ const StepCard = ({
                   animate="show"
                   exit="hidden"
                 >
-                  <CheckCircle2 className="h-7 w-7 shrink-0 text-green-600" />
+                  <CheckCircle2 className="h-7 w-7 shrink-0 text-success" />
                 </m.span>
               ) : isLocked ? (
                 <m.span

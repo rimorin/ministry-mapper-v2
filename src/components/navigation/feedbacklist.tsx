@@ -68,7 +68,7 @@ const FeedbackList = ({
                   {fb.read && fb.type !== MESSAGE_TYPES.ADMIN && !isAdmin && (
                     <Badge
                       variant="outline"
-                      className="h-4 border-green-200 px-1.5 text-[10px] text-green-600"
+                      className="h-4 border-success/30 px-1.5 text-[10px] text-success"
                     >
                       <Check className="mr-0.5 size-2.5" />
                       Read
@@ -85,7 +85,7 @@ const FeedbackList = ({
                     <Button
                       size="icon"
                       variant="ghost"
-                      className="size-7 text-green-600 hover:text-green-700 hover:bg-green-50"
+                      className="size-7 text-success hover:text-success hover:bg-success/10"
                       onClick={() => handleRead(fb.id)}
                       aria-label="Mark as read"
                     >

@@ -27,22 +27,19 @@ interface ReleaseNotesModalProps {
 
 const ITEM_CONFIG = {
   new: {
-    colorClass:
-      "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400",
+    colorClass: "bg-success/15 text-success",
     labelKey: "releaseNotes.new"
   },
   fix: {
-    colorClass:
-      "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400",
+    colorClass: "bg-warning/15 text-warning",
     labelKey: "releaseNotes.fix"
   },
   improved: {
-    colorClass: "bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-400",
+    colorClass: "bg-info/15 text-info",
     labelKey: "releaseNotes.improved"
   },
   announcement: {
-    colorClass:
-      "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400",
+    colorClass: "bg-primary/15 text-primary",
     labelKey: "releaseNotes.announcement"
   }
 } as const;

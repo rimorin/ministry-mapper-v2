@@ -120,7 +120,7 @@ const ExpiryBadge = ({ endtime, onExpired }: ExpiryBadgeProps) => {
       className={cn(
         "gap-1 font-variant-numeric tabular-nums select-none text-xs transition-[color,border-color,background-color,opacity] duration-700 ease-in-out motion-reduce:transition-none",
         urgency === "safe" && "opacity-75",
-        urgency === "warning" && "border-amber-500 text-amber-500",
+        urgency === "warning" && "border-warning text-warning",
         urgency === "critical" && "animate-pulse motion-reduce:animate-none"
       )}
       role="timer"
