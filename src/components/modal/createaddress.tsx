@@ -201,7 +201,7 @@ const CreateAddress = NiceModal.create(
         >
           <DialogHeader>
             <DialogTitle>
-              {t("address.createAddress", "Add address to {{name}}", {
+              {t("address.createAddress", "Add property to {{name}}", {
                 name: addressName
               })}
             </DialogTitle>

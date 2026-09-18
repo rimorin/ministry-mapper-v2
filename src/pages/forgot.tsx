@@ -48,12 +48,12 @@ const ForgotComponent = () => {
       >
         <div className="space-y-1.5">
           <Label htmlFor="forgot-email">
-            {t("auth.emailAddress", "Email address")}
+            {t("auth.emailAddress", "Email Address")}
           </Label>
           <Input
             id="forgot-email"
             type="email"
-            placeholder={t("auth.enterEmail", "Email Address")}
+            placeholder={t("auth.enterEmail", "Enter email")}
             value={loginEmail}
             required
             aria-required="true"

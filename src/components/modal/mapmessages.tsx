@@ -229,10 +229,7 @@ const UpdateMapMessages = NiceModal.create(
                     <Textarea
                       autoFocus
                       name="feedback"
-                      placeholder={t(
-                        "messages.enterMessage",
-                        "Write a message…"
-                      )}
+                      placeholder={t("messages.enterMessage", "Enter message")}
                       value={feedback}
                       rows={3}
                       className="resize-none pr-12"

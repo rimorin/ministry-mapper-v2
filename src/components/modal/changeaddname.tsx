@@ -53,9 +53,7 @@ const ChangeAddressName = NiceModal.create(
       <Dialog {...dialogProps}>
         <DialogContent {...contentProps}>
           <DialogHeader>
-            <DialogTitle>
-              {t("address.changeName", "Change Address Name")}
-            </DialogTitle>
+            <DialogTitle>{t("address.changeName", "Rename")}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">

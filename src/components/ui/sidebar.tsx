@@ -3,6 +3,7 @@ import { mergeProps } from "@base-ui/react/merge-props";
 import { useRender } from "@base-ui/react/use-render";
 import { Dialog } from "@base-ui/react/dialog";
 import { cva, type VariantProps } from "class-variance-authority";
+import { useTranslation } from "react-i18next";
 
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -152,6 +153,7 @@ function Sidebar({
   collapsible?: "offcanvas" | "icon" | "none";
 }) {
   const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
+  const { t } = useTranslation();
 
   if (collapsible === "none") {
     return (
@@ -180,7 +182,7 @@ function Sidebar({
             data-sidebar="sidebar"
             data-slot="sidebar"
             data-mobile="true"
-            aria-label="Sidebar"
+            aria-label={t("navigation.sidebar", "Sidebar")}
             dir={dir}
             finalFocus={false}
             style={
@@ -255,6 +257,7 @@ function SidebarTrigger({
   ...props
 }: React.ComponentProps<typeof Button>) {
   const { toggleSidebar } = useSidebar();
+  const { t } = useTranslation();
 
   return (
     <Button
@@ -270,22 +273,26 @@ function SidebarTrigger({
       {...props}
     >
       <MenuIcon />
-      <span className="sr-only">Toggle Sidebar</span>
+      <span className="sr-only">
+        {t("navigation.toggleSidebar", "Toggle sidebar")}
+      </span>
     </Button>
   );
 }
 
 function SidebarRail({ className, ...props }: React.ComponentProps<"button">) {
   const { toggleSidebar } = useSidebar();
+  const { t } = useTranslation();
+  const toggleLabel = t("navigation.toggleSidebar", "Toggle sidebar");
 
   return (
     <button
       data-sidebar="rail"
       data-slot="sidebar-rail"
-      aria-label="Toggle Sidebar"
+      aria-label={toggleLabel}
       tabIndex={-1}
       onClick={toggleSidebar}
-      title="Toggle Sidebar"
+      title={toggleLabel}
       className={cn(
         "absolute inset-y-0 z-20 hidden w-4 transition-[right,left] ease-linear group-data-[side=left]:-right-4 group-data-[side=right]:left-0 after:absolute after:inset-y-0 after:start-1/2 after:w-[2px] hover:after:bg-sidebar-border sm:flex ltr:-translate-x-1/2 rtl:-translate-x-1/2",
         "in-data-[side=left]:cursor-w-resize in-data-[side=right]:cursor-e-resize",

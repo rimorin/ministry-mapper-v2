@@ -27,7 +27,7 @@ describe("MissingSetupPage", () => {
     );
 
     const title = container.querySelector('[data-slot="card-title"]');
-    expect(title?.textContent).toBe("errors.missingPocketBaseUrl");
+    expect(title?.textContent).toBe("Missing PocketBase URL");
   });
 
   it("should use correct translation key for other setup issues", () => {
@@ -36,6 +36,6 @@ describe("MissingSetupPage", () => {
     );
 
     const title = container.querySelector('[data-slot="card-title"]');
-    expect(title?.textContent).toBe("errors.missingSetup");
+    expect(title?.textContent).toBe("Missing setup");
   });
 });

@@ -55,7 +55,7 @@ const SignupComponent = () => {
         onSubmit={handleFormSubmit}
       >
         <div className="space-y-1.5">
-          <Label htmlFor="name">{t("auth.name", "User Name")}</Label>
+          <Label htmlFor="name">{t("auth.name", "Name")}</Label>
           <Input
             id="name"
             type="text"

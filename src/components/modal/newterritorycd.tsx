@@ -114,9 +114,7 @@ const NewTerritoryCode = NiceModal.create(
       <Dialog {...dialogProps}>
         <DialogContent {...contentProps}>
           <DialogHeader>
-            <DialogTitle>
-              {t("territory.createNew", "Create New Territory")}
-            </DialogTitle>
+            <DialogTitle>{t("territory.createNew", "Create New")}</DialogTitle>
           </DialogHeader>
           <Form {...form}>
             <form

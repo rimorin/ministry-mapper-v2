@@ -16,7 +16,7 @@ describe("UserRoleField", () => {
       screen.getByRole("button", { name: "No Access" })
     ).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: "Read-only" })
+      screen.getByRole("button", { name: "Read Only" })
     ).toBeInTheDocument();
     expect(
       screen.getByRole("button", { name: "Conductor" })
@@ -58,7 +58,7 @@ describe("UserRoleField", () => {
       <UserRoleField {...defaultProps} handleRoleChange={handleRoleChange} />
     );
 
-    await user.click(screen.getByRole("button", { name: "Read-only" }));
+    await user.click(screen.getByRole("button", { name: "Read Only" }));
 
     expect(handleRoleChange).toHaveBeenCalledWith(
       USER_ACCESS_LEVELS.READ_ONLY.CODE

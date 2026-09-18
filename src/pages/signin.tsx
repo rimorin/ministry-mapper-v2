@@ -98,7 +98,7 @@ const LoginComponent = () => {
         >
           <div className="space-y-1.5">
             <Label htmlFor="login-email">
-              {t("auth.emailAddress", "Email address")}
+              {t("auth.emailAddress", "Email Address")}
             </Label>
             <Input
               id="login-email"
@@ -158,7 +158,7 @@ const LoginComponent = () => {
                 disabled={isDisabled}
                 onClick={() => navigate("/forgot")}
               >
-                {t("auth.forgotPassword", "Forgot Password?")}
+                {t("auth.forgotPassword", "Forgot Password")}
               </Button>
             </div>
           </div>

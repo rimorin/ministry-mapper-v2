@@ -189,7 +189,7 @@ const Map = () => {
   if (isLoading) {
     return (
       <>
-        <TopNavbar title={t("common.Loading", "Loading...")} />
+        <TopNavbar title={t("common.loading", "Loading...")} />
         <MapPlaceholder policy={policy} />
       </>
     );
@@ -208,7 +208,7 @@ const Map = () => {
 
   const currentLanguageLabel =
     languageOptions.find((opt) => currentLanguage.startsWith(opt.value))
-      ?.label ?? t("common.Language", "Language");
+      ?.label ?? t("common.language", "Language");
 
   return (
     <>
@@ -290,7 +290,7 @@ const Map = () => {
               type="button"
               className={navItemClass}
               onClick={handleMessageClick}
-              aria-label={t("common.Messages", "Messages")}
+              aria-label={t("common.messages", "Messages")}
               whileTap={tapFeedback}
             >
               <MessageSquareDot
@@ -302,7 +302,7 @@ const Map = () => {
                 )}
               />
               <span className="text-xs leading-none">
-                {t("common.Messages", "Messages")}
+                {t("common.messages", "Messages")}
               </span>
             </m.button>
             {isSingleStory && (
@@ -354,19 +354,19 @@ const Map = () => {
               type="button"
               className={navItemClass}
               onClick={showLocationModal}
-              aria-label={t("common.Directions", "Directions")}
+              aria-label={t("common.directions", "Directions")}
               whileTap={tapFeedback}
             >
               <Navigation className="size-5" />
               <span className="text-xs leading-none">
-                {t("common.Directions", "Directions")}
+                {t("common.directions", "Directions")}
               </span>
             </m.button>
             <m.button
               type="button"
               className={navItemClass}
               onClick={toggleLanguageSelector}
-              aria-label={t("common.Language", "Language")}
+              aria-label={t("common.language", "Language")}
               whileTap={tapFeedback}
             >
               <Languages className="size-5" />
