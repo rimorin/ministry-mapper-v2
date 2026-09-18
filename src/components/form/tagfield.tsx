@@ -1,7 +1,7 @@
 import { useId } from "react";
 import { useTranslation } from "react-i18next";
 import { Label } from "@/components/ui/label";
-import { TagInput } from "@/components/ui/tag-input";
+import { TagInput } from "@/components/common/tag-input";
 import useNotification from "../../hooks/useNotification";
 import { PROPERTY_CODE_PATTERN } from "../../utils/helpers/processpropertyno";
 

@@ -410,7 +410,8 @@
   "tagfield": {
     "invalidCharacters": "영숫자와 하이픈만 허용됩니다",
     "charactersSanitized": "잘못된 문자가 제거되었습니다. 추가됨: \"{{value}}\"",
-    "duplicatesRemoved": "중복 항목이 제거되었습니다"
+    "duplicatesRemoved": "중복 항목이 제거되었습니다",
+    "removeTag": "{{tag}} 제거"
   },
   "unit": {
     "requireOneUnitValidation": "구역에는 최소 1개의 단위 번호가 필요합니다.",
