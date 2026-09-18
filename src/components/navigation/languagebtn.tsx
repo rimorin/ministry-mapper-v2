@@ -17,8 +17,8 @@ const LanguageBtn: FC<LanguageBtnProps> = ({ onClick, className = "" }) => {
       size="sm"
       onClick={onClick}
       className={className}
-      aria-label={t("common.Language", "Language")}
-      title={t("common.Language", "Language")}
+      aria-label={t("common.language", "Language")}
+      title={t("common.language", "Language")}
     >
       <Languages
         aria-hidden="true"

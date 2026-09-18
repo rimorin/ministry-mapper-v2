@@ -244,8 +244,8 @@ function MapRow({
                   onClick={() => handleShowAddUnit(mapId, addressElement)}
                 >
                   {mapType === TERRITORY_TYPES.SINGLE_STORY
-                    ? t("address.addProperty", "Add Property No.")
-                    : t("address.addUnit", "Add Unit No.")}
+                    ? t("address.addProperty", "Add Property Nos.")
+                    : t("address.addUnit", "Add Unit Nos.")}
                 </GenericDropdownItem>
                 {(!mapType || mapType === TERRITORY_TYPES.MULTIPLE_STORIES) && (
                   <>

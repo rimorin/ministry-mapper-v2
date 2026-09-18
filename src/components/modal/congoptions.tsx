@@ -192,7 +192,7 @@ const SortableOptionRow = ({
               <FieldTooltip
                 title={t(
                   "congregation.optionCodeTooltip",
-                  "Appears in territory house boxes"
+                  "Short 2-letter code shown on each house in the territory map (e.g. en, zh)"
                 )}
                 disabled={isAnyDragging}
               />
@@ -215,7 +215,7 @@ const SortableOptionRow = ({
               <FieldTooltip
                 title={t(
                   "congregation.optionDescTooltip",
-                  "Appears in dropdown list"
+                  "Full name shown in the dropdown when publishers record a visit"
                 )}
                 disabled={isAnyDragging}
               />
@@ -242,7 +242,7 @@ const SortableOptionRow = ({
               <FieldTooltip
                 title={t(
                   "congregation.optionCountableTooltip",
-                  "Counts in completion %"
+                  "When checked, houses with this option count toward the territory's completion percentage"
                 )}
                 disabled={isAnyDragging}
               />
@@ -259,7 +259,7 @@ const SortableOptionRow = ({
               <FieldTooltip
                 title={t(
                   "congregation.optionDefaultTooltip",
-                  "Default household type"
+                  "New addresses are automatically assigned this option. Exactly one option must be set as default"
                 )}
                 disabled={isAnyDragging}
               />
