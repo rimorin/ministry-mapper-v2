@@ -23,8 +23,8 @@ const AggregationBadge = ({
           size === "md" && "h-5 text-xs",
           size === "lg" && "h-6 text-sm",
           urgency === "high" && "bg-destructive text-white",
-          urgency === "medium" && "bg-yellow-500 text-black dark:text-black",
-          urgency === "low" && "bg-green-600 text-white"
+          urgency === "medium" && "bg-warning text-warning-foreground",
+          urgency === "low" && "bg-success text-success-foreground"
         )}
         style={{ width: width ?? defaultWidth }}
       >

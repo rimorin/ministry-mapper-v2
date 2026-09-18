@@ -8,13 +8,9 @@ import NotHomeIcon from "./nothome";
 const StatusIcon = ({ status }: { status: string }) => {
   switch (status) {
     case STATUS_CODES.DONE:
-      return (
-        <Check className="size-6 text-green-500 dark:text-green-400 stroke-[3]" />
-      );
+      return <Check className="size-6 text-status-done stroke-[3]" />;
     case STATUS_CODES.DO_NOT_CALL:
-      return (
-        <Ban className="size-5 text-red-500 dark:text-red-400 stroke-[3]" />
-      );
+      return <Ban className="size-5 text-status-dnc stroke-[3]" />;
     default:
       return null;
   }
@@ -58,7 +54,7 @@ const AddressStatus = (props: unitProps) => {
           className="flex items-center justify-center w-full h-full"
           {...statusMotion}
         >
-          <X className="size-5 text-violet-500 dark:text-violet-400 stroke-[3]" />
+          <X className="size-5 text-status-invalid stroke-[3]" />
         </m.div>
       ) : (
         <m.div
@@ -77,7 +73,7 @@ const AddressStatus = (props: unitProps) => {
             <div className="flex items-center justify-center gap-0.5 flex-wrap max-w-full px-0.5">
               {note && (
                 <StickyNote
-                  className="size-4 text-amber-500 dark:text-amber-300 shrink-0"
+                  className="size-4 text-warning shrink-0"
                   aria-label={note}
                 />
               )}

@@ -65,7 +65,7 @@ const PasswordChecklist = ({
         <li key={rule.key} className="flex items-center gap-2 text-sm">
           {rule.isValid ? (
             <CheckCircle2
-              className="size-4 shrink-0 text-green-500"
+              className="size-4 shrink-0 text-success"
               aria-hidden="true"
             />
           ) : (

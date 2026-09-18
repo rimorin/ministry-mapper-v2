@@ -15,10 +15,10 @@ const alertVariants = cva(
         destructive:
           "bg-card text-destructive *:data-[slot=alert-description]:text-destructive/90 *:[svg]:text-current",
         warning:
-          "bg-amber-50 text-amber-900 border-amber-200 dark:bg-amber-950 dark:text-amber-100 dark:border-amber-800 *:data-[slot=alert-description]:text-amber-800 dark:*:data-[slot=alert-description]:text-amber-200 *:[svg]:text-amber-600 dark:*:[svg]:text-amber-400",
-        info: "border-blue-200 bg-blue-50 text-blue-900 dark:border-blue-800 dark:bg-blue-950/50 dark:text-blue-200 *:data-[slot=alert-description]:text-blue-800 dark:*:data-[slot=alert-description]:text-blue-200 *:[svg]:text-blue-600 dark:*:[svg]:text-blue-400",
+          "border-warning/30 bg-warning/10 text-warning *:data-[slot=alert-description]:text-warning/90 *:[svg]:text-warning",
+        info: "border-info/30 bg-info/10 text-info *:data-[slot=alert-description]:text-info/90 *:[svg]:text-info",
         success:
-          "border-green-200 bg-green-50 text-green-900 dark:border-green-800 dark:bg-green-950/50 dark:text-green-200 *:data-[slot=alert-description]:text-green-800 dark:*:data-[slot=alert-description]:text-green-200 *:[svg]:text-green-600 dark:*:[svg]:text-green-400"
+          "border-success/30 bg-success/10 text-success *:data-[slot=alert-description]:text-success/90 *:[svg]:text-success"
       }
     },
     defaultVariants: {

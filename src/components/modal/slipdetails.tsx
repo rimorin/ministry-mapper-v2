@@ -169,8 +169,8 @@ const ConfirmSlipDetails = NiceModal.create(
                     </div>
                   </div>
                   {existingRows.length > 0 && (
-                    <div className="space-y-1.5 rounded-md border border-amber-500/30 bg-amber-500/10 p-2">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-amber-600 dark:text-amber-500">
+                    <div className="space-y-1.5 rounded-md border border-warning/30 bg-warning/10 p-2">
+                      <div className="flex items-center gap-1.5 text-xs font-medium text-warning">
                         <TriangleAlert className="size-3 shrink-0" />
                         <span>
                           {t("slip.alreadyAssigned", "Already assigned")}
@@ -193,7 +193,7 @@ const ConfirmSlipDetails = NiceModal.create(
                             <span className="min-w-0 pt-0.5 text-muted-foreground">
                               {names}
                               {extraCount > 0 && (
-                                <span className="whitespace-nowrap font-medium text-amber-600 dark:text-amber-500">
+                                <span className="whitespace-nowrap font-medium text-warning">
                                   {" "}
                                   {t("slip.moreAssignees", "+{{count}} more", {
                                     count: extraCount

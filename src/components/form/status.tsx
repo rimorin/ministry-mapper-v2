@@ -29,36 +29,30 @@ const HHStatusField = ({
     {
       value: STATUS_CODES.DONE,
       label: t("address.done", "Done"),
-      icon: (
-        <Check className="size-5 text-green-500 dark:text-green-400 stroke-[3]" />
-      ),
+      icon: <Check className="size-5 text-status-done stroke-[3]" />,
       pressedClass:
-        "data-[pressed]:bg-green-500/20 data-[pressed]:ring-green-500/50"
+        "data-[pressed]:bg-status-done/20 data-[pressed]:ring-status-done/50"
     },
     {
       value: STATUS_CODES.NOT_HOME,
       label: t("address.notHome", "Not Home"),
       icon: <NotHomeIcon nhcount={nhcount} iconClassName="size-5" />,
       pressedClass:
-        "data-[pressed]:bg-orange-500/20 data-[pressed]:ring-orange-500/50"
+        "data-[pressed]:bg-status-nothome/20 data-[pressed]:ring-status-nothome/50"
     },
     {
       value: STATUS_CODES.DO_NOT_CALL,
       label: t("address.dnc", "DNC"),
-      icon: (
-        <Ban className="size-5 text-red-500 dark:text-red-400 stroke-[3]" />
-      ),
+      icon: <Ban className="size-5 text-status-dnc stroke-[3]" />,
       pressedClass:
-        "data-[pressed]:bg-red-500/20 data-[pressed]:ring-red-500/50"
+        "data-[pressed]:bg-status-dnc/20 data-[pressed]:ring-status-dnc/50"
     },
     {
       value: STATUS_CODES.INVALID,
       label: t("address.invalid", "Invalid"),
-      icon: (
-        <X className="size-5 text-violet-500 dark:text-violet-400 stroke-[3]" />
-      ),
+      icon: <X className="size-5 text-status-invalid stroke-[3]" />,
       pressedClass:
-        "data-[pressed]:bg-violet-500/20 data-[pressed]:ring-violet-500/50"
+        "data-[pressed]:bg-status-invalid/20 data-[pressed]:ring-status-invalid/50"
     }
   ];
 
