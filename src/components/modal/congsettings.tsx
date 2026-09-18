@@ -82,9 +82,7 @@ const UpdateCongregationSettings = NiceModal.create(
       <Dialog {...dialogProps}>
         <DialogContent {...contentProps}>
           <DialogHeader>
-            <DialogTitle>
-              {t("congregation.settings", "Congregation Settings")}
-            </DialogTitle>
+            <DialogTitle>{t("congregation.settings", "Settings")}</DialogTitle>
             <DialogDescription className="sr-only">
               Congregation settings
             </DialogDescription>

@@ -22,7 +22,7 @@ const UserRoleField = ({
     {
       id: "status-tb-1",
       value: USER_ACCESS_LEVELS.READ_ONLY.CODE,
-      label: t("user.roles.readOnly", "Read-only")
+      label: t("user.roles.readOnly", "Read Only")
     },
     {
       id: "status-tb-2",

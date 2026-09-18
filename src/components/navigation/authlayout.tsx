@@ -100,7 +100,7 @@ const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
         <span className="flex flex-col items-center gap-0.5">
           <LanguageBtn onClick={toggleLanguageSelector} />
           <span className="text-[10px]">
-            {t("common.Language", "Language")}
+            {t("common.language", "Language")}
           </span>
         </span>
       </m.div>

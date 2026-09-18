@@ -42,7 +42,7 @@ const AddressCoordinatesField = ({
 
   return (
     <div className="flex flex-col gap-2">
-      <Label>{t("address.coordinates", "Address Coordinates")}</Label>
+      <Label>{t("address.coordinates", "Coordinates")}</Label>
       <div className="flex gap-2">
         <Button
           variant="outline"

@@ -340,7 +340,7 @@ export function AppSidebar({
                                 aria-hidden="true"
                               />
                             )}
-                            {t("territory.territory", "Manage")}
+                            {t("territory.territory", "Territory")}
                           </span>
                           <ChevronDown className="size-4 shrink-0 transition-transform group-data-open/collapsible:rotate-180" />
                         </CollapsibleTrigger>
@@ -359,7 +359,7 @@ export function AppSidebar({
                                   }
                                 >
                                   <FilePlus className="size-3.5 shrink-0 text-muted-foreground" />
-                                  {t("territory.createNew", "New Territory")}
+                                  {t("territory.createNew", "Create New")}
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
                               <SidebarMenuSubItem>
@@ -412,7 +412,7 @@ export function AppSidebar({
                                   <ArrowUpDown className="size-3.5 shrink-0 text-muted-foreground" />
                                   {t(
                                     "territory.changeSequence",
-                                    "Reorder Maps"
+                                    "Change Sequence"
                                   )}
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
@@ -447,7 +447,7 @@ export function AppSidebar({
                                   <Trash2 className="size-3.5 shrink-0" />
                                   {t(
                                     "territory.deleteCurrent",
-                                    "Delete Territory"
+                                    "Delete Current"
                                   )}
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
@@ -742,7 +742,7 @@ export function AppSidebar({
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="top">
-                  {t("theme.settings", "Theme")}
+                  {t("theme.settings", "Theme Settings")}
                 </TooltipContent>
               </Tooltip>
 
@@ -756,12 +756,12 @@ export function AppSidebar({
                       className="w-full"
                     />
                     <span className="text-[10px] text-muted-foreground">
-                      {t("common.Language", "Language")}
+                      {t("common.language", "Language")}
                     </span>
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="top">
-                  {t("common.Language", "Language")}
+                  {t("common.language", "Language")}
                 </TooltipContent>
               </Tooltip>
             </div>

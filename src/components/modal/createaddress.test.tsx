@@ -37,7 +37,7 @@ const openWithNumber = async (
   render(<></>);
   show(policyOverrides);
   await waitFor(() =>
-    expect(screen.getByText("Add address to Jalan Sempadan")).toBeVisible()
+    expect(screen.getByText("Add property to Jalan Sempadan")).toBeVisible()
   );
   await userEvent.type(screen.getByPlaceholderText("e.g. 1, 2A, B3"), "14");
   await userEvent.click(screen.getByRole("button", { name: "Create" }));

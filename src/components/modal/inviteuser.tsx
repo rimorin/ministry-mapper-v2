@@ -68,7 +68,7 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
     } else if (roleCode === USER_ACCESS_LEVELS.CONDUCTOR.CODE) {
       return t("user.roles.conductor", "Conductor");
     } else if (roleCode === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE) {
-      return t("user.roles.administrator", "Administrator");
+      return t("user.roles.administrator", "Admin");
     } else if (roleCode === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
       return t("user.roles.noAccess", "No Access");
     }

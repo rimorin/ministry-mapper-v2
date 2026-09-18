@@ -168,7 +168,7 @@ const TerritoryHeader = ({
                 ) : (
                   <Zap className="size-4" />
                 )}
-                {t("navigation.generateLink", "Link")}
+                {t("navigation.generateLink", "Quick Link")}
               </Button>
             </ComponentAuthorizer>
           )}
@@ -184,7 +184,7 @@ const TerritoryHeader = ({
                 aria-label={t("map.newMap", "New Map")}
               >
                 <Plus className="size-4" />
-                {t("map.newMap", "Map")}
+                {t("map.newMap", "New Map")}
               </Button>
             </ComponentAuthorizer>
           )}
