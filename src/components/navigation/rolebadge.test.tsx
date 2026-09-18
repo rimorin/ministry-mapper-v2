@@ -16,7 +16,7 @@ describe("UserRoleBadge", () => {
       render(<UserRoleBadge role="conductor" />);
 
       const badge = screen.getByText(/conductor/i);
-      expect(badge).toHaveClass("bg-green-600", "text-white");
+      expect(badge).toHaveClass("bg-success", "text-success-foreground");
     });
 
     it("should display administrator badge for administrator role", () => {
@@ -60,7 +60,7 @@ describe("UserRoleBadge", () => {
       expect(screen.getByText(/read/i)).toHaveClass("bg-secondary");
 
       rerender(<UserRoleBadge role="conductor" />);
-      expect(screen.getByText(/conductor/i)).toHaveClass("bg-green-600");
+      expect(screen.getByText(/conductor/i)).toHaveClass("bg-success");
 
       rerender(<UserRoleBadge role="administrator" />);
       expect(screen.getByText(/admin/i)).toHaveClass("bg-primary");

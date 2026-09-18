@@ -39,6 +39,24 @@
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
+  /* Address status. Deliberately fixed across the colour themes: a green
+     check has to mean "done" whichever theme is picked. */
+  --color-status-done: var(--status-done);
+  --color-status-nothome: var(--status-nothome);
+  --color-status-dnc: var(--status-dnc);
+  --color-status-invalid: var(--status-invalid);
+  --color-status-notdone: var(--muted-foreground);
+
+  /* UI feedback. Each flips between modes so the bare token is always
+     readable as text on the page background; tint surfaces with /10 and
+     draw borders with /30. The -foreground pair is for solid fills only. */
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -78,6 +96,18 @@
   --sidebar-accent-foreground: hsl(240 5.9% 10%);
   --sidebar-border: hsl(220 13% 91%);
   --sidebar-ring: var(--ring);
+
+  --status-done: oklch(62.7% 0.194 149.214); /* green-600 */
+  --status-nothome: oklch(64.6% 0.222 41.116); /* orange-600 */
+  --status-dnc: oklch(57.7% 0.245 27.325); /* red-600 */
+  --status-invalid: oklch(54.1% 0.281 293.009); /* violet-600 */
+
+  --success: oklch(44.8% 0.119 151.328); /* green-800 */
+  --success-foreground: oklch(0.985 0 0);
+  --warning: oklch(47.3% 0.137 46.201); /* amber-800 */
+  --warning-foreground: oklch(0.985 0 0);
+  --info: oklch(42.4% 0.199 265.638); /* blue-800 */
+  --info-foreground: oklch(0.985 0 0);
 }
 
 .dark {
@@ -109,6 +139,18 @@
   --sidebar-accent-foreground: hsl(240 4.8% 95.9%);
   --sidebar-border: hsl(240 3.7% 15.9%);
   --sidebar-ring: var(--ring);
+
+  --status-done: oklch(79.2% 0.209 151.711); /* green-400 */
+  --status-nothome: oklch(75% 0.183 55.934); /* orange-400 */
+  --status-dnc: oklch(70.4% 0.191 22.216); /* red-400 */
+  --status-invalid: oklch(70.2% 0.183 293.541); /* violet-400 */
+
+  --success: oklch(79.2% 0.209 151.711); /* green-400 */
+  --success-foreground: oklch(0.205 0 0);
+  --warning: oklch(82.8% 0.189 84.429); /* amber-400 */
+  --warning-foreground: oklch(0.205 0 0);
+  --info: oklch(70.7% 0.165 254.624); /* blue-400 */
+  --info-foreground: oklch(0.205 0 0);
 }
 
 /* Color themes override tokens on <html> via data-theme. Every variable in a

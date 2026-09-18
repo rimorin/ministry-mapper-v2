@@ -38,7 +38,7 @@ const UnauthorizedPage = ({ handleClick }: SignInDifferentProps) => {
               <AlertTitle className="text-center">
                 {t("auth.contactInstructions", "What can you do?")}
               </AlertTitle>
-              <Separator className="my-2 bg-amber-200 dark:bg-amber-800" />
+              <Separator className="my-2 bg-warning/30" />
               <AlertDescription>
                 <p className="mb-3">
                   <strong>
@@ -53,7 +53,7 @@ const UnauthorizedPage = ({ handleClick }: SignInDifferentProps) => {
                     "Ask your administrator to grant you access."
                   )}
                 </p>
-                <Separator className="my-2 bg-amber-200 dark:bg-amber-800" />
+                <Separator className="my-2 bg-warning/30" />
                 <p>
                   <strong>
                     {t("auth.newUserTitle", "Need a new account?")}

@@ -65,7 +65,7 @@ describe("UnauthorizedPage", () => {
         <UnauthorizedPage handleClick={mockHandleClick} />
       );
 
-      const alert = container.querySelector(".bg-amber-50");
+      const alert = container.querySelector('[class*="bg-warning"]');
       expect(alert).toBeInTheDocument();
     });
 

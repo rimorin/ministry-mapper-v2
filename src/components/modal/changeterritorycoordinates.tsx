@@ -253,7 +253,7 @@ const TerritoryPolygonDrawer = ({
           {/* Hints */}
           <div className="px-2.5 pb-2.5 flex flex-col gap-1 border-t pt-2">
             {vertices.length >= MAX_VERTICES ? (
-              <div className="flex items-center gap-1.5 text-xs text-amber-600 font-medium">
+              <div className="flex items-center gap-1.5 text-xs text-warning font-medium">
                 <TriangleAlert className="size-3.5 shrink-0" />
                 {t("territory.maxVertices", "Maximum points reached")}
               </div>

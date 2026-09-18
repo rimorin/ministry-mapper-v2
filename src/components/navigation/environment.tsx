@@ -4,15 +4,15 @@ import { cn } from "@/lib/utils";
 const ENV_CONFIG: Record<string, { label: string; className: string }> = {
   production: {
     label: "PROD",
-    className: "bg-amber-500/20 text-amber-500 hover:bg-amber-500/40"
+    className: "bg-warning/20 text-warning hover:bg-warning/40"
   },
   staging: {
     label: "STG",
-    className: "bg-blue-500/20 text-blue-400 hover:bg-blue-500/40"
+    className: "bg-info/20 text-info hover:bg-info/40"
   },
   development: {
     label: "DEV",
-    className: "bg-green-500/20 text-green-400 hover:bg-green-500/40"
+    className: "bg-success/20 text-success hover:bg-success/40"
   }
 };
 
