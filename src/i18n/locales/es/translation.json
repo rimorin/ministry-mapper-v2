@@ -410,7 +410,8 @@
   "tagfield": {
     "invalidCharacters": "Solo se permiten caracteres alfanuméricos y guiones",
     "charactersSanitized": "Caracteres no válidos eliminados. Agregado: \"{{value}}\"",
-    "duplicatesRemoved": "Entradas duplicadas eliminadas"
+    "duplicatesRemoved": "Entradas duplicadas eliminadas",
+    "removeTag": "Quitar {{tag}}"
   },
   "unit": {
     "placeholder": "Escribe y presiona Enter para agregar (ej., 1A, 1B, 301, 302)",

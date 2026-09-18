@@ -410,7 +410,8 @@
   "tagfield": {
     "invalidCharacters": "எண்ணெழுத்து எழுத்துக்கள் மற்றும் ஹைபன் மட்டுமே அனுமதிக்கப்படும்",
     "charactersSanitized": "தவறான எழுத்துக்கள் அகற்றப்பட்டன. சேர்க்கப்பட்டது: \"{{value}}\"",
-    "duplicatesRemoved": "நகல் உள்ளீடுகள் அகற்றப்பட்டன"
+    "duplicatesRemoved": "நகல் உள்ளீடுகள் அகற்றப்பட்டன",
+    "removeTag": "{{tag}} அகற்று"
   },
   "unit": {
     "requireOneUnitValidation": "பிராந்தியத்திற்கு குறைந்தது 1 அலகு எண் தேவை.",

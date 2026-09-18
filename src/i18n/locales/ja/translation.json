@@ -410,7 +410,8 @@
   "tagfield": {
     "invalidCharacters": "英数字とハイフンのみ使用できます",
     "charactersSanitized": "無効な文字が削除されました。追加: \"{{value}}\"",
-    "duplicatesRemoved": "重複エントリが削除されました"
+    "duplicatesRemoved": "重複エントリが削除されました",
+    "removeTag": "{{tag}}を削除"
   },
   "unit": {
     "requireOneUnitValidation": "区域には最低1つのユニット番号が必要です。",

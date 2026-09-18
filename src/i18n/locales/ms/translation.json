@@ -410,7 +410,8 @@
   "tagfield": {
     "invalidCharacters": "Hanya aksara alfanumerik dan tanda sempang dibenarkan",
     "charactersSanitized": "Aksara tidak sah dialih keluar. Ditambah: \"{{value}}\"",
-    "duplicatesRemoved": "Entri pendua dialih keluar"
+    "duplicatesRemoved": "Entri pendua dialih keluar",
+    "removeTag": "Buang {{tag}}"
   },
   "unit": {
     "requireOneUnitValidation": "Wilayah memerlukan sekurang-kurangnya 1 nombor unit.",
