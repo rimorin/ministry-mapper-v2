@@ -29,7 +29,7 @@ import {
   ConfigureTerritoryCoordinatesModalProps,
   latlongInterface
 } from "../../utils/interface";
-import ModalSubmitButton from "../form/submit";
+import SubmitButton from "../common/submit-button";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import CustomControl from "../map/customcontrol";
 import useNotification from "../../hooks/useNotification";
@@ -563,10 +563,9 @@ const ConfigureTerritoryCoordinates = NiceModal.create(
                 requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
                 userPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
               >
-                <ModalSubmitButton
-                  isSaving={isSaving}
-                  disabled={vertices.length < 3}
-                />
+                <SubmitButton pending={isSaving} disabled={vertices.length < 3}>
+                  {t("common.save", "Save")}
+                </SubmitButton>
               </ComponentAuthorizer>
             </DialogFooter>
           </form>

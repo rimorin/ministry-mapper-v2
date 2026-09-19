@@ -207,12 +207,6 @@ export interface BrandingProps {
   hideNameOnMobile?: boolean;
 }
 
-export interface SubmitBtnProps {
-  isSaving: boolean;
-  btnLabel?: string;
-  disabled?: boolean;
-}
-
 export interface TerritoryListingProps {
   showListing: boolean;
   hideFunction: () => void;
