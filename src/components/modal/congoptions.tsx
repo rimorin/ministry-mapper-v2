@@ -31,7 +31,7 @@ import {
   HHOptionProps,
   UpdateCongregationOptionsModalProps
 } from "../../utils/interface";
-import ModalSubmitButton from "../form/submit";
+import SubmitButton from "../common/submit-button";
 import { callFunction, getList, ignoreAbort } from "../../utils/pocketbase";
 import {
   DndContext,
@@ -636,7 +636,9 @@ const UpdateCongregationOptions = NiceModal.create(
                 >
                   {t("common.cancel", "Cancel")}
                 </Button>
-                <ModalSubmitButton isSaving={isSaving} />
+                <SubmitButton pending={isSaving}>
+                  {t("common.save", "Save")}
+                </SubmitButton>
               </div>
             </DialogFooter>
           </form>
