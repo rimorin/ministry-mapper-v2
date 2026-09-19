@@ -1,8 +1,19 @@
 import NiceModal from "@ebay/nice-modal-react";
 import * as React from "react";
 import { FormEvent, useState } from "react";
-import { Combobox } from "@base-ui/react/combobox";
-import { Check, ChevronDown, X } from "lucide-react";
+import {
+  Combobox,
+  ComboboxActions,
+  ComboboxClear,
+  ComboboxContent,
+  ComboboxEmpty,
+  ComboboxInput,
+  ComboboxInputGroup,
+  ComboboxItem,
+  ComboboxList,
+  ComboboxStatus,
+  ComboboxTrigger
+} from "@/components/ui/combobox";
 import { useTranslation } from "react-i18next";
 import { RecordModel } from "pocketbase";
 import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
@@ -195,7 +206,7 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
         <form onSubmit={handleUserDetails} className="space-y-4">
           <div className="space-y-1.5">
             <Label>{t("user.user", "User")}</Label>
-            <Combobox.Root
+            <Combobox
               filter={null}
               items={comboboxItems}
               itemToStringLabel={(item: SelectProps) => item.label}
@@ -211,69 +222,38 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
                 if (!open && selectedUser) setSearchResults([selectedUser]);
               }}
             >
-              <Combobox.InputGroup className="relative flex h-9 w-full items-center rounded-md border border-input bg-transparent shadow-xs transition-[color,box-shadow] focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50">
-                <Combobox.Input
+              <ComboboxInputGroup>
+                <ComboboxInput
                   placeholder={t(
                     "user.searchByNameOrEmail",
                     "Search for user by name or email"
                   )}
-                  className="h-full w-full border-0 bg-transparent pl-3 pr-16 text-sm outline-none placeholder:text-muted-foreground"
                   required
                 />
-                <div className="absolute right-1 flex h-9 items-center gap-0.5 text-muted-foreground">
+                <ComboboxActions>
                   {isSearching && (
                     <Spinner className="size-3.5" aria-hidden="true" />
                   )}
-                  <Combobox.Clear
-                    className="flex size-7 items-center justify-center rounded hover:text-foreground"
-                    aria-label="Clear"
-                  >
-                    <X className="size-3.5" />
-                  </Combobox.Clear>
-                  <Combobox.Trigger
-                    className="flex size-7 items-center justify-center rounded hover:text-foreground"
-                    aria-label="Open"
-                  >
-                    <ChevronDown className="size-4" />
-                  </Combobox.Trigger>
-                </div>
-              </Combobox.InputGroup>
-              <Combobox.Portal>
-                <Combobox.Positioner
-                  sideOffset={4}
-                  className="isolate z-[2001] outline-none"
-                >
-                  <Combobox.Popup className="w-[var(--anchor-width)] max-h-[min(var(--available-height),20rem)] overflow-y-auto overscroll-contain rounded-md border border-border bg-popover py-1 text-popover-foreground shadow-md origin-[var(--transform-origin)] transition-[transform,scale,opacity] duration-100 data-[starting-style]:scale-95 data-[starting-style]:opacity-0 data-[ending-style]:scale-95 data-[ending-style]:opacity-0">
-                    <Combobox.Status>
-                      {isSearching && (
-                        <div className="px-3 py-1.5 text-xs text-muted-foreground">
-                          Searching...
-                        </div>
-                      )}
-                    </Combobox.Status>
-                    <Combobox.Empty>
-                      <div className="px-3 py-1.5 text-xs text-muted-foreground">
-                        {t("common.noResults", "No results found.")}
-                      </div>
-                    </Combobox.Empty>
-                    <Combobox.List>
-                      {(item: SelectProps) => (
-                        <Combobox.Item
-                          key={item.value}
-                          value={item}
-                          className="relative flex cursor-default select-none items-center gap-2 rounded-sm px-3 py-2 text-sm outline-none data-[highlighted]:bg-accent data-[highlighted]:text-accent-foreground"
-                        >
-                          <Combobox.ItemIndicator className="flex size-3.5 items-center justify-center">
-                            <Check className="size-3.5" />
-                          </Combobox.ItemIndicator>
-                          {item.label}
-                        </Combobox.Item>
-                      )}
-                    </Combobox.List>
-                  </Combobox.Popup>
-                </Combobox.Positioner>
-              </Combobox.Portal>
-            </Combobox.Root>
+                  <ComboboxClear />
+                  <ComboboxTrigger />
+                </ComboboxActions>
+              </ComboboxInputGroup>
+              <ComboboxContent>
+                <ComboboxStatus>
+                  {isSearching && t("common.searching", "Searching...")}
+                </ComboboxStatus>
+                <ComboboxEmpty>
+                  {t("common.noResults", "No results found.")}
+                </ComboboxEmpty>
+                <ComboboxList>
+                  {(item: SelectProps) => (
+                    <ComboboxItem key={item.value} value={item}>
+                      {item.label}
+                    </ComboboxItem>
+                  )}
+                </ComboboxList>
+              </ComboboxContent>
+            </Combobox>
           </div>
           <div className="space-y-1.5">
             <Label>{t("user.accessLevel", "Access Level")}</Label>
