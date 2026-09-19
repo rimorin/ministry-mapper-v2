@@ -3,70 +3,16 @@
 React front end for Ministry Mapper (door-to-door ministry territory management): a congregation has territories, a territory has maps (single or multi-storey buildings), a map has addresses (household units with status not done / done / not home / DNC / invalid). Publishers work maps through time-limited share links; admins manage everything. The backend is the sibling repo `../ministry-mapper-be` (Go/PocketBase); its route contracts live in `internal/setup/routes.go` there.
 
 ## Working principles
-From Andrej Karpathy's guidelines (github.com/multica-ai/andrej-karpathy-skills), reproduced verbatim.
+Summarised from Andrej Karpathy's guidelines (github.com/multica-ai/andrej-karpathy-skills). They bias toward caution over speed; for trivial tasks, use judgment.
 
-**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+- **Think before coding.** State your assumptions. If several readings are possible, present them rather than picking one silently. If a simpler approach exists, say so.
+- **Simplicity first.** The minimum code that solves the problem — no speculative abstraction, no configurability nobody asked for, no handling for impossible cases. If 200 lines could be 50, rewrite it.
+- **Surgical changes.** Touch only what the request implies and match the surrounding style. Remove orphans your own change created; leave pre-existing dead code alone and mention it instead.
+- **Goal-driven.** Turn the task into a check you can run ("add validation" → "write tests for invalid inputs, then make them pass") and loop until it passes. For multi-step work, state the plan and how each step verifies.
 
-### 1. Think Before Coding
-
-**Don't assume. Don't hide confusion. Surface tradeoffs.**
-
-Before implementing:
-- State your assumptions explicitly. If uncertain, ask.
-- If multiple interpretations exist, present them - don't pick silently.
-- If a simpler approach exists, say so. Push back when warranted.
-- If something is unclear, stop. Name what's confusing. Ask.
-
-### 2. Simplicity First
-
-**Minimum code that solves the problem. Nothing speculative.**
-
-- No features beyond what was asked.
-- No abstractions for single-use code.
-- No "flexibility" or "configurability" that wasn't requested.
-- No error handling for impossible scenarios.
-- If you write 200 lines and it could be 50, rewrite it.
-
-Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
-
-### 3. Surgical Changes
-
-**Touch only what you must. Clean up only your own mess.**
-
-When editing existing code:
-- Don't "improve" adjacent code, comments, or formatting.
-- Don't refactor things that aren't broken.
-- Match existing style, even if you'd do it differently.
-- If you notice unrelated dead code, mention it - don't delete it.
-
-When your changes create orphans:
-- Remove imports/variables/functions that YOUR changes made unused.
-- Don't remove pre-existing dead code unless asked.
-
-The test: Every changed line should trace directly to the user's request.
-
-### 4. Goal-Driven Execution
-
-**Define success criteria. Loop until verified.**
-
-Transform tasks into verifiable goals:
-- "Add validation" → "Write tests for invalid inputs, then make them pass"
-- "Fix the bug" → "Write a test that reproduces it, then make it pass"
-- "Refactor X" → "Ensure tests pass before and after"
-
-For multi-step tasks, state a brief plan:
-```
-1. [Step] → verify: [check]
-2. [Step] → verify: [check]
-3. [Step] → verify: [check]
-```
-
-Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
-
-**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
 ## Stack and layout
 - React 19, Vite (Rolldown), TypeScript strict, Tailwind v4, Wouter for routing (`useLocation`, `useRoute`, `Switch`, `Route`; never `react-router-dom`), PocketBase JS SDK, i18next, motion, NiceModal, LaunchDarkly, Sentry, Umami. Node >= 24.
-- Pages in `src/pages/` (admin under `src/pages/admin/`). Hooks flat in `src/hooks/` as `useX.ts`; most are default exports, so match the file you are editing. UI primitives in `src/components/ui/` are shadcn-generated in the Base UI flavour (not Radix) with lucide icons; keep that folder to registry components and put app-level composites in `src/components/common/`. PocketBase helpers in `src/utils/pocketbase.ts`; `PB_FIELDS` and the publisher header key in `src/utils/constants.ts`.
+- Pages in `src/pages/` (admin under `src/pages/admin/`). Hooks flat in `src/hooks/` as `useX.ts`; most are default exports, so match the file you are editing. UI primitives in `src/components/ui/` are shadcn-generated in the Base UI flavour (not Radix) with lucide icons; that folder stays registry-only, app composites live in `src/components/common/`. PocketBase helpers in `src/utils/pocketbase.ts`; `PB_FIELDS` and the publisher header key in `src/utils/constants.ts`.
 - The React Compiler runs in Vite and Vitest. Don't add `useMemo`, `useCallback` or `React.memo` without a measured reason. `useRealtime.ts` uses React 19's `useEffectEvent`; don't "fix" it to `useCallback`.
 - No state library. State lives in page-level containers with logic extracted into hooks that receive setters as props (`src/hooks/useAdminData.ts`). Contexts are narrow and purpose-built.
 - First paint must not wait on LaunchDarkly: `src/lib/launchdarkly.ts` bounds init with a short timeout and falls back to flags off.
@@ -83,11 +29,13 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ## UI conventions
 - `data-slot` attributes on `src/components/ui/` components drive Tailwind selector rules. Never remove them.
+- Registry files export more than the app calls (`Toggle`, `SidebarInput`, `SidebarGroupAction`, `SidebarMenuAction`, `SidebarMenuSkeleton`). They are tree-shaken out of every chunk, so deleting them gains nothing and only drifts from the registry.
 - User-facing text goes through `useTranslation` as `t("your.key", "Fallback")`. Add the key to `src/i18n/locales/en/translation.json` and the translation to `es`, `id`, `ja`, `ko`, `ms`, `ta`, `zh`; all eight files stay key-identical. Localised data fields may be `string` or `Record<string, string>`; use `resolveLocalized(value, locale)` rather than branching on `typeof`.
-- Colours come from the theme tokens in `src/index.css` and the Tailwind theme, never hardcoded palette values. Address statuses use `status-done|nothome|dnc|invalid|notdone`, fixed across the colour themes; UI feedback uses `success`/`warning`/`info`, which flip between light and dark, so tint surfaces with `/10`, draw borders with `/30`, and save the `-foreground` pair for solid fills. `src/css/variables.css` holds only the `--mm-*` map chrome, pinned on purpose — don't make it theme-aware.
+- Colours come from the theme tokens in `src/index.css`, never hardcoded palette values. Statuses use `status-done|nothome|dnc|invalid|notdone`, fixed across the colour themes; feedback uses `success`/`warning`/`info`, which flip light/dark — tint `/10`, border `/30`, `-foreground` only on solid fills. `src/css/variables.css` holds only the `--mm-*` map chrome, pinned on purpose.
 - `cn()` from `@/lib/utils` for conditional classes. Animation variants live in `src/lib/motion.ts`; animate with `import * as m from "motion/react-m"` and `AnimatePresence` from `motion/react`. Don't render elements from `motion/react`; it skips the lazy bundle.
 - Forms use React Hook Form without a schema resolver; Zod is not installed. Validation lives in controller rules or dedicated utilities.
 - Modals: register with `NiceModal.create(...)`, open with `NiceModal.show(...)`, never inline in JSX. Base UI dialogs use `useBaseUiDialog` (`@/components/common/base-ui-dialog`) with its `onClose`/`size` options, not a custom `onOpenChange`.
+- Two components render bottom panels: `Sheet` for the three list panels (all `side="bottom"`), `Drawer` for `ResponsiveDialog` on mobile (own lazy chunk). The overlap is known; follow whichever a screen's neighbours use rather than migrating one screen alone.
 - Analytics (`src/utils/analytics.ts`) is fire-and-forget and swallows its own errors. Never await it or let it affect control flow.
 - Unused variables and parameters take a `_` prefix (ESLint `^_`). Don't drop a parameter that belongs to a public signature to silence the warning.
 
