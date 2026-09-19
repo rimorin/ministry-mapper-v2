@@ -18,6 +18,8 @@ import AddressMarker from "../map/marker";
 import AssignmentButtonGroup from "./assignmentbtn";
 import { getList, getUser } from "../../utils/pocketbase";
 import ComponentAuthorizer from "./authorizer";
+import NotHomeIcon from "../table/nothome";
+import { Circle } from "lucide-react";
 import { MapController } from "../map/mapcontroller";
 import CustomControl from "../map/customcontrol";
 import useGeolocation from "../../hooks/useGeolocation";
@@ -195,21 +197,25 @@ const MapView: React.FC<MapViewProps> = ({
                   {selectedAddress.type}
                 </p>
               </div>
+              {/* Publishers misread these for each other, so each count carries
+                  the glyph and colour its status uses on the unit tiles. */}
               <div className="grid grid-cols-2 divide-x">
                 <div className="flex flex-col items-center py-3">
-                  <span className="text-2xl font-bold tabular-nums">
+                  <span className="flex items-center gap-1.5 text-2xl font-bold tabular-nums text-status-notdone">
+                    <Circle className="size-4 shrink-0" aria-hidden="true" />
                     {selectedAddress.aggregates.notDone}
                   </span>
-                  <span className="mt-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
-                    Not Done
+                  <span className="mt-0.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                    {t("address.notDone", "Not Done")}
                   </span>
                 </div>
                 <div className="flex flex-col items-center py-3">
-                  <span className="text-2xl font-bold tabular-nums">
+                  <span className="flex items-center gap-1.5 text-2xl font-bold tabular-nums text-status-nothome">
+                    <NotHomeIcon iconClassName="size-4 shrink-0" />
                     {selectedAddress.aggregates.notHome}
                   </span>
-                  <span className="mt-0.5 text-[10px] uppercase tracking-wide text-muted-foreground">
-                    Not Home
+                  <span className="mt-0.5 text-[11px] font-medium uppercase tracking-wide text-muted-foreground">
+                    {t("address.notHome", "Not Home")}
                   </span>
                 </div>
               </div>

@@ -61,9 +61,8 @@ describe("Combobox", () => {
     expect(screen.getByText("Ada")).toBeInTheDocument();
   });
 
-  // Base UI keeps Status and Empty mounted as aria-live regions, so the padded
-  // box has to be an inner child. If it ever moves onto the region itself,
-  // the popup gains a permanent blank row -- these two guard that.
+  // Guards the inner-child padding in combobox.tsx: styling the live regions
+  // directly leaves a permanent blank row in the popup.
   it("leaves the live regions empty while results are showing", () => {
     render(<Harness items={[{ value: "1", label: "Ada" }]} />);
 
