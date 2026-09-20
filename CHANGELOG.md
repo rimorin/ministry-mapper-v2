@@ -1,3 +1,11 @@
+## [2.9.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.9.0...v2.9.1) (2026-09-20)
+
+### Bug Fixes
+
+* give status and feedback colors real theme tokens ([0239447](https://github.com/rimorin/ministry-mapper-v2/commit/02394475b60d1d4eec543d1c8b3f74ef52ca2f5b))
+* tell the not-done and not-home counts apart on the map popup ([123999e](https://github.com/rimorin/ministry-mapper-v2/commit/123999e2fc9f727ba7b166afc66005ca41bee351))
+* translate hardcoded strings in ui primitives and clean up locales ([5b00f5a](https://github.com/rimorin/ministry-mapper-v2/commit/5b00f5a803239c7cc5fb5ac1dcccc25910198c7f))
+
 ## [2.9.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.8.1...v2.9.0) (2026-09-11)
 
 ### Features
