@@ -152,7 +152,8 @@ export default defineConfig(() => {
       VitePWA({
         strategies: "generateSW",
         registerType: "autoUpdate",
-        injectRegister: "auto",
+        // Registered in src/index.tsx
+        injectRegister: false,
         // Use the existing site.webmanifest — don't generate a new one
         manifest: false,
         workbox: {

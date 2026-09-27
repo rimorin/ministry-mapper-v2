@@ -3,6 +3,11 @@ import { initReactI18next } from "react-i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import resourcesToBackend from "i18next-resources-to-backend";
 
+// A stale lang="en" makes browsers translate the page, which breaks React's DOM.
+i18n.on("languageChanged", (language) => {
+  document.documentElement.lang = i18n.resolvedLanguage ?? language;
+});
+
 i18n
   // Translations load via Vite dynamic import — each language code-splits into its own chunk.
   .use(

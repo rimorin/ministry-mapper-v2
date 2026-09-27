@@ -362,13 +362,17 @@ const getPaginatedList = async (
 /**
  * Realtime subscriptions do not inherit headers from configureHeader.
  */
-const setupRealtimeListener = (
+const setupRealtimeListener = async (
   collectionName: string,
   callback: (data: RecordSubscription<RecordModel>) => void,
   options?: RecordSubscribeOptions,
   topic = "*"
 ) => {
-  return pb.collection(collectionName).subscribe(topic, callback, options);
+  const unsubscribe = await pb
+    .collection(collectionName)
+    .subscribe(topic, callback, options);
+  // Rejects if the SSE client already disconnected.
+  return () => void unsubscribe().catch(() => {});
 };
 
 /**
