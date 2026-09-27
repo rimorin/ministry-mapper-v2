@@ -1,3 +1,9 @@
+## [2.9.2](https://github.com/rimorin/ministry-mapper-v2/compare/v2.9.1...v2.9.2) (2026-09-27)
+
+### Bug Fixes
+
+* resolve frontend sentry issues ([a32954c](https://github.com/rimorin/ministry-mapper-v2/commit/a32954c17673e56015eca436e47027722a2133ac))
+
 ## [2.9.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.9.0...v2.9.1) (2026-09-20)
 
 ### Bug Fixes
