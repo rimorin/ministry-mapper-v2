@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import { renderHook, act } from "@testing-library/react";
 
-const mockUnsubscribe = vi.fn();
+const mockUnsubscribe = vi.fn(() => Promise.resolve());
 const mockSubscribe = vi.fn();
 
 vi.mock("../utils/pocketbase", () => ({
@@ -58,6 +58,22 @@ describe("useOnSSEReconnect", () => {
       unmount();
 
       expect(mockUnsubscribe).toHaveBeenCalled();
+    });
+
+    it("swallows an unsubscribe rejection from a dead SSE client", async () => {
+      // Not vi.fn: it handles returned promises, masking the rejection.
+      let unsubscribed = false;
+      mockSubscribe.mockResolvedValueOnce(() => {
+        unsubscribed = true;
+        return Promise.reject(new Error("Invalid realtime client."));
+      });
+      const { unmount } = renderHook(() => useOnSSEReconnect(vi.fn()));
+
+      await vi.waitFor(() => expect(mockSubscribe).toHaveBeenCalled());
+      await Promise.resolve();
+
+      unmount();
+      expect(unsubscribed).toBe(true);
     });
 
     it("resubscribes when enabled changes from false to true", async () => {

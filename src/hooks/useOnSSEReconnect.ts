@@ -25,7 +25,9 @@ export default function useOnSSEReconnect(
 
     pb.realtime
       .subscribe("PB_CONNECT", onReconnect)
-      .then((unsub) => {
+      .then((pbUnsub) => {
+        // Rejects if the SSE client already disconnected.
+        const unsub = () => void pbUnsub().catch(() => {});
         if (isCleaned) {
           unsub();
           return;

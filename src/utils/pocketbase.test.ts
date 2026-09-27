@@ -16,7 +16,8 @@ vi.mock("pocketbase", () => {
       beforeSend: null,
       autoCancellation: vi.fn(),
       listAuthMethods: vi.fn(),
-      authWithOAuth2Code: vi.fn()
+      authWithOAuth2Code: vi.fn(),
+      subscribe: vi.fn()
     };
   };
   return { default: PocketBaseMock };
@@ -26,7 +27,8 @@ import {
   withRetry,
   pb,
   startOAuth2Flow,
-  completeOAuth2Flow
+  completeOAuth2Flow,
+  setupRealtimeListener
 } from "./pocketbase";
 import { OAUTH2_PENDING_KEY } from "./constants";
 
@@ -389,5 +391,21 @@ describe("OAuth2 redirect flow", () => {
       ).resolves.toBeNull();
       expect(collection().authWithOAuth2Code).not.toHaveBeenCalled();
     });
+  });
+});
+
+describe("setupRealtimeListener", () => {
+  it("swallows an unsubscribe rejection from a dead SSE client", async () => {
+    // Not vi.fn: it handles returned promises, masking the rejection.
+    let unsubscribed = false;
+    vi.mocked(pb.collection("maps").subscribe).mockResolvedValue(() => {
+      unsubscribed = true;
+      return Promise.reject(new Error("Invalid realtime client."));
+    });
+
+    const unsubscribe = await setupRealtimeListener("maps", vi.fn());
+
+    unsubscribe();
+    expect(unsubscribed).toBe(true);
   });
 });

@@ -21,10 +21,16 @@ export default function useAuthentication() {
 
   const processEmail = (email: string) => email.trim().toLowerCase();
 
+  const notifyAuthError = (err: unknown) =>
+    notifyError(mapPbAuthError(err, t) ?? err);
+
   const handleOtpRequest = async (email: string) => {
-    await runAction(async () => {
-      setOtpSessionId(await requestOTP(email));
-    });
+    await runAction(
+      async () => {
+        setOtpSessionId(await requestOTP(email));
+      },
+      { onError: notifyAuthError }
+    );
   };
 
   const loginInWithEmailAndPassword = async (
@@ -39,7 +45,7 @@ export default function useAuthentication() {
     } catch (err: unknown) {
       const mfaId = (err as { response?: { mfaId?: string } })?.response?.mfaId;
       if (!mfaId) {
-        notifyError(mapPbAuthError(err, t) ?? err);
+        notifyAuthError(err);
         return;
       }
       await handleOtpRequest(processedEmail);
@@ -55,7 +61,7 @@ export default function useAuthentication() {
         await authenticateOTP(otpSessionId, otpCode, mfaId);
         trackEvent(ANALYTICS_EVENTS.OTP_VERIFIED);
       },
-      { setLoading: setIsLogin }
+      { setLoading: setIsLogin, onError: notifyAuthError }
     );
   };
 

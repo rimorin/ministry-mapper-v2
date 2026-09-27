@@ -4,16 +4,21 @@ import { createRoot } from "react-dom/client";
 import { initAnalytics } from "./utils/analytics";
 import { isAbortError } from "./utils/pocketbase";
 import { checkForNewVersion } from "./utils/versionCheck";
+import { reloadForNewDeploy } from "./utils/reloadForNewDeploy";
 import { initLaunchDarkly } from "./lib/launchdarkly";
 import Loader from "./components/statics/loader";
 import Main from "./pages/index";
 
 initAnalytics();
 
-// registerSW.js only does a bare registration with no reload logic. This
-// prompts the user to reload when a new SW takes control so stale JS bundles
+// Prompt the user to reload when a new SW takes control so stale JS bundles
 // never run silently. hadController skips the prompt on first install.
 if ("serviceWorker" in navigator) {
+  // Some webviews refuse registration; the app works without it.
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
+  });
+
   const hadController = Boolean(navigator.serviceWorker.controller);
   let prompted = false;
   navigator.serviceWorker.addEventListener("controllerchange", () => {
@@ -76,7 +81,7 @@ window.addEventListener("vite:preloadError", (event) => {
   if (!sessionStorage.getItem(PRELOAD_RELOAD_KEY)) {
     event.preventDefault();
     sessionStorage.setItem(PRELOAD_RELOAD_KEY, "1");
-    window.location.reload();
+    reloadForNewDeploy();
   }
 });
 

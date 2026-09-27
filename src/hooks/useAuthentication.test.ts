@@ -4,10 +4,12 @@ import useAuthentication from "./useAuthentication";
 import * as pocketbase from "../utils/pocketbase";
 import type { RecordModel, RecordAuthResponse } from "pocketbase";
 
+const { mockNotifyError } = vi.hoisted(() => ({ mockNotifyError: vi.fn() }));
+
 vi.mock("../utils/pocketbase");
 vi.mock("./useNotification", () => ({
   default: () => ({
-    notifyError: vi.fn(),
+    notifyError: mockNotifyError,
     notifyWarning: vi.fn(),
     notifyInfo: vi.fn(),
     runAction: vi.fn().mockImplementation(
@@ -178,6 +180,22 @@ describe("useAuthentication", () => {
       });
 
       expect(result.current.isLogin).toBe(false);
+    });
+
+    it("shows a friendly message for an expired OTP instead of reporting the error", async () => {
+      const error = Object.assign(new Error("ClientResponseError"), {
+        status: 400,
+        response: { message: "Invalid or expired OTP.", data: {} }
+      });
+      vi.spyOn(pocketbase, "authenticateOTP").mockRejectedValue(error);
+
+      const { result } = renderHook(() => useAuthentication());
+
+      await act(async () => {
+        await result.current.handleOtpSubmit("otp-session-123", "0000");
+      });
+
+      expect(mockNotifyError).toHaveBeenCalledWith(expect.any(String));
     });
   });
 
