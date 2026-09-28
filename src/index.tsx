@@ -3,72 +3,14 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { initAnalytics } from "./utils/analytics";
 import { isAbortError } from "./utils/pocketbase";
-import { checkForNewVersion } from "./utils/versionCheck";
+import { initAppUpdates } from "./utils/appUpdate";
 import { reloadForNewDeploy } from "./utils/reloadForNewDeploy";
 import { initLaunchDarkly } from "./lib/launchdarkly";
 import Loader from "./components/statics/loader";
 import Main from "./pages/index";
 
 initAnalytics();
-
-// Prompt the user to reload when a new SW takes control so stale JS bundles
-// never run silently. hadController skips the prompt on first install.
-if ("serviceWorker" in navigator) {
-  // Some webviews refuse registration; the app works without it.
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch(() => {});
-  });
-
-  const hadController = Boolean(navigator.serviceWorker.controller);
-  let prompted = false;
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (!hadController || prompted) return;
-    prompted = true;
-    window.dispatchEvent(new CustomEvent("mm-sw-update"));
-  });
-  // Trigger an update check when the user returns to the tab so the new SW
-  // starts installing in the background before they notice stale content.
-  // Throttled to 5 minutes to avoid a sw.js network request on every tab switch.
-  // Guards: skip if a SW is already installing, or if the device is offline.
-  let lastUpdateCheck = 0;
-  document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState !== "visible") return;
-    const now = Date.now();
-    if (now - lastUpdateCheck < 5 * 60 * 1000) return;
-    lastUpdateCheck = now;
-    navigator.serviceWorker.ready
-      .then((reg) => {
-        if (reg.installing || !navigator.onLine) return;
-        return reg.update();
-      })
-      .catch(() => {});
-  });
-}
-
-// Backstop for the SW check above: a frozen/suspended standalone window may
-// never fire reg.update() or controllerchange, so check version.json directly.
-let lastVersionCheck = 0;
-let versionStale = false;
-const checkFreshness = (bypassThrottle = false) => {
-  if (!navigator.onLine || versionStale) return;
-  const now = Date.now();
-  if (!bypassThrottle && now - lastVersionCheck < 5 * 60 * 1000) return;
-  lastVersionCheck = now;
-  checkForNewVersion().then((stale) => {
-    if (stale && !versionStale) {
-      versionStale = true;
-      window.dispatchEvent(new CustomEvent("mm-sw-update"));
-    }
-  });
-};
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") checkFreshness();
-});
-// persisted=true means this is a bfcache/app-switcher resume, not a fresh
-// navigation — bypass the throttle since this is the moment staleness must be caught.
-window.addEventListener("pageshow", (event) => {
-  if (event.persisted) checkFreshness(true);
-});
+initAppUpdates();
 
 // Reload once when a chunk fails to load after a fresh deployment (stale hash).
 // The sessionStorage flag prevents an infinite reload loop when the chunk is

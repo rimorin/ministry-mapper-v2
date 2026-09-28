@@ -41,6 +41,7 @@
     "start": "vite",
     "prebuild": "node scripts/prebuild.js",
     "build": "vite build",
+    "postbuild": "node scripts/check-sw.js",
     "test": "vitest run",
     "test:watch": "vitest watch",
     "test:ui": "vitest --ui",
