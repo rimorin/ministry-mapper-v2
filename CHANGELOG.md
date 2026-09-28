@@ -1,3 +1,9 @@
+## [2.9.3](https://github.com/rimorin/ministry-mapper-v2/compare/v2.9.2...v2.9.3) (2026-09-28)
+
+### Bug Fixes
+
+* keep clients on the latest version ([5c83c03](https://github.com/rimorin/ministry-mapper-v2/commit/5c83c0343e60c18e0e57c1ca8eae9e4c09d5a5e3))
+
 ## [2.9.2](https://github.com/rimorin/ministry-mapper-v2/compare/v2.9.1...v2.9.2) (2026-09-27)
 
 ### Bug Fixes
