@@ -1,3 +1,9 @@
+## [2.9.4](https://github.com/rimorin/ministry-mapper-v2/compare/v2.9.3...v2.9.4) (2026-09-29)
+
+### Bug Fixes
+
+* stop inviting without a selected user ([5d4f0df](https://github.com/rimorin/ministry-mapper-v2/commit/5d4f0df92e7e54dabd9d8996b2b4628e256879dd))
+
 ## [2.9.3](https://github.com/rimorin/ministry-mapper-v2/compare/v2.9.2...v2.9.3) (2026-09-28)
 
 ### Bug Fixes
