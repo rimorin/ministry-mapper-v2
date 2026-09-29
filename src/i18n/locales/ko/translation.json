@@ -269,6 +269,7 @@
     },
     "invite": "초대",
     "dontInviteSelf": "자신을 초대하지 마세요.",
+    "selectUserRequired": "검색 결과에서 사용자를 선택하세요.",
     "accessGranted": "사용자에게 {{role}} 접근 권한을 부여했습니다.",
     "updateRole": "{{name}} 역할 업데이트",
     "user": "사용자",

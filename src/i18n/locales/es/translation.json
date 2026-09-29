@@ -271,6 +271,7 @@
     },
     "invite": "Invitar",
     "dontInviteSelf": "Por favor, no te invites a ti mismo.",
+    "selectUserRequired": "Por favor, selecciona un usuario de los resultados.",
     "accessGranted": "Se concedió acceso de {{role}} al usuario.",
     "updateRole": "Actualizar rol de {{name}}",
     "inviteDescription": "Busca un usuario y asigna su nivel de acceso.",

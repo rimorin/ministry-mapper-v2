@@ -243,6 +243,7 @@
     "account": "Akun",
     "invite": "Undang",
     "dontInviteSelf": "Mohon jangan mengundang diri sendiri.",
+    "selectUserRequired": "Silakan pilih pengguna dari hasil pencarian.",
     "accessGranted": "Memberikan akses {{role}} kepada pengguna.",
     "updateRole": "Perbarui Peran {{name}}",
     "user": "Pengguna",

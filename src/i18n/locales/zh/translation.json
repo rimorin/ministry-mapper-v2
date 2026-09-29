@@ -269,6 +269,7 @@
     },
     "invite": "邀请",
     "dontInviteSelf": "请不要邀请自己。",
+    "selectUserRequired": "请从搜索结果中选择一个用户。",
     "accessGranted": "已授予用户 {{role}} 权限。",
     "updateRole": "更新 {{name}} 的角色",
     "user": "用户",

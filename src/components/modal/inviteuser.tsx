@@ -90,6 +90,15 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
     event.preventDefault();
     await runAction(
       async () => {
+        if (!userId) {
+          notifyWarning(
+            t(
+              "user.selectUserRequired",
+              "Please select a user from the results."
+            )
+          );
+          return;
+        }
         if (userId === uid) {
           notifyWarning(
             t("user.dontInviteSelf", "Please do not invite yourself.")

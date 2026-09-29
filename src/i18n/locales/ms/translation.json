@@ -271,6 +271,7 @@
     },
     "invite": "Jemput",
     "dontInviteSelf": "Sila jangan jemput diri sendiri.",
+    "selectUserRequired": "Sila pilih pengguna daripada hasil carian.",
     "accessGranted": "Akses {{role}} diberi kepada pengguna.",
     "updateRole": "Kemas kini Peranan {{name}}",
     "inviteDescription": "Cari pengguna dan tetapkan tahap akses mereka.",

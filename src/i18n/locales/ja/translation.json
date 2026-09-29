@@ -269,6 +269,7 @@
     },
     "invite": "招待",
     "dontInviteSelf": "自分自身を招待しないでください。",
+    "selectUserRequired": "検索結果からユーザーを選択してください。",
     "accessGranted": "ユーザーに{{role}}アクセスを付与しました。",
     "updateRole": "{{name}}の役割を更新",
     "user": "ユーザー",
