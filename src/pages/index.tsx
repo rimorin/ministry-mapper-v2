@@ -8,12 +8,20 @@ import MaintenanceMiddleware from "../components/middlewares/maintenance";
 import MainMiddleware from "../components/middlewares/main";
 import ThemeMiddleware from "../components/middlewares/theme";
 import { Provider as NiceModelMiddleware } from "@ebay/nice-modal-react";
-import { LazyMotion, domAnimation, MotionConfig } from "motion/react";
+import { LazyMotion, MotionConfig } from "motion/react";
 import Router from "./router";
 import "../i18n";
 import { LanguageProvider } from "../i18n/LanguageContext";
 import { ReleaseNotesProvider } from "../components/middlewares/releasenotescontext";
 import SwUpdatePrompt from "../components/middlewares/swupdateprompt";
+
+// Animation features stay off the first-paint path. The fetch starts at module
+// load rather than when LazyMotion mounts, so it runs alongside the translation
+// chunk and entrance animations aren't held back waiting for it.
+const motionFeatures = import("../lib/motion-features").then(
+  (module) => module.default
+);
+const loadMotionFeatures = () => motionFeatures;
 
 interface CombinedMiddlewareProps {
   children: ReactNode;
@@ -34,7 +42,7 @@ const CombinedMiddleware: FC<CombinedMiddlewareProps> = ({ children }) => (
   // until it arrives. Without a boundary here the whole root suspends with
   // no fallback, which React treats as an error.
   <Suspense fallback={<Loader />}>
-    <LazyMotion features={domAnimation} strict>
+    <LazyMotion features={loadMotionFeatures} strict>
       <MotionConfig reducedMotion="user">
         <MainMiddleware>
           <LanguageProvider>

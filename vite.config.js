@@ -55,7 +55,7 @@ export default defineConfig(() => {
                 priority: 80
               },
               // nice-modal is imported at app entry (Provider) — keep it tiny and isolated
-              // so vendor-ui is NOT pulled into the initial modulepreload chain
+              // so no lazy UI chunk is pulled into the initial modulepreload chain
               {
                 name: "vendor-nice-modal",
                 test: /nice-modal-react/,
@@ -105,16 +105,15 @@ export default defineConfig(() => {
                 test: /node_modules\/(react-day-picker|date-fns|@date-fns)\//,
                 priority: 70
               },
-              // Map UI + virtualization — dnd-kit, react-window
-              {
-                name: "vendor-ui",
-                test: /@dnd-kit|react-window/,
-                priority: 70
-              },
+              // Drag-and-drop — only the three reorder modals use it. Kept apart
+              // from react-window so the admin map list doesn't download it.
+              { name: "vendor-dnd", test: /@dnd-kit/, priority: 70 },
               // Leaflet mapping stack
-              { name: "vendor-mapping", test: /leaflet/, priority: 70 },
-              // Everything else from node_modules (wouter, idb, clsx, cva, etc.)
-              { name: "vendor-libs", test: /node_modules/, priority: 10 }
+              { name: "vendor-mapping", test: /leaflet/, priority: 70 }
+              // No catch-all node_modules group: a group ships as one file, so
+              // one module needed at entry drags every lazy-only library in it
+              // (input-otp, motion's layout engine) onto first paint. Ungrouped
+              // modules follow their importers instead.
             ]
           }
         }
