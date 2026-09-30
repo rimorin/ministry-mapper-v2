@@ -1,5 +1,14 @@
 # Catatan Rilis (Bahasa Indonesia)
 
+## 2026-10-01
+
+[NEW] Filter alamat di peta.
+  Sentuh Filter lalu pilih status atau jenis rumah tangga yang Anda inginkan. Alamat yang cocok akan disorot dan sisanya menjadi abu-abu.
+
+  Gunakan untuk fokus pada satu kelompok, misalnya alamat Tidak di Rumah atau satu jenis rumah tangga.
+
+---
+
 ## 2026-09-11
 
 [IMPROVED:ADMIN] Sentuh nama wilayah untuk mengganti wilayah.

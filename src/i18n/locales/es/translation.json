@@ -239,7 +239,12 @@
     "unpinnedCount_one": "{{count}} dirección necesita un marcador",
     "unpinnedCount_other": "{{count}} direcciones necesitan un marcador",
     "unpinnedHint": "Toca para marcar la primera — {{units}}",
-    "noPinSet": "Sin marcador"
+    "noPinSet": "Sin marcador",
+    "filter": "Filtrar",
+    "filterCount": "Filtrar · {{count}}",
+    "filterTitle": "Filtrar direcciones",
+    "filterStatus": "Estado",
+    "filterSearch": "Buscar hogar"
   },
   "household": {
     "household": "Hogar",

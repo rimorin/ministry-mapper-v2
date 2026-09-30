@@ -47,6 +47,7 @@ const ANALYTICS_EVENTS = {
   TRAVEL_MODE_CHANGED: "travel-mode-changed",
   DIRECTIONS_OPENED: "directions-opened",
   ADDRESS_DIRECTIONS_OPENED: "address-directions-opened",
+  ADDRESS_FILTER_APPLIED: "address-filter-applied",
   // Core work loop. Fired from TRACKED_ROUTES below, not from call sites.
   ADDRESS_STATUS_UPDATED: "address-status-updated",
   ADDRESS_CREATED: "address-created",

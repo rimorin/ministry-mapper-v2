@@ -8,6 +8,7 @@ import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 interface NextAvailableProps {
   remaining: number;
   progress: number;
+  isFiltered: boolean;
   surface: "admin" | "publisher";
   onClick: () => void;
 }
@@ -18,6 +19,7 @@ interface NextAvailableProps {
 const NextAvailable = ({
   remaining,
   progress,
+  isFiltered,
   surface,
   onClick
 }: NextAvailableProps) => {
@@ -26,7 +28,8 @@ const NextAvailable = ({
   // Early on nearly every address still needs a call, so the next one is
   // whatever is already on screen. The button only earns its place once what
   // is left is scattered, which is the same point the cells start highlighting.
-  const isOffered = remaining > 0 && isEndgame(progress);
+  // A filter scatters what is left by itself, so it offers the button early.
+  const isOffered = remaining > 0 && (isFiltered || isEndgame(progress));
 
   // Keyed on isOffered, not fired on render, so a map that sits in its endgame
   // across many re-renders still counts as one offer.

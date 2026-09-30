@@ -1,5 +1,14 @@
 # Nota Pelepasan (Bahasa Melayu)
 
+## 2026-10-01
+
+[NEW] Tapis alamat pada peta.
+  Sentuh Tapis dan pilih status atau jenis isi rumah yang anda mahu. Alamat yang sepadan diserlahkan dan yang lain dikelabukan.
+
+  Gunakannya untuk fokus pada satu kumpulan, seperti alamat Tiada Di Rumah atau satu jenis isi rumah.
+
+---
+
 ## 2026-09-11
 
 [IMPROVED:ADMIN] Sentuh nama kawasan untuk menukar kawasan.

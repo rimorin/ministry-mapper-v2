@@ -27,20 +27,27 @@ const centreInContainer = (
 };
 
 // units arrive in reading order: buildFloorList sorts floors top-down and units
-// by sequence, so the grid's own order is the tour order.
-const useNextAvailable = (units: unitDetails[], policy: Policy) => {
+// by sequence, so the grid's own order is the tour order. isMatch narrows the
+// tour to the addresses the active filter leaves in view.
+const useNextAvailable = (
+  units: unitDetails[],
+  policy: Policy,
+  isMatch: (unit: unitDetails) => boolean
+) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const [lastTargetId, setLastTargetId] = useState<string>();
   const shouldReduceMotion = useReducedMotion();
 
-  const available = units.filter((unit) => policy.isAvailable(unit));
+  const isTarget = (unit: unitDetails) =>
+    policy.isAvailable(unit) && isMatch(unit);
+  const available = units.filter(isTarget);
 
   const goToNext = () => {
     // Resume from wherever the last jump landed — searching the full list, not
     // just the available ones, keeps the place even after that unit is done.
     const from = units.findIndex((unit) => unit.id === lastTargetId);
     const next =
-      units.find((unit, index) => index > from && policy.isAvailable(unit)) ??
+      units.find((unit, index) => index > from && isTarget(unit)) ??
       available[0];
     if (!next) return;
 

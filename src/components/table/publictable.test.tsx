@@ -6,10 +6,12 @@ import {
   STATUS_CODES
 } from "../../utils/constants";
 import type {
+  AddressFilter,
   addressDetails,
   floorDetails,
   unitDetails
 } from "../../utils/interface";
+import { EMPTY_ADDRESS_FILTER } from "../../hooks/useAddressFilter";
 import PublicTerritoryTable from "./publictable";
 
 const policy = new Policy("tester", [
@@ -45,10 +47,15 @@ const floors = (): floorDetails[] => [
 const addressDetails = (progress: number) =>
   ({ aggregates: { value: progress } }) as addressDetails;
 
-const setup = (progress: number, floorList = floors()) =>
+const setup = (
+  progress: number,
+  floorList = floors(),
+  filter: AddressFilter = EMPTY_ADDRESS_FILTER
+) =>
   render(
     <PublicTerritoryTable
       floors={floorList}
+      filter={filter}
       addressDetails={addressDetails(progress)}
       policy={policy}
       maxUnitLength={2}
@@ -89,5 +96,38 @@ describe("PublicTerritoryTable floor tallies", () => {
   it("shows no tallies on a single-floor map", () => {
     setup(95, [{ floor: 1, units: [unit("a"), unit("b")] }]);
     expect(tallies()).toHaveLength(0);
+  });
+});
+
+describe("PublicTerritoryTable filter", () => {
+  const notHomeOnly = {
+    statuses: [STATUS_CODES.NOT_HOME],
+    types: []
+  };
+  const filteredFloors = (): floorDetails[] => [
+    { floor: 2, units: [unit("a", STATUS_CODES.NOT_HOME), unit("b")] },
+    { floor: 1, units: [unit("c"), unit("d", STATUS_CODES.NOT_HOME)] }
+  ];
+  const cell = (id: string) =>
+    document.querySelector<HTMLElement>(`[data-id="${id}"]`)!;
+
+  it("highlights the matches and dims the rest, leaving them inert", () => {
+    setup(6, filteredFloors(), notHomeOnly);
+
+    expect(cell("a")).toHaveClass("address-match");
+    expect(cell("a")).not.toHaveClass("pointer-events-none");
+    expect(cell("a").firstElementChild).not.toHaveClass("address-dimmed");
+    expect(cell("b")).not.toHaveClass("address-match");
+    expect(cell("b")).not.toHaveClass("available");
+    expect(cell("b")).toHaveClass("pointer-events-none");
+    expect(cell("b").firstElementChild).toHaveClass("address-dimmed");
+  });
+
+  it("counts only matching addresses, even before the endgame", () => {
+    setup(6, filteredFloors(), notHomeOnly);
+    const shown = tallies();
+    expect(shown).toHaveLength(2);
+    expect(shown[0]).toHaveTextContent("1");
+    expect(shown[1]).toHaveTextContent("1");
   });
 });

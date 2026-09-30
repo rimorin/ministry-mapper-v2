@@ -239,7 +239,12 @@
     "unpinnedCount_one": "{{count}}개 주소에 위치 표시가 필요합니다",
     "unpinnedCount_other": "{{count}}개 주소에 위치 표시가 필요합니다",
     "unpinnedHint": "탭하여 첫 번째 주소 설정 — {{units}}",
-    "noPinSet": "위치 미지정"
+    "noPinSet": "위치 미지정",
+    "filter": "필터",
+    "filterCount": "필터 · {{count}}",
+    "filterTitle": "주소 필터",
+    "filterStatus": "상태",
+    "filterSearch": "가구 검색"
   },
   "household": {
     "household": "가구",

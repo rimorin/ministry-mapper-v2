@@ -239,7 +239,12 @@
     "unpinnedCount_one": "{{count}} address needs a pin",
     "unpinnedCount_other": "{{count}} addresses need a pin",
     "unpinnedHint": "Tap to set the first — {{units}}",
-    "noPinSet": "No pin set"
+    "noPinSet": "No pin set",
+    "filter": "Filter",
+    "filterCount": "Filter · {{count}}",
+    "filterTitle": "Filter addresses",
+    "filterStatus": "Status",
+    "filterSearch": "Search household"
   },
   "household": {
     "household": "Household",

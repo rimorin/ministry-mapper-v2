@@ -239,7 +239,12 @@
     "unpinnedCount_one": "{{count}} alamat perlu ditanda",
     "unpinnedCount_other": "{{count}} alamat perlu ditanda",
     "unpinnedHint": "Ketik untuk menanda yang pertama — {{units}}",
-    "noPinSet": "Belum ditanda"
+    "noPinSet": "Belum ditanda",
+    "filter": "Tapis",
+    "filterCount": "Tapis · {{count}}",
+    "filterTitle": "Tapis alamat",
+    "filterStatus": "Status",
+    "filterSearch": "Cari isi rumah"
   },
   "household": {
     "household": "Isi Rumah",

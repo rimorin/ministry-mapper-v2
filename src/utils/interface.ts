@@ -259,8 +259,14 @@ export interface backToTopProp {
   onScrollToTop?: () => void;
 }
 
+export interface AddressFilter {
+  statuses: string[];
+  types: string[];
+}
+
 export interface territoryTableProps {
   mapView?: boolean;
+  filter: AddressFilter;
   policy: Policy;
   addressDetails: addressDetails;
   assignmentId?: string;
@@ -273,6 +279,7 @@ export interface territoryTableProps {
 
 export interface territoryMultiProps {
   floors: floorDetails[];
+  filter: AddressFilter;
   addressDetails: addressDetails;
   policy: Policy;
   maxUnitLength: number;
@@ -284,6 +291,7 @@ export interface territoryMultiProps {
 
 export interface territorySingleProps {
   houses: floorDetails;
+  filter: AddressFilter;
   policy: Policy;
   addressDetails: addressDetails;
   pendingAddressIds?: Set<string>;

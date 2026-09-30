@@ -1,6 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { territorySingleProps } from "../../utils/interface";
+import { territorySingleProps, unitDetails } from "../../utils/interface";
 import { DEFAULT_AGGREGATES, USER_ACCESS_LEVELS } from "../../utils/constants";
 import AddressStatus, { PendingSyncDot } from "./address";
 import ComponentAuthorizer from "../navigation/authorizer";
@@ -8,9 +8,14 @@ import * as m from "motion/react-m";
 import { diagonalCell } from "@/lib/motion";
 import useNextAvailable from "../../hooks/useNextAvailable";
 import NextAvailable from "./nextavailable";
+import {
+  countAddressFilters,
+  matchesAddressFilter
+} from "../../hooks/useAddressFilter";
 
 const PrivateTerritoryTable = ({
   houses,
+  filter,
   policy,
   addressDetails,
   handleHouseUpdate,
@@ -18,9 +23,12 @@ const PrivateTerritoryTable = ({
   pendingAddressIds
 }: territorySingleProps) => {
   const aggregates = addressDetails?.aggregates;
+  const isFiltered = countAddressFilters(filter) > 0;
+  const isMatch = (unit: unitDetails) => matchesAddressFilter(unit, filter);
   const { containerRef, remaining, targetId, goToNext } = useNextAvailable(
     houses?.units ?? [],
-    policy
+    policy,
+    isMatch
   );
   return (
     <div className={cn("relative", !policy.isFromAdmin() && "h-full")}>
@@ -45,7 +53,8 @@ const PrivateTerritoryTable = ({
                 <Card
                   className={cn(
                     "h-full overflow-visible gap-0 py-0",
-                    element.id === targetId && "map-target-ring"
+                    element.id === targetId && "map-target-ring",
+                    !isMatch(element) && "address-dimmed pointer-events-none"
                   )}
                 >
                   <CardContent
@@ -71,10 +80,12 @@ const PrivateTerritoryTable = ({
                     <div
                       className={cn(
                         "flex min-h-12 flex-1 flex-wrap items-center justify-center gap-[0.15rem] p-[0.2rem] font-bold fluid-text transition-colors duration-200 border-t border-border",
-                        policy?.getUnitColor(
-                          element,
-                          aggregates?.value || DEFAULT_AGGREGATES.value
-                        )
+                        isFiltered
+                          ? isMatch(element) && "address-match"
+                          : policy?.getUnitColor(
+                              element,
+                              aggregates?.value || DEFAULT_AGGREGATES.value
+                            )
                       )}
                     >
                       <AddressStatus
@@ -112,6 +123,7 @@ const PrivateTerritoryTable = ({
       <NextAvailable
         remaining={remaining}
         progress={aggregates?.value || DEFAULT_AGGREGATES.value}
+        isFiltered={isFiltered}
         surface="admin"
         onClick={goToNext}
       />

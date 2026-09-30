@@ -9,6 +9,12 @@ import AssignmentButtonGroup from "./assignmentbtn";
 import MessageButtonGroup from "./messagebtn";
 import ComponentAuthorizer from "./authorizer";
 import MainTable from "../table/map";
+import AddressFilterPopover from "./addressfilter";
+import useAddressFilter, {
+  countAddressFilters
+} from "../../hooks/useAddressFilter";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { getUser } from "../../utils/pocketbase";
 import {
   addressDetails,
@@ -40,7 +46,8 @@ import {
   ChevronUp,
   ChevronDown,
   RotateCcw,
-  Trash2
+  Trash2,
+  ListFilter
 } from "lucide-react";
 import { List, type RowComponentProps } from "react-window";
 import useScrollPersistence from "../../hooks/useScrollPersistence";
@@ -89,6 +96,8 @@ function MapRow({
     addressElement.aggregates?.value || DEFAULT_AGGREGATES.value;
   const notDoneCount = addressElement.aggregates?.notDone ?? 0;
   const notHomeCount = addressElement.aggregates?.notHome ?? 0;
+  const [addressFilter, setAddressFilter] = useAddressFilter(mapId);
+  const activeFilterCount = countAddressFilters(addressFilter);
 
   return (
     <div className="map-item border-0" style={style}>
@@ -182,6 +191,21 @@ function MapRow({
               key={`message-btn-${mapId}`}
               addressElement={addressElement}
               policy={policy}
+            />
+            <AddressFilterPopover
+              filter={addressFilter}
+              onChange={setAddressFilter}
+              options={policy.options}
+              surface="admin"
+              trigger={
+                <Button size="sm" variant="outline">
+                  <ListFilter className="size-3.5" />
+                  {t("address.filter", "Filter")}
+                  {activeFilterCount > 0 && (
+                    <Badge className="tabular-nums">{activeFilterCount}</Badge>
+                  )}
+                </Button>
+              }
             />
             <ComponentAuthorizer
               requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
@@ -282,6 +306,7 @@ function MapRow({
           </div>
           <MainTable
             mapView={mapViews.get(mapId)}
+            filter={addressFilter}
             key={`table-${mapId}`}
             policy={policy}
             addressDetails={addressElement}
