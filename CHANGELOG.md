@@ -1,3 +1,13 @@
+## [2.10.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.9.4...v2.10.0) (2026-09-30)
+
+### Features
+
+* filter map addresses by status and household type ([5049460](https://github.com/rimorin/ministry-mapper-v2/commit/50494605ba3ffce16561de2aa061ba3e82f19ed7))
+
+### Performance Improvements
+
+* stop lazy-only libraries loading on every page ([858f82f](https://github.com/rimorin/ministry-mapper-v2/commit/858f82f76dc0a8e5050dfe054b02d7d3aab04b44))
+
 ## [2.9.4](https://github.com/rimorin/ministry-mapper-v2/compare/v2.9.3...v2.9.4) (2026-09-29)
 
 ### Bug Fixes
