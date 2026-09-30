@@ -10,6 +10,10 @@ import * as Sentry from "@sentry/react";
 import { ClientResponseError } from "pocketbase";
 import { isReloadingForNewDeploy } from "./src/utils/reloadForNewDeploy";
 
+// Sentry's own denylist for identifying headers (IP, forwarding, user), as
+// applied in v10 when sendDefaultPii was off.
+const PII_SNIPPETS = ["forwarded", "-ip", "remote-", "via", "-user"];
+
 Sentry.init({
   dsn: import.meta.env.VITE_SENTRY_DSN,
   environment: import.meta.env.VITE_SYSTEM_ENVIRONMENT || "local",
@@ -17,6 +21,25 @@ Sentry.init({
 
   // Disable performance monitoring (tree-shaken via vite plugin)
   tracesSampleRate: 0,
+
+  // Keeps v10's restrictive collection. Every field is set on purpose: once
+  // dataCollection is present, any field left out takes v11's permissive
+  // default (user IP, cookies, headers and bodies).
+  dataCollection: {
+    userInfo: false,
+    cookies: { deny: PII_SNIPPETS },
+    httpHeaders: {
+      request: { deny: PII_SNIPPETS },
+      response: { deny: PII_SNIPPETS }
+    },
+    httpBodies: [],
+    urlQueryParams: { deny: PII_SNIPPETS },
+    graphQL: { document: true, variables: true },
+    genAI: { inputs: false, outputs: false },
+    databaseQueryData: false,
+    stackFrameVariables: true,
+    frameContextLines: 7
+  },
 
   // Using default integrations for automatic error capture
   // (breadcrumbs, uncaught exceptions, unhandled rejections, etc.)
