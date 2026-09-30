@@ -120,6 +120,17 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ---
 
+## 2026-10-01
+
+[NEW] Filter addresses on a map.
+  Tap Filter and pick the statuses or household types you want. Matching addresses are highlighted and the rest are greyed out.
+
+  Use it to focus on one group, like Not Home addresses or one household type.
+
+![Filter addresses](https://assets.ministry-mapper.com/release-notes/2026-10-01/filter.png)
+
+---
+
 ## 2026-09-11
 
 [IMPROVED:ADMIN] Tap the territory name to change territory.

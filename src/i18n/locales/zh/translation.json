@@ -239,7 +239,12 @@
     "unpinnedCount_one": "{{count}} 个地址需要标记",
     "unpinnedCount_other": "{{count}} 个地址需要标记",
     "unpinnedHint": "点击标记第一个 — {{units}}",
-    "noPinSet": "未标记"
+    "noPinSet": "未标记",
+    "filter": "筛选",
+    "filterCount": "筛选 · {{count}}",
+    "filterTitle": "筛选地址",
+    "filterStatus": "状态",
+    "filterSearch": "搜索家庭"
   },
   "household": {
     "household": "家庭",

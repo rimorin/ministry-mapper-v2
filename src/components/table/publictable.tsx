@@ -1,7 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { floorDetails, territoryMultiProps } from "../../utils/interface";
+import {
+  floorDetails,
+  territoryMultiProps,
+  unitDetails
+} from "../../utils/interface";
 import { isEndgame, type Policy } from "../../utils/policies";
 import AddressStatus, { PendingSyncDot } from "./address";
 import {
@@ -21,6 +25,10 @@ import {
 } from "@/lib/motion";
 import useNextAvailable from "../../hooks/useNextAvailable";
 import NextAvailable from "./nextavailable";
+import {
+  countAddressFilters,
+  matchesAddressFilter
+} from "../../hooks/useAddressFilter";
 
 interface FloorRowProps {
   item: floorDetails;
@@ -28,6 +36,8 @@ interface FloorRowProps {
   moreThanOneFloor: boolean;
   aggregatesValue: number;
   policy: Policy;
+  isFiltered: boolean;
+  isMatch: (unit: unitDetails) => boolean;
   pendingAddressIds?: Set<string>;
   targetId?: string;
   handleUnitStatusUpdate: (event: React.MouseEvent<HTMLElement>) => void;
@@ -43,19 +53,23 @@ const FloorRow = ({
   moreThanOneFloor,
   aggregatesValue,
   policy,
+  isFiltered,
+  isMatch,
   pendingAddressIds,
   targetId,
   handleUnitStatusUpdate,
   handleFloorDelete
 }: FloorRowProps) => {
   const { t } = useTranslation();
-  const availableCount = item.units.filter((unit) =>
-    policy.isAvailable(unit)
+  const availableCount = item.units.filter(
+    (unit) => policy.isAvailable(unit) && isMatch(unit)
   ).length;
   // Same rule as the next-address button: before the endgame almost every
   // floor has something left, so a count on each one says nothing.
   const showTally =
-    moreThanOneFloor && availableCount > 0 && isEndgame(aggregatesValue);
+    moreThanOneFloor &&
+    availableCount > 0 &&
+    (isFiltered || isEndgame(aggregatesValue));
   return (
     <tr className="h-16">
       <m.th
@@ -103,8 +117,11 @@ const FloorRow = ({
           key={`td-${item.floor}-${element.number}`}
           className={cn(
             "map-cell",
-            policy?.getUnitColor(element, aggregatesValue),
-            element.id === targetId && "map-target-ring"
+            isFiltered
+              ? isMatch(element) && "address-match"
+              : policy?.getUnitColor(element, aggregatesValue),
+            element.id === targetId && "map-target-ring",
+            !isMatch(element) && "pointer-events-none"
           )}
           onClick={handleUnitStatusUpdate}
           data-id={element.id}
@@ -115,7 +132,12 @@ const FloorRow = ({
           initial="hidden"
           animate="show"
         >
-          <div className="relative w-full h-full">
+          <div
+            className={cn(
+              "relative w-full h-full",
+              !isMatch(element) && "address-dimmed"
+            )}
+          >
             {pendingAddressIds?.has(element.id) && <PendingSyncDot />}
             <AddressStatus
               key={`${element.status}-${element.nhcount}`}
@@ -134,6 +156,7 @@ const FloorRow = ({
 
 const PublicTerritoryTable = ({
   floors,
+  filter,
   addressDetails,
   policy,
   maxUnitLength,
@@ -147,9 +170,12 @@ const PublicTerritoryTable = ({
   const floorDetails = floors[0];
   const aggregatesValue =
     addressDetails.aggregates?.value || DEFAULT_AGGREGATES.value;
+  const isFiltered = countAddressFilters(filter) > 0;
+  const isMatch = (unit: unitDetails) => matchesAddressFilter(unit, filter);
   const { containerRef, remaining, targetId, goToNext } = useNextAvailable(
     floors.flatMap((floor) => floor.units),
-    policy
+    policy,
+    isMatch
   );
   return (
     <div className={cn("relative", !policy.isFromAdmin() && "h-full")}>
@@ -214,6 +240,8 @@ const PublicTerritoryTable = ({
                 moreThanOneFloor={moreThanOneFloor}
                 aggregatesValue={aggregatesValue}
                 policy={policy}
+                isFiltered={isFiltered}
+                isMatch={isMatch}
                 pendingAddressIds={pendingAddressIds}
                 targetId={targetId}
                 handleUnitStatusUpdate={handleUnitStatusUpdate}
@@ -226,6 +254,7 @@ const PublicTerritoryTable = ({
       <NextAvailable
         remaining={remaining}
         progress={aggregatesValue}
+        isFiltered={isFiltered}
         surface="publisher"
         onClick={goToNext}
       />

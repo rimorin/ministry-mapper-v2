@@ -27,6 +27,7 @@ const setup = (
     <NextAvailable
       remaining={remaining}
       progress={progress}
+      isFiltered={false}
       surface={surface}
       onClick={onClick}
     />
@@ -49,6 +50,19 @@ describe("NextAvailable", () => {
 
   it("appears once the map reaches its endgame", () => {
     setup(ENDGAME_PROGRESS_THRESHOLD);
+    expect(button()).toBeInTheDocument();
+  });
+
+  it("appears before the endgame when a filter is narrowing the map", () => {
+    render(
+      <NextAvailable
+        remaining={4}
+        progress={6}
+        isFiltered
+        surface="publisher"
+        onClick={vi.fn()}
+      />
+    );
     expect(button()).toBeInTheDocument();
   });
 
@@ -94,6 +108,7 @@ describe("NextAvailable", () => {
         <NextAvailable
           remaining={2}
           progress={97}
+          isFiltered={false}
           surface="admin"
           onClick={vi.fn()}
         />
@@ -113,6 +128,7 @@ describe("NextAvailable", () => {
           <NextAvailable
             remaining={remaining}
             progress={progress}
+            isFiltered={false}
             surface="admin"
             onClick={vi.fn()}
           />

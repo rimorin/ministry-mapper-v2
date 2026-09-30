@@ -1,5 +1,14 @@
 # Notas de versión (Español)
 
+## 2026-10-01
+
+[NEW] Filtra las direcciones de un mapa.
+  Toca Filtrar y elige los estados o tipos de hogar que quieras. Las direcciones que coinciden se resaltan y el resto se ve en gris.
+
+  Úsalo para concentrarte en un grupo, como las direcciones No en casa o un tipo de hogar.
+
+---
+
 ## 2026-09-11
 
 [IMPROVED:ADMIN] Toca el nombre del territorio para cambiar de territorio.

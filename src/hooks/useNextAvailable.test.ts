@@ -39,6 +39,8 @@ const units = [
   unit("e")
 ];
 
+const everyUnit = () => true;
+
 let scrollTo: Mock<(...args: unknown[]) => void>;
 
 const attachContainer = (
@@ -66,14 +68,18 @@ beforeEach(() => {
 
 describe("useNextAvailable", () => {
   it("counts only the addresses that still need a call", () => {
-    const { result } = renderHook(() => useNextAvailable(units, policy));
+    const { result } = renderHook(() =>
+      useNextAvailable(units, policy, everyUnit)
+    );
 
     expect(result.current.remaining).toBe(3);
     expect(result.current.targetId).toBeUndefined();
   });
 
   it("walks the addresses in order and wraps back to the first", () => {
-    const { result } = renderHook(() => useNextAvailable(units, policy));
+    const { result } = renderHook(() =>
+      useNextAvailable(units, policy, everyUnit)
+    );
     attachContainer(
       result.current.containerRef,
       units.map((u) => u.id)
@@ -88,12 +94,28 @@ describe("useNextAvailable", () => {
     expect(visited).toEqual(["b", "d", "e", "b"]);
   });
 
+  it("skips the addresses the filter leaves out", () => {
+    const { result } = renderHook(() =>
+      useNextAvailable(units, policy, (u) => u.id !== "d")
+    );
+    attachContainer(
+      result.current.containerRef,
+      units.map((u) => u.id)
+    );
+
+    act(() => result.current.goToNext());
+    act(() => result.current.goToNext());
+
+    expect(result.current.remaining).toBe(2);
+    expect(result.current.targetId).toBe("e");
+  });
+
   it("keeps its place when the address it jumped to is completed", () => {
     const done = units.map((u) =>
       u.id === "d" ? unit("d", STATUS_CODES.DONE) : u
     );
     const { result, rerender } = renderHook(
-      ({ list }) => useNextAvailable(list, policy),
+      ({ list }) => useNextAvailable(list, policy, everyUnit),
       { initialProps: { list: units } }
     );
     attachContainer(
@@ -116,7 +138,9 @@ describe("useNextAvailable", () => {
   });
 
   it("scrolls the container itself, centring the address in view", () => {
-    const { result } = renderHook(() => useNextAvailable(units, policy));
+    const { result } = renderHook(() =>
+      useNextAvailable(units, policy, everyUnit)
+    );
     attachContainer(
       result.current.containerRef,
       units.map((u) => u.id)
@@ -134,7 +158,9 @@ describe("useNextAvailable", () => {
 
   it("does nothing when every address has been called on", () => {
     const allDone = units.map((u) => unit(u.id, STATUS_CODES.DONE));
-    const { result } = renderHook(() => useNextAvailable(allDone, policy));
+    const { result } = renderHook(() =>
+      useNextAvailable(allDone, policy, everyUnit)
+    );
     attachContainer(
       result.current.containerRef,
       allDone.map((u) => u.id)

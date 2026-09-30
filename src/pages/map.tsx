@@ -6,6 +6,7 @@ import {
   Languages,
   Palette,
   LayoutGrid,
+  ListFilter,
   Map as MapIcon
 } from "lucide-react";
 import { AnimatePresence } from "motion/react";
@@ -38,6 +39,10 @@ import useMapLink from "../hooks/useMapLink";
 import { ANALYTICS_EVENTS, trackEvent } from "../utils/analytics";
 import { useSmartSync, SmartSyncProvider } from "../hooks/useSmartSync";
 import { Progress } from "@/components/ui/progress";
+import AddressFilterPopover from "../components/navigation/addressfilter";
+import useAddressFilter, {
+  countAddressFilters
+} from "../hooks/useAddressFilter";
 const GetMapGeolocation = lazy(() => import("../components/modal/getlocation"));
 const UpdateMapMessages = lazy(() => import("../components/modal/mapmessages"));
 const ThemeSettingsModal = lazy(
@@ -55,6 +60,7 @@ const Map = () => {
     "false"
   );
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const [addressFilter, setAddressFilter] = useAddressFilter(id ?? "");
 
   const { showModal } = useModalManagement();
   const {
@@ -206,6 +212,8 @@ const Map = () => {
   // cells start highlighting.
   const showBreakdown = isEndgame(mapDetails?.aggregates.value ?? 0);
 
+  const activeFilterCount = countAddressFilters(addressFilter);
+
   const currentLanguageLabel =
     languageOptions.find((opt) => currentLanguage.startsWith(opt.value))
       ?.label ?? t("common.language", "Language");
@@ -233,6 +241,7 @@ const Map = () => {
               <MainTable
                 key={`link-map-${id}`}
                 mapView={mapView}
+                filter={addressFilter}
                 policy={policy}
                 addressDetails={mapDetails}
                 assignmentId={id}
@@ -350,6 +359,34 @@ const Map = () => {
                 </AnimatePresence>
               </m.button>
             )}
+            <AddressFilterPopover
+              filter={addressFilter}
+              onChange={setAddressFilter}
+              options={policy.options}
+              surface="publisher"
+              side="top"
+              trigger={
+                <m.button
+                  type="button"
+                  className={navItemClass}
+                  whileTap={tapFeedback}
+                >
+                  <ListFilter
+                    className={cn(
+                      "size-5",
+                      activeFilterCount > 0 && "text-primary"
+                    )}
+                  />
+                  <span className="text-xs leading-none">
+                    {activeFilterCount > 0
+                      ? t("address.filterCount", "Filter · {{count}}", {
+                          count: activeFilterCount
+                        })
+                      : t("address.filter", "Filter")}
+                  </span>
+                </m.button>
+              }
+            />
             <m.button
               type="button"
               className={navItemClass}

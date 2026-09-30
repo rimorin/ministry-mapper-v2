@@ -239,7 +239,12 @@
     "unpinnedCount_one": "{{count}} 件の住所にピンが必要です",
     "unpinnedCount_other": "{{count}} 件の住所にピンが必要です",
     "unpinnedHint": "タップして最初の住所を設定 — {{units}}",
-    "noPinSet": "ピンなし"
+    "noPinSet": "ピンなし",
+    "filter": "絞り込み",
+    "filterCount": "絞り込み · {{count}}",
+    "filterTitle": "住所を絞り込む",
+    "filterStatus": "ステータス",
+    "filterSearch": "世帯を検索"
   },
   "household": {
     "household": "世帯",

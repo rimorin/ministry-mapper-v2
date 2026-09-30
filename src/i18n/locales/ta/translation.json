@@ -213,7 +213,12 @@
     "unpinnedCount_one": "{{count}} முகவரிக்கு குறியிட வேண்டும்",
     "unpinnedCount_other": "{{count}} முகவரிகளுக்கு குறியிட வேண்டும்",
     "unpinnedHint": "முதலாவதைக் குறியிட தட்டவும் — {{units}}",
-    "noPinSet": "குறி இல்லை"
+    "noPinSet": "குறி இல்லை",
+    "filter": "வடிகட்டு",
+    "filterCount": "வடிகட்டு · {{count}}",
+    "filterTitle": "முகவரிகளை வடிகட்டு",
+    "filterStatus": "நிலை",
+    "filterSearch": "குடும்பத்தைத் தேடு"
   },
   "household": {
     "household": "குடும்பம்",

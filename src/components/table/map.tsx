@@ -464,6 +464,7 @@ const MainTable = ({
   policy,
   addressDetails,
   mapView = false,
+  filter,
   assignmentId,
   territoryId,
   preloadedAddresses
@@ -663,6 +664,7 @@ const MainTable = ({
         <TerritoryMapView
           addressDetails={addressDetails}
           houses={floorList[0] || []}
+          filter={filter}
           policy={policy}
           handleHouseUpdate={handleHouseUpdate}
         />
@@ -671,6 +673,7 @@ const MainTable = ({
       <PrivateTerritoryTable
         addressDetails={addressDetails}
         houses={floorList[0] || []}
+        filter={filter}
         handleHouseUpdate={handleHouseUpdate}
         handleAddMoreClick={handleAddMoreClick}
         policy={policy}
@@ -680,6 +683,7 @@ const MainTable = ({
   ) : (
     <PublicTerritoryTable
       floors={floorList}
+      filter={filter}
       policy={policy}
       addressDetails={addressDetails}
       maxUnitLength={maxUnitLength}

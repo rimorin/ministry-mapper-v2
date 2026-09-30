@@ -123,6 +123,43 @@
   transition: background-color 0.2s ease;
 }
 
+/* While a filter is on, matches take this fill in place of the "still to call"
+   tint, and everything else recedes. */
+.address-match {
+  background-color: color-mix(
+    in oklch,
+    var(--primary) 16%,
+    transparent
+  ) !important;
+}
+
+.map-marker.address-match {
+  background-color: color-mix(
+    in oklch,
+    var(--primary) 25%,
+    var(--mm-marker-surface)
+  );
+  box-shadow:
+    0 0 0 2px var(--primary),
+    0 1px 3px rgb(0 0 0 / 0.3);
+}
+
+/* Dimmed addresses are also made inert where they render, so a filter never
+   leads to editing an address it hid. */
+.address-dimmed {
+  opacity: 0.15;
+  filter: grayscale(1);
+  transition:
+    opacity 0.2s ease,
+    filter 0.2s ease;
+}
+
+/* Light badges on a dark cell keep far more contrast at the same opacity than
+   dark ones on white, so dark mode has to fade them further to match. */
+.dark .address-dimmed {
+  opacity: 0.08;
+}
+
 .cell-highlight {
   background-color: color-mix(
     in oklch,

@@ -20,6 +20,10 @@ import { MapController } from "../map/mapcontroller";
 import CustomControl from "../map/customcontrol";
 import useGeolocation from "../../hooks/useGeolocation";
 import { ThemedTileLayer } from "../map/themedtilelayer";
+import {
+  countAddressFilters,
+  matchesAddressFilter
+} from "../../hooks/useAddressFilter";
 
 // Inline SVG strings for Leaflet divIcon markers — avoids react-dom/server entirely.
 // SVG paths sourced from lucide-icons/lucide@main. Tailwind classes are applied by the
@@ -47,6 +51,7 @@ const getStatusIconHtml = (status: string, nhcount: string): string => {
 
 const TerritoryMapView = ({
   houses,
+  filter,
   policy,
   addressDetails,
   handleHouseUpdate
@@ -68,6 +73,7 @@ const TerritoryMapView = ({
     } as unknown as React.MouseEvent<HTMLElement>);
   };
 
+  const isFiltered = countAddressFilters(filter) > 0;
   const houseMarkers = useMemo(
     () =>
       houses?.units.map((element, index) => {
@@ -75,11 +81,15 @@ const TerritoryMapView = ({
 
         const houseType =
           element.type?.map((type) => type.code).join(", ") || "";
-        const className =
-          policy?.getMarkerColor(
-            element,
-            aggregates?.value || DEFAULT_AGGREGATES.value
-          ) || "";
+        const isMatch = matchesAddressFilter(element, filter);
+        const className = !isFiltered
+          ? policy?.getMarkerColor(
+              element,
+              aggregates?.value || DEFAULT_AGGREGATES.value
+            ) || ""
+          : isMatch
+            ? "address-match"
+            : "address-dimmed";
 
         const statusIconHtml = getStatusIconHtml(
           element.status,
@@ -96,10 +106,13 @@ const TerritoryMapView = ({
         });
 
         return (
+          // Leaflet reads `interactive` only when a marker is created, so the
+          // match state is part of the key to rebuild a marker that flips.
           <Marker
-            key={`housemark-${element.id}-${index}`}
+            key={`housemark-${element.id}-${index}-${isMatch}`}
             position={[element.coordinates.lat, element.coordinates.lng]}
             icon={houseIcon}
+            interactive={isMatch}
             eventHandlers={{
               click: (e) => {
                 const markerElement = e.sourceTarget.getElement();
@@ -114,7 +127,7 @@ const TerritoryMapView = ({
           />
         );
       }),
-    [houses?.units, aggregates, policy, handleHouseUpdate]
+    [houses?.units, filter, isFiltered, aggregates, policy, handleHouseUpdate]
   );
 
   return (

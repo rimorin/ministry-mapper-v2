@@ -213,7 +213,12 @@
     "unpinnedCount_one": "{{count}} alamat perlu ditandai",
     "unpinnedCount_other": "{{count}} alamat perlu ditandai",
     "unpinnedHint": "Ketuk untuk menandai yang pertama — {{units}}",
-    "noPinSet": "Belum ditandai"
+    "noPinSet": "Belum ditandai",
+    "filter": "Filter",
+    "filterCount": "Filter · {{count}}",
+    "filterTitle": "Filter alamat",
+    "filterStatus": "Status",
+    "filterSearch": "Cari rumah tangga"
   },
   "household": {
     "household": "Rumah Tangga",
