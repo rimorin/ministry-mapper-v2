@@ -100,7 +100,7 @@ const MapView: React.FC<MapViewProps> = ({
   const defaultCenter = sortedAddressList[0].coordinates || DEFAULT_COORDINATES;
 
   return (
-    <div className="relative z-0 h-[75dvh] w-full overflow-hidden rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.12)]">
+    <div className="relative z-0 min-h-0 w-full flex-1 overflow-hidden rounded-xl shadow-[0_4px_12px_rgba(0,0,0,0.12)]">
       <MapContainer
         center={[defaultCenter.lat, defaultCenter.lng]}
         zoom={18}

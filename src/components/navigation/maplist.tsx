@@ -585,7 +585,7 @@ const MapListing: React.FC<MapListingProps> = ({
 
   return (
     <List
-      className="virtual-map-container map-container-flush h-[80dvh]"
+      className="virtual-map-container map-container-flush min-h-0 flex-1"
       listRef={listRef}
       onScroll={handleScroll}
       rowCount={sortedAddressList.length}

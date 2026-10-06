@@ -135,7 +135,7 @@ export default function TerritoryContent({
       ) : (
         <m.div
           key={selectedTerritory.id}
-          className="territory-content"
+          className="territory-content flex min-h-0 flex-1 flex-col"
           variants={fadeSlideUp}
           initial="hidden"
           animate="show"

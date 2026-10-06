@@ -752,7 +752,7 @@ function Admin({ user }: adminProps) {
           onLogout: logoutUser
         }}
       />
-      <SidebarInset className="min-w-0">
+      <SidebarInset className="h-dvh min-w-0">
         {isLoading ? (
           <Loader />
         ) : (
