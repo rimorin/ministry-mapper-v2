@@ -1,3 +1,9 @@
+## [2.10.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.10.0...v2.10.1) (2026-10-06)
+
+### Bug Fixes
+
+* fit map view and map list to small screens ([0565067](https://github.com/rimorin/ministry-mapper-v2/commit/0565067bcbd1efc78c6bf5f3bd5f6c442fcf5aae))
+
 ## [2.10.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.9.4...v2.10.0) (2026-09-30)
 
 ### Features
