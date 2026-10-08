@@ -19,6 +19,7 @@ import useLocalStorage from "../../hooks/useLocalStorage";
 import useGeolocation from "../../hooks/useGeolocation";
 import { useTranslation } from "react-i18next";
 import { ThemedTileLayer } from "../map/themedtilelayer";
+import UnboundedTerritories from "./unboundedterritories";
 import "leaflet/dist/leaflet.css";
 
 const DEFAULT_MAP_ZOOM =
@@ -169,17 +170,13 @@ const TerritoryMapView = ({
     undefined
   );
 
-  const territoriesWithCoordinates =
-    territories?.filter(
-      (territory) =>
-        territory.coordinates &&
-        Array.isArray(territory.coordinates) &&
-        territory.coordinates.length >= 3
-    ) || [];
+  const hasBoundary = (territory: territoryDetails) =>
+    Array.isArray(territory.coordinates) && territory.coordinates.length >= 3;
 
-  const territoriesWithoutCoordinates = territories?.length
-    ? territories.length - territoriesWithCoordinates.length
-    : 0;
+  const territoriesWithCoordinates = territories?.filter(hasBoundary) || [];
+
+  const territoriesWithoutCoordinates =
+    territories?.filter((territory) => !hasBoundary(territory)) || [];
 
   const defaultCenter: [number, number] = [
     DEFAULT_COORDINATES.Singapore.lat,
@@ -287,15 +284,13 @@ const TerritoryMapView = ({
           </>
         )}
 
-        {/* Territory count indicator */}
-        {territoriesWithoutCoordinates > 0 && (
+        {/* Territories without a polygon to tap */}
+        {territoriesWithoutCoordinates.length > 0 && (
           <CustomControl position="bottomright">
-            <div className="mb-0 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 font-bold text-warning shadow-[0_0.125rem_0.25rem_rgba(0,0,0,0.075)]">
-              <span className="font-semibold text-destructive">
-                {territoriesWithoutCoordinates}
-              </span>{" "}
-              {t("territory.withoutBoundaries", "without boundaries")}
-            </div>
+            <UnboundedTerritories
+              territories={territoriesWithoutCoordinates}
+              handleSelect={handleSelect}
+            />
           </CustomControl>
         )}
 
