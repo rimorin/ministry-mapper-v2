@@ -123,7 +123,8 @@
     "passwordRequired": "Kata sandi wajib diisi.",
     "passwordTooShort": "Kata sandi harus terdiri dari minimal 6 karakter.",
     "confirmPasswordRequired": "Silakan konfirmasi kata sandi Anda.",
-    "passwordsMismatch": "Kata sandi tidak cocok."
+    "passwordsMismatch": "Kata sandi tidak cocok.",
+    "accountDisabled": "Akun ini telah dinonaktifkan. Mintalah administrator sidang Anda untuk mengaktifkannya kembali."
   },
   "territory": {
     "territory": "Wilayah",

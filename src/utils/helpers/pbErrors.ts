@@ -107,6 +107,14 @@ export function mapPbAuthError(err: unknown, t: TFunction): string | null {
 
   // 403 — auth method disabled or collection rules not met
   if (status === 403) {
+    // The users auth rule refuses disabled accounts (the inactivity job
+    // disables them); PocketBase words every auth rule failure this way.
+    if (/requirements to authenticate/i.test(message)) {
+      return t(
+        "auth.accountDisabled",
+        "This account has been disabled. Ask an administrator of your congregation to turn it back on."
+      );
+    }
     if (/password authentication/i.test(message)) {
       return t(
         "auth.passwordAuthDisabled",

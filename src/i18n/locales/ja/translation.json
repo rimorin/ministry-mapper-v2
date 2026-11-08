@@ -123,7 +123,8 @@
     "passwordRequired": "パスワードは必須です。",
     "passwordTooShort": "パスワードは6文字以上必要です。",
     "confirmPasswordRequired": "パスワードを確認してください。",
-    "passwordsMismatch": "パスワードが一致しません。"
+    "passwordsMismatch": "パスワードが一致しません。",
+    "accountDisabled": "このアカウントは無効になっています。会衆の管理者に再度有効にしてもらってください。"
   },
   "territory": {
     "territory": "区域",
