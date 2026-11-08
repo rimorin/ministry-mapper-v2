@@ -123,7 +123,8 @@
     "passwordRequired": "Kata laluan diperlukan.",
     "passwordTooShort": "Kata laluan mesti sekurang-kurangnya 6 aksara.",
     "confirmPasswordRequired": "Sila sahkan kata laluan anda.",
-    "passwordsMismatch": "Kata laluan tidak sepadan."
+    "passwordsMismatch": "Kata laluan tidak sepadan.",
+    "accountDisabled": "Akaun ini telah dinyahaktifkan. Minta pentadbir sidang anda untuk mengaktifkannya semula."
   },
   "territory": {
     "territory": "Wilayah",

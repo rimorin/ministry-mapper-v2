@@ -123,7 +123,8 @@
     "passwordRequired": "Password is required.",
     "passwordTooShort": "Password must be at least 6 characters.",
     "confirmPasswordRequired": "Please confirm your password.",
-    "passwordsMismatch": "Passwords do not match."
+    "passwordsMismatch": "Passwords do not match.",
+    "accountDisabled": "This account has been disabled. Ask an administrator of your congregation to turn it back on."
   },
   "territory": {
     "territory": "Territory",

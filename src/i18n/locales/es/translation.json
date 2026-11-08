@@ -123,7 +123,8 @@
     "passwordRequired": "La contraseña es obligatoria.",
     "passwordTooShort": "La contraseña debe tener al menos 6 caracteres.",
     "confirmPasswordRequired": "Por favor, confirma tu contraseña.",
-    "passwordsMismatch": "Las contraseñas no coinciden."
+    "passwordsMismatch": "Las contraseñas no coinciden.",
+    "accountDisabled": "Esta cuenta ha sido desactivada. Pide a un administrador de tu congregación que la vuelva a activar."
   },
   "territory": {
     "territory": "Territorio",
