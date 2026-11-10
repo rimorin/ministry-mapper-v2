@@ -4,6 +4,10 @@
 // learn more: https://github.com/testing-library/jest-dom
 import "@testing-library/jest-dom";
 import "fake-indexeddb/auto";
+import { MotionGlobalConfig } from "motion/react";
+
+// Animations finish at once, so content that fades in is visible to tests.
+MotionGlobalConfig.skipAnimations = true;
 
 // jsdom doesn't implement the Web Animations API used by @base-ui/react ScrollArea
 if (typeof Element !== "undefined" && !Element.prototype.getAnimations) {

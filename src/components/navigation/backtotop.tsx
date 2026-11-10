@@ -18,7 +18,8 @@ const BackToTopButton = ({ showButton, onScrollToTop }: backToTopProp) => {
     <AnimatePresence>
       {showButton && (
         <m.div
-          className="fixed bottom-[30px] right-[25px] z-50"
+          // Clear of the docked assistant when it is open.
+          className="fixed right-[calc(var(--assistant-dock-width,0px)+25px)] bottom-[30px] z-50"
           variants={fadeSlideUp}
           initial="hidden"
           animate="show"

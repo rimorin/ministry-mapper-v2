@@ -35,7 +35,7 @@ const EnvironmentIndicator = ({
       aria-label={`${environment} environment`}
       title={`${environment} environment`}
       className={cn(
-        "fixed top-4 right-4 z-[1000] cursor-default select-none rounded-full border-0 px-2.5 py-1 text-xs font-bold opacity-50 hover:opacity-100 transition-opacity motion-reduce:transition-none",
+        "fixed top-4 right-[calc(var(--assistant-dock-width,0px)+1rem)] z-[1000] cursor-default select-none rounded-full border-0 px-2.5 py-1 text-xs font-bold opacity-50 hover:opacity-100 transition-opacity motion-reduce:transition-none",
         className
       )}
     >
