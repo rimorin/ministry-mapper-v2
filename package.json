@@ -14,6 +14,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@ebay/nice-modal-react": "^1.2.13",
     "@sentry/react": "^11.1.0",
+    "@shadcn/react": "^0.3.1",
     "class-variance-authority": "^0.7.1",
     "cn": "^0.4.0",
     "i18next": "^26.4.2",

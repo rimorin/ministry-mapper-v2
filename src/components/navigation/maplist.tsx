@@ -335,7 +335,8 @@ const MapListing: React.FC<MapListingProps> = ({
   setAccordionKeys,
   isReadonly,
   territoryId,
-  territoryName
+  territoryName,
+  onMapInView
 }) => {
   const { t } = useTranslation();
   const { showModal } = useModalManagement();
@@ -588,6 +589,10 @@ const MapListing: React.FC<MapListingProps> = ({
       className="virtual-map-container map-container-flush min-h-0 flex-1"
       listRef={listRef}
       onScroll={handleScroll}
+      onRowsRendered={(visible) => {
+        const top = sortedAddressList[visible.startIndex];
+        if (top) onMapInView?.(top.id);
+      }}
       rowCount={sortedAddressList.length}
       rowHeight={getRowHeight}
       rowComponent={MapRow}

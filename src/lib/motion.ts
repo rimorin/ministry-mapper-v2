@@ -7,6 +7,42 @@ export const springBase = {
   bounce: 0.25
 } as const;
 
+// A panel docking beside the page: no bounce, because the page moves with it.
+// Close to the 200 ms the shadcn sidebar takes, so the two read as one motion
+// when the navigation folds as the assistant opens.
+export const panelTransition: Transition = {
+  type: "spring",
+  visualDuration: 0.3,
+  bounce: 0
+};
+
+// The docked panel's contents: in from the edge as the panel widens.
+export const panelContent: Variants = {
+  hidden: { opacity: 0, x: 24 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      ...panelTransition,
+      opacity: { duration: 0.2, ease: "linear" }
+    }
+  }
+};
+
+// A chat turn arriving: a short rise without bounce, so it reads as new
+// without pulling the eye from the page.
+export const messageEnter: Variants = {
+  hidden: { opacity: 0, y: 8 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      default: { ...panelTransition, visualDuration: 0.25 },
+      opacity: { duration: 0.2, ease: "linear" }
+    }
+  }
+};
+
 // Transforms → spring; opacity → linear fade long enough to be visible.
 export const enterTransition: Transition = {
   default: springBase,

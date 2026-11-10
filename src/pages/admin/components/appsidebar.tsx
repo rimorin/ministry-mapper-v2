@@ -48,6 +48,7 @@ import {
   SidebarSeparator,
   useSidebar
 } from "@/components/ui/sidebar";
+import { AssistantIcon } from "@/components/common/assistant-icon";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -66,6 +67,11 @@ import PendingBadge from "../../../components/navigation/pendingbadge";
 import { USER_ACCESS_LEVELS } from "../../../utils/constants";
 import { territoryDetails } from "../../../utils/interface";
 import { Policy } from "../../../utils/policies";
+
+// How the assistant's shortcut reads on this keyboard.
+const ASSISTANT_SHORTCUT = /Mac|iPhone|iPad/.test(navigator.userAgent)
+  ? "⌘⇧U"
+  : "Ctrl+Shift+U";
 
 const sectionIn = (delay: number) => ({
   initial: { opacity: 0, y: -8 },
@@ -172,6 +178,10 @@ interface AppSidebarProps {
     onLogout: () => void;
   };
   pendingCount?: number;
+  // Present only when the assistant is enabled for the congregation.
+  onOpenAssistant?: () => void;
+  // The docked assistant is open, so its button shows as pressed.
+  assistantOpen?: boolean;
 }
 
 export function AppSidebar({
@@ -193,7 +203,9 @@ export function AppSidebar({
   onCreateTerritory,
   onTerritoryActions,
   onCongregationActions,
-  onAccountActions
+  onAccountActions,
+  onOpenAssistant,
+  assistantOpen = false
 }: AppSidebarProps) {
   const { t } = useTranslation();
   const { isMobile, setOpenMobile } = useSidebar();
@@ -285,6 +297,30 @@ export function AppSidebar({
                       ) : (
                         t("territory.selectTerritory", "Select Territory")
                       )}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+
+                {onOpenAssistant && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      onClick={handleAction(onOpenAssistant)}
+                      isActive={assistantOpen}
+                      aria-pressed={assistantOpen}
+                      aria-keyshortcuts="Control+Shift+U Meta+Shift+U"
+                      className="gap-2"
+                    >
+                      <AssistantIcon className="size-4 shrink-0 text-muted-foreground" />
+                      <span className="min-w-0 flex-1 truncate">
+                        {t("assistant.title", "Mapper Assistant")}
+                      </span>
+                      {/* The shortcut works on desktop only (admin page). */}
+                      <kbd
+                        aria-hidden="true"
+                        className="hidden font-sans text-xs text-muted-foreground md:inline"
+                      >
+                        {ASSISTANT_SHORTCUT}
+                      </kbd>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}

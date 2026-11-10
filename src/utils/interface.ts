@@ -595,6 +595,8 @@ export interface MapListingProps {
   isReadonly: boolean;
   territoryId: string;
   territoryName?: string;
+  // The map at the top of the list, for the assistant to know what is open.
+  onMapInView?: (mapId: string) => void;
 }
 
 export interface MapRowProps {

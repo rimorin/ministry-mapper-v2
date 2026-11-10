@@ -62,6 +62,8 @@ interface TerritoryContentProps {
   onCreateTerritory: () => void;
   hasAnyMaps: boolean;
   onCreateMap: () => void;
+  // The map at the top of the list, for the assistant.
+  onMapInView?: (mapId: string) => void;
 }
 
 export default function TerritoryContent({
@@ -95,7 +97,8 @@ export default function TerritoryContent({
   onCreateOptions,
   onCreateTerritory,
   hasAnyMaps,
-  onCreateMap
+  onCreateMap,
+  onMapInView
 }: TerritoryContentProps) {
   const hasOptions = congregationOptions.length > 0;
   const hasTerritories = territories.size > 0;
@@ -186,6 +189,7 @@ export default function TerritoryContent({
               toggleAddressTerritoryListing={toggleAddressTerritoryListing}
               territoryId={selectedTerritory.id}
               territoryName={selectedTerritory.name}
+              onMapInView={onMapInView}
             />
           )}
         </m.div>

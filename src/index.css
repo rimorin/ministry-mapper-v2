@@ -69,6 +69,12 @@
 :root {
   color-scheme: light;
   --radius: 0.625rem;
+  /* Chart series in fixed order (blue, orange, aqua), checked together for
+     colour vision deficiency on each mode's surface; fixed across the colour
+     themes, like the status colours. */
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -112,6 +118,9 @@
 
 .dark {
   color-scheme: dark;
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -318,6 +327,15 @@
   }
 }
 
+/* Toasts stay at the page's right edge, clear of the docked assistant
+   (assistant-dock.tsx sets the width while it is open). From sm up, where
+   toast.tsx anchors them right. */
+@media (min-width: 40rem) {
+  [data-slot="toast-viewport"] {
+    right: calc(var(--assistant-dock-width, 0px) + 1rem);
+  }
+}
+
 /* Collapsible height animation — base-ui sets --collapsible-panel-height
    and data-open / data-closed on the panel element. */
 [data-slot="collapsible-content"] {
@@ -339,6 +357,13 @@
 @media (prefers-reduced-motion: reduce) {
   [data-slot="collapsible-content"] {
     transition: none;
+  }
+}
+
+/* A piece of a streamed answer appearing (assistant-reveal.tsx). */
+@keyframes fade-in {
+  from {
+    opacity: 0;
   }
 }
 
