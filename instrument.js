@@ -36,7 +36,9 @@ Sentry.init({
     urlQueryParams: { deny: PII_SNIPPETS },
     graphQL: { document: true, variables: true },
     genAI: { inputs: false, outputs: false },
+    mcp: { inputs: false, outputs: false },
     databaseQueryData: false,
+    queues: false,
     stackFrameVariables: true,
     frameContextLines: 7
   },
