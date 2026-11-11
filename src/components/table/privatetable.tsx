@@ -31,7 +31,7 @@ const PrivateTerritoryTable = ({
     isMatch
   );
   return (
-    <div className={cn("relative", !policy.isFromAdmin() && "h-full")}>
+    <>
       <div
         ref={containerRef}
         className={cn(
@@ -124,10 +124,9 @@ const PrivateTerritoryTable = ({
         remaining={remaining}
         progress={aggregates?.value || DEFAULT_AGGREGATES.value}
         isFiltered={isFiltered}
-        surface="admin"
         onClick={goToNext}
       />
-    </div>
+    </>
   );
 };
 

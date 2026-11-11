@@ -7,6 +7,7 @@ import {
   Palette,
   LayoutGrid,
   ListFilter,
+  LocateFixed,
   Map as MapIcon
 } from "lucide-react";
 import { AnimatePresence } from "motion/react";
@@ -19,6 +20,7 @@ import { cn } from "@/lib/utils";
 import { resolveLocalized } from "../utils/resolveLocalized";
 import InvalidPage from "../components/statics/invalidpage";
 import MainTable from "../components/table/map";
+import { NextAddressSlotContext } from "../components/table/nextavailable";
 import MapPlaceholder from "../components/statics/placeholder";
 import TopNavbar from "../components/navigation/topnavbar";
 import { mapAddressResponse } from "../utils/interface";
@@ -60,6 +62,7 @@ const Map = () => {
     "false"
   );
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const [nextSlot, setNextSlot] = useState<HTMLElement | null>(null);
   const [addressFilter, setAddressFilter] = useAddressFilter(id ?? "");
 
   const { showModal } = useModalManagement();
@@ -201,8 +204,12 @@ const Map = () => {
     );
   }
 
-  const navItemClass =
+  const navItemBaseClass =
     "flex min-w-0 flex-1 cursor-pointer select-none flex-col items-center gap-1.5 px-2 py-3 text-center text-xs transition-[background-color,box-shadow,border-radius] duration-200 ease-in motion-reduce:transition-none hover:rounded-[5px] hover:bg-primary/10 hover:ring-[5px] hover:ring-primary/10 focus-visible:rounded-[5px]";
+  const navItemClass = cn(
+    navItemBaseClass,
+    !isOnline && "pointer-events-none opacity-50"
+  );
 
   const isSingleStory = mapDetails?.type === TERRITORY_TYPES.SINGLE_STORY;
 
@@ -238,16 +245,37 @@ const Map = () => {
         <div className="flex-1 overflow-hidden relative">
           {mapDetails && (
             <SmartSyncProvider value={smartSync}>
-              <MainTable
-                key={`link-map-${id}`}
-                mapView={mapView}
-                filter={addressFilter}
-                policy={policy}
-                addressDetails={mapDetails}
-                assignmentId={id}
-                territoryId={territoryId}
-                preloadedAddresses={preloadedAddresses}
-              />
+              <NextAddressSlotContext.Provider
+                value={{
+                  target: nextSlot,
+                  surface: "publisher",
+                  renderButton: (onClick) => (
+                    <m.button
+                      type="button"
+                      className={navItemBaseClass}
+                      onClick={onClick}
+                      aria-label={t("navigation.nextAddress", "Next address")}
+                      whileTap={tapFeedback}
+                    >
+                      <LocateFixed className="size-5" />
+                      <span className="text-xs leading-none">
+                        {t("navigation.next", "Next")}
+                      </span>
+                    </m.button>
+                  )
+                }}
+              >
+                <MainTable
+                  key={`link-map-${id}`}
+                  mapView={mapView}
+                  filter={addressFilter}
+                  policy={policy}
+                  addressDetails={mapDetails}
+                  assignmentId={id}
+                  territoryId={territoryId}
+                  preloadedAddresses={preloadedAddresses}
+                />
+              </NextAddressSlotContext.Provider>
             </SmartSyncProvider>
           )}
           <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-linear-to-l from-background to-transparent" />
@@ -289,12 +317,7 @@ const Map = () => {
               )}
             </div>
           )}
-          <div
-            className={cn(
-              "flex items-stretch justify-between px-2",
-              !isOnline && "pointer-events-none opacity-50"
-            )}
-          >
+          <div className="flex items-stretch justify-between px-2">
             <m.button
               type="button"
               className={navItemClass}
@@ -387,6 +410,7 @@ const Map = () => {
                 </m.button>
               }
             />
+            <span ref={setNextSlot} className="contents" />
             <m.button
               type="button"
               className={navItemClass}
