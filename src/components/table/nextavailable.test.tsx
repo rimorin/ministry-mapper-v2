@@ -1,12 +1,17 @@
+import type { ReactElement } from "react";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen, userEvent } from "../../utils/test/test-wrapper";
 import { ENDGAME_PROGRESS_THRESHOLD } from "../../utils/constants";
 import { ANALYTICS_EVENTS } from "../../utils/analytics";
-import NextAvailable from "./nextavailable";
+import NextAvailable, {
+  NextAddressSlotContext,
+  type NextAddressSlotValue
+} from "./nextavailable";
 
 type Umami = NonNullable<Window["umami"]>;
 
 const mockTrack = vi.fn();
+const targets: HTMLElement[] = [];
 
 beforeEach(() => {
   window.umami = { track: mockTrack, identify: vi.fn() } as unknown as Umami;
@@ -15,27 +20,66 @@ beforeEach(() => {
 afterEach(() => {
   vi.clearAllMocks();
   delete window.umami;
+  targets.splice(0).forEach((target) => target.remove());
 });
 
 const setup = (
   progress: number,
   remaining = 3,
-  surface: "admin" | "publisher" = "admin"
+  surface: NextAddressSlotValue["surface"] = "admin",
+  isFiltered = false
 ) => {
+  const target = document.createElement("div");
+  document.body.appendChild(target);
+  targets.push(target);
+
   const onClick = vi.fn();
-  const view = render(
-    <NextAvailable
-      remaining={remaining}
-      progress={progress}
-      isFiltered={false}
-      surface={surface}
-      onClick={onClick}
-    />
+  const slot: NextAddressSlotValue = {
+    target,
+    surface,
+    renderButton: (handleClick) => (
+      <button type="button" onClick={handleClick}>
+        Next
+      </button>
+    )
+  };
+  const inSlot = (ui: ReactElement) => (
+    <NextAddressSlotContext.Provider value={slot}>
+      {ui}
+    </NextAddressSlotContext.Provider>
   );
-  return { onClick, view };
+
+  const view = render(
+    inSlot(
+      <NextAvailable
+        remaining={remaining}
+        progress={progress}
+        isFiltered={isFiltered}
+        onClick={onClick}
+      />
+    )
+  );
+  const rerender = (nextRemaining: number, nextProgress: number) =>
+    view.rerender(
+      inSlot(
+        <NextAvailable
+          remaining={nextRemaining}
+          progress={nextProgress}
+          isFiltered={isFiltered}
+          onClick={onClick}
+        />
+      )
+    );
+
+  return { target, onClick, rerender };
 };
 
 const button = () => screen.queryByRole("button");
+
+const offerCount = () =>
+  mockTrack.mock.calls.filter(
+    (call) => call[0] === ANALYTICS_EVENTS.NEXT_ADDRESS_OFFERED
+  ).length;
 
 describe("NextAvailable", () => {
   it("stays hidden while most of the map still needs calling", () => {
@@ -54,25 +98,29 @@ describe("NextAvailable", () => {
   });
 
   it("appears before the endgame when a filter is narrowing the map", () => {
-    render(
-      <NextAvailable
-        remaining={4}
-        progress={6}
-        isFiltered
-        surface="publisher"
-        onClick={vi.fn()}
-      />
-    );
+    setup(6, 4, "publisher", true);
     expect(button()).toBeInTheDocument();
-  });
-
-  it("counts the addresses that are left", () => {
-    setup(95, 3);
-    expect(screen.getByRole("button")).toHaveTextContent("3");
   });
 
   it("stays hidden at full progress even though the map is in its endgame", () => {
     setup(100, 0);
+    expect(button()).not.toBeInTheDocument();
+  });
+
+  it("renders into the slot the page provides", () => {
+    const { target } = setup(95);
+    expect(target).toContainElement(screen.getByRole("button"));
+  });
+
+  it("stays hidden when the page provides no slot", () => {
+    render(
+      <NextAvailable
+        remaining={3}
+        progress={95}
+        isFiltered={false}
+        onClick={vi.fn()}
+      />
+    );
     expect(button()).not.toBeInTheDocument();
   });
 
@@ -103,45 +151,16 @@ describe("NextAvailable", () => {
     });
 
     it("counts one offer per endgame, not per render", () => {
-      const { view } = setup(95, 3);
-      view.rerender(
-        <NextAvailable
-          remaining={2}
-          progress={97}
-          isFiltered={false}
-          surface="admin"
-          onClick={vi.fn()}
-        />
-      );
-
-      expect(
-        mockTrack.mock.calls.filter(
-          (call) => call[0] === ANALYTICS_EVENTS.NEXT_ADDRESS_OFFERED
-        )
-      ).toHaveLength(1);
+      const { rerender } = setup(95, 3);
+      rerender(2, 97);
+      expect(offerCount()).toBe(1);
     });
 
     it("reports a fresh offer when a map re-enters its endgame", () => {
-      const { view } = setup(95, 3);
-      const rerender = (remaining: number, progress: number) =>
-        view.rerender(
-          <NextAvailable
-            remaining={remaining}
-            progress={progress}
-            isFiltered={false}
-            surface="admin"
-            onClick={vi.fn()}
-          />
-        );
-
+      const { rerender } = setup(95, 3);
       rerender(0, 100);
       rerender(1, 96);
-
-      expect(
-        mockTrack.mock.calls.filter(
-          (call) => call[0] === ANALYTICS_EVENTS.NEXT_ADDRESS_OFFERED
-        )
-      ).toHaveLength(2);
+      expect(offerCount()).toBe(2);
     });
 
     it("reports the use alongside the offer when tapped", async () => {

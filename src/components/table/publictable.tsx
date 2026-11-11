@@ -178,7 +178,7 @@ const PublicTerritoryTable = ({
     isMatch
   );
   return (
-    <div className={cn("relative", !policy.isFromAdmin() && "h-full")}>
+    <>
       <div
         ref={containerRef}
         className={cn(
@@ -255,10 +255,9 @@ const PublicTerritoryTable = ({
         remaining={remaining}
         progress={aggregatesValue}
         isFiltered={isFiltered}
-        surface="publisher"
         onClick={goToNext}
       />
-    </div>
+    </>
   );
 };
 

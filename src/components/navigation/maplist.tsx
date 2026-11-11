@@ -9,6 +9,7 @@ import AssignmentButtonGroup from "./assignmentbtn";
 import MessageButtonGroup from "./messagebtn";
 import ComponentAuthorizer from "./authorizer";
 import MainTable from "../table/map";
+import { NextAddressSlotContext } from "../table/nextavailable";
 import AddressFilterPopover from "./addressfilter";
 import useAddressFilter, {
   countAddressFilters
@@ -47,7 +48,8 @@ import {
   ChevronDown,
   RotateCcw,
   Trash2,
-  ListFilter
+  ListFilter,
+  LocateFixed
 } from "lucide-react";
 import { List, type RowComponentProps } from "react-window";
 import useScrollPersistence from "../../hooks/useScrollPersistence";
@@ -98,6 +100,7 @@ function MapRow({
   const notHomeCount = addressElement.aggregates?.notHome ?? 0;
   const [addressFilter, setAddressFilter] = useAddressFilter(mapId);
   const activeFilterCount = countAddressFilters(addressFilter);
+  const [nextSlot, setNextSlot] = useState<HTMLElement | null>(null);
 
   return (
     <div className="map-item border-0" style={style}>
@@ -303,15 +306,38 @@ function MapRow({
                 </GenericDropdownItem>
               </GenericDropdownButton>
             </ComponentAuthorizer>
+            <span ref={setNextSlot} className="contents" />
           </div>
-          <MainTable
-            mapView={mapViews.get(mapId)}
-            filter={addressFilter}
-            key={`table-${mapId}`}
-            policy={policy}
-            addressDetails={addressElement}
-            territoryId={territoryId}
-          />
+          <NextAddressSlotContext.Provider
+            value={{
+              target: nextSlot,
+              surface: "admin",
+              renderButton: (onClick) => (
+                <GenericButton
+                  size="sm"
+                  variant="outline"
+                  className="ml-auto"
+                  onClick={onClick}
+                  aria-label={t("navigation.nextAddress", "Next address")}
+                  label={
+                    <span className="flex items-center gap-1.5">
+                      <LocateFixed className="size-3.5" />
+                      {t("navigation.next", "Next")}
+                    </span>
+                  }
+                />
+              )
+            }}
+          >
+            <MainTable
+              mapView={mapViews.get(mapId)}
+              filter={addressFilter}
+              key={`table-${mapId}`}
+              policy={policy}
+              addressDetails={addressElement}
+              territoryId={territoryId}
+            />
+          </NextAddressSlotContext.Provider>
         </div>
       </div>
     </div>
