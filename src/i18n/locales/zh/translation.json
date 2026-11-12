@@ -246,7 +246,8 @@
     "filterCount": "筛选 · {{count}}",
     "filterTitle": "筛选地址",
     "filterStatus": "状态",
-    "filterSearch": "搜索家庭"
+    "filterSearch": "搜索家庭",
+    "removeFloorsUnits": "删除楼层或单元"
   },
   "household": {
     "household": "家庭",
@@ -377,7 +378,8 @@
     "toggleSidebar": "侧边栏切换",
     "updatingLocation": "正在更新位置",
     "progress": "进度",
-    "goHome": "返回首页"
+    "goHome": "返回首页",
+    "more": "更多"
   },
   "maintenance": {
     "maintenanceMode": "传道地图正在进行维护。",

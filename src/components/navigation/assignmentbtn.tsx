@@ -157,9 +157,11 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
           <Button
             key={`assign-personal-${mapId}`}
             size="sm"
-            variant={personalLinks.size > 0 ? "default" : "outline"}
+            variant="outline"
             onClick={() => handleButtonClick(LINK_TYPES.PERSONAL)}
-            className={personalLinks.size > 0 ? "rounded-r-none" : undefined}
+            className={
+              personalLinks.size > 0 ? "rounded-r-none border-r-0" : undefined
+            }
           >
             {t("links.personal", "Personal")}
           </Button>
@@ -181,9 +183,11 @@ const AssignmentButtonGroup: FC<PersonalButtonGroupProps> = ({
           <Button
             key={`assign-normal-${mapId}`}
             size="sm"
-            variant={normalLinks.size > 0 ? "default" : "outline"}
+            variant="outline"
             onClick={() => handleButtonClick(LINK_TYPES.ASSIGNMENT)}
-            className={normalLinks.size > 0 ? "rounded-r-none" : undefined}
+            className={
+              normalLinks.size > 0 ? "rounded-r-none border-r-0" : undefined
+            }
           >
             {t("links.assignment", "Assign")}
           </Button>

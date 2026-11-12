@@ -3,7 +3,8 @@ import { render, screen } from "../../utils/test/test-wrapper";
 import { Policy } from "../../utils/policies";
 import {
   ENDGAME_PROGRESS_THRESHOLD,
-  STATUS_CODES
+  STATUS_CODES,
+  USER_ACCESS_LEVELS
 } from "../../utils/constants";
 import type {
   AddressFilter,
@@ -129,5 +130,45 @@ describe("PublicTerritoryTable filter", () => {
     expect(shown).toHaveLength(2);
     expect(shown[0]).toHaveTextContent("1");
     expect(shown[1]).toHaveTextContent("1");
+  });
+});
+
+describe("PublicTerritoryTable layout controls", () => {
+  const servant = new Policy(
+    "servant",
+    policy.options,
+    undefined,
+    undefined,
+    USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
+  );
+  const renderFor = (withHandlers: boolean) =>
+    render(
+      <PublicTerritoryTable
+        floors={floors()}
+        filter={EMPTY_ADDRESS_FILTER}
+        addressDetails={addressDetails(6)}
+        policy={servant}
+        maxUnitLength={2}
+        handleUnitStatusUpdate={vi.fn()}
+        handleFloorDelete={withHandlers ? vi.fn() : undefined}
+        handleUnitDelete={withHandlers ? vi.fn() : undefined}
+      />
+    );
+
+  it("keeps floor and unit delete buttons out of the grid by default", () => {
+    renderFor(false);
+    expect(screen.queryAllByRole("button", { name: /delete/i })).toHaveLength(
+      0
+    );
+  });
+
+  it("shows a delete button per floor and per unit while removing", () => {
+    renderFor(true);
+    expect(
+      screen.getAllByRole("button", { name: "Delete floor" })
+    ).toHaveLength(2);
+    expect(screen.getAllByRole("button", { name: "Delete unit" })).toHaveLength(
+      2
+    );
   });
 });

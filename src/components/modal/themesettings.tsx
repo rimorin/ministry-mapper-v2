@@ -1,6 +1,7 @@
 import NiceModal from "@ebay/nice-modal-react";
 import { use } from "react";
 import { useTranslation } from "react-i18next";
+import { Monitor, Moon, Sun } from "lucide-react";
 import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
 import {
   Dialog,
@@ -104,9 +105,7 @@ const ThemeSettingsModal = NiceModal.create(() => {
               checked={theme === "light"}
               onChange={() => handleThemeChange("light")}
             />
-            <span role="img" aria-hidden="true">
-              ☀️
-            </span>
+            <Sun className="size-4 text-muted-foreground" />
             <div>
               <div className="font-semibold">{t("theme.light", "Light")}</div>
               <small className="text-muted-foreground">
@@ -127,9 +126,7 @@ const ThemeSettingsModal = NiceModal.create(() => {
               checked={theme === "dark"}
               onChange={() => handleThemeChange("dark")}
             />
-            <span role="img" aria-hidden="true">
-              🌙
-            </span>
+            <Moon className="size-4 text-muted-foreground" />
             <div>
               <div className="font-semibold">{t("theme.dark", "Dark")}</div>
               <small className="text-muted-foreground">
@@ -150,9 +147,7 @@ const ThemeSettingsModal = NiceModal.create(() => {
               checked={theme === "system"}
               onChange={() => handleThemeChange("system")}
             />
-            <span role="img" aria-hidden="true">
-              💻
-            </span>
+            <Monitor className="size-4 text-muted-foreground" />
             <div>
               <div className="font-semibold">{t("theme.system", "System")}</div>
               <small className="text-muted-foreground">

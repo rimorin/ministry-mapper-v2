@@ -874,6 +874,8 @@ function Admin({ user }: adminProps) {
           <>
             <AdminNavbar
               congregationName={congregationName}
+              territoryName={selectedTerritory.name}
+              onSwitchTerritory={toggleTerritoryListing}
               pendingCount={displayPendingCount}
             />
             <SmartSyncProvider value={smartSync}>
@@ -888,7 +890,6 @@ function Admin({ user }: adminProps) {
                 sortMode={sortMode}
                 onSortModeChange={handleSortModeChange}
                 isLoadingLocation={isLoadingLocation}
-                onSwitchTerritory={toggleTerritoryListing}
                 accordionKeys={accordionKeys}
                 setAccordionKeys={setAccordionKeys}
                 mapViews={mapViews}

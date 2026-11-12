@@ -40,7 +40,7 @@ describe("ModalUnitTitle", () => {
         <ModalUnitTitle unit="123" floor={5} name="Block 123" type="multi" />
       );
 
-      expect(screen.getByText("Block 123 — # 05 - 123")).toBeInTheDocument();
+      expect(screen.getByText("Block 123 — #05-123")).toBeInTheDocument();
     });
 
     it("should pad floor number correctly", () => {
@@ -48,7 +48,7 @@ describe("ModalUnitTitle", () => {
         <ModalUnitTitle unit="456" floor={3} name="Tower A" type="multi" />
       );
 
-      expect(screen.getByText("Tower A — # 03 - 456")).toBeInTheDocument();
+      expect(screen.getByText("Tower A — #03-456")).toBeInTheDocument();
     });
 
     it("should handle double-digit floors", () => {
@@ -56,7 +56,7 @@ describe("ModalUnitTitle", () => {
         <ModalUnitTitle unit="789" floor={12} name="High Rise" type="multi" />
       );
 
-      expect(screen.getByText("High Rise — # 12 - 789")).toBeInTheDocument();
+      expect(screen.getByText("High Rise — #12-789")).toBeInTheDocument();
     });
   });
 

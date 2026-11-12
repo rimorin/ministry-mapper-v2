@@ -246,7 +246,8 @@
     "filterCount": "絞り込み · {{count}}",
     "filterTitle": "住所を絞り込む",
     "filterStatus": "ステータス",
-    "filterSearch": "世帯を検索"
+    "filterSearch": "世帯を検索",
+    "removeFloorsUnits": "階またはユニットを削除"
   },
   "household": {
     "household": "世帯",
@@ -377,7 +378,8 @@
     "toggleSidebar": "サイドバー切替",
     "updatingLocation": "位置情報を更新中",
     "progress": "進捗",
-    "goHome": "ホームに戻る"
+    "goHome": "ホームに戻る",
+    "more": "その他"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapperはメンテナンス中です。",

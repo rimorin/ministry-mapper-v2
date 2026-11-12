@@ -246,7 +246,8 @@
     "filterCount": "Tapis · {{count}}",
     "filterTitle": "Tapis alamat",
     "filterStatus": "Status",
-    "filterSearch": "Cari isi rumah"
+    "filterSearch": "Cari isi rumah",
+    "removeFloorsUnits": "Padam tingkat atau unit"
   },
   "household": {
     "household": "Isi Rumah",
@@ -377,7 +378,8 @@
     "progressRing": "Kemajuan",
     "updatingLocation": "Sedang mengemas kini lokasi",
     "progress": "Kemajuan",
-    "goHome": "Pergi ke Laman Utama"
+    "goHome": "Pergi ke Laman Utama",
+    "more": "Lagi"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper kini dalam penyelenggaraan.",
