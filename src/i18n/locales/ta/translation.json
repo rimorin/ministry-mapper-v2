@@ -53,7 +53,7 @@
     "welcomeDefault": "மினிஸ்ட்ரி மேப்பருக்கு",
     "logout": "வெளியேறு",
     "useAnotherAccount": "வேறு கணக்கைப் பயன்படுத்து",
-    "unauthorizedAccessTitle": "அணுகல் மறுக்கப்பட்டது 🔐",
+    "unauthorizedAccessTitle": "அணுகல் மறுக்கப்பட்டது",
     "newUserTitle": "புதிய கணக்கு தேவையா?",
     "newUserMessage": "அணுகல் அமைக்க",
     "newUserMessageEnd": "செய்யுங்கள்.",
@@ -389,7 +389,7 @@
     "invalidRequest": "தவறான கோரிக்கை",
     "linkExpired": "இந்த இணைப்பு காலாவதியாகிவிட்டது ⌛",
     "closeTab": "தயவுசெய்து இந்த தாவலை மூடவும்.",
-    "pageNotFound": "404 பக்கம் காணப்படவில்லை 🚫",
+    "pageNotFound": "404 பக்கம் காணப்படவில்லை",
     "unableToGetLocation": "தற்போதைய இருப்பிடத்தைப் பெற முடியவில்லை. உலாவி அமைப்புகளைச் சரிபார்க்கவும்.",
     "geolocationNotSupported": "உங்கள் உலாவி புவியிடத்தைக் ஆதரிக்கவில்லை",
     "pageNotFoundMessage": "மன்னிக்கவும், நீங்கள் கோரிய பக்கத்தைக் கண்டுபிடிக்க முடியவில்லை.",
@@ -414,8 +414,8 @@
   },
   "table": {
     "levelUnit": "மாடி/அலகு",
-    "deleteFloor": "🗑️",
-    "deleteUnit": "🗑️"
+    "deleteFloor": "தளத்தை அழி",
+    "deleteUnit": "அலகை அழி"
   },
   "tagfield": {
     "invalidCharacters": "எண்ணெழுத்து எழுத்துக்கள் மற்றும் ஹைபன் மட்டுமே அனுமதிக்கப்படும்",

@@ -8,7 +8,7 @@ const NotFoundPage = () => {
   const [, navigate] = useLocation();
 
   return (
-    <StaticPageCard title={t("errors.pageNotFound", "404 Page Not Found 🚫")}>
+    <StaticPageCard title={t("errors.pageNotFound", "404 Page Not Found")}>
       <p className="text-center text-sm text-muted-foreground">
         {t(
           "errors.pageNotFoundMessage",

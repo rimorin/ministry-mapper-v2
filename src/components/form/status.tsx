@@ -1,4 +1,5 @@
 import * as m from "motion/react-m";
+import { springPop } from "@/lib/motion";
 import type { FormProps } from "../../utils/interface";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
@@ -39,7 +40,7 @@ const HHStatusField = ({
             <m.span
               className="inline-flex"
               animate={{ scale: changeValue === value ? 1.15 : 1 }}
-              transition={{ type: "spring", visualDuration: 0.25, bounce: 0.4 }}
+              transition={springPop}
             >
               {icon}
             </m.span>

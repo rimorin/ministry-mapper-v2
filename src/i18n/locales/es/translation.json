@@ -53,7 +53,7 @@
     "welcomeDefault": "Al Mapeador del Ministerio",
     "logout": "Cerrar sesión",
     "useAnotherAccount": "Usar otra cuenta",
-    "unauthorizedAccessTitle": "Acceso denegado 🔐",
+    "unauthorizedAccessTitle": "Acceso denegado",
     "newUserTitle": "¿Necesitas una nueva cuenta?",
     "newUserMessage": "Por favor",
     "newUserMessageEnd": "para configurar el acceso.",
@@ -389,7 +389,7 @@
     "invalidRequest": "Solicitud inválida",
     "linkExpired": "Este enlace ha caducado ⌛",
     "closeTab": "Por favor, cierre esta pestaña.",
-    "pageNotFound": "404 Página no encontrada 🚫",
+    "pageNotFound": "404 Página no encontrada",
     "unableToGetLocation": "No se puede obtener tu ubicación actual. Por favor, verifica la configuración de tu navegador.",
     "geolocationNotSupported": "Tu navegador no admite la geolocalización",
     "pageNotFoundMessage": "Lo sentimos, no se pudo encontrar la página que solicitaste.",
@@ -414,8 +414,8 @@
   },
   "table": {
     "levelUnit": "nivel/unidad",
-    "deleteFloor": "🗑️",
-    "deleteUnit": "🗑️"
+    "deleteFloor": "Eliminar piso",
+    "deleteUnit": "Eliminar unidad"
   },
   "tagfield": {
     "invalidCharacters": "Solo se permiten caracteres alfanuméricos y guiones",

@@ -59,7 +59,7 @@ const VerificationPage = ({ user }: userInterface) => {
               <Spinner aria-hidden="true" />
             ) : (
               <span
-                className="mb-6 inline-block cursor-pointer rounded-lg px-3 py-1.5 text-primary transition-[background-color,color] duration-200 ease-in hover:bg-primary/10 hover:text-primary/80 hover:underline"
+                className="mb-6 inline-block cursor-pointer rounded-lg px-3 py-1.5 text-primary transition-[background-color,color] duration-150 ease-in hover:bg-primary/10 hover:text-primary/80 hover:underline"
                 onClick={handleResendMail}
                 role="button"
                 tabIndex={0}

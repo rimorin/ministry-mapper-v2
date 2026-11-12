@@ -25,7 +25,7 @@
 .map-body::-webkit-scrollbar-thumb {
   background: transparent;
   border-radius: 3px;
-  transition: background 0.2s ease;
+  transition: background var(--motion-fast) ease;
 }
 
 .map-body:hover::-webkit-scrollbar-thumb {
@@ -49,7 +49,7 @@
   padding: 0;
   vertical-align: middle;
   cursor: pointer;
-  transition: background-color 0.15s ease;
+  transition: background-color var(--motion-fast) ease;
 }
 
 .map-cell:hover {
@@ -120,7 +120,7 @@
 
 .available {
   background-color: var(--mm-success-alpha-10) !important;
-  transition: background-color 0.2s ease;
+  transition: background-color var(--motion-fast) ease;
 }
 
 /* While a filter is on, matches take this fill in place of the "still to call"
@@ -150,8 +150,8 @@
   opacity: 0.15;
   filter: grayscale(1);
   transition:
-    opacity 0.2s ease,
-    filter 0.2s ease;
+    opacity var(--motion-base) ease,
+    filter var(--motion-base) ease;
 }
 
 /* Light badges on a dark cell keep far more contrast at the same opacity than
@@ -209,7 +209,7 @@
   line-height: 36px !important;
   font-size: 18px !important;
   font-weight: 400 !important;
-  transition: background-color 0.15s ease !important;
+  transition: background-color var(--motion-fast) ease !important;
 }
 
 .leaflet-touch .leaflet-bar a {
@@ -417,7 +417,7 @@
    ring follows whatever rounding the element already has. */
 .map-target-ring {
   box-shadow: inset 0 0 0 3px var(--primary);
-  animation: map-target-settle 0.45s ease-out;
+  animation: map-target-settle var(--motion-slow) ease-out;
 }
 
 /* Closes inward as the grid scrolls the address into view. Ends on the resting

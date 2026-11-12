@@ -76,7 +76,7 @@ const SortableItem = ({ id, code, sequence }: SortableItemProps) => {
         ref={setNodeRef}
         style={style}
         className={cn(
-          "sortable-item flex touch-none select-none items-center gap-2 rounded-lg border px-3 py-2 transition-[transform,opacity] duration-200 ease-in",
+          "sortable-item flex touch-none select-none items-center gap-2 rounded-lg border px-3 py-2 transition-[transform,opacity] duration-150 ease-in",
           isDragging
             ? "cursor-grabbing border-dashed border-primary/50 bg-background/40 opacity-40 shadow-none"
             : "cursor-grab border-border bg-background shadow-[0_2px_4px_rgba(0,0,0,0.075)]"

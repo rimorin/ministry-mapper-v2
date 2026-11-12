@@ -58,7 +58,7 @@ const PrivateTerritoryTable = ({
                   )}
                 >
                   <CardContent
-                    className="relative flex flex-1 flex-col p-0 text-center transition-colors duration-200"
+                    className="relative flex flex-1 flex-col p-0 text-center transition-colors duration-150"
                     onClick={handleHouseUpdate}
                     data-id={element.id}
                     data-unitno={element.number}
@@ -79,7 +79,7 @@ const PrivateTerritoryTable = ({
                     </div>
                     <div
                       className={cn(
-                        "flex min-h-12 flex-1 flex-wrap items-center justify-center gap-[0.15rem] p-[0.2rem] font-bold fluid-text transition-colors duration-200 border-t border-border",
+                        "flex min-h-12 flex-1 flex-wrap items-center justify-center gap-[0.15rem] p-[0.2rem] font-bold fluid-text transition-colors duration-150 border-t border-border",
                         isFiltered
                           ? isMatch(element) && "address-match"
                           : policy?.getUnitColor(

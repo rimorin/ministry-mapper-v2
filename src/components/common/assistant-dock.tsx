@@ -10,7 +10,7 @@ import {
 import { useTranslation } from "react-i18next";
 import { useReducedMotion } from "motion/react";
 import * as m from "motion/react-m";
-import { panelContent, panelTransition } from "@/lib/motion";
+import { panelContent, springCalm } from "@/lib/motion";
 import { useSidebar } from "@/components/ui/sidebar";
 import type { AssistantView } from "../../hooks/useAssistant";
 import type { CongregationSettings } from "../../utils/assistantActions";
@@ -146,7 +146,7 @@ const AssistantDock = ({ onClose, ...chat }: AssistantDockProps) => {
       initial={{ width: 0 }}
       animate={{ width }}
       exit={{ width: 0 }}
-      transition={reduceMotion || dragging ? { duration: 0 } : panelTransition}
+      transition={reduceMotion || dragging ? { duration: 0 } : springCalm}
       onUpdate={followWidth}
       // Escape closes the panel, as it would a dialog, unless something
       // inside it (a menu or tooltip) used the key first.

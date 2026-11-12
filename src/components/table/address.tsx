@@ -1,6 +1,7 @@
 import { Check, Ban, X, StickyNote } from "lucide-react";
 import * as m from "motion/react-m";
 import { AnimatePresence } from "motion/react";
+import { duration, springPop } from "@/lib/motion";
 import { STATUS_CODES } from "../../utils/constants";
 import { type unitProps } from "../../utils/interface";
 import NotHomeIcon from "./nothome";
@@ -22,9 +23,9 @@ const statusMotion = {
   exit: {
     opacity: 0,
     scale: 0.4,
-    transition: { duration: 0.1, ease: "easeIn" }
+    transition: { duration: duration.fast, ease: "easeIn" }
   },
-  transition: { type: "spring", stiffness: 500, damping: 20, mass: 0.5 }
+  transition: springPop
 } as const;
 
 const MAX_VISIBLE_TYPES = 2;
@@ -100,18 +101,10 @@ const AddressStatus = (props: unitProps) => {
 
 export default AddressStatus;
 
+// Info blue, not orange: orange already means "not home" on the same cell.
 export const PendingSyncDot = () => (
   <span
     aria-label="pending smart sync"
-    style={{
-      position: "absolute",
-      top: 3,
-      right: 3,
-      width: 7,
-      height: 7,
-      borderRadius: "50%",
-      backgroundColor: "#fd7e14",
-      pointerEvents: "none"
-    }}
+    className="pointer-events-none absolute top-[3px] right-[3px] size-[7px] rounded-full bg-info"
   />
 );
