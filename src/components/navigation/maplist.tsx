@@ -1,4 +1,4 @@
-import React, { lazy, useState, useEffect } from "react";
+import React, { lazy, useState, useEffect, useRef } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import {
   USER_ACCESS_LEVELS,
@@ -49,8 +49,13 @@ import {
   RotateCcw,
   Trash2,
   ListFilter,
-  LocateFixed
+  LocateFixed,
+  Check,
+  LayoutGrid,
+  Map as MapIcon
 } from "lucide-react";
+import useCanScrollRight from "../../hooks/useCanScrollRight";
+import { cn } from "@/lib/utils";
 import { List, type RowComponentProps } from "react-window";
 import useScrollPersistence from "../../hooks/useScrollPersistence";
 import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
@@ -101,6 +106,16 @@ function MapRow({
   const [addressFilter, setAddressFilter] = useAddressFilter(mapId);
   const activeFilterCount = countAddressFilters(addressFilter);
   const [nextSlot, setNextSlot] = useState<HTMLElement | null>(null);
+  const [isRemovingLayout, setIsRemovingLayout] = useState(false);
+  const toolbarRef = useRef<HTMLDivElement>(null);
+  const canScrollToolbar = useCanScrollRight(toolbarRef);
+  // Done is narrower than the menu it replaces, so the toolbar is pinned to
+  // its end to keep Done clear of the edge fade.
+  useEffect(() => {
+    const toolbar = toolbarRef.current;
+    if (isRemovingLayout && toolbar)
+      toolbar.scrollTo({ left: toolbar.scrollWidth });
+  }, [isRemovingLayout]);
 
   return (
     <div className="map-item border-0" style={style}>
@@ -158,155 +173,204 @@ function MapRow({
 
       <div className="map-content">
         <div className="map-content-body p-0">
-          <div className="flex flex-nowrap items-center justify-start gap-1 overflow-x-auto px-2 py-2 scrollbar-none">
-            {mapType === TERRITORY_TYPES.SINGLE_STORY && (
+          <div className="relative">
+            <div
+              ref={toolbarRef}
+              className="relative flex flex-nowrap items-center justify-start gap-1 overflow-x-auto px-2 py-2 scrollbar-none"
+            >
+              {mapType === TERRITORY_TYPES.SINGLE_STORY && (
+                <GenericButton
+                  size="sm"
+                  variant="outline"
+                  onClick={() => handleToggleMapView(mapId)}
+                  label={
+                    <span className="flex items-center gap-1.5">
+                      {mapViews.get(mapId) ? (
+                        <LayoutGrid className="size-3.5" />
+                      ) : (
+                        <MapIcon className="size-3.5" />
+                      )}
+                      <span className="sr-only sm:not-sr-only">
+                        {mapViews.get(mapId)
+                          ? t("navigation.listView", "List View")
+                          : t("navigation.mapView", "Map View")}
+                      </span>
+                    </span>
+                  }
+                />
+              )}
+
+              <AssignmentButtonGroup
+                key={`assignment-btn-${mapId}`}
+                addressElement={addressElement}
+                policy={policy}
+                userId={getUser("id") as string}
+                territoryName={territoryName}
+              />
               <GenericButton
                 size="sm"
                 variant="outline"
-                onClick={() => handleToggleMapView(mapId)}
+                onClick={() => handleShowGetLocation(addressElement)}
                 label={
-                  mapViews.get(mapId)
-                    ? t("navigation.listView", "List View")
-                    : t("navigation.mapView", "Map View")
+                  <span className="flex items-center gap-1.5">
+                    <Navigation2 className="size-3.5" />
+                    <span className="sr-only sm:not-sr-only">
+                      {t("navigation.direction", "Direction")}
+                    </span>
+                  </span>
                 }
               />
-            )}
-
-            <AssignmentButtonGroup
-              key={`assignment-btn-${mapId}`}
-              addressElement={addressElement}
-              policy={policy}
-              userId={getUser("id") as string}
-              territoryName={territoryName}
-            />
-            <GenericButton
-              size="sm"
-              variant="outline"
-              onClick={() => handleShowGetLocation(addressElement)}
-              label={
-                <span className="flex items-center gap-1.5">
-                  <Navigation2 className="size-3.5" />
-                  {t("navigation.direction", "Direction")}
-                </span>
-              }
-            />
-            <MessageButtonGroup
-              key={`message-btn-${mapId}`}
-              addressElement={addressElement}
-              policy={policy}
-            />
-            <AddressFilterPopover
-              filter={addressFilter}
-              onChange={setAddressFilter}
-              options={policy.options}
-              surface="admin"
-              trigger={
-                <Button size="sm" variant="outline">
-                  <ListFilter className="size-3.5" />
-                  {t("address.filter", "Filter")}
-                  {activeFilterCount > 0 && (
-                    <Badge className="tabular-nums">{activeFilterCount}</Badge>
-                  )}
-                </Button>
-              }
-            />
-            <ComponentAuthorizer
-              requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
-              userPermission={userAccessLevel}
-            >
-              <GenericDropdownButton
-                align="end"
-                variant="outline"
-                size="sm"
-                label={
-                  <>
-                    {processingMap.isProcessing &&
-                      processingMap.mapId === mapId && (
-                        <>
-                          <Spinner
-                            data-icon="inline-start"
-                            aria-hidden="true"
-                          />{" "}
-                        </>
-                      )}{" "}
-                    {t("address.address", "Address")}
-                  </>
+              <MessageButtonGroup
+                key={`message-btn-${mapId}`}
+                addressElement={addressElement}
+                policy={policy}
+              />
+              <AddressFilterPopover
+                filter={addressFilter}
+                onChange={setAddressFilter}
+                options={policy.options}
+                surface="admin"
+                trigger={
+                  <Button size="sm" variant="outline">
+                    <ListFilter className="size-3.5" />
+                    <span className="sr-only sm:not-sr-only">
+                      {t("address.filter", "Filter")}
+                    </span>
+                    {activeFilterCount > 0 && (
+                      <Badge className="tabular-nums">
+                        {activeFilterCount}
+                      </Badge>
+                    )}
+                  </Button>
                 }
-                drop={dropDirections[mapId]}
-                onClick={(e) => handleDropdownDirection(e, mapId)}
+              />
+              <ComponentAuthorizer
+                requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
+                userPermission={userAccessLevel}
               >
-                <GenericDropdownItem
-                  icon={<MapPin className="size-4" />}
-                  onClick={() =>
-                    handleShowChangeLocation(
-                      mapId,
-                      mapName,
-                      addressElement.coordinates
-                    )
-                  }
-                >
-                  {t("address.changeLocation", "Change Location")}
-                </GenericDropdownItem>
+                {/* Done takes the menu's place, so it appears where the menu
+                    was opened instead of off-screen at the toolbar's start. */}
+                {isRemovingLayout ? (
+                  <Button
+                    size="sm"
+                    autoFocus
+                    onClick={() => setIsRemovingLayout(false)}
+                  >
+                    <Check className="size-3.5" />
+                    {t("common.done", "Done")}
+                  </Button>
+                ) : (
+                  <GenericDropdownButton
+                    align="end"
+                    variant="outline"
+                    size="sm"
+                    label={
+                      <>
+                        {processingMap.isProcessing &&
+                          processingMap.mapId === mapId && (
+                            <>
+                              <Spinner
+                                data-icon="inline-start"
+                                aria-hidden="true"
+                              />{" "}
+                            </>
+                          )}{" "}
+                        {t("address.address", "Address")}
+                      </>
+                    }
+                    drop={dropDirections[mapId]}
+                    onClick={(e) => handleDropdownDirection(e, mapId)}
+                  >
+                    <GenericDropdownItem
+                      icon={<MapPin className="size-4" />}
+                      onClick={() =>
+                        handleShowChangeLocation(
+                          mapId,
+                          mapName,
+                          addressElement.coordinates
+                        )
+                      }
+                    >
+                      {t("address.changeLocation", "Change Location")}
+                    </GenericDropdownItem>
 
-                <GenericDropdownItem
-                  icon={<FolderInput className="size-4" />}
-                  onClick={() => handleChangeTerritory(mapId, mapName)}
-                >
-                  {t("address.changeTerritory", "Change Territory")}
-                </GenericDropdownItem>
-                <GenericDropdownItem
-                  icon={<ArrowUpDown className="size-4" />}
-                  onClick={() => handleSequenceUpdate(mapId)}
-                >
-                  {t("address.changeSequence", "Change Sequence")}
-                </GenericDropdownItem>
-                <GenericDropdownItem
-                  icon={<Pencil className="size-4" />}
-                  onClick={() => handleShowChangeName(mapId, mapName)}
-                >
-                  {t("address.changeName", "Rename")}
-                </GenericDropdownItem>
-                <GenericDropdownItem
-                  icon={<Plus className="size-4" />}
-                  onClick={() => handleShowAddUnit(mapId, addressElement)}
-                >
-                  {mapType === TERRITORY_TYPES.SINGLE_STORY
-                    ? t("address.addProperty", "Add Property Nos.")
-                    : t("address.addUnit", "Add Unit Nos.")}
-                </GenericDropdownItem>
-                {(!mapType || mapType === TERRITORY_TYPES.MULTIPLE_STORIES) && (
-                  <>
                     <GenericDropdownItem
-                      icon={<ChevronUp className="size-4" />}
-                      onClick={() => handleAddHigherFloor(mapId)}
+                      icon={<FolderInput className="size-4" />}
+                      onClick={() => handleChangeTerritory(mapId, mapName)}
                     >
-                      {t("address.addHigherFloor", "Add Higher Floor")}
+                      {t("address.changeTerritory", "Change Territory")}
                     </GenericDropdownItem>
                     <GenericDropdownItem
-                      icon={<ChevronDown className="size-4" />}
-                      onClick={() => handleAddLowerFloor(mapId)}
+                      icon={<ArrowUpDown className="size-4" />}
+                      onClick={() => handleSequenceUpdate(mapId)}
                     >
-                      {t("address.addLowerFloor", "Add Lower Floor")}
+                      {t("address.changeSequence", "Change Sequence")}
                     </GenericDropdownItem>
-                  </>
+                    <GenericDropdownItem
+                      icon={<Pencil className="size-4" />}
+                      onClick={() => handleShowChangeName(mapId, mapName)}
+                    >
+                      {t("address.changeName", "Rename")}
+                    </GenericDropdownItem>
+                    <GenericDropdownItem
+                      icon={<Plus className="size-4" />}
+                      onClick={() => handleShowAddUnit(mapId, addressElement)}
+                    >
+                      {mapType === TERRITORY_TYPES.SINGLE_STORY
+                        ? t("address.addProperty", "Add Property Nos.")
+                        : t("address.addUnit", "Add Unit Nos.")}
+                    </GenericDropdownItem>
+                    {(!mapType ||
+                      mapType === TERRITORY_TYPES.MULTIPLE_STORIES) && (
+                      <>
+                        <GenericDropdownItem
+                          icon={<ChevronUp className="size-4" />}
+                          onClick={() => handleAddHigherFloor(mapId)}
+                        >
+                          {t("address.addHigherFloor", "Add Higher Floor")}
+                        </GenericDropdownItem>
+                        <GenericDropdownItem
+                          icon={<ChevronDown className="size-4" />}
+                          onClick={() => handleAddLowerFloor(mapId)}
+                        >
+                          {t("address.addLowerFloor", "Add Lower Floor")}
+                        </GenericDropdownItem>
+                        <GenericDropdownItem
+                          icon={<Trash2 className="size-4" />}
+                          onClick={() => setIsRemovingLayout(true)}
+                        >
+                          {t(
+                            "address.removeFloorsUnits",
+                            "Remove Floors or Units"
+                          )}
+                        </GenericDropdownItem>
+                      </>
+                    )}
+                    <GenericDropdownSeparator />
+                    <GenericDropdownItem
+                      icon={<RotateCcw className="size-4" />}
+                      onClick={() => handleResetMap(mapId, mapName)}
+                    >
+                      {t("address.resetStatus", "Reset Status")}
+                    </GenericDropdownItem>
+                    <GenericDropdownItem
+                      icon={<Trash2 className="size-4" />}
+                      variant="destructive"
+                      onClick={() => handleDeleteMap(mapId, mapName)}
+                    >
+                      {t("address.delete", "Delete")}
+                    </GenericDropdownItem>
+                  </GenericDropdownButton>
                 )}
-                <GenericDropdownSeparator />
-                <GenericDropdownItem
-                  icon={<RotateCcw className="size-4" />}
-                  onClick={() => handleResetMap(mapId, mapName)}
-                >
-                  {t("address.resetStatus", "Reset Status")}
-                </GenericDropdownItem>
-                <GenericDropdownItem
-                  icon={<Trash2 className="size-4" />}
-                  variant="destructive"
-                  onClick={() => handleDeleteMap(mapId, mapName)}
-                >
-                  {t("address.delete", "Delete")}
-                </GenericDropdownItem>
-              </GenericDropdownButton>
-            </ComponentAuthorizer>
-            <span ref={setNextSlot} className="contents" />
+              </ComponentAuthorizer>
+              <span ref={setNextSlot} className="contents" />
+            </div>
+            <div
+              className={cn(
+                "pointer-events-none absolute inset-y-0 right-0 w-8 bg-linear-to-l from-background to-transparent transition-opacity duration-150",
+                canScrollToolbar ? "opacity-100" : "opacity-0"
+              )}
+            />
           </div>
           <NextAddressSlotContext.Provider
             value={{
@@ -331,6 +395,7 @@ function MapRow({
           >
             <MainTable
               mapView={mapViews.get(mapId)}
+              showLayoutControls={isRemovingLayout}
               filter={addressFilter}
               key={`table-${mapId}`}
               policy={policy}

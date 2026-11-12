@@ -246,7 +246,8 @@
     "filterCount": "Filter · {{count}}",
     "filterTitle": "Filter addresses",
     "filterStatus": "Status",
-    "filterSearch": "Search household"
+    "filterSearch": "Search household",
+    "removeFloorsUnits": "Remove Floors or Units"
   },
   "household": {
     "household": "Household",
@@ -377,7 +378,8 @@
     "progressRing": "Progress",
     "updatingLocation": "Updating location",
     "progress": "Progress",
-    "goHome": "Go to Home"
+    "goHome": "Go to Home",
+    "more": "More"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper is currently down for maintenance.",

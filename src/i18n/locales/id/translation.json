@@ -220,7 +220,8 @@
     "filterCount": "Filter · {{count}}",
     "filterTitle": "Filter alamat",
     "filterStatus": "Status",
-    "filterSearch": "Cari rumah tangga"
+    "filterSearch": "Cari rumah tangga",
+    "removeFloorsUnits": "Hapus lantai atau unit"
   },
   "household": {
     "household": "Rumah Tangga",
@@ -351,7 +352,8 @@
     "toggleSidebar": "Pengalih bilah sisi",
     "updatingLocation": "Memperbarui lokasi",
     "progress": "Kemajuan",
-    "goHome": "Kembali ke Beranda"
+    "goHome": "Kembali ke Beranda",
+    "more": "Lainnya"
   },
   "map": {
     "createMap": "Buat Peta",

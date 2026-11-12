@@ -752,7 +752,7 @@ export function AppSidebar({
 
       <m.div {...sectionIn(0.45)}>
         <SidebarFooter className="p-0">
-          <SidebarSeparator />
+          <SidebarSeparator className="data-horizontal:w-auto" />
           <TooltipProvider>
             <div className="flex gap-2 p-3">
               <Tooltip>

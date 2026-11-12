@@ -248,7 +248,6 @@ export interface territoryHeaderProp {
   onToggleView?: () => void;
   onGenerateLink?: () => void;
   onCreateMap?: () => void;
-  onSwitchTerritory: () => void;
   sortMode?: MapSortMode;
   onSortModeChange?: (mode: MapSortMode) => void;
   isLoadingLocation?: boolean;
@@ -266,6 +265,7 @@ export interface AddressFilter {
 
 export interface territoryTableProps {
   mapView?: boolean;
+  showLayoutControls?: boolean;
   filter: AddressFilter;
   policy: Policy;
   addressDetails: addressDetails;

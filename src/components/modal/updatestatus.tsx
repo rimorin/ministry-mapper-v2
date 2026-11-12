@@ -12,7 +12,10 @@ import { useTranslation } from "react-i18next";
 import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  ResponsiveDialog,
+  ResponsiveDialogContent
+} from "@/components/common/responsive-dialog";
 import { Separator } from "@/components/ui/separator";
 import SubmitButton from "../common/submit-button";
 import {
@@ -209,8 +212,8 @@ const UpdateUnitStatus = NiceModal.create(
     const focusTrapRef = useRef<HTMLSpanElement>(null);
 
     return (
-      <Dialog {...dialogProps}>
-        <DialogContent
+      <ResponsiveDialog {...dialogProps}>
+        <ResponsiveDialogContent
           {...contentProps}
           className={cn(
             contentProps.className,
@@ -331,8 +334,8 @@ const UpdateUnitStatus = NiceModal.create(
               )}
             </div>
           </form>
-        </DialogContent>
-      </Dialog>
+        </ResponsiveDialogContent>
+      </ResponsiveDialog>
     );
   }
 );

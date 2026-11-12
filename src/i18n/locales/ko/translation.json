@@ -246,7 +246,8 @@
     "filterCount": "필터 · {{count}}",
     "filterTitle": "주소 필터",
     "filterStatus": "상태",
-    "filterSearch": "가구 검색"
+    "filterSearch": "가구 검색",
+    "removeFloorsUnits": "층 또는 세대 삭제"
   },
   "household": {
     "household": "가구",
@@ -377,7 +378,8 @@
     "toggleSidebar": "사이드바 전환",
     "updatingLocation": "위치 업데이트 중",
     "progress": "진행률",
-    "goHome": "홈으로 이동"
+    "goHome": "홈으로 이동",
+    "more": "더보기"
   },
   "maintenance": {
     "maintenanceMode": "Ministry Mapper는 현재 유지보수 중입니다.",

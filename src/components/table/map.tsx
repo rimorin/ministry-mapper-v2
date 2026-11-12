@@ -464,6 +464,7 @@ const MainTable = ({
   policy,
   addressDetails,
   mapView = false,
+  showLayoutControls = false,
   filter,
   assignmentId,
   territoryId,
@@ -688,8 +689,10 @@ const MainTable = ({
       addressDetails={addressDetails}
       maxUnitLength={maxUnitLength}
       handleUnitStatusUpdate={handleHouseUpdate}
-      handleFloorDelete={handleFloorDeleteEvent}
-      handleUnitDelete={handleUnitDeleteEvent}
+      handleFloorDelete={
+        showLayoutControls ? handleFloorDeleteEvent : undefined
+      }
+      handleUnitDelete={showLayoutControls ? handleUnitDeleteEvent : undefined}
       pendingAddressIds={displayPendingAddressIds}
     />
   );
