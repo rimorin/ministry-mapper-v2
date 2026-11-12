@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
-import { tapFeedback, enterTransition } from "@/lib/motion";
+import { duration, tapFeedback, enterTransition } from "@/lib/motion";
 import useAnimatedCounter from "../hooks/useAnimatedCounter";
 import { configureHeader, clearHeader } from "../utils/pocketbase";
 import { ReleaseNotifier } from "../components/statics/releasenotifier";
@@ -205,7 +205,7 @@ const Map = () => {
   }
 
   const navItemBaseClass =
-    "flex min-w-0 flex-1 cursor-pointer select-none flex-col items-center gap-1.5 px-2 py-3 text-center text-xs transition-[background-color,box-shadow,border-radius] duration-200 ease-in motion-reduce:transition-none hover:rounded-[5px] hover:bg-primary/10 hover:ring-[5px] hover:ring-primary/10 focus-visible:rounded-[5px]";
+    "flex min-w-0 flex-1 cursor-pointer select-none flex-col items-center gap-1.5 px-2 py-3 text-center text-xs transition-[background-color,box-shadow,border-radius] duration-150 ease-in motion-reduce:transition-none hover:rounded-[5px] hover:bg-primary/10 hover:ring-[5px] hover:ring-primary/10 focus-visible:rounded-[5px]";
   const navItemClass = cn(
     navItemBaseClass,
     !isOnline && "pointer-events-none opacity-50"
@@ -357,7 +357,7 @@ const Map = () => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ duration: 0.12 }}
+                      transition={{ duration: duration.fast }}
                     >
                       <LayoutGrid className="size-5" />
                       <span className="text-xs leading-none">
@@ -371,7 +371,7 @@ const Map = () => {
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
                       exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ duration: 0.12 }}
+                      transition={{ duration: duration.fast }}
                     >
                       <MapIcon className="size-5" />
                       <span className="text-xs leading-none">

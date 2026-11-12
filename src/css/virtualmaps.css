@@ -71,11 +71,11 @@
   height: var(--vmap-header-height);
   min-height: var(--vmap-header-height);
   transition:
-    color 0.15s ease-in-out,
-    background 0.15s ease-in-out,
-    border-color 0.15s ease-in-out,
-    box-shadow 0.15s ease-in-out,
-    font-weight 0.15s ease-in-out;
+    color var(--motion-fast) ease-in-out,
+    background var(--motion-fast) ease-in-out,
+    border-color var(--motion-fast) ease-in-out,
+    box-shadow var(--motion-fast) ease-in-out,
+    font-weight var(--motion-fast) ease-in-out;
 }
 
 @media (max-width: 768px) {
@@ -101,7 +101,7 @@
   background-color: var(--background);
   overflow: visible;
   position: relative;
-  transition: opacity 0.15s ease-in-out;
+  transition: opacity var(--motion-fast) ease-in-out;
   border-radius: 0 0 0.5rem 0.5rem;
   box-sizing: border-box;
   width: 100%;

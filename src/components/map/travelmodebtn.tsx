@@ -48,7 +48,7 @@ const TravelModeButtons: React.FC<TravelModeButtonsProps> = ({
             onClick={() => onTravelModeChange(mode.value)}
             disabled={isLoading}
             className={cn(
-              "relative flex min-h-11 min-w-[60px] flex-1 flex-col items-center justify-center gap-px rounded-md border border-border px-2 py-1 text-[13px] font-medium shadow-none transition-[background-color,color] duration-200 ease-in",
+              "relative flex min-h-11 min-w-[60px] flex-1 flex-col items-center justify-center gap-px rounded-md border border-border px-2 py-1 text-[13px] font-medium shadow-none transition-[background-color,color] duration-150 ease-in",
               isActive
                 ? "bg-background text-foreground shadow-xs hover:bg-background"
                 : "text-muted-foreground hover:bg-transparent hover:text-foreground",

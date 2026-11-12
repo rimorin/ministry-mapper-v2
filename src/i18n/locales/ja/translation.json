@@ -53,7 +53,7 @@
     "welcomeDefault": "Ministry Mapperへ",
     "logout": "ログアウト",
     "useAnotherAccount": "別アカウント",
-    "unauthorizedAccessTitle": "アクセス拒否 🔐",
+    "unauthorizedAccessTitle": "アクセス拒否",
     "newUserTitle": "新しいアカウントが必要ですか？",
     "newUserMessage": "アクセス設定について",
     "newUserMessageEnd": "してください。",
@@ -389,7 +389,7 @@
     "invalidRequest": "無効なリクエスト",
     "linkExpired": "リンクの有効期限が切れました ⌛",
     "closeTab": "このタブを閉じてください。",
-    "pageNotFound": "404 ページが見つかりません 🚫",
+    "pageNotFound": "404 ページが見つかりません",
     "unableToGetLocation": "現在地を取得できません。ブラウザ設定を確認してください。",
     "geolocationNotSupported": "お使いのブラウザは位置情報に対応していません",
     "pageNotFoundMessage": "申し訳ありませんが、お探しのページは見つかりませんでした。",
@@ -414,8 +414,8 @@
   },
   "table": {
     "levelUnit": "階/ユニット",
-    "deleteFloor": "🗑️",
-    "deleteUnit": "🗑️"
+    "deleteFloor": "階を削除",
+    "deleteUnit": "ユニットを削除"
   },
   "tagfield": {
     "invalidCharacters": "英数字とハイフンのみ使用できます",

@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as m from "motion/react-m";
 import { stagger, useAnimate, useReducedMotion } from "motion/react";
+import { duration } from "@/lib/motion";
 import {
   ArrowUpDown,
   BarChart3,
@@ -76,7 +77,7 @@ const ASSISTANT_SHORTCUT = /Mac|iPhone|iPad/.test(navigator.userAgent)
 const sectionIn = (delay: number) => ({
   initial: { opacity: 0, y: -8 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.35, ease: "easeOut" as const, delay }
+  transition: { duration: duration.base, ease: "easeOut" as const, delay }
 });
 
 function runSectionStagger(
@@ -91,7 +92,7 @@ function runSectionStagger(
   void animate(
     "li",
     { opacity: [0, 1], ...from },
-    { delay: stagger(0.04), duration: 0.2, ease: "easeOut" }
+    { delay: stagger(0.04), duration: duration.fast, ease: "easeOut" }
   );
 }
 

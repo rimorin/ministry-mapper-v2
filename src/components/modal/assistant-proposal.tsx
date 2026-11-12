@@ -10,7 +10,7 @@ import {
 } from "lucide-react";
 import * as m from "motion/react-m";
 import { cn } from "@/lib/utils";
-import { fadeIn, panelTransition } from "@/lib/motion";
+import { fadeIn, springCalm } from "@/lib/motion";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Spinner } from "@/components/ui/spinner";
@@ -924,7 +924,7 @@ function AutoHeight({ children }: { children: ReactNode }) {
     <m.div
       initial={false}
       animate={{ height }}
-      transition={panelTransition}
+      transition={springCalm}
       className="-m-1 overflow-hidden"
     >
       <div

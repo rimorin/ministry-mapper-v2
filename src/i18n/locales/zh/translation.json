@@ -53,7 +53,7 @@
     "welcomeDefault": "来到传道地图",
     "logout": "登出",
     "useAnotherAccount": "使用其他账户",
-    "unauthorizedAccessTitle": "拒绝访问 🔐",
+    "unauthorizedAccessTitle": "拒绝访问",
     "newUserTitle": "需要新账户？",
     "newUserMessage": "请",
     "newUserMessageEnd": "设置访问权限。",
@@ -389,7 +389,7 @@
     "invalidRequest": "无效请求",
     "linkExpired": "此链接已过期 ⌛",
     "closeTab": "请关闭此标签页。",
-    "pageNotFound": "404 页面未找到 🚫",
+    "pageNotFound": "404 页面未找到",
     "unableToGetLocation": "无法获取您的当前位置。请检查您的浏览器设置。",
     "geolocationNotSupported": "您的浏览器不支持地理定位",
     "pageNotFoundMessage": "很抱歉，找不到您请求的页面。",
@@ -414,8 +414,8 @@
   },
   "table": {
     "levelUnit": "楼层/单元",
-    "deleteFloor": "🗑️",
-    "deleteUnit": "🗑️"
+    "deleteFloor": "删除楼层",
+    "deleteUnit": "删除单元"
   },
   "tagfield": {
     "invalidCharacters": "仅允许字母数字字符和连字符",

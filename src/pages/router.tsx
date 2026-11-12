@@ -10,6 +10,7 @@ import { ErrorBoundary } from "react-error-boundary";
 import { Route, Switch, useLocation, useRoute } from "wouter";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
+import { duration } from "@/lib/motion";
 import * as Sentry from "@sentry/react";
 import Loader from "../components/statics/loader";
 import ErrorBoundaryFallback from "../components/statics/errorboundary";
@@ -97,10 +98,10 @@ const Router: FC = () => {
             key={location}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
+            exit={{ opacity: 0, transition: { duration: duration.fast } }}
+            transition={{ duration: duration.base }}
           >
-            <Switch>
+            <Switch location={location}>
               <Route path="/">{LazyLoad(FrontPage, "FrontPage")}</Route>
               <Route path="/signup">{LazyLoad(SignupPage, "Signup")}</Route>
               <Route path="/forgot">{LazyLoad(ForgotPage, "Forgot")}</Route>

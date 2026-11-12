@@ -45,9 +45,9 @@ const getColorForTerritory = (index: number, total: number) => {
 };
 
 const getProgressColor = (aggregate: number): string => {
-  if (aggregate > 90) return "#dc3545";
-  if (aggregate > 70) return "#fd7e14";
-  return "#198754";
+  if (aggregate > 90) return "var(--mm-urgency-high)";
+  if (aggregate > 70) return "var(--mm-urgency-medium)";
+  return "var(--mm-urgency-low)";
 };
 
 const calculateFontSize = (
@@ -113,17 +113,10 @@ const createLabelIcon = (
           font-size: ${codeSize}px;
           font-weight: 800;
           color: ${color};
-          text-shadow: 
-            -2px -2px 0 #000,
-            2px -2px 0 #000,
-            -2px 2px 0 #000,
-            2px 2px 0 #000,
-            -2px 0 0 #000,
-            2px 0 0 #000,
-            0 -2px 0 #000,
-            0 2px 0 #000,
-            0 0 4px #000,
-            0 0 8px #000;
+          text-shadow:
+            0 0 2px rgb(0 0 0 / 0.95),
+            0 0 2px rgb(0 0 0 / 0.95),
+            0 1px 4px rgb(0 0 0 / 0.6);
           margin-bottom: 4px;
           letter-spacing: 1px;
         ">${territory.code}</div>

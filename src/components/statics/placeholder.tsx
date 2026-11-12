@@ -3,7 +3,7 @@ import { Policy } from "../../utils/policies";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
 import * as m from "motion/react-m";
-import { fadeIn, staggerContainer } from "@/lib/motion";
+import { fadeIn } from "@/lib/motion";
 
 interface MapPlaceholderProps {
   policy: Policy | undefined;
@@ -43,9 +43,9 @@ const MapPlaceholder: FC<MapPlaceholderProps> = ({
             ))}
           </tr>
         </thead>
-        <m.tbody variants={staggerContainer(0.04)}>
+        <tbody>
           {Array.from({ length: rows }, (_, i) => (
-            <m.tr key={i} variants={fadeIn}>
+            <tr key={i}>
               {Array.from({ length: columns }, (_, j) => (
                 <td key={j} className="py-2 px-3 border border-border">
                   <Skeleton
@@ -53,9 +53,9 @@ const MapPlaceholder: FC<MapPlaceholderProps> = ({
                   />
                 </td>
               ))}
-            </m.tr>
+            </tr>
           ))}
-        </m.tbody>
+        </tbody>
       </table>
     </m.div>
   );

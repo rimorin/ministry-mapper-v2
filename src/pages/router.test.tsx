@@ -1,7 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render } from "@testing-library/react";
+import { act, render, screen } from "@testing-library/react";
 import { Router as WouterRouter } from "wouter";
 import { memoryLocation } from "wouter/memory-location";
+import { LazyMotion, domAnimation } from "motion/react";
 
 const mocks = vi.hoisted(() => ({ trackPageview: vi.fn() }));
 
@@ -60,5 +61,25 @@ describe("Router pageviews", () => {
     renderAt("/maps/abc");
 
     expect(mocks.trackPageview).toHaveBeenCalledWith("/maps/abc");
+  });
+});
+
+describe("Router transitions", () => {
+  it("keeps the leaving page on screen while it fades out", async () => {
+    const { hook, navigate } = memoryLocation({ path: "/" });
+    // Without animation features the exit is skipped and the page swaps at once.
+    render(
+      <LazyMotion features={domAnimation}>
+        <WouterRouter hook={hook}>
+          <Router />
+        </WouterRouter>
+      </LazyMotion>
+    );
+    await screen.findByText("frontpage");
+
+    act(() => navigate("/signup"));
+
+    expect(screen.getByText("frontpage")).toBeInTheDocument();
+    expect(await screen.findByText("signup")).toBeInTheDocument();
   });
 });

@@ -53,7 +53,7 @@
     "welcomeDefault": "Ke Ministry Mapper",
     "logout": "Keluar",
     "useAnotherAccount": "Gunakan Akun Lain",
-    "unauthorizedAccessTitle": "Akses Ditolak 🔐",
+    "unauthorizedAccessTitle": "Akses Ditolak",
     "newUserTitle": "Butuh akun baru?",
     "newUserMessage": "Silakan",
     "newUserMessageEnd": "untuk mengatur akses.",
@@ -389,7 +389,7 @@
     "invalidRequest": "Permintaan Tidak Valid",
     "linkExpired": "Tautan ini telah kedaluwarsa ⌛",
     "closeTab": "Silakan tutup tab ini.",
-    "pageNotFound": "404 Halaman Tidak Ditemukan 🚫",
+    "pageNotFound": "404 Halaman Tidak Ditemukan",
     "unableToGetLocation": "Tidak dapat memperoleh lokasi Anda saat ini. Silakan periksa pengaturan browser Anda.",
     "geolocationNotSupported": "Geolokasi tidak didukung oleh browser Anda",
     "pageNotFoundMessage": "Maaf, halaman yang Anda minta tidak dapat ditemukan.",
@@ -414,8 +414,8 @@
   },
   "table": {
     "levelUnit": "lantai/unit",
-    "deleteFloor": "🗑️",
-    "deleteUnit": "🗑️"
+    "deleteFloor": "Hapus lantai",
+    "deleteUnit": "Hapus unit"
   },
   "tagfield": {
     "invalidCharacters": "Hanya karakter alfanumerik dan tanda hubung yang diperbolehkan",

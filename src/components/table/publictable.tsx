@@ -13,6 +13,7 @@ import {
   DEFAULT_FLOOR_PADDING,
   USER_ACCESS_LEVELS
 } from "../../utils/constants";
+import { Trash2 } from "lucide-react";
 import ZeroPad from "../../utils/helpers/zeropad";
 import * as m from "motion/react-m";
 import GenericButton from "../navigation/button";
@@ -21,6 +22,7 @@ import {
   diagonalCell,
   columnHeader,
   rowHeader,
+  duration,
   PAGE_ENTER_DELAY
 } from "@/lib/motion";
 import useNextAvailable from "../../hooks/useNextAvailable";
@@ -92,7 +94,8 @@ const FloorRow = ({
                 className="me-1"
                 onClick={handleFloorDelete}
                 dataAttributes={{ floor: item.floor.toString() }}
-                label={t("table.deleteFloor", "🗑️")}
+                aria-label={t("table.deleteFloor", "Delete floor")}
+                label={<Trash2 />}
               />
             </ComponentAuthorizer>
           )}
@@ -194,7 +197,7 @@ const PublicTerritoryTable = ({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{
-                  duration: 0.25,
+                  duration: duration.base,
                   ease: "linear",
                   delay: PAGE_ENTER_DELAY
                 }}
@@ -222,7 +225,8 @@ const PublicTerritoryTable = ({
                         className="me-1"
                         onClick={handleUnitDelete}
                         dataAttributes={{ unitno: item.number }}
-                        label={t("table.deleteUnit", "🗑️")}
+                        aria-label={t("table.deleteUnit", "Delete unit")}
+                        label={<Trash2 />}
                       />
                     </ComponentAuthorizer>
                     <span>{ZeroPad(item.number, maxUnitLength)}</span>

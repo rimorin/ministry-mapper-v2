@@ -53,7 +53,7 @@
     "welcomeDefault": "To the Ministry Mapper",
     "logout": "Logout",
     "useAnotherAccount": "Use Another Account",
-    "unauthorizedAccessTitle": "Access Denied 🔐",
+    "unauthorizedAccessTitle": "Access Denied",
     "newUserTitle": "Need a new account?",
     "newUserMessage": "Please",
     "newUserMessageEnd": "to set up access.",
@@ -389,7 +389,7 @@
     "invalidRequest": "Invalid Request",
     "linkExpired": "This link has expired ⌛",
     "closeTab": "Please close this tab.",
-    "pageNotFound": "404 Page Not Found 🚫",
+    "pageNotFound": "404 Page Not Found",
     "unableToGetLocation": "Unable to get your current location. Please check your browser settings.",
     "geolocationNotSupported": "Geolocation is not supported by your browser",
     "pageNotFoundMessage": "We are sorry, the page you requested could not be found.",
@@ -414,8 +414,8 @@
   },
   "table": {
     "levelUnit": "lvl/unit",
-    "deleteFloor": "🗑️",
-    "deleteUnit": "🗑️"
+    "deleteFloor": "Delete floor",
+    "deleteUnit": "Delete unit"
   },
   "tagfield": {
     "invalidCharacters": "Only alphanumeric characters and hyphens are allowed",
