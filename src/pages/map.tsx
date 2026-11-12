@@ -242,7 +242,9 @@ const Map = () => {
         currentLanguage={currentLanguage}
         languageOptions={languageOptions}
       />
-      <div className="map-content flex h-dvh flex-col">
+      {/* Less the p-2 that MainMiddleware wraps every page in, so the bottom
+          bar ends at the screen's edge instead of 8px below it. */}
+      <div className="map-content flex h-[calc(100dvh-1rem)] flex-col">
         <TopNavbar
           title={mapDetails?.name || ""}
           tokenEndTime={tokenEndTime}
