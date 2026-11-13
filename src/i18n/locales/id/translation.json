@@ -877,6 +877,8 @@
       "unitAddFloors_other": "Ditambahkan di setiap {{count}} lantai.",
       "skipped_one": "{{count}} rumah sudah berubah dan dibiarkan.",
       "skipped_other": "{{count}} rumah sudah berubah dan dibiarkan.",
+      "notChanged_one": "{{count}} tidak dapat diubah.",
+      "notChanged_other": "{{count}} tidak dapat diubah.",
       "titleTerritoryCreate": "Wilayah baru {{code}}, {{name}}",
       "titleMapsCreate": "Peta baru di {{code}}",
       "newMapBuilding": "Gedung, lantai {{lowest}} sampai {{top}}, {{units}} unit per lantai",

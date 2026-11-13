@@ -877,6 +877,8 @@
       "unitAddFloors_other": "Se añade en cada uno de los {{count}} pisos.",
       "skipped_one": "{{count}} vivienda había cambiado y se dejó.",
       "skipped_other": "{{count}} viviendas habían cambiado y se dejaron.",
+      "notChanged_one": "{{count}} no se pudo cambiar.",
+      "notChanged_other": "{{count}} no se pudieron cambiar.",
       "titleTerritoryCreate": "Territorio nuevo {{code}}, {{name}}",
       "titleMapsCreate": "Mapas nuevos en {{code}}",
       "newMapBuilding": "Edificio, pisos {{lowest}} a {{top}}, {{units}} unidades por piso",

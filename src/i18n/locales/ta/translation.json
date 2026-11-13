@@ -877,6 +877,8 @@
       "unitAddFloors_other": "{{count}} தளங்களிலும் சேர்க்கப்படும்.",
       "skipped_one": "{{count}} வீடு இடையில் மாறியதால் விடப்பட்டது.",
       "skipped_other": "{{count}} வீடுகள் இடையில் மாறியதால் விடப்பட்டன.",
+      "notChanged_one": "{{count}} மாற்ற முடியவில்லை.",
+      "notChanged_other": "{{count}} மாற்ற முடியவில்லை.",
       "titleTerritoryCreate": "புதிய பிராந்தியம் {{code}}, {{name}}",
       "titleMapsCreate": "{{code}}-இல் புதிய வரைபடங்கள்",
       "newMapBuilding": "கட்டடம், தளம் {{lowest}} முதல் {{top}} வரை, ஒரு தளத்திற்கு {{units}} அலகுகள்",

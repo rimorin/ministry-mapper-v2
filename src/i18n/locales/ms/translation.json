@@ -877,6 +877,8 @@
       "unitAddFloors_other": "Ditambah pada setiap {{count}} tingkat.",
       "skipped_one": "{{count}} rumah telah berubah dan dibiarkan.",
       "skipped_other": "{{count}} rumah telah berubah dan dibiarkan.",
+      "notChanged_one": "{{count}} tidak dapat diubah.",
+      "notChanged_other": "{{count}} tidak dapat diubah.",
       "titleTerritoryCreate": "Kawasan baharu {{code}}, {{name}}",
       "titleMapsCreate": "Peta baharu di {{code}}",
       "newMapBuilding": "Bangunan, tingkat {{lowest}} hingga {{top}}, {{units}} unit setingkat",

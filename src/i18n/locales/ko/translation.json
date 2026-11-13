@@ -877,6 +877,8 @@
       "unitAddFloors_other": "{{count}}개 층 모두에 추가됩니다.",
       "skipped_one": "{{count}}집은 그사이 변경되어 그대로 두었습니다.",
       "skipped_other": "{{count}}집은 그사이 변경되어 그대로 두었습니다.",
+      "notChanged_one": "{{count}}개는 변경할 수 없었습니다.",
+      "notChanged_other": "{{count}}개는 변경할 수 없었습니다.",
       "titleTerritoryCreate": "새 구역 {{code}}, {{name}}",
       "titleMapsCreate": "{{code}}의 새 지도",
       "newMapBuilding": "건물, {{lowest}}층부터 {{top}}층, 층마다 {{units}}호",

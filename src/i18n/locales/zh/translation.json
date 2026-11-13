@@ -877,6 +877,8 @@
       "unitAddFloors_other": "添加在全部 {{count}} 层。",
       "skipped_one": "{{count}} 户期间已有改动，保持不变。",
       "skipped_other": "{{count}} 户期间已有改动，保持不变。",
+      "notChanged_one": "{{count}} 项无法更改。",
+      "notChanged_other": "{{count}} 项无法更改。",
       "titleTerritoryCreate": "新地区 {{code}}，{{name}}",
       "titleMapsCreate": "{{code}} 的新地图",
       "newMapBuilding": "楼房，{{lowest}} 楼至 {{top}} 楼，每层 {{units}} 个单位",
