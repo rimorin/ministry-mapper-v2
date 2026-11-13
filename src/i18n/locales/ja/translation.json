@@ -877,6 +877,8 @@
       "unitAddFloors_other": "{{count}} 階すべてに追加します。",
       "skipped_one": "{{count}} 軒は変更されていたためそのままにしました。",
       "skipped_other": "{{count}} 軒は変更されていたためそのままにしました。",
+      "notChanged_one": "{{count}} 件は変更できませんでした。",
+      "notChanged_other": "{{count}} 件は変更できませんでした。",
       "titleTerritoryCreate": "新しい区域 {{code}}、{{name}}",
       "titleMapsCreate": "{{code}} の新しい地図",
       "newMapBuilding": "建物、{{lowest}} 階から {{top}} 階、各階 {{units}} 戸",

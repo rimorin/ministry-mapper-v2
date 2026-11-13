@@ -877,6 +877,8 @@
       "unitAddFloors_other": "Added on each of the {{count}} floors.",
       "skipped_one": "{{count}} home had changed since and was left.",
       "skipped_other": "{{count}} homes had changed since and were left.",
+      "notChanged_one": "{{count}} could not be changed.",
+      "notChanged_other": "{{count}} could not be changed.",
       "titleTerritoryCreate": "New territory {{code}}, {{name}}",
       "titleMapsCreate": "New maps in {{code}}",
       "newMapBuilding": "Building, floors {{lowest}} to {{top}}, {{units}} units a floor",

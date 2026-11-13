@@ -10,6 +10,7 @@ const {
   getFirstItemOfListMock,
   getListMock,
   getOneMock,
+  countMock,
   createDataMock,
   updateDataByIdMock,
   deleteDataByIdMock
@@ -20,6 +21,7 @@ const {
   getFirstItemOfListMock: vi.fn(),
   getListMock: vi.fn(),
   getOneMock: vi.fn(),
+  countMock: vi.fn(),
   createDataMock: vi.fn(),
   updateDataByIdMock: vi.fn(),
   deleteDataByIdMock: vi.fn()
@@ -29,7 +31,7 @@ vi.mock("../utils/pocketbase", () => ({
   callFunction: callFunctionMock,
   pb: {
     cancelRequest: cancelRequestMock,
-    collection: () => ({ getOne: getOneMock })
+    collection: () => ({ getOne: getOneMock, getList: countMock })
   },
   getFirstItemOfList: getFirstItemOfListMock,
   getList: getListMock,
@@ -1557,8 +1559,17 @@ describe("useAssistant assisting actions", () => {
 
 describe("useAssistant structural actions", () => {
   const map = { id: "m1", name: "Blk 412" };
-  const proposal = proposalOf({ kind: "map_reset", target: map });
+  const proposal = proposalOf({
+    kind: "map_reset",
+    target: map,
+    data: { done: 7, not_home: 5, maps: 1 }
+  });
   const lastCall = () => callFunctionMock.mock.calls.at(-1);
+  // The homes done, then not home, that the reset's check finds now.
+  const homesNow = (done: number, notHome: number) =>
+    countMock
+      .mockResolvedValueOnce({ totalItems: done })
+      .mockResolvedValueOnce({ totalItems: notHome });
 
   beforeEach(() =>
     resetMocks(
@@ -1566,6 +1577,7 @@ describe("useAssistant structural actions", () => {
       getFirstItemOfListMock,
       getListMock,
       getOneMock,
+      countMock,
       updateDataByIdMock
     )
   );
@@ -1573,7 +1585,7 @@ describe("useAssistant structural actions", () => {
   it("resets a map and a territory through their routes", async () => {
     const p = proposal({});
     const { hook, turnId } = await withProposal(p);
-    getFirstItemOfListMock.mockResolvedValueOnce({ id: "m1" });
+    homesNow(7, 5);
     callFunctionMock.mockResolvedValueOnce("ok");
     await act(() => hook.result.current.confirmProposal(turnId, p));
     expect(lastCall()?.[0]).toBe("/map/reset");
@@ -1584,6 +1596,7 @@ describe("useAssistant structural actions", () => {
       target: { ...map, id: "t1", name: "T01" }
     });
     const territory = await withProposal(t);
+    homesNow(7, 5);
     callFunctionMock.mockResolvedValueOnce("ok");
     await act(() =>
       territory.hook.result.current.confirmProposal(territory.turnId, t)
@@ -1591,6 +1604,85 @@ describe("useAssistant structural actions", () => {
     expect(lastCall()?.[0]).toBe("/territory/reset");
     expect(lastCall()?.[1].body).toEqual({ territory: "t1" });
     expect(action(territory.hook)?.status).toBe("done");
+  });
+
+  it("does not reset once more homes were worked than the card said", async () => {
+    for (const kind of ["map_reset", "territory_reset"] as const) {
+      const p = proposal({ kind });
+      const { hook, turnId } = await withProposal(p);
+      homesNow(40, 5);
+      await act(() => hook.result.current.confirmProposal(turnId, p));
+      expect(action(hook)?.status).toBe("stale");
+    }
+    expect(countMock).toHaveBeenCalledWith(
+      1,
+      1,
+      expect.objectContaining({ filter: 'territory="m1" && status="done"' })
+    );
+    expect(callFunctionMock).not.toHaveBeenCalledWith(
+      expect.stringMatching(/reset/),
+      expect.anything()
+    );
+  });
+
+  it("says which homes of many could not be changed, and keeps Undo for the rest", async () => {
+    const state = JSON.stringify({
+      status: "do_not_call",
+      notes: "",
+      not_home_tries: 0,
+      dnc_time: "2025-01-01",
+      types: [],
+      type_names: []
+    });
+    const home = (id: string, status: string) => ({
+      id,
+      status,
+      notes: "",
+      not_home_tries: 0,
+      dnc_time: status === "do_not_call" ? "2025-01-01" : ""
+    });
+    const p = proposal({
+      kind: "dnc_return",
+      target: undefined,
+      value: '{"status":"not_done","dnc_time":""}',
+      items: ["h1", "h2", "h3"].map((id) => ({
+        id,
+        map: "m1",
+        label: id,
+        detail: state
+      }))
+    });
+    const { hook, turnId } = await withProposal(p);
+    getFirstItemOfListMock.mockImplementation((_c: string, filter: string) =>
+      Promise.resolve(home(filter.slice(4, 6), "do_not_call"))
+    );
+    getListMock.mockResolvedValue([]);
+    callFunctionMock
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockResolvedValueOnce(undefined);
+
+    await act(() => hook.result.current.confirmProposal(turnId, p));
+    // The second home failing neither stops the third nor hides the first.
+    expect(action(hook)).toMatchObject({
+      status: "done",
+      recordIds: ["h1", "h3"],
+      failed: 1
+    });
+
+    // Undo that fails for one home stays done, with that home left to undo.
+    getFirstItemOfListMock.mockImplementation((_c: string, filter: string) =>
+      Promise.resolve(home(filter.slice(4, 6), "not_done"))
+    );
+    callFunctionMock
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error("offline"));
+    await act(() => hook.result.current.undoProposal(turnId, p, action(hook)!));
+    expect(action(hook)).toMatchObject({
+      status: "done",
+      recordIds: ["h3"],
+      failed: 1
+    });
   });
 
   it("resets homes that still hold their state, counts the rest, and undoes", async () => {
@@ -1875,9 +1967,24 @@ describe("useAssistant creating territories and maps", () => {
       error: "Blk 413: Duplicate unit in sequence"
     });
 
-    getListMock.mockResolvedValueOnce([]);
+    // A map moved into the new territory since is not this card's to delete.
+    getListMock
+      .mockResolvedValueOnce([])
+      .mockResolvedValueOnce([{ id: "m1" }, { id: "moved" }]);
+    await act(() => hook.result.current.undoProposal(turnId, p, action(hook)!));
+    expect(callFunctionMock).not.toHaveBeenCalledWith(
+      "/territory/delete",
+      expect.anything()
+    );
+    expect(action(hook)).toMatchObject({ status: "done" });
+
+    getListMock.mockResolvedValueOnce([]).mockResolvedValueOnce([{ id: "m1" }]);
     callFunctionMock.mockResolvedValueOnce(undefined);
     await act(() => hook.result.current.undoProposal(turnId, p, action(hook)!));
+    expect(getListMock).toHaveBeenLastCalledWith(
+      "maps",
+      expect.objectContaining({ filter: 'territory="t9"' })
+    );
     expect(callFunctionMock).toHaveBeenLastCalledWith(
       "/territory/delete",
       expect.objectContaining({ body: { territory: "t9" } })

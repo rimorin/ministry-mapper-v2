@@ -114,6 +114,38 @@ const mapsUnused = async (maps: string[], requestKey: string) => {
   return !used.length;
 };
 
+// Runs a change to many records one at a time and carries on past one that
+// fails, so the card can say what was changed and what was not. step answers
+// false for a record left alone because it had changed since. Nothing changed
+// and something failed is a plain failure, thrown as the first one.
+const changeEach = async <T extends { id: string }>(
+  items: T[],
+  step: (item: T) => Promise<boolean>
+) => {
+  const changed: string[] = [];
+  const failed: string[] = [];
+  let skipped = 0;
+  let firstError: unknown;
+  for (const item of items) {
+    try {
+      if (await step(item)) changed.push(item.id);
+      else skipped++;
+    } catch (error) {
+      firstError ??= error;
+      failed.push(item.id);
+    }
+  }
+  if (!changed.length && failed.length) throw firstError;
+  return { changed, failed, skipped };
+};
+
+// What Undo leaves after going through many records: undone, or still done
+// with the ones that failed kept so Undo can be tried again for them.
+const undoneOrLeft = (failed: string[], skipped = 0): Outcome =>
+  failed.length
+    ? { status: "done", recordIds: failed, failed: failed.length, skipped }
+    : { status: "undone", failed: 0, skipped };
+
 // A home's fields a home update changes; see homeState in the backend.
 interface HomeState {
   status: string;
@@ -218,31 +250,32 @@ const writeHome = async (
   return true;
 };
 
-// Sets a flag on the listed messages that do not have it yet, and returns
-// the ones it changed.
+// Sets a flag on the listed messages that do not have it yet. Every map is
+// read before the first message is changed, so a failed read changes nothing.
 const flagMessages = async (
   { proposal, key }: Context,
   filter: string,
   data: Record<string, boolean>
 ) => {
   const items = proposal.items ?? [];
-  const changed: string[] = [];
+  const pending = new Set<string>();
   for (const map of new Set(items.map((item) => item.map))) {
-    const pending = await getList("messages", {
+    const records = await getList("messages", {
       filter: `map="${map}" && ${filter}`,
       fields: "id",
       requestKey: key(`messages-${map}`)
     });
-    const ids = new Set(pending.map((record) => record.id));
-    for (const item of items) {
-      if (item.map !== map || !ids.has(item.id)) continue;
+    for (const record of records) pending.add(record.id);
+  }
+  return changeEach(
+    items.filter((item) => pending.has(item.id)),
+    async (item) => {
       await updateDataById("messages", item.id, data, {
         requestKey: key(`message-${item.id}`)
       });
-      changed.push(item.id);
+      return true;
     }
-  }
-  return changed;
+  );
 };
 
 // Each swap below changes one thing from `from` to `to` if it still holds
@@ -358,23 +391,45 @@ const swapTerritory = async (
 const mapExists = ({ congregation, key }: Context, mapId: string) =>
   fetchRecord("maps", mapId, congregation, "id", key("check"));
 
+// A reset cannot be undone and its card states how many homes go back to not
+// done, so it runs only while the map or territory still holds exactly those:
+// a card confirmed after more work was recorded stops instead.
+const resetUnchanged = async (
+  { proposal, key }: Context,
+  column: "map" | "territory"
+) => {
+  const count = async (status: string) =>
+    (
+      await pb.collection("addresses").getList(1, 1, {
+        filter: `${column}="${proposal.target?.id}" && status="${status}"`,
+        fields: "id",
+        requestKey: key(`reset-${status}`)
+      })
+    ).totalItems;
+  return (
+    (await count("done")) === Number(proposal.data?.done) &&
+    (await count("not_home")) === Number(proposal.data?.not_home)
+  );
+};
+
 // Applies the proposal's change to each listed home that still holds what it
 // held when prepared; homes changed since are left and counted.
 const updateHomes = async (ctx: Context, undo?: ProposalState) => {
   const patch = parseObject(ctx.proposal.value) as Partial<HomeState>;
   const ids = undo ? new Set(undo.recordIds) : undefined;
-  const changed: string[] = [];
-  let skipped = 0;
-  for (const item of ctx.proposal.items ?? []) {
-    if (ids && !ids.has(item.id)) continue;
+  const items = (ctx.proposal.items ?? []).filter(
+    (item) => !ids || ids.has(item.id)
+  );
+  const { changed, failed, skipped } = await changeEach(items, (item) => {
     const before = parseHome(item.detail);
     const after = { ...before, ...patch };
     const [from, to] = undo ? [after, before] : [before, after];
-    if (await writeHome(ctx, item, from, to)) changed.push(item.id);
-    else skipped++;
-  }
-  if (undo) return { status: "undone", skipped } as Outcome;
-  return changed.length ? done({ recordIds: changed, skipped }) : STALE;
+    return writeHome(ctx, item, from, to);
+  });
+  if (undo) return undoneOrLeft(failed, skipped);
+  return changed.length
+    ? done({ recordIds: changed, skipped, failed: failed.length })
+    : STALE;
 };
 
 const rename = async (ctx: Context) =>
@@ -437,23 +492,25 @@ const RUN: Partial<Record<Kind, (ctx: Context) => Promise<Outcome>>> = {
   },
 
   mark_read: async (ctx) => {
-    const changed = await flagMessages(
+    const { changed, failed } = await flagMessages(
       ctx,
       `read=false && type!="administrator"`,
       { read: true }
     );
-    return changed.length ? done({ recordIds: changed }) : STALE;
+    return changed.length
+      ? done({ recordIds: changed, failed: failed.length })
+      : STALE;
   },
 
   unpin_message: async (ctx) => {
-    const changed = await flagMessages(
+    const { changed, failed } = await flagMessages(
       ctx,
       `pinned=true && type="administrator"`,
       { pinned: false }
     );
     if (!changed.length) return STALE;
     trackEvent(ANALYTICS_EVENTS.MESSAGE_PINNED, { pinned: false });
-    return done({ recordIds: changed });
+    return done({ recordIds: changed, failed: failed.length });
   },
 
   map_location: async (ctx) => {
@@ -467,14 +524,14 @@ const RUN: Partial<Record<Kind, (ctx: Context) => Promise<Outcome>>> = {
   },
 
   link_revoke: async ({ proposal, key }) => {
-    const removed: string[] = [];
-    for (const item of proposal.items ?? []) {
-      const deleted = await deleteDataById("assignments", item.id, {
+    const { changed, failed } = await changeEach(proposal.items ?? [], (item) =>
+      deleteDataById("assignments", item.id, {
         requestKey: key(`revoke-${item.id}`)
-      });
-      if (deleted) removed.push(item.id);
-    }
-    return removed.length ? done({ recordIds: removed }) : STALE;
+      })
+    );
+    return changed.length
+      ? done({ recordIds: changed, failed: failed.length })
+      : STALE;
   },
 
   quick_link: async ({ proposal, location, key }) => {
@@ -505,7 +562,7 @@ const RUN: Partial<Record<Kind, (ctx: Context) => Promise<Outcome>>> = {
 
   map_reset: async (ctx) => {
     const target = ctx.proposal.target;
-    if (!target || !(await mapExists(ctx, target.id))) return STALE;
+    if (!target || !(await resetUnchanged(ctx, "map"))) return STALE;
     await callFunction("/map/reset", {
       method: "POST",
       requestKey: ctx.key("map-reset"),
@@ -514,12 +571,12 @@ const RUN: Partial<Record<Kind, (ctx: Context) => Promise<Outcome>>> = {
     return done();
   },
 
-  territory_reset: async ({ proposal, key }) => {
-    const target = proposal.target;
-    if (!target) return STALE;
+  territory_reset: async (ctx) => {
+    const target = ctx.proposal.target;
+    if (!target || !(await resetUnchanged(ctx, "territory"))) return STALE;
     await callFunction("/territory/reset", {
       method: "POST",
-      requestKey: key("territory-reset"),
+      requestKey: ctx.key("territory-reset"),
       body: { territory: target.id }
     });
     return done();
@@ -729,7 +786,15 @@ export const undoRecordProposal = async (
       const maps = state.recordIds ?? [];
       if (!(await mapsUnused(maps, ctx.key("used")))) return leftAsItIs;
       if (proposal.kind === "territory_create" && state.recordId) {
-        // Deletes the territory with every map and home in it.
+        // Deleting the territory takes every map and home in it, so it must
+        // hold nothing but the maps this card made: one moved or added there
+        // since stays, and so does the territory.
+        const inside = await getList("maps", {
+          filter: `territory="${state.recordId}"`,
+          fields: "id",
+          requestKey: ctx.key("territory-maps")
+        });
+        if (inside.some((map) => !maps.includes(map.id))) return leftAsItIs;
         await callFunction("/territory/delete", {
           method: "POST",
           requestKey: ctx.key("territory-delete"),
@@ -755,15 +820,24 @@ export const undoRecordProposal = async (
       );
     case "mark_read":
     case "unpin_message":
-      for (const id of state.recordIds ?? []) {
-        await updateDataById(
-          "messages",
-          id,
-          proposal.kind === "mark_read" ? { read: false } : { pinned: true },
-          { requestKey: ctx.key(`message-${id}`) }
-        );
-      }
-      return { status: "undone" };
+      return undoneOrLeft(
+        (
+          await changeEach(
+            (state.recordIds ?? []).map((id) => ({ id })),
+            async ({ id }) => {
+              await updateDataById(
+                "messages",
+                id,
+                proposal.kind === "mark_read"
+                  ? { read: false }
+                  : { pinned: true },
+                { requestKey: ctx.key(`message-${id}`) }
+              );
+              return true;
+            }
+          )
+        ).failed
+      );
     case "share_link":
     case "pin_message":
     case "quick_link":

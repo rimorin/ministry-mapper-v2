@@ -271,6 +271,8 @@ export interface ProposalState {
   label?: string;
   // Homes left alone because they changed since the proposal.
   skipped?: number;
+  // Records of a change to many that could not be changed.
+  failed?: number;
   // New maps: where each one is, by its place in the proposal's list, set on
   // the card before confirming.
   locations?: Record<string, SharedLocation>;

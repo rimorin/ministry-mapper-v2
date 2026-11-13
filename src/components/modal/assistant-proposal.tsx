@@ -685,6 +685,15 @@ const AssistantProposalCard = ({
                 )}
               </span>
             )}
+            {!!state?.failed && (
+              <span className="text-destructive">
+                {t(
+                  "assistant.action.notChanged",
+                  "{{count}} could not be changed.",
+                  { count: state.failed }
+                )}
+              </span>
+            )}
             <div className="ml-auto flex gap-2">
               {/* Your own access shapes the whole page, so it shows once the
                   page loads again. Not on cards brought back from history. */}
