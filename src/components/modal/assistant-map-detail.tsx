@@ -66,6 +66,9 @@ const AssistantMapDetail = ({
   const statusLabel = useValueLabel();
   const num = (field: string) => Number(row[field] ?? 0);
   const text = (field: string) => String(row[field] ?? "");
+  // Every home on the map, counted toward progress or not. Answers kept from
+  // before all_homes was sent have only homes.
+  const allHomes = num("all_homes") || num("homes");
   const date = (stamp: string) =>
     formatLocalStamp(stamp, i18n.resolvedLanguage ?? i18n.language);
   const pinned = Array.isArray(row.pinned) ? (row.pinned as string[]) : [];
@@ -90,7 +93,7 @@ const AssistantMapDetail = ({
             : t("assistant.detail.housesShape", "Street of houses")}
           {" · "}
           {t("assistant.action.homes", "{{count}} homes", {
-            count: num("homes")
+            count: allHomes
           })}
         </span>
       </div>
@@ -207,7 +210,7 @@ const AssistantMapDetail = ({
       )}
 
       <div className="flex flex-wrap gap-2">
-        {num("homes") > 0 && (
+        {allHomes > 0 && (
           <Button
             type="button"
             variant="outline"
