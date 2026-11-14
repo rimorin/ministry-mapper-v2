@@ -575,7 +575,7 @@
     "title": "Pembantu Mapper",
     "description": "Tanya tentang kawasan anda dengan kata-kata sendiri. Jawapan diambil daripada data sidang anda.",
     "descriptionChange": "Tanya tentang kawasan anda atau minta perubahan, dengan kata-kata sendiri. Tiada apa yang berubah sehingga anda mengesahkannya.",
-    "privacy": "Nama orang dalam rekod anda disembunyikan daripada AI. Nama lain yang anda taip, atau yang terdapat dalam nota, mungkin dihantar.",
+    "privacy": "Nama orang dalam rekod anda disembunyikan daripada AI. Nama lain yang anda taip, atau yang terdapat dalam nota atau foto, mungkin dihantar.",
     "placeholder": "Ajukan soalan…",
     "send": "Hantar",
     "thinking": "Sedang berfikir…",
@@ -676,7 +676,8 @@
       "propose_rename": "Menyediakan penukaran nama",
       "propose_reset": "Menyediakan set semula",
       "calculate": "Mengira angka",
-      "territory_rounds": "Menyemak rekod liputan"
+      "territory_rounds": "Menyemak rekod liputan",
+      "read_image": "Membaca foto"
     },
     "column": {
       "action": "Tindakan",
@@ -756,7 +757,8 @@
       "days": "Hari",
       "completed_rounds": "Pusingan selesai",
       "average_days": "Purata hari",
-      "open_since": "Dibuka sejak"
+      "open_since": "Dibuka sejak",
+      "units": "Unit"
     },
     "reading": "Membaca soalan anda…",
     "showMore": "Tunjukkan {{count}} lagi",
@@ -982,6 +984,12 @@
       "lineSummary": "Carta garis {{title}}, {{count}} titik dari {{from}} hingga {{to}}. Jadual semakan ini mengandungi setiap nilai."
     },
     "copyTable": "Salin jadual",
-    "downloadCsv": "Muat turun sebagai CSV"
+    "downloadCsv": "Muat turun sebagai CSV",
+    "photo": {
+      "attach": "Lampirkan foto",
+      "remove": "Buang foto",
+      "failed": "Foto itu tidak dapat digunakan. Cuba JPEG atau PNG.",
+      "alt": "Foto yang anda lampirkan"
+    }
   }
 }

@@ -14,6 +14,8 @@ import {
   Activity,
   ArrowDown,
   ArrowUp,
+  Camera,
+  ImagePlus,
   Ban,
   Building2,
   Calculator,
@@ -110,6 +112,7 @@ import AssistantHistory from "./assistant-history";
 import AssistantMapDetail from "./assistant-map-detail";
 import { AnswerReveal } from "./assistant-reveal";
 import { downloadCsv, toCsv, toTsv } from "../../utils/tableExport";
+import { isPhoto, shrinkImage } from "../../utils/shrinkImage";
 import AssistantChart from "./assistant-chart";
 import {
   KIND_ICONS,
@@ -211,6 +214,7 @@ const TOOL_ICONS: Record<string, LucideIcon> = {
   map_overview: MapIcon,
   map_details: Building2,
   homes: House,
+  read_image: Camera,
   maps_near: Navigation,
   activity: Activity,
   who_worked: Users,
@@ -443,6 +447,21 @@ export const AssistantChat = ({
     }
   };
   const [text, setText] = useState("");
+  // A photo to send with the next question, already made small, and whether
+  // the last one picked could not be used.
+  const [photo, setPhoto] = useState<string>();
+  const [photoFailed, setPhotoFailed] = useState(false);
+  const photoInputRef = useRef<HTMLInputElement>(null);
+  const attachPhoto = async (file?: Blob | null) => {
+    if (!file) return;
+    try {
+      setPhoto(await shrinkImage(file));
+      setPhotoFailed(false);
+    } catch {
+      setPhotoFailed(true);
+    }
+    focusInput();
+  };
   const [fullTables, setFullTables] = useState<Set<string>>(new Set());
   // Answers already there when the panel opened are shown as they are; only
   // those arriving while it is open are revealed as they are written.
@@ -471,8 +490,10 @@ export const AssistantChat = ({
       : "";
 
   const send = (question: string) => {
-    void ask(question, activeView);
+    void ask(question, activeView, photo);
     setText("");
+    setPhoto(undefined);
+    setPhotoFailed(false);
     // Starters and suggestions go once used; keep keyboard users in place.
     focusInput();
   };
@@ -789,6 +810,13 @@ export const AssistantChat = ({
                 ) : (
                   renderTable(step.result, `${turnId}-${index}`, title)
                 )}
+                {/* What a photo's reading holds besides its homes, and what
+                  the reader could not make out. */}
+                {step.tool === "read_image" && step.result.note && (
+                  <p className="mt-2 text-xs whitespace-pre-line text-muted-foreground">
+                    {step.result.note}
+                  </p>
+                )}
               </TraceCollapsibleContent>
             </TraceCollapsible>
           )}
@@ -949,7 +977,9 @@ export const AssistantChat = ({
                   <IconAction
                     label={t("assistant.action.askAgain", "Ask again")}
                     disabled={!isOnline || busy}
-                    onClick={() => void ask(turn.question, turn.view)}
+                    onClick={() =>
+                      void ask(turn.question, turn.view, turn.image)
+                    }
                   >
                     <RefreshCcw />
                   </IconAction>
@@ -1019,7 +1049,7 @@ export const AssistantChat = ({
                     }
                     onAskAgain={
                       isOnline && !busy
-                        ? () => void ask(turn.question, turn.view)
+                        ? () => void ask(turn.question, turn.view, turn.image)
                         : undefined
                     }
                     onShareLocation={
@@ -1167,7 +1197,7 @@ export const AssistantChat = ({
                 <ShieldCheck className="size-3.5 shrink-0" />
                 {t(
                   "assistant.privacy",
-                  "Names of people in your records are hidden from the AI. Other names you type, or that appear in notes, may be sent."
+                  "Names of people in your records are hidden from the AI. Other names you type, or that appear in notes or photos, may be sent."
                 )}
               </p>
             </EmptyContent>
@@ -1202,6 +1232,16 @@ export const AssistantChat = ({
                         >
                           <Message align="end">
                             <MessageContent>
+                              {turn.image && (
+                                <img
+                                  src={turn.image}
+                                  alt={t(
+                                    "assistant.photo.alt",
+                                    "The photo you attached"
+                                  )}
+                                  className="max-h-40 max-w-48 self-end rounded-md border object-contain"
+                                />
+                              )}
                               <Bubble align="end" variant="muted">
                                 <BubbleContent>{turn.question}</BubbleContent>
                               </Bubble>
@@ -1366,12 +1406,61 @@ export const AssistantChat = ({
               </Button>
             </div>
           )}
+          {photo && (
+            <div className="relative self-start">
+              <img
+                src={photo}
+                alt={t("assistant.photo.alt", "The photo you attached")}
+                className="max-h-24 max-w-32 rounded-md border object-contain"
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                size="icon-xs"
+                className="absolute -top-2 -right-2 rounded-full"
+                aria-label={t("assistant.photo.remove", "Remove the photo")}
+                onClick={() => setPhoto(undefined)}
+              >
+                <X />
+              </Button>
+            </div>
+          )}
+          {photoFailed && (
+            <p role="alert" className="text-xs text-destructive">
+              {t(
+                "assistant.photo.failed",
+                "That photo could not be used. Try a JPEG or PNG."
+              )}
+            </p>
+          )}
+          <input
+            ref={photoInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            className="hidden"
+            tabIndex={-1}
+            aria-hidden
+            onChange={(event) => {
+              void attachPhoto(event.target.files?.[0]);
+              // The same photo can be picked again after it is removed.
+              event.target.value = "";
+            }}
+          />
           <InputGroup>
             <InputGroupTextarea
               ref={textareaRef}
               value={text}
               onChange={(event) => setText(event.target.value)}
               onKeyDown={onKeyDown}
+              onPaste={(event) => {
+                const pasted = Array.from(event.clipboardData.files).find(
+                  isPhoto
+                );
+                if (pasted) {
+                  event.preventDefault();
+                  void attachPhoto(pasted);
+                }
+              }}
               maxLength={MAX_QUESTION_LENGTH}
               disabled={!isOnline}
               placeholder={t("assistant.placeholder", "Ask a question…")}
@@ -1379,6 +1468,17 @@ export const AssistantChat = ({
               className="min-h-0 p-3"
             />
             <InputGroupAddon align="inline-end" className="self-end">
+              <InputGroupButton
+                type="button"
+                size="icon-sm"
+                variant="ghost"
+                className={cn(STEADY_HOVER, "rounded-full")}
+                disabled={!isOnline || busy}
+                onClick={() => photoInputRef.current?.click()}
+                aria-label={t("assistant.photo.attach", "Attach a photo")}
+              >
+                <ImagePlus />
+              </InputGroupButton>
               {busy ? (
                 <InputGroupButton
                   type="button"

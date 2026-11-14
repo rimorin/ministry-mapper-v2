@@ -486,6 +486,20 @@ describe("useAssistant", () => {
     expect(body.people).toEqual({ "Person QXWB": "Bro Tan" });
   });
 
+  it("sends a photo with its question, keeps it for the turn, and not for the next", async () => {
+    callFunctionMock.mockResolvedValue(answer());
+    const congregation = nextCongregation();
+    const { result } = renderHook(() => useAssistant(congregation));
+    const photo = "data:image/jpeg;base64,/9j/4AAQ";
+
+    await act(() => result.current.ask("What is this?", undefined, photo));
+    expect(callFunctionMock.mock.calls[0][1].body.image).toBe(photo);
+    expect(result.current.turns[0].image).toBe(photo);
+
+    await act(() => result.current.ask("And the floors?"));
+    expect(callFunctionMock.mock.calls[1][1].body.image).toBeUndefined();
+  });
+
   it("sends no names from an answer that was not grounded", async () => {
     callFunctionMock.mockResolvedValueOnce(
       answer({

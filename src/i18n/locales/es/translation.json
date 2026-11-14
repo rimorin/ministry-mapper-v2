@@ -575,7 +575,7 @@
     "title": "Asistente de Mapper",
     "description": "Pregunte sobre sus territorios con sus propias palabras. Las respuestas salen de los datos de su congregación.",
     "descriptionChange": "Pregunte sobre sus territorios o pida un cambio, con sus propias palabras. Nada cambia hasta que usted lo confirme.",
-    "privacy": "Los nombres de las personas de sus registros se ocultan a la IA. Otros nombres que escriba, o que aparezcan en las notas, pueden enviarse.",
+    "privacy": "Los nombres de las personas de sus registros se ocultan a la IA. Otros nombres que escriba, o que aparezcan en las notas o en las fotos, pueden enviarse.",
     "placeholder": "Haga una pregunta…",
     "send": "Enviar",
     "thinking": "Pensando…",
@@ -676,7 +676,8 @@
       "propose_rename": "Preparé un cambio de nombre",
       "propose_reset": "Preparé un reinicio",
       "calculate": "Calculé una cifra",
-      "territory_rounds": "Revisó el registro de cobertura"
+      "territory_rounds": "Revisó el registro de cobertura",
+      "read_image": "Leyó la foto"
     },
     "column": {
       "action": "Acción",
@@ -756,7 +757,8 @@
       "days": "Días",
       "completed_rounds": "Rondas completadas",
       "average_days": "Días promedio",
-      "open_since": "Abierta desde"
+      "open_since": "Abierta desde",
+      "units": "Unidades"
     },
     "reading": "Leyendo su pregunta…",
     "showMore": "Mostrar {{count}} más",
@@ -982,6 +984,12 @@
       "lineSummary": "Gráfico de líneas de {{title}}, {{count}} puntos del {{from}} al {{to}}. La tabla de esta consulta tiene todos los valores."
     },
     "copyTable": "Copiar tabla",
-    "downloadCsv": "Descargar como CSV"
+    "downloadCsv": "Descargar como CSV",
+    "photo": {
+      "attach": "Adjuntar una foto",
+      "remove": "Quitar la foto",
+      "failed": "No se pudo usar esa foto. Pruebe con un JPEG o PNG.",
+      "alt": "La foto que adjuntó"
+    }
   }
 }

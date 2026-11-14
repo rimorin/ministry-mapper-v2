@@ -305,6 +305,9 @@ export interface AssistantTurn {
   question: string;
   // The view the question was asked with, so a retry asks about the same.
   view?: AssistantView;
+  // The photo sent with the question, as a data URL. Kept only in this page's
+  // memory, to show beside the question and to ask again with.
+  image?: string;
   // stopped: the admin pressed Stop before the answer arrived.
   status: "pending" | "done" | "error" | "stopped";
   // Checks that finished while the answer is still being written.
@@ -587,7 +590,11 @@ export default function useAssistant(
     );
   };
 
-  const ask = async (question: string, view?: AssistantView) => {
+  const ask = async (
+    question: string,
+    view?: AssistantView,
+    image?: string
+  ) => {
     const trimmed = question.trim();
     if (!trimmed || busy) return;
 
@@ -606,7 +613,7 @@ export default function useAssistant(
 
     update(congregation, (previous) => [
       ...previous,
-      { id, question: trimmed, view, status: "pending", progress: [] }
+      { id, question: trimmed, view, image, status: "pending", progress: [] }
     ]);
     // A record id, as conversationIDPattern in the backend expects.
     let conversation = conversationIds.get(congregation);
@@ -635,6 +642,7 @@ export default function useAssistant(
           question: trimmed,
           locale: i18n.resolvedLanguage ?? i18n.language,
           people,
+          image,
           location: sharedLocations.get(congregation),
           conversation,
           view: view && { territory: view.territoryId, map: view.mapId ?? "" }
