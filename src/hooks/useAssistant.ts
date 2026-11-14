@@ -321,9 +321,6 @@ export interface AssistantTurn {
   ratingReason?: RatingReason;
 }
 
-// Mirrors MaxHistory in the backend's assistant package.
-const MAX_HISTORY = 8;
-
 // Conversations live outside the panel, keyed by congregation, so closing the
 // panel (for example to open a territory from an answer) keeps them, and an
 // answer still arriving lands where the reopened panel can show it.
@@ -479,15 +476,16 @@ let turnCounter = 0;
 // How long after a change its card offers Undo.
 export const UNDO_WINDOW_MS = 5 * 60 * 1000;
 
-// What the next question tells the model about each card's outcome.
-const OUTCOMES: Partial<Record<ProposalState["status"], string>> = {
-  done: "The admin confirmed this change.",
-  cancelled: "The admin cancelled this change.",
-  undone: "The admin confirmed this change, then undid it.",
-  failed: "The change failed and was not made.",
-  stale:
-    "The change was not made because the record had changed since it was prepared."
-};
+// The card outcomes reported to the backend, which keeps them for history and
+// tells the model about them with the next question (cardOutcomes in
+// assistant_feedback.go).
+const REPORTED_OUTCOMES = new Set<ProposalState["status"]>([
+  "done",
+  "cancelled",
+  "undone",
+  "failed",
+  "stale"
+]);
 
 const requestKey = (turnId: string) => `assistant-ask-${turnId}`;
 
@@ -572,7 +570,7 @@ export default function useAssistant(
       if (error.status === 429) {
         return t(
           "assistant.error.limit",
-          "Your congregation has reached today's question limit. Try again tomorrow."
+          "Today's question limit has been reached. Try again tomorrow."
         );
       }
       if (error.status === 503) {
@@ -599,17 +597,8 @@ export default function useAssistant(
     const answered = (conversations.get(congregation) ?? NO_TURNS).filter(
       (turn) => turn.status === "done" && turn.response?.grounded
     );
-    const history = answered.slice(-MAX_HISTORY).map((turn) => ({
-      question: turn.question,
-      answer: [
-        turn.response?.context ?? "",
-        ...Object.values(turn.actions ?? {}).map(
-          (action) => OUTCOMES[action.status] ?? ""
-        )
-      ]
-        .filter(Boolean)
-        .join(" ")
-    }));
+    // Earlier turns are not sent: the backend reads them from the
+    // conversation's log, so only the names they mention go along.
     const people = Object.assign(
       {},
       ...answered.map((turn) => turn.response?.people ?? {})
@@ -644,7 +633,6 @@ export default function useAssistant(
         body: {
           congregation,
           question: trimmed,
-          history,
           locale: i18n.resolvedLanguage ?? i18n.language,
           people,
           location: sharedLocations.get(congregation),
@@ -750,8 +738,7 @@ export default function useAssistant(
         }
       }
     }));
-    // The outcomes the model is told about are the ones worth recording.
-    if (patch.status && OUTCOMES[patch.status]) {
+    if (patch.status && REPORTED_OUTCOMES.has(patch.status)) {
       // From the store, just updated: a change confirmed in this render's
       // closure picked its person after the render.
       const turn = (conversations.get(congregation) ?? NO_TURNS).find(

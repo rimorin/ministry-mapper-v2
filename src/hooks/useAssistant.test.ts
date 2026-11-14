@@ -146,7 +146,6 @@ describe("useAssistant", () => {
         body: {
           congregation,
           question: "Which territory is overdue?",
-          history: [],
           locale: "zh",
           people: {},
           conversation: expect.stringMatching(/^[a-z0-9]{15}$/)
@@ -452,7 +451,6 @@ describe("useAssistant", () => {
     await act(() => result.current.ask("And yesterday?"));
     expect(callFunctionMock.mock.lastCall?.[1].body).toMatchObject({
       conversation: "past1",
-      history: [{ question: "Who came out?", answer: "Person QXWB came out." }],
       people: { "Person QXWB": "Bro Tan" }
     });
   });
@@ -468,7 +466,7 @@ describe("useAssistant", () => {
     expect(callFunctionMock).toHaveBeenCalledTimes(1);
   });
 
-  it("sends earlier answers as masked context with the people they mention", async () => {
+  it("sends the people earlier answers mention, and leaves the turns to the backend", async () => {
     callFunctionMock.mockResolvedValueOnce(
       answer({
         answer: "Bro Tan came out today.",
@@ -484,15 +482,18 @@ describe("useAssistant", () => {
     await act(() => result.current.ask("And yesterday?"));
 
     const body = callFunctionMock.mock.calls[1][1].body;
-    expect(body.history).toEqual([
-      { question: "Who came out today?", answer: "Person QXWB came out today." }
-    ]);
+    expect(body.history).toBeUndefined();
     expect(body.people).toEqual({ "Person QXWB": "Bro Tan" });
   });
 
-  it("leaves answers that were not grounded out of the history", async () => {
+  it("sends no names from an answer that was not grounded", async () => {
     callFunctionMock.mockResolvedValueOnce(
-      answer({ grounded: false, answer: "", context: "" })
+      answer({
+        grounded: false,
+        answer: "",
+        context: "",
+        people: { "Person QXWB": "Bro Tan" }
+      })
     );
     callFunctionMock.mockResolvedValueOnce(answer());
     const congregation = nextCongregation();
@@ -501,7 +502,7 @@ describe("useAssistant", () => {
     await act(() => result.current.ask("First?"));
     await act(() => result.current.ask("Second?"));
 
-    expect(callFunctionMock.mock.calls[1][1].body.history).toEqual([]);
+    expect(callFunctionMock.mock.calls[1][1].body.people).toEqual({});
   });
 
   it.each([
@@ -513,7 +514,7 @@ describe("useAssistant", () => {
     [
       429,
       "Your congregation has reached today's question limit.",
-      "Your congregation has reached today's question limit. Try again tomorrow."
+      "Today's question limit has been reached. Try again tomorrow."
     ],
     [
       503,
@@ -1092,9 +1093,16 @@ describe("useAssistant proposals", () => {
     );
   });
 
-  it("shows the backend's refusal and tells the model it failed", async () => {
+  it("shows the backend's refusal and reports that it failed", async () => {
     const p = proposal();
-    const { hook, turnId } = await withProposal(p);
+    callFunctionMock.mockResolvedValue({});
+    callFunctionMock.mockResolvedValueOnce(
+      answer({ proposals: [p], questionId: "q1" })
+    );
+    const congregation = nextCongregation();
+    const hook = renderHook(() => useAssistant(congregation));
+    await act(() => hook.result.current.ask("Do it"));
+    const turnId = hook.result.current.turns[0].id;
     getFirstItemOfListMock.mockResolvedValue({ id: "r1", role: "conductor" });
     updateDataByIdMock.mockRejectedValue(
       pbError(400, "A congregation must keep at least one administrator.")
@@ -1106,11 +1114,13 @@ describe("useAssistant proposals", () => {
       error: "A congregation must keep at least one administrator."
     });
 
-    callFunctionMock.mockResolvedValueOnce(answer());
-    await act(() => hook.result.current.ask("What happened?"));
-    expect(
-      callFunctionMock.mock.calls.at(-1)?.[1].body.history[0].answer
-    ).toContain("The change failed and was not made.");
+    // Reported to the backend, which tells the model with the next question.
+    expect(callFunctionMock).toHaveBeenLastCalledWith(
+      "/assistant/feedback",
+      expect.objectContaining({
+        body: expect.objectContaining({ proposal: "p1", outcome: "failed" })
+      })
+    );
   });
 });
 

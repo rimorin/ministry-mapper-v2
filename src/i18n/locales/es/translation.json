@@ -575,7 +575,7 @@
     "title": "Asistente de Mapper",
     "description": "Pregunte sobre sus territorios con sus propias palabras. Las respuestas salen de los datos de su congregación.",
     "descriptionChange": "Pregunte sobre sus territorios o pida un cambio, con sus propias palabras. Nada cambia hasta que usted lo confirme.",
-    "privacy": "Los nombres de sus registros se ocultan a la IA.",
+    "privacy": "Los nombres de las personas de sus registros se ocultan a la IA. Otros nombres que escriba, o que aparezcan en las notas, pueden enviarse.",
     "placeholder": "Haga una pregunta…",
     "send": "Enviar",
     "thinking": "Pensando…",
@@ -595,7 +595,7 @@
     "no": "No",
     "error": {
       "disabled": "El asistente no está activado para su congregación.",
-      "limit": "Su congregación alcanzó el límite de preguntas de hoy. Inténtelo mañana.",
+      "limit": "Se alcanzó el límite de preguntas de hoy. Inténtelo mañana.",
       "unavailable": "El asistente no está disponible en este momento.",
       "generic": "Algo salió mal. Inténtelo de nuevo."
     },
