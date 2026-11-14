@@ -69,6 +69,12 @@
 :root {
   color-scheme: light;
   --radius: 0.625rem;
+  /* Chart series in fixed order (blue, orange, aqua), checked together for
+     colour vision deficiency on each mode's surface; fixed across the colour
+     themes, like the status colours. */
+  --chart-1: #2a78d6;
+  --chart-2: #eb6834;
+  --chart-3: #1baf7a;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -112,6 +118,9 @@
 
 .dark {
   color-scheme: dark;
+  --chart-1: #3987e5;
+  --chart-2: #d95926;
+  --chart-3: #199e70;
   --background: oklch(0.145 0 0);
   --foreground: oklch(0.985 0 0);
   --card: oklch(0.205 0 0);
@@ -216,8 +225,8 @@
   html {
     height: 100%;
     transition:
-      background-color 0.3s ease,
-      color 0.3s ease;
+      background-color var(--motion-base) ease,
+      color var(--motion-base) ease;
   }
   @media (prefers-reduced-motion: reduce) {
     html {
@@ -241,6 +250,26 @@
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
+  }
+}
+
+/* The timing scale from src/lib/motion.ts (duration), for CSS. */
+:root {
+  --motion-fast: 150ms;
+  --motion-base: 250ms;
+  --motion-slow: 400ms;
+}
+
+/* Reduced motion for every page, publisher and admin alike. Durations collapse
+   rather than being removed, so transitionend still fires for the dialogs and
+   drawers that wait on it. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 
@@ -285,8 +314,8 @@
   opacity: 1;
   transform: translateY(0);
   transition:
-    opacity 0.15s ease-out,
-    transform 0.15s ease-out;
+    opacity var(--motion-fast) ease-out,
+    transform var(--motion-fast) ease-out;
 }
 
 @starting-style {
@@ -300,8 +329,8 @@
   opacity: 1;
   transform: translateY(0);
   transition:
-    opacity 0.15s ease-out,
-    transform 0.15s ease-out;
+    opacity var(--motion-fast) ease-out,
+    transform var(--motion-fast) ease-out;
 }
 
 @starting-style {
@@ -318,12 +347,21 @@
   }
 }
 
+/* Toasts stay at the page's right edge, clear of the docked assistant
+   (assistant-dock.tsx sets the width while it is open). From sm up, where
+   toast.tsx anchors them right. */
+@media (min-width: 40rem) {
+  [data-slot="toast-viewport"] {
+    right: calc(var(--assistant-dock-width, 0px) + 1rem);
+  }
+}
+
 /* Collapsible height animation — base-ui sets --collapsible-panel-height
    and data-open / data-closed on the panel element. */
 [data-slot="collapsible-content"] {
   overflow: hidden;
   height: var(--collapsible-panel-height);
-  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: height var(--motion-base) cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @starting-style {
@@ -339,6 +377,13 @@
 @media (prefers-reduced-motion: reduce) {
   [data-slot="collapsible-content"] {
     transition: none;
+  }
+}
+
+/* A piece of a streamed answer appearing (assistant-reveal.tsx). */
+@keyframes fade-in {
+  from {
+    opacity: 0;
   }
 }
 

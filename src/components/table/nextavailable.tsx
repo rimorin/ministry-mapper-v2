@@ -1,29 +1,32 @@
-import { useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { ChevronRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { createContext, use, useEffect, type ReactNode } from "react";
+import { createPortal } from "react-dom";
 import { isEndgame } from "../../utils/policies";
 import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
+
+export interface NextAddressSlotValue {
+  target: HTMLElement | null;
+  surface: "admin" | "publisher";
+  renderButton: (onClick: () => void) => ReactNode;
+}
+
+export const NextAddressSlotContext =
+  createContext<NextAddressSlotValue | null>(null);
 
 interface NextAvailableProps {
   remaining: number;
   progress: number;
   isFiltered: boolean;
-  surface: "admin" | "publisher";
   onClick: () => void;
 }
 
-// The floating map controls sit on tiles and need an opaque bg-background to
-// stay legible. This one sits on the grid, which already is bg-background, so
-// it lifts to the secondary surface — the tone the sticky headers use.
 const NextAvailable = ({
   remaining,
   progress,
   isFiltered,
-  surface,
   onClick
 }: NextAvailableProps) => {
-  const { t } = useTranslation();
+  const slot = use(NextAddressSlotContext);
+  const surface = slot?.surface;
 
   // Early on nearly every address still needs a call, so the next one is
   // whatever is already on screen. The button only earns its place once what
@@ -34,25 +37,19 @@ const NextAvailable = ({
   // Keyed on isOffered, not fired on render, so a map that sits in its endgame
   // across many re-renders still counts as one offer.
   useEffect(() => {
-    if (isOffered) {
+    if (isOffered && surface) {
       trackEvent(ANALYTICS_EVENTS.NEXT_ADDRESS_OFFERED, { surface });
     }
   }, [isOffered, surface]);
 
-  if (!isOffered) return null;
+  if (!isOffered || !slot?.target) return null;
 
-  return (
-    <Button
-      variant="secondary"
-      onClick={() => {
-        trackEvent(ANALYTICS_EVENTS.NEXT_ADDRESS_USED, { surface });
-        onClick();
-      }}
-      className="absolute right-4 bottom-4 z-20 rounded-full border-border px-3.5 text-xs tabular-nums shadow-sm"
-    >
-      {t("navigation.addressesLeft", "{{count}} to go", { count: remaining })}
-      <ChevronRight className="size-3.5 text-muted-foreground" />
-    </Button>
+  return createPortal(
+    slot.renderButton(() => {
+      trackEvent(ANALYTICS_EVENTS.NEXT_ADDRESS_USED, { surface: slot.surface });
+      onClick();
+    }),
+    slot.target
   );
 };
 

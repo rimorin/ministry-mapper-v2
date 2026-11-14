@@ -7,11 +7,19 @@ import {
   Palette,
   LayoutGrid,
   ListFilter,
+  LocateFixed,
+  Ellipsis,
   Map as MapIcon
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from "@/components/ui/dropdown-menu";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
-import { tapFeedback, enterTransition } from "@/lib/motion";
+import { duration, tapFeedback, enterTransition } from "@/lib/motion";
 import useAnimatedCounter from "../hooks/useAnimatedCounter";
 import { configureHeader, clearHeader } from "../utils/pocketbase";
 import { ReleaseNotifier } from "../components/statics/releasenotifier";
@@ -19,6 +27,7 @@ import { cn } from "@/lib/utils";
 import { resolveLocalized } from "../utils/resolveLocalized";
 import InvalidPage from "../components/statics/invalidpage";
 import MainTable from "../components/table/map";
+import { NextAddressSlotContext } from "../components/table/nextavailable";
 import MapPlaceholder from "../components/statics/placeholder";
 import TopNavbar from "../components/navigation/topnavbar";
 import { mapAddressResponse } from "../utils/interface";
@@ -60,6 +69,7 @@ const Map = () => {
     "false"
   );
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
+  const [nextSlot, setNextSlot] = useState<HTMLElement | null>(null);
   const [addressFilter, setAddressFilter] = useAddressFilter(id ?? "");
 
   const { showModal } = useModalManagement();
@@ -201,8 +211,12 @@ const Map = () => {
     );
   }
 
-  const navItemClass =
-    "flex min-w-0 flex-1 cursor-pointer select-none flex-col items-center gap-1.5 px-2 py-3 text-center text-xs transition-[background-color,box-shadow,border-radius] duration-200 ease-in motion-reduce:transition-none hover:rounded-[5px] hover:bg-primary/10 hover:ring-[5px] hover:ring-primary/10 focus-visible:rounded-[5px]";
+  const navItemBaseClass =
+    "flex min-w-0 flex-1 cursor-pointer select-none flex-col items-center gap-1.5 px-1 py-3 text-center text-xs whitespace-nowrap transition-[background-color,box-shadow,border-radius] duration-150 ease-in motion-reduce:transition-none hover:rounded-[5px] hover:bg-primary/10 hover:ring-[5px] hover:ring-primary/10 focus-visible:rounded-[5px]";
+  const navItemClass = cn(
+    navItemBaseClass,
+    !isOnline && "pointer-events-none opacity-50"
+  );
 
   const isSingleStory = mapDetails?.type === TERRITORY_TYPES.SINGLE_STORY;
 
@@ -228,7 +242,9 @@ const Map = () => {
         currentLanguage={currentLanguage}
         languageOptions={languageOptions}
       />
-      <div className="map-content flex h-dvh flex-col">
+      {/* Less the p-2 that MainMiddleware wraps every page in, so the bottom
+          bar ends at the screen's edge instead of 8px below it. */}
+      <div className="map-content flex h-[calc(100dvh-1rem)] flex-col">
         <TopNavbar
           title={mapDetails?.name || ""}
           tokenEndTime={tokenEndTime}
@@ -238,19 +254,39 @@ const Map = () => {
         <div className="flex-1 overflow-hidden relative">
           {mapDetails && (
             <SmartSyncProvider value={smartSync}>
-              <MainTable
-                key={`link-map-${id}`}
-                mapView={mapView}
-                filter={addressFilter}
-                policy={policy}
-                addressDetails={mapDetails}
-                assignmentId={id}
-                territoryId={territoryId}
-                preloadedAddresses={preloadedAddresses}
-              />
+              <NextAddressSlotContext.Provider
+                value={{
+                  target: nextSlot,
+                  surface: "publisher",
+                  renderButton: (onClick) => (
+                    <m.button
+                      type="button"
+                      className={navItemBaseClass}
+                      onClick={onClick}
+                      aria-label={t("navigation.nextAddress", "Next address")}
+                      whileTap={tapFeedback}
+                    >
+                      <LocateFixed className="size-5" />
+                      <span className="text-xs leading-none">
+                        {t("navigation.next", "Next")}
+                      </span>
+                    </m.button>
+                  )
+                }}
+              >
+                <MainTable
+                  key={`link-map-${id}`}
+                  mapView={mapView}
+                  filter={addressFilter}
+                  policy={policy}
+                  addressDetails={mapDetails}
+                  assignmentId={id}
+                  territoryId={territoryId}
+                  preloadedAddresses={preloadedAddresses}
+                />
+              </NextAddressSlotContext.Provider>
             </SmartSyncProvider>
           )}
-          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-linear-to-l from-background to-transparent" />
         </div>
         <m.nav
           className="shrink-0 border-t bg-background"
@@ -260,169 +296,181 @@ const Map = () => {
           animate={{ y: 0, opacity: 1 }}
           transition={enterTransition}
         >
-          {mapDetails && (
-            <div className="flex flex-col gap-1.5 px-4 pt-2.5 pb-1">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-muted-foreground">
-                  {t("navigation.progress", "Progress")}
-                </span>
-                <span className="text-xs font-semibold tabular-nums">
-                  {`${animatedProgress}%`}
-                </span>
-              </div>
-              <Progress value={mapDetails.aggregates.value} className="h-1.5" />
-              {showBreakdown && (notDoneCount > 0 || notHomeCount > 0) && (
-                <span className="text-xs text-muted-foreground">
-                  {[
-                    notDoneCount > 0 &&
-                      t("navigation.countNotDone", "{{count}} not done", {
-                        count: notDoneCount
-                      }),
-                    notHomeCount > 0 &&
-                      t("navigation.countNotHome", "{{count}} not home", {
-                        count: notHomeCount
-                      })
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </span>
-              )}
-            </div>
-          )}
-          <div
-            className={cn(
-              "flex items-stretch justify-between px-2",
-              !isOnline && "pointer-events-none opacity-50"
-            )}
-          >
-            <m.button
-              type="button"
-              className={navItemClass}
-              onClick={handleMessageClick}
-              aria-label={t("common.messages", "Messages")}
-              whileTap={tapFeedback}
-            >
-              <MessageSquareDot
-                className={cn(
-                  "size-5",
-                  hasPinnedMessages &&
-                    readPinnedMessages === "false" &&
-                    "text-primary"
+          {/* Capped so the controls stay together on tablets and desktops instead
+              of spreading across the screen. */}
+          <div className="mx-auto w-full max-w-2xl">
+            {mapDetails && (
+              <div className="flex flex-col gap-1.5 px-4 pt-2.5 pb-1">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-muted-foreground">
+                    {t("navigation.progress", "Progress")}
+                  </span>
+                  <span className="text-xs font-semibold tabular-nums">
+                    {`${animatedProgress}%`}
+                  </span>
+                </div>
+                <Progress
+                  value={mapDetails.aggregates.value}
+                  className="h-1.5"
+                />
+                {showBreakdown && (notDoneCount > 0 || notHomeCount > 0) && (
+                  <span className="text-xs text-muted-foreground">
+                    {[
+                      notDoneCount > 0 &&
+                        t("navigation.countNotDone", "{{count}} not done", {
+                          count: notDoneCount
+                        }),
+                      notHomeCount > 0 &&
+                        t("navigation.countNotHome", "{{count}} not home", {
+                          count: notHomeCount
+                        })
+                    ]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </span>
                 )}
-              />
-              <span className="text-xs leading-none">
-                {t("common.messages", "Messages")}
-              </span>
-            </m.button>
-            {isSingleStory && (
+              </div>
+            )}
+            <div className="flex items-stretch justify-between px-2">
               <m.button
                 type="button"
                 className={navItemClass}
-                onClick={toggleMapView}
-                aria-label={
-                  mapView
-                    ? t("navigation.listView", "List View")
-                    : t("navigation.mapView", "Map View")
-                }
+                onClick={handleMessageClick}
+                aria-label={t("common.messages", "Messages")}
                 whileTap={tapFeedback}
               >
-                <AnimatePresence mode="wait" initial={false}>
-                  {mapView ? (
-                    <m.span
-                      key="grid"
-                      className="flex flex-col items-center gap-1.5"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ duration: 0.12 }}
-                    >
-                      <LayoutGrid className="size-5" />
-                      <span className="text-xs leading-none">
-                        {t("navigation.listView", "List View")}
-                      </span>
-                    </m.span>
-                  ) : (
-                    <m.span
-                      key="map"
-                      className="flex flex-col items-center gap-1.5"
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ duration: 0.12 }}
-                    >
-                      <MapIcon className="size-5" />
-                      <span className="text-xs leading-none">
-                        {t("navigation.mapView", "Map View")}
-                      </span>
-                    </m.span>
+                <MessageSquareDot
+                  className={cn(
+                    "size-5",
+                    hasPinnedMessages &&
+                      readPinnedMessages === "false" &&
+                      "text-primary"
                   )}
-                </AnimatePresence>
+                />
+                <span className="text-xs leading-none">
+                  {t("common.messages", "Messages")}
+                </span>
               </m.button>
-            )}
-            <AddressFilterPopover
-              filter={addressFilter}
-              onChange={setAddressFilter}
-              options={policy.options}
-              surface="publisher"
-              side="top"
-              trigger={
+              {isSingleStory && (
                 <m.button
                   type="button"
                   className={navItemClass}
+                  onClick={toggleMapView}
+                  aria-label={
+                    mapView
+                      ? t("navigation.listView", "List View")
+                      : t("navigation.mapView", "Map View")
+                  }
                   whileTap={tapFeedback}
                 >
-                  <ListFilter
-                    className={cn(
-                      "size-5",
-                      activeFilterCount > 0 && "text-primary"
+                  <AnimatePresence mode="wait" initial={false}>
+                    {mapView ? (
+                      <m.span
+                        key="grid"
+                        className="flex flex-col items-center gap-1.5"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: duration.fast }}
+                      >
+                        <LayoutGrid className="size-5" />
+                        <span className="text-xs leading-none">
+                          {t("navigation.listView", "List View")}
+                        </span>
+                      </m.span>
+                    ) : (
+                      <m.span
+                        key="map"
+                        className="flex flex-col items-center gap-1.5"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        transition={{ duration: duration.fast }}
+                      >
+                        <MapIcon className="size-5" />
+                        <span className="text-xs leading-none">
+                          {t("navigation.mapView", "Map View")}
+                        </span>
+                      </m.span>
                     )}
-                  />
-                  <span className="text-xs leading-none">
-                    {activeFilterCount > 0
-                      ? t("address.filterCount", "Filter · {{count}}", {
-                          count: activeFilterCount
-                        })
-                      : t("address.filter", "Filter")}
-                  </span>
+                  </AnimatePresence>
                 </m.button>
-              }
-            />
-            <m.button
-              type="button"
-              className={navItemClass}
-              onClick={showLocationModal}
-              aria-label={t("common.directions", "Directions")}
-              whileTap={tapFeedback}
-            >
-              <Navigation className="size-5" />
-              <span className="text-xs leading-none">
-                {t("common.directions", "Directions")}
-              </span>
-            </m.button>
-            <m.button
-              type="button"
-              className={navItemClass}
-              onClick={toggleLanguageSelector}
-              aria-label={t("common.language", "Language")}
-              whileTap={tapFeedback}
-            >
-              <Languages className="size-5" />
-              <span className="text-xs leading-none">
-                {currentLanguageLabel}
-              </span>
-            </m.button>
-            <m.button
-              type="button"
-              className={navItemClass}
-              onClick={handleOpenThemeSettings}
-              aria-label={t("theme.settings", "Theme Settings")}
-              whileTap={tapFeedback}
-            >
-              <Palette className="size-5" />
-              <span className="text-xs leading-none">
-                {t("theme.theme", "Theme")}
-              </span>
-            </m.button>
+              )}
+              <AddressFilterPopover
+                filter={addressFilter}
+                onChange={setAddressFilter}
+                options={policy.options}
+                surface="publisher"
+                side="top"
+                trigger={
+                  <m.button
+                    type="button"
+                    className={navItemClass}
+                    whileTap={tapFeedback}
+                  >
+                    <ListFilter
+                      className={cn(
+                        "size-5",
+                        activeFilterCount > 0 && "text-primary"
+                      )}
+                    />
+                    <span className="text-xs leading-none">
+                      {activeFilterCount > 0
+                        ? t("address.filterCount", "Filter · {{count}}", {
+                            count: activeFilterCount
+                          })
+                        : t("address.filter", "Filter")}
+                    </span>
+                  </m.button>
+                }
+              />
+              <span ref={setNextSlot} className="contents" />
+              <m.button
+                type="button"
+                className={navItemClass}
+                onClick={showLocationModal}
+                aria-label={t("common.directions", "Directions")}
+                whileTap={tapFeedback}
+              >
+                <Navigation className="size-5" />
+                <span className="text-xs leading-none">
+                  {t("common.directions", "Directions")}
+                </span>
+              </m.button>
+              <DropdownMenu>
+                <DropdownMenuTrigger
+                  render={
+                    <m.button
+                      type="button"
+                      className={navItemClass}
+                      whileTap={tapFeedback}
+                    />
+                  }
+                >
+                  <Ellipsis className="size-5" />
+                  <span className="text-xs leading-none">
+                    {t("navigation.more", "More")}
+                  </span>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent
+                  side="top"
+                  align="end"
+                  className="min-w-48"
+                >
+                  <DropdownMenuItem onClick={toggleLanguageSelector}>
+                    <Languages />
+                    {t("common.language", "Language")}
+                    <span className="ml-auto text-xs text-muted-foreground">
+                      {currentLanguageLabel}
+                    </span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleOpenThemeSettings}>
+                    <Palette />
+                    {t("theme.theme", "Theme")}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
         </m.nav>
       </div>

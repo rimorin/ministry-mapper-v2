@@ -13,6 +13,7 @@ import {
   DEFAULT_FLOOR_PADDING,
   USER_ACCESS_LEVELS
 } from "../../utils/constants";
+import { Trash2 } from "lucide-react";
 import ZeroPad from "../../utils/helpers/zeropad";
 import * as m from "motion/react-m";
 import GenericButton from "../navigation/button";
@@ -21,9 +22,11 @@ import {
   diagonalCell,
   columnHeader,
   rowHeader,
+  duration,
   PAGE_ENTER_DELAY
 } from "@/lib/motion";
 import useNextAvailable from "../../hooks/useNextAvailable";
+import useCanScrollRight from "../../hooks/useCanScrollRight";
 import NextAvailable from "./nextavailable";
 import {
   countAddressFilters,
@@ -81,7 +84,7 @@ const FloorRow = ({
         animate="show"
       >
         <div className="inline-flex items-center">
-          {moreThanOneFloor && (
+          {moreThanOneFloor && handleFloorDelete && (
             <ComponentAuthorizer
               requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
               userPermission={policy?.userRole}
@@ -92,7 +95,8 @@ const FloorRow = ({
                 className="me-1"
                 onClick={handleFloorDelete}
                 dataAttributes={{ floor: item.floor.toString() }}
-                label={t("table.deleteFloor", "🗑️")}
+                aria-label={t("table.deleteFloor", "Delete floor")}
+                label={<Trash2 />}
               />
             </ComponentAuthorizer>
           )}
@@ -177,88 +181,99 @@ const PublicTerritoryTable = ({
     policy,
     isMatch
   );
+  const canScrollRight = useCanScrollRight(containerRef);
   return (
-    <div className={cn("relative", !policy.isFromAdmin() && "h-full")}>
-      <div
-        ref={containerRef}
-        className={cn(
-          policy.isFromAdmin() ? "map-body-admin" : "h-full map-body"
-        )}
-      >
-        <table className="sticky-table w-full text-sm">
-          <thead>
-            <tr className="h-16">
-              <m.th
-                scope="col"
-                className="sticky-top-cell sticky-left-cell sticky-corner"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{
-                  duration: 0.25,
-                  ease: "linear",
-                  delay: PAGE_ENTER_DELAY
-                }}
-              />
-              {floorDetails?.units.map((item, index) => (
+    <>
+      <div className={cn("relative", !policy.isFromAdmin() && "h-full")}>
+        <div
+          ref={containerRef}
+          className={cn(
+            policy.isFromAdmin() ? "map-body-admin" : "h-full map-body"
+          )}
+        >
+          <table className="sticky-table w-full text-sm">
+            <thead>
+              <tr className="h-16">
                 <m.th
-                  key={`th-${item.number}`}
                   scope="col"
-                  className="sticky-top-cell text-center align-middle text-xs text-muted-foreground tracking-wide uppercase"
-                  custom={{ index }}
-                  variants={columnHeader}
-                  initial="hidden"
-                  animate="show"
-                >
-                  <div className="inline-flex items-center">
-                    <ComponentAuthorizer
-                      requiredPermission={
-                        USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
-                      }
-                      userPermission={policy?.userRole}
-                    >
-                      <GenericButton
-                        size="sm"
-                        variant="secondary"
-                        className="me-1"
-                        onClick={handleUnitDelete}
-                        dataAttributes={{ unitno: item.number }}
-                        label={t("table.deleteUnit", "🗑️")}
-                      />
-                    </ComponentAuthorizer>
-                    <span>{ZeroPad(item.number, maxUnitLength)}</span>
-                  </div>
-                </m.th>
+                  className="sticky-top-cell sticky-left-cell sticky-corner"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{
+                    duration: duration.base,
+                    ease: "linear",
+                    delay: PAGE_ENTER_DELAY
+                  }}
+                />
+                {floorDetails?.units.map((item, index) => (
+                  <m.th
+                    key={`th-${item.number}`}
+                    scope="col"
+                    className="sticky-top-cell text-center align-middle text-xs text-muted-foreground tracking-wide uppercase"
+                    custom={{ index }}
+                    variants={columnHeader}
+                    initial="hidden"
+                    animate="show"
+                  >
+                    <div className="inline-flex items-center">
+                      {handleUnitDelete && (
+                        <ComponentAuthorizer
+                          requiredPermission={
+                            USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
+                          }
+                          userPermission={policy?.userRole}
+                        >
+                          <GenericButton
+                            size="sm"
+                            variant="secondary"
+                            className="me-1"
+                            onClick={handleUnitDelete}
+                            dataAttributes={{ unitno: item.number }}
+                            aria-label={t("table.deleteUnit", "Delete unit")}
+                            label={<Trash2 />}
+                          />
+                        </ComponentAuthorizer>
+                      )}
+                      <span>{ZeroPad(item.number, maxUnitLength)}</span>
+                    </div>
+                  </m.th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {floors.map((item, rowIndex) => (
+                <FloorRow
+                  key={`row-${item.floor}`}
+                  item={item}
+                  rowIndex={rowIndex}
+                  moreThanOneFloor={moreThanOneFloor}
+                  aggregatesValue={aggregatesValue}
+                  policy={policy}
+                  isFiltered={isFiltered}
+                  isMatch={isMatch}
+                  pendingAddressIds={pendingAddressIds}
+                  targetId={targetId}
+                  handleUnitStatusUpdate={handleUnitStatusUpdate}
+                  handleFloorDelete={handleFloorDelete}
+                />
               ))}
-            </tr>
-          </thead>
-          <tbody>
-            {floors.map((item, rowIndex) => (
-              <FloorRow
-                key={`row-${item.floor}`}
-                item={item}
-                rowIndex={rowIndex}
-                moreThanOneFloor={moreThanOneFloor}
-                aggregatesValue={aggregatesValue}
-                policy={policy}
-                isFiltered={isFiltered}
-                isMatch={isMatch}
-                pendingAddressIds={pendingAddressIds}
-                targetId={targetId}
-                handleUnitStatusUpdate={handleUnitStatusUpdate}
-                handleFloorDelete={handleFloorDelete}
-              />
-            ))}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
+        <div
+          className={cn(
+            "pointer-events-none absolute inset-y-0 right-0 w-8 bg-linear-to-l from-background to-transparent transition-opacity duration-150",
+            canScrollRight ? "opacity-100" : "opacity-0"
+          )}
+        />
       </div>
       <NextAvailable
         remaining={remaining}
         progress={aggregatesValue}
         isFiltered={isFiltered}
-        surface="publisher"
         onClick={goToNext}
       />
-    </div>
+    </>
   );
 };
 

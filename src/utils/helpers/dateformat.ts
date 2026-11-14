@@ -1,11 +1,12 @@
-// e.g. "Tue, 21/09/21, 10:30 AM"
+// e.g. "Thu, 12 Nov 2026, 2:32 pm". The month is spelled out because
+// "12/11/26" reads as a different day to someone used to month-first dates.
 const formatDate = (dateString: number | string | Date): string => {
   return new Date(dateString).toLocaleString("en-GB", {
     weekday: "short",
-    day: "2-digit",
-    month: "2-digit",
-    year: "2-digit",
-    hour: "2-digit",
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
     minute: "2-digit",
     hour12: true
   });

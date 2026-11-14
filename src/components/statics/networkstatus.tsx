@@ -2,6 +2,7 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
+import { springCalm } from "@/lib/motion";
 import { useNetworkStatusContext } from "../middlewares/networkstatuscontext";
 import "../../css/networkstatus.css";
 
@@ -14,7 +15,7 @@ const bannerMotion = {
   initial: { opacity: 0, y: 12 },
   animate: { opacity: 1, y: 0 },
   exit: { opacity: 0, y: 12 },
-  transition: { type: "spring", visualDuration: 0.4, bounce: 0.2 }
+  transition: springCalm
 } as const;
 
 export const NetworkStatusBanner: FC = () => {

@@ -10,7 +10,7 @@ import ReleaseHistoryBtn from "./releasehistorybtn";
 import LanguageBtn from "./languagebtn";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
 import * as m from "motion/react-m";
-import { springBase } from "@/lib/motion";
+import { duration, enterTransition, springCalm } from "@/lib/motion";
 
 const { VITE_ABOUT_URL } = import.meta.env;
 const AboutURL = (VITE_ABOUT_URL ||
@@ -46,7 +46,7 @@ const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
           className="flex items-center gap-2 self-center font-medium"
           initial={{ opacity: 0, y: 16 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={springBase}
+          transition={springCalm}
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
@@ -61,9 +61,9 @@ const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
         </m.a>
 
         <m.div
-          initial={{ opacity: 0, scale: 0.93, y: 20 }}
+          initial={{ opacity: 0, scale: 0.93, y: 12 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          transition={{ ...springBase, delay: 0.1 }}
+          transition={{ ...enterTransition, delay: 0.1 }}
         >
           {children}
         </m.div>
@@ -73,7 +73,7 @@ const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
         className="w-full max-w-sm flex items-center justify-center gap-2 pb-6 text-muted-foreground"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5, delay: 0.2 }}
+        transition={{ duration: duration.slow, delay: 0.2 }}
       >
         <span className="flex flex-col items-center gap-0.5">
           <Button

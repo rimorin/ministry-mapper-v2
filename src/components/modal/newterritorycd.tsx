@@ -2,6 +2,7 @@ import NiceModal from "@ebay/nice-modal-react";
 import { lazy, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
+import { Trash2 } from "lucide-react";
 import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
 import { Button } from "@/components/ui/button";
 import {
@@ -226,7 +227,7 @@ const NewTerritoryCode = NiceModal.create(
                       onClick={() => setCoordinates([])}
                       aria-label="Clear boundary"
                     >
-                      🗑️
+                      <Trash2 />
                     </Button>
                   )}
                 </div>

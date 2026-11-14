@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/tooltip";
 import {
   checkEnter,
+  duration,
   fadeSlideUp,
   fadeZoom,
   staggerContainer,
@@ -206,7 +207,7 @@ const StepCard = ({
                     transition={{
                       repeat: Infinity,
                       repeatDelay: 2.5,
-                      duration: 0.45,
+                      duration: duration.slow,
                       ease: "easeInOut"
                     }}
                     whileTap={tapFeedback}
@@ -303,7 +304,7 @@ const GettingStarted = ({
                 key={completedCount}
                 initial={{ scaleX: 1 }}
                 animate={{ scaleX: [1, 1.01, 1] }}
-                transition={{ duration: 0.3, ease: "easeOut" }}
+                transition={{ duration: duration.base, ease: "easeOut" }}
                 style={{ originX: 0 }}
               >
                 <Progress

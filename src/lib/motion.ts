@@ -1,26 +1,76 @@
 import { type Transition, type Variants } from "motion/react";
 
-// Shared spring base — reused in authlayout for inline transitions.
-export const springBase = {
-  type: "spring",
-  visualDuration: 0.5,
-  bounce: 0.25
-} as const;
+// The app's timing scale, in seconds; CSS mirrors it as --motion-fast/base/slow
+// in index.css and Tailwind classes use duration-150/250/400. fast: presses,
+// colour changes and exits. base: fades and most entrances. slow: deliberate
+// moments. Ambient loops, chart draw-ins and map flights keep their own timing.
+export const duration = { fast: 0.15, base: 0.25, slow: 0.4 } as const;
 
-// Transforms → spring; opacity → linear fade long enough to be visible.
+// The two springs. Calm moves anything large, such as pages, panels and cards,
+// with no overshoot because the page moves with it. Close to the 200 ms the
+// shadcn sidebar takes, so the two read as one motion when the navigation
+// folds as the assistant opens.
+export const springCalm: Transition = {
+  type: "spring",
+  visualDuration: duration.base,
+  bounce: 0
+};
+
+// Pop is for small things that should feel tactile: status icons, badges,
+// the completion check.
+export const springPop: Transition = {
+  type: "spring",
+  visualDuration: duration.base,
+  bounce: 0.4
+};
+
+// The docked panel's contents: in from the edge as the panel widens.
+export const panelContent: Variants = {
+  hidden: { opacity: 0, x: 24 },
+  show: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      ...springCalm,
+      opacity: { duration: duration.base, ease: "linear" }
+    }
+  }
+};
+
+// A chat turn arriving: a short rise without bounce, so it reads as new
+// without pulling the eye from the page.
+export const messageEnter: Variants = {
+  hidden: { opacity: 0, y: 8 },
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      default: springCalm,
+      opacity: { duration: duration.base, ease: "linear" }
+    }
+  }
+};
+
+// Transforms → the calm spring, since these move whole cards and pages, where
+// an overshoot reads as a wobble; opacity → linear fade.
 export const enterTransition: Transition = {
-  default: springBase,
-  opacity: { duration: 0.35, ease: "linear" }
+  default: springCalm,
+  opacity: { duration: duration.base, ease: "linear" }
 };
 
 // Matches the .map-content CSS transition duration in index.css.
 // Table entrance animations use this as their base delay so they start
 // after the page fade-in completes.
-export const PAGE_ENTER_DELAY = 0.15;
+export const PAGE_ENTER_DELAY = duration.fast;
+
+// Grid cells and headers step 40 ms apart, capped so a tall building is not
+// still filling in a second later; past the cap the rest arrive together.
+const gridDelay = (steps: number) =>
+  PAGE_ENTER_DELAY + Math.min(steps * 0.04, 0.4);
 
 export const fadeIn: Variants = {
   hidden: { opacity: 0 },
-  show: { opacity: 1, transition: { duration: 0.25, ease: "linear" } }
+  show: { opacity: 1, transition: { duration: duration.base, ease: "linear" } }
 };
 
 // Delayed variant of fadeIn — lets a dialog finish opening before its content fades in.
@@ -28,17 +78,17 @@ export const fadeInDelayed: Variants = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { duration: 0.35, ease: "linear", delay: 0.2 }
+    transition: { duration: duration.base, ease: "linear", delay: 0.2 }
   }
 };
 
 export const fadeSlideUp: Variants = {
-  hidden: { opacity: 0, y: 24 },
+  hidden: { opacity: 0, y: 12 },
   show: { opacity: 1, y: 0, transition: enterTransition }
 };
 
 export const fadeSlideDown: Variants = {
-  hidden: { opacity: 0, y: -16 },
+  hidden: { opacity: 0, y: -8 },
   show: { opacity: 1, y: 0, transition: enterTransition }
 };
 
@@ -56,9 +106,9 @@ export const diagonalCell: Variants = {
   show: ({ row, col }: { row: number; col: number }) => ({
     opacity: 1,
     transition: {
-      duration: 0.35,
+      duration: duration.base,
       ease: "linear",
-      delay: PAGE_ENTER_DELAY + (row + col) * 0.04
+      delay: gridDelay(row + col)
     }
   })
 };
@@ -75,13 +125,13 @@ export const staggerContainer = (gap = 0.08, delay = 0): Variants => ({
 export const columnHeader: Variants = {
   hidden: { opacity: 0, x: -16 },
   show: ({ index }: { index: number }) => {
-    const delay = PAGE_ENTER_DELAY + index * 0.04;
+    const delay = gridDelay(index);
     return {
       opacity: 1,
       x: 0,
       transition: {
-        default: { ...springBase, delay },
-        opacity: { duration: 0.35, ease: "linear", delay }
+        default: { ...springCalm, delay },
+        opacity: { duration: duration.base, ease: "linear", delay }
       }
     };
   }
@@ -91,13 +141,13 @@ export const columnHeader: Variants = {
 export const rowHeader: Variants = {
   hidden: { opacity: 0, y: -10 },
   show: ({ index }: { index: number }) => {
-    const delay = PAGE_ENTER_DELAY + index * 0.04;
+    const delay = gridDelay(index);
     return {
       opacity: 1,
       y: 0,
       transition: {
-        default: { ...springBase, delay },
-        opacity: { duration: 0.35, ease: "linear", delay }
+        default: { ...springCalm, delay },
+        opacity: { duration: duration.base, ease: "linear", delay }
       }
     };
   }
@@ -113,9 +163,9 @@ export const sortableItemEnter: Variants = {
       opacity: 1,
       y: 0,
       transition: {
-        layout: { type: "spring", stiffness: 300, damping: 30 },
-        opacity: { duration: 0.18, delay },
-        y: { duration: 0.18, delay }
+        layout: springCalm,
+        opacity: { duration: duration.fast, delay },
+        y: { duration: duration.fast, delay }
       }
     };
   }
@@ -129,8 +179,8 @@ export const checkEnter: Variants = {
     scale: 1,
     rotate: 0,
     transition: {
-      default: { type: "spring", visualDuration: 0.4, bounce: 0.45 },
-      opacity: { duration: 0.2, ease: "linear" }
+      default: springPop,
+      opacity: { duration: duration.fast, ease: "linear" }
     }
   }
 };
@@ -142,12 +192,12 @@ export const countPop: Variants = {
   show: {
     opacity: 1,
     scale: 1,
-    transition: { type: "spring", visualDuration: 0.25, bounce: 0.5 }
+    transition: springPop
   },
   exit: {
     opacity: 0,
     scale: 0.6,
-    transition: { duration: 0.12, ease: "easeIn" }
+    transition: { duration: duration.fast, ease: "easeIn" }
   }
 };
 
@@ -156,7 +206,7 @@ export const countPop: Variants = {
 export const exitUp = {
   opacity: 0,
   y: -8,
-  transition: { duration: 0.15, ease: "easeIn" }
+  transition: { duration: duration.fast, ease: "easeIn" }
 } as const;
 
 // Shared tap/press feedback — scale only (compositor, zero reflow, Safari-safe).

@@ -19,6 +19,7 @@ import useLocalStorage from "../../hooks/useLocalStorage";
 import useGeolocation from "../../hooks/useGeolocation";
 import { useTranslation } from "react-i18next";
 import { ThemedTileLayer } from "../map/themedtilelayer";
+import UnboundedTerritories from "./unboundedterritories";
 import "leaflet/dist/leaflet.css";
 
 const DEFAULT_MAP_ZOOM =
@@ -44,9 +45,9 @@ const getColorForTerritory = (index: number, total: number) => {
 };
 
 const getProgressColor = (aggregate: number): string => {
-  if (aggregate > 90) return "#dc3545";
-  if (aggregate > 70) return "#fd7e14";
-  return "#198754";
+  if (aggregate > 90) return "var(--mm-urgency-high)";
+  if (aggregate > 70) return "var(--mm-urgency-medium)";
+  return "var(--mm-urgency-low)";
 };
 
 const calculateFontSize = (
@@ -112,17 +113,10 @@ const createLabelIcon = (
           font-size: ${codeSize}px;
           font-weight: 800;
           color: ${color};
-          text-shadow: 
-            -2px -2px 0 #000,
-            2px -2px 0 #000,
-            -2px 2px 0 #000,
-            2px 2px 0 #000,
-            -2px 0 0 #000,
-            2px 0 0 #000,
-            0 -2px 0 #000,
-            0 2px 0 #000,
-            0 0 4px #000,
-            0 0 8px #000;
+          text-shadow:
+            0 0 2px rgb(0 0 0 / 0.95),
+            0 0 2px rgb(0 0 0 / 0.95),
+            0 1px 4px rgb(0 0 0 / 0.6);
           margin-bottom: 4px;
           letter-spacing: 1px;
         ">${territory.code}</div>
@@ -169,17 +163,13 @@ const TerritoryMapView = ({
     undefined
   );
 
-  const territoriesWithCoordinates =
-    territories?.filter(
-      (territory) =>
-        territory.coordinates &&
-        Array.isArray(territory.coordinates) &&
-        territory.coordinates.length >= 3
-    ) || [];
+  const hasBoundary = (territory: territoryDetails) =>
+    Array.isArray(territory.coordinates) && territory.coordinates.length >= 3;
 
-  const territoriesWithoutCoordinates = territories?.length
-    ? territories.length - territoriesWithCoordinates.length
-    : 0;
+  const territoriesWithCoordinates = territories?.filter(hasBoundary) || [];
+
+  const territoriesWithoutCoordinates =
+    territories?.filter((territory) => !hasBoundary(territory)) || [];
 
   const defaultCenter: [number, number] = [
     DEFAULT_COORDINATES.Singapore.lat,
@@ -287,15 +277,13 @@ const TerritoryMapView = ({
           </>
         )}
 
-        {/* Territory count indicator */}
-        {territoriesWithoutCoordinates > 0 && (
+        {/* Territories without a polygon to tap */}
+        {territoriesWithoutCoordinates.length > 0 && (
           <CustomControl position="bottomright">
-            <div className="mb-0 rounded-lg border border-warning/30 bg-warning/10 px-4 py-3 font-bold text-warning shadow-[0_0.125rem_0.25rem_rgba(0,0,0,0.075)]">
-              <span className="font-semibold text-destructive">
-                {territoriesWithoutCoordinates}
-              </span>{" "}
-              {t("territory.withoutBoundaries", "without boundaries")}
-            </div>
+            <UnboundedTerritories
+              territories={territoriesWithoutCoordinates}
+              handleSelect={handleSelect}
+            />
           </CustomControl>
         )}
 

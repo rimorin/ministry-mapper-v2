@@ -1,6 +1,7 @@
 import { ReactElement, ReactNode } from "react";
 import { render, RenderOptions } from "@testing-library/react";
 import NiceModal from "@ebay/nice-modal-react";
+import { LazyMotion, domAnimation } from "motion/react";
 import { I18nextProvider } from "react-i18next";
 import i18n from "./i18n";
 import ThemeMiddleware from "../../components/middlewares/theme";
@@ -25,13 +26,17 @@ interface AllTheProvidersProps {
   children: ReactNode;
 }
 
+// The app loads motion's features once at the root; without them, m.*
+// elements stay at their initial style, such as opacity 0.
 const AllTheProviders = ({ children }: AllTheProvidersProps) => {
   return (
-    <I18nextProvider i18n={i18n}>
-      <ThemeMiddleware>
-        <NiceModal.Provider>{children}</NiceModal.Provider>
-      </ThemeMiddleware>
-    </I18nextProvider>
+    <LazyMotion features={domAnimation}>
+      <I18nextProvider i18n={i18n}>
+        <ThemeMiddleware>
+          <NiceModal.Provider>{children}</NiceModal.Provider>
+        </ThemeMiddleware>
+      </I18nextProvider>
+    </LazyMotion>
   );
 };
 

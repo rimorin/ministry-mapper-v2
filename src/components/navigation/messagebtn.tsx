@@ -104,7 +104,9 @@ const MessageButtonGroup: React.FC<PersonalButtonGroupProps> = ({
         }
       >
         <MessageSquare className="size-3.5" />
-        {t("messages.messages", "Messages")}
+        <span className="sr-only sm:not-sr-only">
+          {t("messages.messages", "Messages")}
+        </span>
       </Button>
       {isAdmin && unreadMsgCount > 0 && (
         <CountBadge

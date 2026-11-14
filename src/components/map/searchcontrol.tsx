@@ -5,6 +5,7 @@ import { Search, X, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Spinner } from "@/components/ui/spinner";
 import { latlongInterface } from "../../utils/interface";
+import { searchAddresses, type AddressMatch } from "../../utils/geocode";
 import CustomControl from "./customcontrol";
 
 const MIN_QUERY_LENGTH = 3;
@@ -14,27 +15,13 @@ interface SearchControlProps {
   origin: string;
 }
 
-interface SearchResult {
-  formatted: string;
-  address_line1?: string;
-  address_line2?: string;
-  lat: number;
-  lon: number;
-}
-
-interface GeoapifyFeatureCollection {
-  features?: Array<{
-    properties: SearchResult;
-  }>;
-}
-
 export const SearchControl = ({
   onLocationSelect,
   origin
 }: SearchControlProps) => {
   const map = useMap();
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<SearchResult[]>([]);
+  const [results, setResults] = useState<AddressMatch[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -58,20 +45,7 @@ export const SearchControl = ({
       abortRef.current = controller;
       setIsLoading(true);
       try {
-        const apiKey = import.meta.env.VITE_GEOAPIFY_API_KEY as string;
-        const params = new URLSearchParams({
-          text: q,
-          limit: "5",
-          apiKey
-        });
-        if (origin) params.set("filter", `countrycode:${origin.toLowerCase()}`);
-        const res = await fetch(
-          `https://api.geoapify.com/v1/geocode/autocomplete?${params}`,
-          { signal: controller.signal }
-        );
-        if (!res.ok) throw new Error("Search failed");
-        const data: GeoapifyFeatureCollection = await res.json();
-        setResults((data.features ?? []).map((f) => f.properties));
+        setResults(await searchAddresses(q, origin, 5, controller.signal));
       } catch (err) {
         if (!isAbortError(err)) setResults([]);
       } finally {
@@ -92,7 +66,7 @@ export const SearchControl = ({
     debounceRef.current = setTimeout(() => search(value), 300);
   };
 
-  const handleSelect = (result: SearchResult) => {
+  const handleSelect = (result: AddressMatch) => {
     const lat = result.lat;
     const lng = result.lon;
     onLocationSelect({ lat, lng });

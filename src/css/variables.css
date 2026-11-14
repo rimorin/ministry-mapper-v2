@@ -17,6 +17,12 @@
   --mm-marker-selected-gap: var(--mm-marker-surface);
   --mm-marker-label-bg: rgba(0, 0, 0, 0.5);
 
+  /* Territory progress on the map: the progress badge's destructive, warning
+     and success at their light values, pinned because the pill stays white. */
+  --mm-urgency-high: oklch(57.7% 0.245 27.325); /* red-600 */
+  --mm-urgency-medium: oklch(47.3% 0.137 46.201); /* amber-800 */
+  --mm-urgency-low: oklch(44.8% 0.119 151.328); /* green-800 */
+
   /* Brand semantic colours (no matching shadcn token) */
   --mm-success: #28a745;
   --mm-warning: #ff6b35;

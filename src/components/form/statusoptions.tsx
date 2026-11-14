@@ -3,9 +3,10 @@ import { Ban, Check, Circle, X } from "lucide-react";
 import { STATUS_CODES } from "../../utils/constants";
 import NotHomeIcon from "../table/nothome";
 
-// Idle tiles recede and pressed ones come forward.
+// Idle tiles recede and pressed ones come forward. Only the icon fades, so an
+// idle label stays readable instead of looking disabled.
 export const STATUS_TILE_CLASS =
-  "flex-1 flex-col gap-1 h-auto py-2.5 opacity-40 transition-[opacity,transform,background-color,box-shadow] duration-150 ease-in-out motion-reduce:transition-none active:scale-95 data-[pressed]:opacity-100 data-[pressed]:z-10 data-[pressed]:ring-1 data-[pressed]:ring-inset focus:outline-none";
+  "flex-1 flex-col gap-1 h-auto py-2.5 text-muted-foreground transition-[color,transform,background-color,box-shadow] duration-150 ease-in-out motion-reduce:transition-none active:scale-95 [&_svg]:opacity-55 [&_svg]:transition-opacity data-[pressed]:text-foreground data-[pressed]:[&_svg]:opacity-100 data-[pressed]:z-10 data-[pressed]:ring-1 data-[pressed]:ring-inset focus:outline-none";
 
 // Pressed tiles tint with the status's own hue instead of the theme primary,
 // which can clash with the fixed symbol colors.

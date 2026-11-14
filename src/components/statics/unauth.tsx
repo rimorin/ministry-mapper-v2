@@ -25,7 +25,7 @@ const UnauthorizedPage = ({ handleClick }: SignInDifferentProps) => {
           <CardContent>
             <CardHeader className="px-0 pt-0">
               <CardTitle className="text-center">
-                {t("auth.unauthorizedAccessTitle", "Access Denied 🔐")}
+                {t("auth.unauthorizedAccessTitle", "Access Denied")}
               </CardTitle>
             </CardHeader>
             <p className="mb-4 text-center text-sm text-muted-foreground">

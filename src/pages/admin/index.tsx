@@ -1,7 +1,8 @@
 import "../../css/admin.css";
 
-import { useEffect, useRef, use, lazy } from "react";
+import { useEffect, useRef, use, lazy, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import {
   adminProps,
   userDetails,
@@ -51,6 +52,14 @@ import AdminNavbar from "./components/adminnavbar";
 import { AppSidebar } from "./components/appsidebar";
 import BackToTopButton from "../../components/navigation/backtotop";
 import { useSmartSync, SmartSyncProvider } from "../../hooks/useSmartSync";
+import { useIsMobile } from "../../hooks/use-mobile";
+import type { AssistantView } from "../../hooks/useAssistant";
+import type { CongregationSettings } from "../../utils/assistantActions";
+import { AnimatePresence } from "motion/react";
+// Small and shown at once, so not lazy; the chat inside it is.
+import AssistantDock, {
+  preloadAssistantChat
+} from "../../components/common/assistant-dock";
 
 const TerritoryContent = SuspenseComponent(
   lazy(() => import("./components/territorycontent"))
@@ -60,6 +69,8 @@ const UnauthorizedPage = SuspenseComponent(
   lazy(() => import("../../components/statics/unauth"))
 );
 const UpdateUser = lazy(() => import("../../components/modal/updateuser"));
+const AssistantModal = lazy(() => import("../../components/modal/assistant"));
+
 const UpdateCongregationSettings = lazy(
   () => import("../../components/modal/congsettings")
 );
@@ -144,6 +155,17 @@ function Admin({ user }: adminProps) {
   } = useCongregationManagement({ userId });
 
   useLaunchDarklyContext(userCongregationAccesses, congregationCode);
+  // Targeted per congregation; without the LaunchDarkly provider useFlags()
+  // returns {} and the assistant stays hidden.
+  const { enableAdminAssistant } = useFlags();
+  const isMobile = useIsMobile();
+  // Docked beside the page on desktop; a drawer on phones.
+  const [assistantOpen, setAssistantOpen] = useState(false);
+  // The map at the top of the list, so the assistant knows what is open.
+  // Kept in a ref while the dock is closed, so scrolling does not re-render
+  // the page for nothing.
+  const mapInViewRef = useRef("");
+  const [mapInView, setMapInView] = useState("");
   useAnalyticsIdentity(userCongregationAccesses, congregationCode);
 
   const {
@@ -224,15 +246,83 @@ function Admin({ user }: adminProps) {
 
   // Calls setupMaps immediately inside the user-gesture event handler so Safari
   // doesn't defer the fetch until after the sheet-close CSS animation finishes.
+  const selectTerritory = (id: string) => {
+    setupMapsFiredForRef.current = id;
+    void setupMaps(id);
+    handleTerritorySelect(id);
+  };
+
   const handleTerritorySelectWithSetup = (
     id: string | null,
     _: React.SyntheticEvent<unknown>
   ) => {
     if (!id) return;
-    setupMapsFiredForRef.current = id;
-    void setupMaps(id);
-    handleTerritorySelect(id);
+    selectTerritory(id);
   };
+
+  // What the admin has open, for the assistant: the territory, and the map
+  // at the top of the list (not in map view, which shows no list).
+  const viewOf = (mapId: string): AssistantView | undefined => {
+    if (!selectedTerritory.id || !selectedTerritory.code) return undefined;
+    const topMap = isMapView
+      ? undefined
+      : displayAddressList.find((map) => map.id === mapId);
+    return {
+      territoryId: selectedTerritory.id,
+      territoryCode: selectedTerritory.code,
+      territoryName: selectedTerritory.name,
+      mapId: topMap?.id,
+      mapName: topMap?.name
+    };
+  };
+
+  const handleMapInView = (mapId: string) => {
+    mapInViewRef.current = mapId;
+    if (assistantOpen) setMapInView(mapId);
+  };
+
+  // The docked panel opens and closes, about the map in view right then.
+  const toggleAssistantDock = () => {
+    setMapInView(mapInViewRef.current);
+    setAssistantOpen((open) => !open);
+  };
+
+  const handleOpenAssistant = () => {
+    if (!isMobile) {
+      toggleAssistantDock();
+      return;
+    }
+    showModal(AssistantModal, {
+      congregation: congregationCode,
+      role: userAccessLevel,
+      origin: policy.origin,
+      view: viewOf(mapInViewRef.current),
+      onSelectTerritory: selectTerritory,
+      onSettingsChange: handleAssistantSettings
+    });
+  };
+
+  // With the docked panel: the chat loads while the page is idle, so the panel
+  // opens straight onto it, and Ctrl or Cmd + Shift + U opens and closes it.
+  useEffect(() => {
+    if (enableAdminAssistant !== true || isMobile) return;
+    const preload = window.setTimeout(preloadAssistantChat, 2000);
+    const onKey = (event: globalThis.KeyboardEvent) => {
+      if (
+        (event.metaKey || event.ctrlKey) &&
+        event.shiftKey &&
+        event.key.toLowerCase() === "u"
+      ) {
+        event.preventDefault();
+        toggleAssistantDock();
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => {
+      window.clearTimeout(preload);
+      window.removeEventListener("keydown", onKey);
+    };
+  }, [enableAdminAssistant, isMobile]);
 
   const handleUserSelect = async (userKey: string | null) => {
     if (!userKey) return;
@@ -344,6 +434,27 @@ function Admin({ user }: adminProps) {
         )
       );
     }
+  };
+
+  // Settings changed or put back on an assistant card, so the page uses them
+  // without a reload.
+  const handleAssistantSettings = ({
+    max_tries,
+    expiry_hours
+  }: CongregationSettings) => {
+    setDefaultExpiryHours(expiry_hours);
+    setPolicy(
+      (current) =>
+        new Policy(
+          current.userName,
+          current.options,
+          max_tries,
+          current.origin,
+          current.userRole,
+          expiry_hours,
+          current.congregation
+        )
+    );
   };
 
   const handleShowCongregationOptions = async () => {
@@ -751,6 +862,10 @@ function Admin({ user }: adminProps) {
           onPasswordReset: handlePasswordReset,
           onLogout: logoutUser
         }}
+        assistantOpen={assistantOpen && !isMobile}
+        onOpenAssistant={
+          enableAdminAssistant === true ? handleOpenAssistant : undefined
+        }
       />
       <SidebarInset className="h-dvh min-w-0">
         {isLoading ? (
@@ -759,6 +874,8 @@ function Admin({ user }: adminProps) {
           <>
             <AdminNavbar
               congregationName={congregationName}
+              territoryName={selectedTerritory.name}
+              onSwitchTerritory={toggleTerritoryListing}
               pendingCount={displayPendingCount}
             />
             <SmartSyncProvider value={smartSync}>
@@ -773,7 +890,6 @@ function Admin({ user }: adminProps) {
                 sortMode={sortMode}
                 onSortModeChange={handleSortModeChange}
                 isLoadingLocation={isLoadingLocation}
-                onSwitchTerritory={toggleTerritoryListing}
                 accordionKeys={accordionKeys}
                 setAccordionKeys={setAccordionKeys}
                 mapViews={mapViews}
@@ -794,6 +910,7 @@ function Admin({ user }: adminProps) {
                 onCreateTerritory={handleCreateTerritory}
                 hasAnyMaps={hasAnyMaps}
                 onCreateMap={handleCreateMap}
+                onMapInView={handleMapInView}
               />
               <BackToTopButton
                 showButton={showBkTopButton && !isMapView}
@@ -809,6 +926,20 @@ function Admin({ user }: adminProps) {
           </>
         )}
       </SidebarInset>
+      <AnimatePresence>
+        {assistantOpen && !isMobile && enableAdminAssistant === true && (
+          <AssistantDock
+            key={congregationCode}
+            congregation={congregationCode}
+            role={userAccessLevel}
+            origin={policy.origin}
+            view={viewOf(mapInView)}
+            onSelectTerritory={selectTerritory}
+            onSettingsChange={handleAssistantSettings}
+            onClose={() => setAssistantOpen(false)}
+          />
+        )}
+      </AnimatePresence>
     </SidebarProvider>
   );
 }

@@ -1,5 +1,4 @@
 import {
-  ChevronDown,
   GripVertical,
   List,
   LocateFixed,
@@ -56,8 +55,7 @@ const TerritoryHeader = ({
   onCreateMap,
   sortMode,
   onSortModeChange,
-  isLoadingLocation,
-  onSwitchTerritory
+  isLoadingLocation
 }: territoryHeaderProp) => {
   const { t } = useTranslation();
 
@@ -76,119 +74,105 @@ const TerritoryHeader = ({
 
   return (
     <m.div
-      className="sticky top-0 z-30 flex min-h-[44px] flex-col gap-1.5 border-b border-border bg-background px-4 py-2 text-base text-foreground"
+      className="sticky top-0 z-30 flex min-h-[44px] items-center justify-between gap-2 border-b border-border bg-background px-4 py-2 text-base text-foreground"
       variants={fadeSlideDown}
       initial="hidden"
       animate="show"
     >
-      <Button
-        variant="secondary"
-        size="lg"
-        onClick={onSwitchTerritory}
-        aria-haspopup="dialog"
-        className="h-11 self-center bg-primary/10 font-bold text-primary hover:bg-primary/15"
-      >
-        {name}
-        <ChevronDown className="size-4" />
-      </Button>
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          {onToggleView && (
-            <ToggleGroup
-              value={[isMapView ? "map" : "list"]}
-              onValueChange={(value) => {
-                if (value[0]) onToggleView();
-              }}
-              variant="outline"
-              size="sm"
-              aria-label={t("navigation.viewToggle", "View toggle")}
+      <div className="flex items-center gap-2">
+        {onToggleView && (
+          <ToggleGroup
+            value={[isMapView ? "map" : "list"]}
+            onValueChange={(value) => {
+              if (value[0]) onToggleView();
+            }}
+            variant="outline"
+            size="sm"
+            aria-label={t("navigation.viewToggle", "View toggle")}
+          >
+            <ToggleGroupItem
+              value="list"
+              aria-label={t("navigation.listView", "List View")}
             >
-              <ToggleGroupItem
-                value="list"
-                aria-label={t("navigation.listView", "List View")}
-              >
-                <List className="size-4" />
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value="map"
-                aria-label={t("navigation.mapView", "Map View")}
-              >
-                <Map className="size-4" />
-              </ToggleGroupItem>
-            </ToggleGroup>
-          )}
-          {onSortModeChange && !isMapView && (
-            <GenericDropdownButton
-              align="start"
-              variant="outline"
-              size="sm"
-              label={
-                <>
-                  {isLoadingLocation ? (
-                    <Spinner data-icon="inline-start" aria-hidden="true" />
-                  ) : (
-                    <SortIcon className="size-4" />
-                  )}
-                  <span className="sr-only sm:not-sr-only sm:inline">
-                    {sortModeLabels[currentSortMode]}
-                  </span>
-                </>
-              }
+              <List className="size-4" />
+            </ToggleGroupItem>
+            <ToggleGroupItem
+              value="map"
+              aria-label={t("navigation.mapView", "Map View")}
             >
-              <DropdownMenuRadioGroup
-                value={currentSortMode}
-                onValueChange={(value) =>
-                  onSortModeChange(value as MapSortMode)
-                }
-              >
-                {SORT_MODES.map((mode) => (
-                  <DropdownMenuRadioItem key={mode} value={mode} closeOnClick>
-                    {sortModeLabels[mode]}
-                  </DropdownMenuRadioItem>
-                ))}
-              </DropdownMenuRadioGroup>
-            </GenericDropdownButton>
-          )}
-        </div>
-        <div className="flex items-center gap-2">
-          {onGenerateLink && (
-            <ComponentAuthorizer
-              requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
-              userPermission={userAccessLevel}
-            >
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onGenerateLink}
-                disabled={isAssignmentLoading}
-                aria-label={t("navigation.generateLink", "Quick Link")}
-              >
-                {isAssignmentLoading ? (
-                  <Spinner aria-hidden="true" />
+              <Map className="size-4" />
+            </ToggleGroupItem>
+          </ToggleGroup>
+        )}
+        {onSortModeChange && !isMapView && (
+          <GenericDropdownButton
+            align="start"
+            variant="outline"
+            size="sm"
+            label={
+              <>
+                {isLoadingLocation ? (
+                  <Spinner data-icon="inline-start" aria-hidden="true" />
                 ) : (
-                  <Zap className="size-4" />
+                  <SortIcon className="size-4" />
                 )}
-                {t("navigation.generateLink", "Quick Link")}
-              </Button>
-            </ComponentAuthorizer>
-          )}
-          {showCreateMapAction && (
-            <ComponentAuthorizer
-              requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
-              userPermission={userAccessLevel}
+                <span className="sr-only sm:not-sr-only sm:inline">
+                  {sortModeLabels[currentSortMode]}
+                </span>
+              </>
+            }
+          >
+            <DropdownMenuRadioGroup
+              value={currentSortMode}
+              onValueChange={(value) => onSortModeChange(value as MapSortMode)}
             >
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={onCreateMap}
-                aria-label={t("map.newMap", "New Map")}
-              >
-                <Plus className="size-4" />
-                {t("map.newMap", "New Map")}
-              </Button>
-            </ComponentAuthorizer>
-          )}
-        </div>
+              {SORT_MODES.map((mode) => (
+                <DropdownMenuRadioItem key={mode} value={mode} closeOnClick>
+                  {sortModeLabels[mode]}
+                </DropdownMenuRadioItem>
+              ))}
+            </DropdownMenuRadioGroup>
+          </GenericDropdownButton>
+        )}
+      </div>
+      <div className="flex items-center gap-2">
+        {onGenerateLink && (
+          <ComponentAuthorizer
+            requiredPermission={USER_ACCESS_LEVELS.CONDUCTOR.CODE}
+            userPermission={userAccessLevel}
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onGenerateLink}
+              disabled={isAssignmentLoading}
+              aria-label={t("navigation.generateLink", "Quick Link")}
+            >
+              {isAssignmentLoading ? (
+                <Spinner aria-hidden="true" />
+              ) : (
+                <Zap className="size-4" />
+              )}
+              {t("navigation.generateLink", "Quick Link")}
+            </Button>
+          </ComponentAuthorizer>
+        )}
+        {showCreateMapAction && (
+          <ComponentAuthorizer
+            requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
+            userPermission={userAccessLevel}
+          >
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onCreateMap}
+              aria-label={t("map.newMap", "New Map")}
+            >
+              <Plus className="size-4" />
+              {t("map.newMap", "New Map")}
+            </Button>
+          </ComponentAuthorizer>
+        )}
       </div>
     </m.div>
   );

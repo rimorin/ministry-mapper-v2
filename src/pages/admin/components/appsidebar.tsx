@@ -1,6 +1,7 @@
 import * as React from "react";
 import * as m from "motion/react-m";
 import { stagger, useAnimate, useReducedMotion } from "motion/react";
+import { duration } from "@/lib/motion";
 import {
   ArrowUpDown,
   BarChart3,
@@ -48,6 +49,7 @@ import {
   SidebarSeparator,
   useSidebar
 } from "@/components/ui/sidebar";
+import { AssistantIcon } from "@/components/common/assistant-icon";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -67,10 +69,15 @@ import { USER_ACCESS_LEVELS } from "../../../utils/constants";
 import { territoryDetails } from "../../../utils/interface";
 import { Policy } from "../../../utils/policies";
 
+// How the assistant's shortcut reads on this keyboard.
+const ASSISTANT_SHORTCUT = /Mac|iPhone|iPad/.test(navigator.userAgent)
+  ? "⌘⇧U"
+  : "Ctrl+Shift+U";
+
 const sectionIn = (delay: number) => ({
   initial: { opacity: 0, y: -8 },
   animate: { opacity: 1, y: 0 },
-  transition: { duration: 0.35, ease: "easeOut" as const, delay }
+  transition: { duration: duration.base, ease: "easeOut" as const, delay }
 });
 
 function runSectionStagger(
@@ -85,7 +92,7 @@ function runSectionStagger(
   void animate(
     "li",
     { opacity: [0, 1], ...from },
-    { delay: stagger(0.04), duration: 0.2, ease: "easeOut" }
+    { delay: stagger(0.04), duration: duration.fast, ease: "easeOut" }
   );
 }
 
@@ -172,6 +179,10 @@ interface AppSidebarProps {
     onLogout: () => void;
   };
   pendingCount?: number;
+  // Present only when the assistant is enabled for the congregation.
+  onOpenAssistant?: () => void;
+  // The docked assistant is open, so its button shows as pressed.
+  assistantOpen?: boolean;
 }
 
 export function AppSidebar({
@@ -193,7 +204,9 @@ export function AppSidebar({
   onCreateTerritory,
   onTerritoryActions,
   onCongregationActions,
-  onAccountActions
+  onAccountActions,
+  onOpenAssistant,
+  assistantOpen = false
 }: AppSidebarProps) {
   const { t } = useTranslation();
   const { isMobile, setOpenMobile } = useSidebar();
@@ -285,6 +298,30 @@ export function AppSidebar({
                       ) : (
                         t("territory.selectTerritory", "Select Territory")
                       )}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+
+                {onOpenAssistant && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      onClick={handleAction(onOpenAssistant)}
+                      isActive={assistantOpen}
+                      aria-pressed={assistantOpen}
+                      aria-keyshortcuts="Control+Shift+U Meta+Shift+U"
+                      className="gap-2"
+                    >
+                      <AssistantIcon className="size-4 shrink-0 text-muted-foreground" />
+                      <span className="min-w-0 flex-1 truncate">
+                        {t("assistant.title", "Mapper Assistant")}
+                      </span>
+                      {/* The shortcut works on desktop only (admin page). */}
+                      <kbd
+                        aria-hidden="true"
+                        className="hidden font-sans text-xs text-muted-foreground md:inline"
+                      >
+                        {ASSISTANT_SHORTCUT}
+                      </kbd>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 )}
@@ -715,7 +752,7 @@ export function AppSidebar({
 
       <m.div {...sectionIn(0.45)}>
         <SidebarFooter className="p-0">
-          <SidebarSeparator />
+          <SidebarSeparator className="data-horizontal:w-auto" />
           <TooltipProvider>
             <div className="flex gap-2 p-3">
               <Tooltip>

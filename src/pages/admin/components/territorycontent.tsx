@@ -55,13 +55,14 @@ interface TerritoryContentProps {
   resetMap: (mapId: string) => Promise<void>;
   processingMap: { isProcessing: boolean; mapId: string | null };
   toggleAddressTerritoryListing: () => void;
-  onSwitchTerritory: () => void;
   congregationOptions: HHOptionProps[];
   territories: Map<string, territoryDetails>;
   onCreateOptions: () => void;
   onCreateTerritory: () => void;
   hasAnyMaps: boolean;
   onCreateMap: () => void;
+  // The map at the top of the list, for the assistant.
+  onMapInView?: (mapId: string) => void;
 }
 
 export default function TerritoryContent({
@@ -89,13 +90,13 @@ export default function TerritoryContent({
   resetMap,
   processingMap,
   toggleAddressTerritoryListing,
-  onSwitchTerritory,
   congregationOptions,
   territories,
   onCreateOptions,
   onCreateTerritory,
   hasAnyMaps,
-  onCreateMap
+  onCreateMap,
+  onMapInView
 }: TerritoryContentProps) {
   const hasOptions = congregationOptions.length > 0;
   const hasTerritories = territories.size > 0;
@@ -155,7 +156,6 @@ export default function TerritoryContent({
             sortMode={sortMode}
             onSortModeChange={onSortModeChange}
             isLoadingLocation={isLoadingLocation}
-            onSwitchTerritory={onSwitchTerritory}
           />
           {isMapView ? (
             <MapView
@@ -186,6 +186,7 @@ export default function TerritoryContent({
               toggleAddressTerritoryListing={toggleAddressTerritoryListing}
               territoryId={selectedTerritory.id}
               territoryName={selectedTerritory.name}
+              onMapInView={onMapInView}
             />
           )}
         </m.div>
