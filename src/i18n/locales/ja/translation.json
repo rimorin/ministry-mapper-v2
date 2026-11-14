@@ -575,7 +575,7 @@
     "title": "Mapper アシスタント",
     "description": "区域について自由に質問してください。回答は会衆のデータに基づきます。",
     "descriptionChange": "区域について質問したり、変更を頼んだりできます。確認するまで何も変更されません。",
-    "privacy": "記録にある人の名前は AI には見えません。入力したその他の名前やメモに書かれた名前は送信されることがあります。",
+    "privacy": "記録にある人の名前は AI には見えません。入力したその他の名前や、メモや写真にある名前は送信されることがあります。",
     "placeholder": "質問を入力…",
     "send": "送信",
     "thinking": "考えています…",
@@ -676,7 +676,8 @@
       "propose_rename": "名前の変更を準備",
       "propose_reset": "リセットを準備",
       "calculate": "数値を計算",
-      "territory_rounds": "カバー記録を確認"
+      "territory_rounds": "カバー記録を確認",
+      "read_image": "写真を読み取りました"
     },
     "column": {
       "action": "操作",
@@ -756,7 +757,8 @@
       "days": "日数",
       "completed_rounds": "完了した周回",
       "average_days": "平均日数",
-      "open_since": "開始日"
+      "open_since": "開始日",
+      "units": "部屋番号"
     },
     "reading": "質問を確認しています…",
     "showMore": "さらに {{count}} 件表示",
@@ -982,6 +984,12 @@
       "lineSummary": "{{title}}の折れ線グラフ。{{from}}から{{to}}までの{{count}}点。すべての値はこの確認の表にあります。"
     },
     "copyTable": "表をコピー",
-    "downloadCsv": "CSVでダウンロード"
+    "downloadCsv": "CSVでダウンロード",
+    "photo": {
+      "attach": "写真を添付",
+      "remove": "写真を削除",
+      "failed": "その写真は使用できませんでした。JPEG または PNG をお試しください。",
+      "alt": "添付した写真"
+    }
   }
 }

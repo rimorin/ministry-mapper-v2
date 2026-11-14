@@ -575,7 +575,7 @@
     "title": "Asisten Mapper",
     "description": "Tanyakan tentang wilayah Anda dengan kata-kata sendiri. Jawaban berasal dari data sidang Anda.",
     "descriptionChange": "Tanyakan tentang wilayah Anda atau minta perubahan, dengan kata-kata sendiri. Tidak ada yang berubah sampai Anda mengonfirmasi.",
-    "privacy": "Nama orang dalam catatan Anda disembunyikan dari AI. Nama lain yang Anda ketik, atau yang muncul di catatan rumah, mungkin terkirim.",
+    "privacy": "Nama orang dalam catatan Anda disembunyikan dari AI. Nama lain yang Anda ketik, atau yang muncul di catatan rumah atau foto, mungkin terkirim.",
     "placeholder": "Ajukan pertanyaan…",
     "send": "Kirim",
     "thinking": "Berpikir…",
@@ -676,7 +676,8 @@
       "propose_rename": "Menyiapkan penggantian nama",
       "propose_reset": "Menyiapkan reset",
       "calculate": "Menghitung angka",
-      "territory_rounds": "Memeriksa catatan cakupan"
+      "territory_rounds": "Memeriksa catatan cakupan",
+      "read_image": "Membaca foto"
     },
     "column": {
       "action": "Tindakan",
@@ -756,7 +757,8 @@
       "days": "Hari",
       "completed_rounds": "Putaran selesai",
       "average_days": "Rata-rata hari",
-      "open_since": "Dibuka sejak"
+      "open_since": "Dibuka sejak",
+      "units": "Unit"
     },
     "reading": "Membaca pertanyaan Anda…",
     "showMore": "Tampilkan {{count}} lagi",
@@ -982,6 +984,12 @@
       "lineSummary": "Grafik garis {{title}}, {{count}} titik dari {{from}} sampai {{to}}. Tabel pemeriksaan ini memuat semua nilainya."
     },
     "copyTable": "Salin tabel",
-    "downloadCsv": "Unduh sebagai CSV"
+    "downloadCsv": "Unduh sebagai CSV",
+    "photo": {
+      "attach": "Lampirkan foto",
+      "remove": "Hapus foto",
+      "failed": "Foto itu tidak dapat digunakan. Coba JPEG atau PNG.",
+      "alt": "Foto yang Anda lampirkan"
+    }
   }
 }

@@ -575,7 +575,7 @@
     "title": "Mapper 助手",
     "description": "用自己的话询问有关地区的问题。回答来自会众的数据。",
     "descriptionChange": "用自己的话询问有关地区的问题，或要求更改。您确认之前不会有任何更改。",
-    "privacy": "记录中人员的姓名对 AI 隐藏。您输入的其他姓名或备注中出现的姓名可能会被发送。",
+    "privacy": "记录中人员的姓名对 AI 隐藏。您输入的其他姓名，或备注和照片中出现的姓名，可能会被发送。",
     "placeholder": "提出问题…",
     "send": "发送",
     "thinking": "正在思考…",
@@ -676,7 +676,8 @@
       "propose_rename": "已准备改名",
       "propose_reset": "已准备重置",
       "calculate": "计算了数字",
-      "territory_rounds": "查看覆盖记录"
+      "territory_rounds": "查看覆盖记录",
+      "read_image": "读取了照片"
     },
     "column": {
       "action": "操作",
@@ -756,7 +757,8 @@
       "days": "天数",
       "completed_rounds": "完成轮数",
       "average_days": "平均天数",
-      "open_since": "本轮开始于"
+      "open_since": "本轮开始于",
+      "units": "单位"
     },
     "reading": "正在阅读您的问题…",
     "showMore": "再显示 {{count}} 条",
@@ -982,6 +984,12 @@
       "lineSummary": "{{title}}的折线图，从{{from}}到{{to}}共{{count}}个点。此查询的表格包含所有数值。"
     },
     "copyTable": "复制表格",
-    "downloadCsv": "下载为 CSV"
+    "downloadCsv": "下载为 CSV",
+    "photo": {
+      "attach": "添加照片",
+      "remove": "移除照片",
+      "failed": "无法使用该照片。请尝试 JPEG 或 PNG。",
+      "alt": "您添加的照片"
+    }
   }
 }

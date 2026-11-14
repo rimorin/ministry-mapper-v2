@@ -575,7 +575,7 @@
     "title": "Mapper Assistant",
     "description": "Ask about your territories in your own words. Answers come from your congregation's data.",
     "descriptionChange": "Ask about your territories or ask for a change, in your own words. Nothing changes until you confirm.",
-    "privacy": "Names of people in your records are hidden from the AI. Other names you type, or that appear in notes, may be sent.",
+    "privacy": "Names of people in your records are hidden from the AI. Other names you type, or that appear in notes or photos, may be sent.",
     "placeholder": "Ask a question…",
     "send": "Send",
     "thinking": "Thinking…",
@@ -676,7 +676,8 @@
       "propose_rename": "Prepared a rename",
       "propose_reset": "Prepared a reset",
       "calculate": "Worked out a figure",
-      "territory_rounds": "Checked the coverage record"
+      "territory_rounds": "Checked the coverage record",
+      "read_image": "Read the photo"
     },
     "column": {
       "action": "Action",
@@ -756,7 +757,8 @@
       "days": "Days",
       "completed_rounds": "Rounds completed",
       "average_days": "Average days",
-      "open_since": "Open since"
+      "open_since": "Open since",
+      "units": "Units"
     },
     "reading": "Reading your question…",
     "showMore": "Show {{count}} more",
@@ -982,6 +984,12 @@
       "lineSummary": "Line chart of {{title}}, {{count}} points from {{from}} to {{to}}. The table of this check has every value."
     },
     "copyTable": "Copy table",
-    "downloadCsv": "Download as CSV"
+    "downloadCsv": "Download as CSV",
+    "photo": {
+      "attach": "Attach a photo",
+      "remove": "Remove the photo",
+      "failed": "That photo could not be used. Try a JPEG or PNG.",
+      "alt": "The photo you attached"
+    }
   }
 }
