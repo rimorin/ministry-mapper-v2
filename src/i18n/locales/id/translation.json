@@ -575,7 +575,7 @@
     "title": "Asisten Mapper",
     "description": "Tanyakan tentang wilayah Anda dengan kata-kata sendiri. Jawaban berasal dari data sidang Anda.",
     "descriptionChange": "Tanyakan tentang wilayah Anda atau minta perubahan, dengan kata-kata sendiri. Tidak ada yang berubah sampai Anda mengonfirmasi.",
-    "privacy": "Nama dalam catatan Anda disembunyikan dari AI.",
+    "privacy": "Nama orang dalam catatan Anda disembunyikan dari AI. Nama lain yang Anda ketik, atau yang muncul di catatan rumah, mungkin terkirim.",
     "placeholder": "Ajukan pertanyaan…",
     "send": "Kirim",
     "thinking": "Berpikir…",
@@ -595,7 +595,7 @@
     "no": "Tidak",
     "error": {
       "disabled": "Asisten belum diaktifkan untuk sidang Anda.",
-      "limit": "Sidang Anda telah mencapai batas pertanyaan hari ini. Coba lagi besok.",
+      "limit": "Batas pertanyaan hari ini telah tercapai. Coba lagi besok.",
       "unavailable": "Asisten sedang tidak tersedia.",
       "generic": "Terjadi kesalahan. Silakan coba lagi."
     },

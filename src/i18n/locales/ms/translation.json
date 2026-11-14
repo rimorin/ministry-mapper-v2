@@ -575,7 +575,7 @@
     "title": "Pembantu Mapper",
     "description": "Tanya tentang kawasan anda dengan kata-kata sendiri. Jawapan diambil daripada data sidang anda.",
     "descriptionChange": "Tanya tentang kawasan anda atau minta perubahan, dengan kata-kata sendiri. Tiada apa yang berubah sehingga anda mengesahkannya.",
-    "privacy": "Nama dalam rekod anda disembunyikan daripada AI.",
+    "privacy": "Nama orang dalam rekod anda disembunyikan daripada AI. Nama lain yang anda taip, atau yang terdapat dalam nota, mungkin dihantar.",
     "placeholder": "Ajukan soalan…",
     "send": "Hantar",
     "thinking": "Sedang berfikir…",
@@ -595,7 +595,7 @@
     "no": "Tidak",
     "error": {
       "disabled": "Pembantu belum diaktifkan untuk sidang anda.",
-      "limit": "Sidang anda telah mencapai had soalan hari ini. Cuba lagi esok.",
+      "limit": "Had soalan hari ini telah dicapai. Cuba lagi esok.",
       "unavailable": "Pembantu tidak tersedia buat masa ini.",
       "generic": "Berlaku ralat. Sila cuba lagi."
     },

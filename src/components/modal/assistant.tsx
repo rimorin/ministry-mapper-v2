@@ -1167,7 +1167,7 @@ export const AssistantChat = ({
                 <ShieldCheck className="size-3.5 shrink-0" />
                 {t(
                   "assistant.privacy",
-                  "Names in your records are hidden from the AI."
+                  "Names of people in your records are hidden from the AI. Other names you type, or that appear in notes, may be sent."
                 )}
               </p>
             </EmptyContent>

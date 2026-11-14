@@ -575,7 +575,7 @@
     "title": "Mapper Assistant",
     "description": "Ask about your territories in your own words. Answers come from your congregation's data.",
     "descriptionChange": "Ask about your territories or ask for a change, in your own words. Nothing changes until you confirm.",
-    "privacy": "Names in your records are hidden from the AI.",
+    "privacy": "Names of people in your records are hidden from the AI. Other names you type, or that appear in notes, may be sent.",
     "placeholder": "Ask a question…",
     "send": "Send",
     "thinking": "Thinking…",
@@ -595,7 +595,7 @@
     "no": "No",
     "error": {
       "disabled": "The assistant is not turned on for your congregation.",
-      "limit": "Your congregation has reached today's question limit. Try again tomorrow.",
+      "limit": "Today's question limit has been reached. Try again tomorrow.",
       "unavailable": "The assistant is not available right now.",
       "generic": "Something went wrong. Please try again."
     },
