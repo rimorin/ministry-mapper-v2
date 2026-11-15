@@ -1,3 +1,22 @@
+## [2.11.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.10.1...v2.11.0) (2026-11-15)
+
+### Features
+
+* add Mapper Assistant for admins ([e2eac5d](https://github.com/rimorin/ministry-mapper-v2/commit/e2eac5d90a45f8546daaae60feb81292cef9ce0c))
+* attach a photo to an assistant question ([6da477d](https://github.com/rimorin/ministry-mapper-v2/commit/6da477d2b802f23fed16ff90c23dffb68c4cae04))
+* label the assistant's homes query and merged change functions ([cf74e75](https://github.com/rimorin/ministry-mapper-v2/commit/cf74e752b0f0bf05cfbafbd43f0831b64a037945))
+* name and select territories without boundaries on the map view ([e2f79c1](https://github.com/rimorin/ministry-mapper-v2/commit/e2f79c1b00701477c0b1defe4944ecf6e49a9b5f))
+
+### Bug Fixes
+
+* calm and unify motion across the app ([91362ce](https://github.com/rimorin/ministry-mapper-v2/commit/91362ceb6d1233aa587b7bccd5e66c18247ef764))
+* fit the publisher map to the screen and match the tries selector ([5fc3ea9](https://github.com/rimorin/ministry-mapper-v2/commit/5fc3ea992ee69792c49170dbbc21f6f5fb8852be))
+* leave assistant history to the backend and correct the privacy line ([0ebedb3](https://github.com/rimorin/ministry-mapper-v2/commit/0ebedb3f75e73cb72e12d894c8cc0e918facd997))
+* make assistant change cards safer to confirm and undo ([ba5c304](https://github.com/rimorin/ministry-mapper-v2/commit/ba5c3044431c318061fc4603e1fd0cd5895b77d5))
+* move the next address button off the map grid ([40b6087](https://github.com/rimorin/ministry-mapper-v2/commit/40b6087ce436b160fbc45ac2d0bb392ca2fa874f))
+* tell a disabled account why it cannot sign in ([c0841fd](https://github.com/rimorin/ministry-mapper-v2/commit/c0841fd0cad88d05263d93482a9a6a0412055c09))
+* tidy the map screens for publishers and admins ([e4848b0](https://github.com/rimorin/ministry-mapper-v2/commit/e4848b0915e252a03610977a0de9b856976e4640)), closes [#08-101](https://github.com/rimorin/ministry-mapper-v2/issues/08-101)
+
 ## [2.10.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.10.0...v2.10.1) (2026-10-06)
 
 ### Bug Fixes
