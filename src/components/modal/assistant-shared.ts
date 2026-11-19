@@ -87,6 +87,7 @@ const VALUE_LABELS: Record<string, [string, string]> = {
   administrator: ["user.roles.administrator", "Admin"],
   conductor: ["user.roles.conductor", "Conductor"],
   read_only: ["user.roles.readOnly", "Read Only"],
+  publisher: ["user.roles.publisher", "Publisher"],
   personal: ["links.personal", "Personal"],
   single: ["map.singleStory", "Single-Story"],
   multi: ["map.multiStory", "Multi-story"]

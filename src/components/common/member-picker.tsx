@@ -31,6 +31,8 @@ interface MemberPickerProps {
   // Members offered first, most recent first: the same few people are paired
   // up again and again in one sitting.
   recentIds?: string[];
+  // Off where the picker sits in a page that has its own focus to keep.
+  autoFocus?: boolean;
 }
 
 // Picks the congregation members a link is given to, by name or email.
@@ -38,7 +40,8 @@ const MemberPicker = ({
   members,
   value,
   onValueChange,
-  recentIds = []
+  recentIds = [],
+  autoFocus = true
 }: MemberPickerProps) => {
   const { t } = useTranslation();
   // Base UI's own matching: ignores case and accents.
@@ -82,7 +85,7 @@ const MemberPicker = ({
             </ComboboxChip>
           ))}
           <ComboboxChipsInput
-            autoFocus
+            autoFocus={autoFocus}
             placeholder={
               value.length > 0
                 ? undefined

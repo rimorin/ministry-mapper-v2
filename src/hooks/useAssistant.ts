@@ -1,4 +1,4 @@
-import { useEffect, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import * as Sentry from "@sentry/react";
 import { ClientResponseError } from "pocketbase";
@@ -15,6 +15,10 @@ import { ANALYTICS_EVENTS, trackEvent } from "../utils/analytics";
 import { sendFeedback } from "../utils/assistantFeedback";
 import { generateRecordId } from "../utils/recordId";
 import { safeStorage } from "../utils/safeStorage";
+import getCongregationMembers, {
+  type CongregationMember
+} from "../utils/helpers/getcongregationmembers";
+import usePublisherRoleEnabled from "./usePublisherRoleEnabled";
 import {
   parseSettings,
   runRecordProposal,
@@ -211,6 +215,9 @@ export interface AssistantProposal {
   // Share links: normal or personal, lasting this many hours.
   linkType?: "normal" | "personal";
   hours?: number;
+  // The people a share link names and the accounts they may be, where links
+  // can be given to accounts.
+  people?: ProposalPerson[];
   // The records a change touches: messages, links or homes.
   items?: ProposalItem[];
   // What the card shows for structural and many-home changes: how many
@@ -225,6 +232,40 @@ export interface ProposalItem {
   label: string;
   detail?: string;
 }
+
+// A person a share link names. picked is the account chosen for them without
+// asking, remembered when that rests on an earlier choice and not on the name;
+// suggested are accounts the name may also be. Both are user ids.
+export interface ProposalPerson {
+  name: string;
+  picked?: string;
+  remembered?: boolean;
+  suggested?: string[];
+}
+
+// The accounts a link card starts with, before the admin changes them.
+export const pickedAccounts = (proposal: AssistantProposal) =>
+  (proposal.people ?? []).flatMap((person) => person.picked ?? []);
+
+// Which account the admin settled on for each name, so the next link for the
+// same name needs no asking. A name left with none says so, to be forgotten.
+export const pairNames = (people: ProposalPerson[], assignees: string[]) => {
+  const unclaimed = new Set(assignees);
+  const pairs = people.map((person) => {
+    const user =
+      [person.picked, ...(person.suggested ?? [])].find(
+        (id) => id && unclaimed.has(id)
+      ) ?? "";
+    unclaimed.delete(user);
+    return { name: person.name, user };
+  });
+  // An account added by hand belongs to the one name still without one.
+  const unpaired = pairs.filter((pair) => !pair.user);
+  if (unpaired.length === 1 && unclaimed.size === 1) {
+    [unpaired[0].user] = unclaimed;
+  }
+  return pairs;
+};
 
 export const isRoleProposal = (proposal: AssistantProposal) =>
   proposal.kind === "role_change" ||
@@ -276,6 +317,8 @@ export interface ProposalState {
   // New maps: where each one is, by its place in the proposal's list, set on
   // the card before confirming.
   locations?: Record<string, SharedLocation>;
+  // A share link: the accounts it is given to, set on the card.
+  assignees?: string[];
   doneAt?: number;
   error?: string;
 }
@@ -551,6 +594,8 @@ const restoredTurn = (
 
 // onSettingsChange hears the congregation's settings as a card left them, so the
 // page can use them without a reload.
+const NO_MEMBERS: CongregationMember[] = [];
+
 export default function useAssistant(
   congregation: string,
   onSettingsChange?: (settings: CongregationSettings) => void
@@ -561,6 +606,24 @@ export default function useAssistant(
     () => conversations.get(congregation) ?? NO_TURNS
   );
   const busy = turns.some((turn) => turn.status === "pending");
+  const memberLinks = usePublisherRoleEnabled();
+
+  // The roster a link card picks accounts from, loaded once a card needs it.
+  const [roster, setRoster] = useState<{
+    congregation: string;
+    members: CongregationMember[];
+  }>();
+  const needsRoster = turns.some((turn) =>
+    turn.response?.proposals?.some((proposal) => proposal.people?.length)
+  );
+  useEffect(() => {
+    if (!needsRoster) return;
+    getCongregationMembers(congregation)
+      .then((members) => setRoster({ congregation, members }))
+      .catch(() => {});
+  }, [needsRoster, congregation]);
+  const members =
+    roster?.congregation === congregation ? roster.members : NO_MEMBERS;
 
   const errorMessage = (error: unknown) => {
     if (error instanceof ClientResponseError) {
@@ -642,6 +705,7 @@ export default function useAssistant(
           question: trimmed,
           locale: i18n.resolvedLanguage ?? i18n.language,
           people,
+          memberLinks,
           image,
           location: sharedLocations.get(congregation),
           conversation,
@@ -776,7 +840,13 @@ export default function useAssistant(
             proposal: proposal.id,
             outcome: patch.status,
             ...(person && { person }),
-            ...link
+            ...link,
+            // Kept when the link is made, and dropped again if it is undone:
+            // a link taken back may have gone to the wrong account.
+            ...(proposal.people &&
+              (patch.status === "done" || patch.status === "undone") && {
+                pairs: pairNames(proposal.people, action?.assignees ?? [])
+              })
           },
           `assistant-outcome-${proposalId}`
         );
@@ -838,16 +908,21 @@ export default function useAssistant(
           });
           return;
         }
-        const locations = turns.find((turn) => turn.id === turnId)?.actions?.[
+        const chosen = turns.find((turn) => turn.id === turnId)?.actions?.[
           proposal.id
-        ]?.locations;
+        ];
+        // Only accounts the card showed: with no roster it showed none.
+        const assignees = (
+          chosen?.assignees ?? pickedAccounts(proposal)
+        ).filter((id) => members.some((member) => member.id === id));
         const outcome = await runRecordProposal(
           proposal,
           congregation,
           location,
-          locations
+          chosen?.locations,
+          assignees
         );
-        setAction(turnId, proposal.id, outcome);
+        setAction(turnId, proposal.id, { ...outcome, assignees });
         if (proposal.kind === "settings" && outcome.status === "done") {
           onSettingsChange?.(parseSettings(proposal.value));
         }
@@ -1068,6 +1143,7 @@ export default function useAssistant(
     updateLocation,
     stopSharingLocation,
     setAction,
+    members,
     confirmProposal,
     undoProposal,
     rate,

@@ -4,6 +4,7 @@ import type {
   ProposalState,
   SharedLocation
 } from "../hooks/useAssistant";
+import { ClientResponseError } from "pocketbase";
 import { ANALYTICS_EVENTS, trackEvent } from "./analytics";
 import { batchUpdateAddress, fetchAddressOptionMap } from "./addressUpdate";
 import addHours from "./helpers/addhours";
@@ -34,6 +35,8 @@ interface Context {
   location?: SharedLocation;
   // Where each new map goes, set on the card.
   locations?: Record<string, SharedLocation>;
+  // The accounts a share link is given to.
+  assignees?: string[];
   key: (step: string) => string;
 }
 
@@ -455,19 +458,33 @@ const RUN: Partial<Record<Kind, (ctx: Context) => Promise<Outcome>>> = {
     const { proposal, congregation, key } = ctx;
     const target = proposal.target;
     if (!target || !(await mapExists(ctx, target.id))) return STALE;
-    const link = await createData(
-      "assignments",
-      {
-        map: target.id,
-        user: getUser("id"),
-        type: proposal.linkType,
-        expiry_date: addHours(proposal.hours ?? 0),
-        publisher: proposal.value,
-        congregation
-      },
-      { requestKey: key("link") }
-    );
-    return done({ recordId: link.id });
+    const assignees = ctx.assignees ?? [];
+    try {
+      const link = await createData(
+        "assignments",
+        {
+          map: target.id,
+          user: getUser("id"),
+          type: proposal.linkType,
+          expiry_date: addHours(proposal.hours ?? 0),
+          publisher: proposal.value,
+          congregation,
+          ...(assignees.length > 0 && { assignees })
+        },
+        { requestKey: key("link") }
+      );
+      return done({ recordId: link.id });
+    } catch (error) {
+      // An account that left the congregation since the card was prepared.
+      if (
+        assignees.length > 0 &&
+        error instanceof ClientResponseError &&
+        error.status === 400
+      ) {
+        return STALE;
+      }
+      throw error;
+    }
   },
 
   pin_message: async (ctx) => {
@@ -693,7 +710,8 @@ export const runRecordProposal = async (
   proposal: AssistantProposal,
   congregation: string,
   location?: SharedLocation,
-  locations?: Record<string, SharedLocation>
+  locations?: Record<string, SharedLocation>,
+  assignees?: string[]
 ): Promise<Outcome> => {
   const run = RUN[proposal.kind];
   if (!run) return STALE;
@@ -702,6 +720,7 @@ export const runRecordProposal = async (
     congregation,
     location,
     locations,
+    assignees,
     key: (step) => `assistant-${step}-${proposal.id}`
   });
 };

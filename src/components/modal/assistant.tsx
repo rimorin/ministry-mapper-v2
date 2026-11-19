@@ -358,6 +358,7 @@ export const AssistantChat = ({
     updateLocation,
     stopSharingLocation,
     setAction,
+    members,
     confirmProposal,
     undoProposal,
     rate,
@@ -1040,6 +1041,7 @@ export const AssistantChat = ({
                     // being written.
                     actionable={isOnline && !busy}
                     online={isOnline}
+                    members={members}
                     onStatus={(patch) => setAction(turn.id, proposal.id, patch)}
                     onConfirm={(candidate) =>
                       void confirmProposal(turn.id, proposal, candidate)

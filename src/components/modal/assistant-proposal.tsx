@@ -18,6 +18,7 @@ import {
   UNDO_WINDOW_MS,
   isLinkProposal,
   isRoleProposal,
+  pickedAccounts,
   roleChangeFor,
   type AssistantProposal,
   type ProposalCandidate,
@@ -31,6 +32,8 @@ import assignmentMessage, {
 import { resolveLocalized } from "../../utils/resolveLocalized";
 import LinkDateFormatter from "../../utils/helpers/linkdateformatter";
 import { listOf, parseHome, parseSettings } from "../../utils/assistantActions";
+import type { CongregationMember } from "../../utils/helpers/getcongregationmembers";
+import AssistantLinkAccounts from "./assistant-link-accounts";
 import AssistantNewMaps, { allMapsPlaced } from "./assistant-new-maps";
 import { KIND_ICONS, STEADY_HOVER, useValueLabel } from "./assistant-shared";
 
@@ -50,6 +53,8 @@ interface AssistantProposalCardProps {
   onShareLocation?: () => void;
   // The congregation's country, to look up new maps' addresses there.
   origin?: string;
+  // The roster a link card picks accounts from; empty until it has loaded.
+  members?: CongregationMember[];
 }
 
 const AssistantProposalCard = ({
@@ -62,7 +67,8 @@ const AssistantProposalCard = ({
   onUndo,
   onAskAgain,
   onShareLocation,
-  origin
+  origin,
+  members = []
 }: AssistantProposalCardProps) => {
   const { t, i18n } = useTranslation();
   const { notifyError } = useNotification();
@@ -77,6 +83,14 @@ const AssistantProposalCard = ({
     state?.candidate ?? proposal.candidates.find((c) => c.userId === picked);
   const name = candidate?.name ?? "";
   const target = proposal.target?.name ?? "";
+  // A share link: the accounts it goes to, and whether anyone it names is
+  // left to be sent the link by hand.
+  const accounts = state?.assignees ?? pickedAccounts(proposal);
+  const accountNames = accounts
+    .flatMap((id) => members.find((member) => member.id === id)?.name ?? [])
+    .join(", ");
+  const sharesByHand =
+    !proposal.people || accounts.length < proposal.people.length;
   const role = roleChangeFor(proposal, candidate);
 
   // Undo is offered for a while after the change, showing the minutes left,
@@ -340,6 +354,26 @@ const AssistantProposalCard = ({
                 duration: formatExpiry(proposal.hours ?? 0)
               })}
             </span>
+            {proposal.people &&
+              members.length > 0 &&
+              (status === "idle" ? (
+                <AssistantLinkAccounts
+                  people={proposal.people}
+                  members={members}
+                  value={accounts}
+                  onChange={(assignees) => onStatus({ assignees })}
+                />
+              ) : (
+                accountNames && (
+                  <span className="text-muted-foreground">
+                    {t(
+                      "assistant.action.inMyMaps",
+                      "In My maps for {{names}}",
+                      { names: accountNames }
+                    )}
+                  </span>
+                )
+              ))}
           </div>
         );
       case "pin_message":
@@ -711,7 +745,7 @@ const AssistantProposalCard = ({
                   )}
                 </Button>
               )}
-              {isLink && state?.recordId && (
+              {isLink && state?.recordId && sharesByHand && (
                 <Button
                   type="button"
                   size="sm"

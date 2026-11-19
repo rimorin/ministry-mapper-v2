@@ -48,6 +48,7 @@ import {
   requestPasswordReset
 } from "../../utils/pocketbase";
 import useOnSSEReconnect from "../../hooks/useOnSSEReconnect";
+import useOnTabFocus from "../../hooks/useOnTabFocus";
 
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import AdminNavbar from "./components/adminnavbar";
@@ -183,12 +184,14 @@ function Admin({ user }: adminProps) {
   // The account holds only the publisher role, so it gets its links, not the shell.
   const [isPublisherOnly, setIsPublisherOnly] = useState(false);
   // A staff account looking at the links given to it, in place of a territory.
-  // Kept for the tab so coming back from a map lands on the links again.
+  // Kept for the tab so coming back from a map lands on the links again, and
+  // under the account's id so the next account to sign in here starts afresh.
   const [showPublisherView, setShowPublisherView] = useState(
-    () => sessionStorage.getItem(PUBLISHER_VIEW_KEY) === "1"
+    () => sessionStorage.getItem(PUBLISHER_VIEW_KEY) === getUser("id")
   );
   const togglePublisherView = (show: boolean) => {
-    if (show) sessionStorage.setItem(PUBLISHER_VIEW_KEY, "1");
+    if (show)
+      sessionStorage.setItem(PUBLISHER_VIEW_KEY, getUser("id") as string);
     else sessionStorage.removeItem(PUBLISHER_VIEW_KEY);
     setShowPublisherView(show);
   };
@@ -710,6 +713,11 @@ function Admin({ user }: adminProps) {
   const checkMapsOnRealtimeUpdate = () => {
     checkForMaps(congregationCode);
   };
+
+  // The publisher page follows nothing that would show a role being given.
+  useOnTabFocus(() => {
+    if (isPublisherOnly) fetchData();
+  });
 
   useOnSSEReconnect(() => {
     if (selectedTerritory.id) {

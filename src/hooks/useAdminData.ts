@@ -111,6 +111,8 @@ export default function useAdminData({
       notifyError(`Unauthorised access by ${userEmail}`, true);
       return;
     }
+    // A later load may find the account promoted out of the publisher page.
+    setIsPublisherOnly(false);
     const congregationAccesses: Array<{
       code: string;
       access: string;
