@@ -74,7 +74,9 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
   }, [searchResults, selectedUser]);
 
   const getRoleDisplayName = (roleCode: string): string => {
-    if (roleCode === USER_ACCESS_LEVELS.READ_ONLY.CODE) {
+    if (roleCode === USER_ACCESS_LEVELS.PUBLISHER.CODE) {
+      return t("user.roles.publisher", "Publisher");
+    } else if (roleCode === USER_ACCESS_LEVELS.READ_ONLY.CODE) {
       return t("user.roles.readOnly", "Read Only");
     } else if (roleCode === USER_ACCESS_LEVELS.CONDUCTOR.CODE) {
       return t("user.roles.conductor", "Conductor");

@@ -9,8 +9,15 @@ vi.stubGlobal("fetch", mockFetch);
 const mockSetLastSeen = vi.fn();
 let mockLastSeenValue: string | null = null;
 
+// The hook writes the marker through useLocalStorage but reads it from
+// storage at fetch time, so the mock keeps storage in step with the value a
+// test sets.
 vi.mock("./useLocalStorage", () => ({
-  default: vi.fn(() => [mockLastSeenValue, mockSetLastSeen, vi.fn()])
+  default: vi.fn((key: string) => {
+    if (mockLastSeenValue === null) window.localStorage.removeItem(key);
+    else window.localStorage.setItem(key, JSON.stringify(mockLastSeenValue));
+    return [mockLastSeenValue, mockSetLastSeen, vi.fn()];
+  })
 }));
 
 import { useReleaseNotes } from "./useReleaseNotes";
@@ -183,6 +190,25 @@ describe("useReleaseNotes", () => {
       en: "Details here.",
       zh: "详情在此。"
     });
+  });
+
+  it("does not carry one audience's new releases over to the other", async () => {
+    mockFetch.mockResolvedValue(mockJsonResponse(sampleChangelog));
+
+    const { result, rerender } = renderHook(
+      ({ audience }: { audience: "admin" | "publisher" }) =>
+        useReleaseNotes(audience),
+      { initialProps: { audience: "admin" } }
+    );
+    await act(async () => {});
+    expect(result.current.hasNewReleases).toBe(true);
+
+    // The publisher audience has already seen the latest release.
+    mockLastSeenValue = "2026-02-19";
+    rerender({ audience: "publisher" });
+    await act(async () => {});
+
+    expect(result.current.hasNewReleases).toBe(false);
   });
 
   it("drops items meant for the other audience", async () => {

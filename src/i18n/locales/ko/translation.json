@@ -10,6 +10,7 @@
     "select": "선택",
     "submit": "제출",
     "clear": "지우기",
+    "remove": "제거",
     "open": "열기",
     "undo": "실행 취소",
     "list": "목록",
@@ -273,7 +274,13 @@
       "readOnly": "읽기 전용",
       "conductor": "지휘자",
       "administrator": "관리자",
-      "noAccess": "접근 불가"
+      "noAccess": "접근 불가",
+      "publisher": "출판자",
+      "publisherHint": "출판자는 자신의 계정에 배정된 지도만 보고 작업할 수 있습니다.",
+      "noAccessHint": "이 사용자를 회중에서 제외합니다.",
+      "readOnlyHint": "구역과 지도를 볼 수 있지만 변경할 수는 없습니다.",
+      "conductorHint": "지도를 업데이트하고 링크로 배정할 수 있습니다.",
+      "administratorHint": "구역, 지도, 구성원, 설정을 모두 관리할 수 있습니다."
     },
     "invite": "초대",
     "dontInviteSelf": "자신을 초대하지 마세요.",
@@ -337,7 +344,11 @@
     "created": "생성일",
     "expires": "만료일",
     "assignedBy": "배정자",
-    "assignedTo": "담당자"
+    "assignedTo": "담당자",
+    "givenTo": "{{names}} 님에게 배정됨",
+    "changeMembers": "구성원 변경",
+    "changeMembersTitle": "이 지도를 누구에게 배정합니까?",
+    "membersUpdated": "구성원이 업데이트되었습니다"
   },
   "messages": {
     "messages": "메시지",
@@ -435,7 +446,8 @@
   "profile": {
     "updateSuccess": "프로필 업데이트됨.",
     "title": "내 프로필",
-    "updateButton": "업데이트"
+    "updateButton": "업데이트",
+    "emailOnAssignment": "지도가 배정되면 이메일로 알림"
   },
   "slip": {
     "selectExpiryValidation": "만료 날짜를 선택해주세요.",
@@ -446,7 +458,14 @@
     "confirmButton": "확인",
     "linkReadyTitle": "지도 링크가 준비되었습니다",
     "alreadyAssigned": "이미 할당됨",
-    "moreAssignees": "외 {{count}}명"
+    "moreAssignees": "외 {{count}}명",
+    "memberLabel": "구성원에게 배정 (선택 사항)",
+    "memberPlaceholder": "구성원 검색",
+    "memberHint": "이 지도는 내 지도에 표시됩니다.",
+    "recentMembers": "최근",
+    "allMembers": "구성원",
+    "memberOpenLinks": "진행 중인 지도: {{count}}",
+    "givenTo": "{{names}}에게 배정됨"
   },
   "password": {
     "number": "비밀번호에는 숫자가 포함되어야 합니다.",
@@ -991,5 +1010,20 @@
       "failed": "그 사진은 사용할 수 없습니다. JPEG 또는 PNG로 시도하세요.",
       "alt": "첨부한 사진"
     }
+  },
+  "myLinks": {
+    "title": "내 지도",
+    "description": "지도를 눌러 시작하세요.",
+    "personal": "개인 구역",
+    "assigned": "배정됨",
+    "emptyTitle": "지금은 지도가 없습니다",
+    "emptyMessage": "배정받은 지도가 여기에 표시됩니다.",
+    "refresh": "다시 확인",
+    "from": "{{name}} 님이 배정",
+    "with": "{{names}} 님과 함께",
+    "loadFailed": "지도를 불러오지 못했습니다.",
+    "accountMenu": "계정 메뉴",
+    "given": "지도를 배정받았습니다",
+    "open": "열기"
   }
 }

@@ -4,9 +4,15 @@ import { isAbortError } from "../utils/pocketbase";
 
 type NotificationType = "success" | "error" | "warning" | "info";
 
+interface NotificationAction {
+  label: string;
+  onClick: () => void;
+}
+
 interface NotificationOptions {
   title?: string;
   silent?: boolean;
+  action?: NotificationAction;
 }
 
 const extractValidationErrors = (data: Record<string, unknown>): string => {
@@ -50,7 +56,7 @@ const useNotification = () => {
     messageOrError: string | Error | unknown,
     options?: NotificationOptions
   ) => {
-    const { title, silent = false } = options || {};
+    const { title, silent = false, action } = options || {};
 
     if (type === "error") {
       if (isAbortError(messageOrError)) {
@@ -83,7 +89,14 @@ const useNotification = () => {
           ? messageOrError
           : String(messageOrError);
 
-      toast.add({ title: message, description: title, type });
+      toast.add({
+        title: message,
+        description: title,
+        type,
+        ...(action && {
+          actionProps: { children: action.label, onClick: action.onClick }
+        })
+      });
     }
   };
 
@@ -98,8 +111,11 @@ const useNotification = () => {
   const notifyWarning = (message: string, title?: string) =>
     handleNotification("warning", message, { title });
 
-  const notifyInfo = (message: string, title?: string) =>
-    handleNotification("info", message, { title });
+  const notifyInfo = (
+    message: string,
+    title?: string,
+    action?: NotificationAction
+  ) => handleNotification("info", message, { title, action });
 
   const runAction = async <T>(
     fn: () => Promise<T>,

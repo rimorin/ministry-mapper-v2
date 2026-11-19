@@ -1,6 +1,6 @@
 import NiceModal from "@ebay/nice-modal-react";
 import { useTranslation } from "react-i18next";
-import { useState, FormEvent } from "react";
+import { useEffect, useState, FormEvent } from "react";
 import { BookUser, Clock, MapPinned, TriangleAlert } from "lucide-react";
 import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
 import MapProgressStats from "@/components/common/map-progress-stats";
@@ -15,19 +15,29 @@ import {
   ResponsiveDialogTitle
 } from "@/components/common/responsive-dialog";
 import { Calendar } from "@/components/ui/calendar";
+import MemberPicker from "@/components/common/member-picker";
+import usePublisherRoleEnabled from "../../hooks/usePublisherRoleEnabled";
+import { Label } from "@/components/ui/label";
 import { USER_ACCESS_LEVELS, LINK_TYPES } from "../../utils/constants";
 import GenericInputField from "../form/input";
 import { ConfirmSlipDetailsModalProps } from "../../utils/interface";
 import useNotification from "../../hooks/useNotification";
 import useShareLink from "../../hooks/useShareLink";
+import useLocalStorage from "../../hooks/useLocalStorage";
 import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import LinkTypeDescription from "../../utils/helpers/linkdesc";
 import LinkDateFormatter from "../../utils/helpers/linkdateformatter";
 import addHours from "../../utils/helpers/addhours";
 import { createData } from "../../utils/pocketbase";
 import ComponentAuthorizer from "../navigation/authorizer";
+import getCongregationMembers, {
+  CongregationMember,
+  namesOf
+} from "../../utils/helpers/getcongregationmembers";
 
 const MAX_ASSIGNEE_NAMES = 3;
+const MAX_RECENT_MEMBERS = 6;
+const NO_RECENT_MEMBERS: string[] = [];
 
 const ConfirmSlipDetails = NiceModal.create(
   ({
@@ -39,12 +49,32 @@ const ConfirmSlipDetails = NiceModal.create(
     existingLinks
   }: ConfirmSlipDetailsModalProps) => {
     const { t } = useTranslation();
-    const { notifyWarning, notifyError, runAction } = useNotification();
+    const { notifyWarning, notifyError, notifySuccess, runAction } =
+      useNotification();
     const { modal, dialogProps, contentProps } = useBaseUiDialog();
     const { shareLink, isSharing, shareButtonLabel } = useShareLink();
     const [linkExpiryHrs, setLinkExpiryHrs] = useState<number | undefined>();
     const [name, setName] = useState<string>("");
     const [isCreating, setIsCreating] = useState(false);
+    const [members, setMembers] = useState<CongregationMember[]>([]);
+    const [assignees, setAssignees] = useState<CongregationMember[]>([]);
+    // The members this conductor gave links to last, offered first: the same
+    // few people are paired up again and again in one sitting.
+    const [recentIds, setRecentIds] = useLocalStorage<string[]>(
+      `recentAssignees:${policy.congregation}`,
+      NO_RECENT_MEMBERS
+    );
+
+    const isPublisherRoleEnabled = usePublisherRoleEnabled();
+
+    // Giving the link to members is optional, so a roster that fails to load
+    // only leaves the picker out, as the role being switched off does.
+    useEffect(() => {
+      if (!policy.congregation || !isPublisherRoleEnabled) return;
+      getCongregationMembers(policy.congregation)
+        .then(setMembers)
+        .catch(() => {});
+    }, [policy.congregation, isPublisherRoleEnabled]);
     const [createdLink, setCreatedLink] = useState<{
       linkId: string;
       message: string;
@@ -98,12 +128,33 @@ const ConfirmSlipDetails = NiceModal.create(
               type: linkType,
               expiry_date: expiryDate,
               publisher: name,
-              congregation: policy.congregation
+              congregation: policy.congregation,
+              ...(assignees.length > 0 && {
+                assignees: assignees.map((member) => member.id)
+              })
             },
             {
               requestKey: `create-assignment-${mapId}-${userId}`
             }
           );
+          if (assignees.length > 0) {
+            const ids = assignees.map((member) => member.id);
+            setRecentIds((recent) =>
+              [...ids, ...recent.filter((id) => !ids.includes(id))].slice(
+                0,
+                MAX_RECENT_MEMBERS
+              )
+            );
+            // They find the map under My maps, so there is nothing to send.
+            // The link can still be copied from the map's assignments.
+            notifySuccess(
+              t("slip.givenTo", "Given to {{names}}", {
+                names: namesOf(assignees)
+              })
+            );
+            modal.hide();
+            return;
+          }
           setCreatedLink({
             linkId: linkRecord.id,
             message: assignmentMessage(addressName, name, expiryHrs, linkType),
@@ -126,6 +177,41 @@ const ConfirmSlipDetails = NiceModal.create(
         notifyError(error);
       }
     };
+
+    const existingWarning = existingRows.length > 0 && (
+      <div className="space-y-1.5 rounded-md border border-warning/30 bg-warning/10 p-2">
+        <div className="flex items-center gap-1.5 text-xs font-medium text-warning">
+          <TriangleAlert className="size-3 shrink-0" />
+          <span>{t("slip.alreadyAssigned", "Already assigned")}</span>
+        </div>
+        {existingRows.map(({ linkType, label, names, extraCount }) => (
+          <div
+            key={`existing-${linkType}`}
+            className="flex items-start gap-1.5 text-xs"
+          >
+            {showTypeBadges && (
+              <Badge
+                variant="secondary"
+                className="shrink-0 px-1.5 text-[10px]"
+              >
+                {label}
+              </Badge>
+            )}
+            <span className="min-w-0 pt-0.5 text-muted-foreground">
+              {names}
+              {extraCount > 0 && (
+                <span className="whitespace-nowrap font-medium text-warning">
+                  {" "}
+                  {t("slip.moreAssignees", "+{{count}} more", {
+                    count: extraCount
+                  })}
+                </span>
+              )}
+            </span>
+          </div>
+        ))}
+      </div>
+    );
 
     return (
       <ResponsiveDialog {...dialogProps}>
@@ -168,44 +254,7 @@ const ConfirmSlipDetails = NiceModal.create(
                       </span>
                     </div>
                   </div>
-                  {existingRows.length > 0 && (
-                    <div className="space-y-1.5 rounded-md border border-warning/30 bg-warning/10 p-2">
-                      <div className="flex items-center gap-1.5 text-xs font-medium text-warning">
-                        <TriangleAlert className="size-3 shrink-0" />
-                        <span>
-                          {t("slip.alreadyAssigned", "Already assigned")}
-                        </span>
-                      </div>
-                      {existingRows.map(
-                        ({ linkType, label, names, extraCount }) => (
-                          <div
-                            key={`existing-${linkType}`}
-                            className="flex items-start gap-1.5 text-xs"
-                          >
-                            {showTypeBadges && (
-                              <Badge
-                                variant="secondary"
-                                className="shrink-0 px-1.5 text-[10px]"
-                              >
-                                {label}
-                              </Badge>
-                            )}
-                            <span className="min-w-0 pt-0.5 text-muted-foreground">
-                              {names}
-                              {extraCount > 0 && (
-                                <span className="whitespace-nowrap font-medium text-warning">
-                                  {" "}
-                                  {t("slip.moreAssignees", "+{{count}} more", {
-                                    count: extraCount
-                                  })}
-                                </span>
-                              )}
-                            </span>
-                          </div>
-                        )
-                      )}
-                    </div>
-                  )}
+                  {existingWarning}
                   {aggregates && (
                     <div className="border-t pt-2">
                       <MapProgressStats
@@ -255,6 +304,33 @@ const ConfirmSlipDetails = NiceModal.create(
                       className="mb-1 w-full rounded-md border [--cell-size:--spacing(10)]"
                     />
                   )}
+                  {members.length > 0 && (
+                    <div className="mb-3 space-y-1.5">
+                      <Label>
+                        {t("slip.memberLabel", "Give to members (optional)")}
+                      </Label>
+                      <MemberPicker
+                        members={members}
+                        value={assignees}
+                        recentIds={recentIds}
+                        onValueChange={(chosen) => {
+                          setAssignees(chosen);
+                          // Follow the picker unless the name was typed by hand.
+                          if (name === namesOf(assignees)) {
+                            setName(namesOf(chosen));
+                          }
+                        }}
+                      />
+                      {assignees.length > 0 && (
+                        <p className="text-xs text-muted-foreground">
+                          {t(
+                            "slip.memberHint",
+                            "They will find this map under My maps."
+                          )}
+                        </p>
+                      )}
+                    </div>
+                  )}
                   <GenericInputField
                     label={t("slip.publisherNameLabel")}
                     name="name"
@@ -264,10 +340,11 @@ const ConfirmSlipDetails = NiceModal.create(
                     }}
                     placeholder={t("slip.publisherNamePlaceholder")}
                     changeValue={name}
-                    focus={true}
+                    focus={members.length === 0}
                     required={true}
                   />
                 </div>
+                {assignees.length > 0 && existingWarning}
                 <ResponsiveDialogFooter>
                   <Button variant="outline" type="button" onClick={modal.hide}>
                     {t("common.cancel", "Cancel")}

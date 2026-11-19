@@ -33,6 +33,14 @@ const USER_ACCESS_LEVELS = {
   }
 };
 
+// The roles that open a congregation's data. PUBLISHER is a role too, but an
+// account holding only that works the links given to it and nothing else.
+const STAFF_ROLES = [
+  USER_ACCESS_LEVELS.READ_ONLY.CODE,
+  USER_ACCESS_LEVELS.CONDUCTOR.CODE,
+  USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE
+];
+
 const MESSAGE_TYPES = {
   PUBLISHER: "publisher",
   CONDUCTOR: "conductor",
@@ -107,7 +115,7 @@ const PB_FIELDS = {
     "id, code, description, is_countable, is_default, sequence",
   MESSAGES: "id, message, created_by, read, pinned, created, type",
   ASSIGNMENTS:
-    "id, user, type, expiry_date, publisher, created, expand.map.description, expand.user.name",
+    "id, user, congregation, type, expiry_date, publisher, created, assignees, expand.map.description, expand.user.name, expand.assignees.id, expand.assignees.name",
   ADDRESSES_SUBSCRIPTION:
     "id, code, coordinates, notes, status, not_home_tries, dnc_time, sequence, floor, updated, updated_by",
   ADDRESS_OPTIONS: "id,address,option",
@@ -115,6 +123,8 @@ const PB_FIELDS = {
     "id, role, expand.congregation.id, expand.congregation.name, expand.congregation.max_tries, expand.congregation.origin, expand.congregation.expiry_hours, expand.congregation.expand.options_via_congregation.id, expand.congregation.expand.options_via_congregation.code, expand.congregation.expand.options_via_congregation.description, expand.congregation.expand.options_via_congregation.is_countable, expand.congregation.expand.options_via_congregation.is_default, expand.congregation.expand.options_via_congregation.sequence, expand.congregation.expand.territories_via_congregation.id, expand.congregation.expand.territories_via_congregation.code, expand.congregation.expand.territories_via_congregation.description, expand.congregation.expand.territories_via_congregation.progress, expand.congregation.expand.territories_via_congregation.coordinates",
   CONGREGATION_ROLES:
     "id, role, expand.user.name, expand.user.email, expand.user.verified",
+  CONGREGATION_MEMBERS: "id, user, expand.user.name, expand.user.email",
+  ASSIGNMENT_HOLDERS: "id, assignees",
   TERRITORIES: "id, code, description, progress, coordinates",
   MAPS: "id, sequence, description, type, progress, coordinates, aggregates",
   MAPS_SEQUENCE: "id, sequence, description",
@@ -139,6 +149,7 @@ export {
   MAX_TOP_FLOOR,
   COUNTABLE_HOUSEHOLD_STATUS,
   USER_ACCESS_LEVELS,
+  STAFF_ROLES,
   LINK_TYPES,
   TERRITORY_TYPES,
   SPECIAL_CHARACTERS,

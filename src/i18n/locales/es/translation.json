@@ -10,6 +10,7 @@
     "select": "Seleccionar",
     "submit": "Enviar",
     "clear": "Limpiar",
+    "remove": "Quitar",
     "open": "Abrir",
     "undo": "Deshacer",
     "list": "Lista",
@@ -275,7 +276,13 @@
       "readOnly": "Solo lectura",
       "conductor": "Conductor",
       "administrator": "Administrador",
-      "noAccess": "Sin acceso"
+      "noAccess": "Sin acceso",
+      "publisher": "Publicador",
+      "publisherHint": "Un publicador solo ve y trabaja los mapas asignados a su cuenta.",
+      "noAccessHint": "Quita a esta persona de la congregación.",
+      "readOnlyHint": "Puede ver los territorios y los mapas, pero no puede cambiar nada.",
+      "conductorHint": "Puede actualizar los mapas y entregarlos como enlaces.",
+      "administratorHint": "Puede gestionarlo todo: territorios, mapas, miembros y ajustes."
     },
     "invite": "Invitar",
     "dontInviteSelf": "Por favor, no te invites a ti mismo.",
@@ -337,7 +344,11 @@
     "assignedTo": "Asignado a",
     "expiresIn": "Expira en {{time}}",
     "normalAssignment": "¡Buen {{greeting}}, {{publisherName}}!\n\nSe te asignó {{address}}.\n\nPor favor, haz clic en el enlace a continuación para continuar.",
-    "personalSlip": "¡Buen {{greeting}}, {{publisherName}}!\n\nTienes un slip personal para {{address}}.\n\nEste enlace expira en {{expiryHrs}}.\n\nPor favor, haz clic en el enlace a continuación para continuar."
+    "personalSlip": "¡Buen {{greeting}}, {{publisherName}}!\n\nTienes un slip personal para {{address}}.\n\nEste enlace expira en {{expiryHrs}}.\n\nPor favor, haz clic en el enlace a continuación para continuar.",
+    "givenTo": "Entregado a {{names}}",
+    "changeMembers": "Cambiar miembros",
+    "changeMembersTitle": "¿A quién se entrega este mapa?",
+    "membersUpdated": "Miembros actualizados"
   },
   "messages": {
     "messages": "Mensajes",
@@ -435,7 +446,8 @@
   "profile": {
     "updateSuccess": "Perfil actualizado.",
     "title": "Mi perfil",
-    "updateButton": "Actualizar"
+    "updateButton": "Actualizar",
+    "emailOnAssignment": "Enviarme un correo cuando me entreguen un mapa"
   },
   "slip": {
     "selectExpiryValidation": "Por favor, selecciona una fecha de caducidad.",
@@ -446,7 +458,14 @@
     "confirmButton": "Confirmar",
     "linkReadyTitle": "El enlace del mapa está listo",
     "alreadyAssigned": "Ya asignado",
-    "moreAssignees": "+{{count}} más"
+    "moreAssignees": "+{{count}} más",
+    "memberLabel": "Asignar a miembros (opcional)",
+    "memberPlaceholder": "Buscar miembros",
+    "memberHint": "Encontrarán este mapa en Mis mapas.",
+    "recentMembers": "Recientes",
+    "allMembers": "Miembros",
+    "memberOpenLinks": "Mapas abiertos: {{count}}",
+    "givenTo": "Asignado a {{names}}"
   },
   "password": {
     "number": "La contraseña debe contener números.",
@@ -991,5 +1010,20 @@
       "failed": "No se pudo usar esa foto. Pruebe con un JPEG o PNG.",
       "alt": "La foto que adjuntó"
     }
+  },
+  "myLinks": {
+    "title": "Mis mapas",
+    "description": "Toca un mapa para empezar.",
+    "personal": "Territorio personal",
+    "assigned": "Asignados",
+    "emptyTitle": "No hay mapas por ahora",
+    "emptyMessage": "Los mapas que te asignen aparecerán aquí.",
+    "refresh": "Comprobar de nuevo",
+    "from": "Asignado por {{name}}",
+    "with": "Con {{names}}",
+    "loadFailed": "No se pudieron cargar tus mapas.",
+    "accountMenu": "Menú de la cuenta",
+    "given": "Te asignaron un mapa",
+    "open": "Abrir"
   }
 }

@@ -10,6 +10,7 @@
     "select": "Pilih",
     "submit": "Kirim",
     "clear": "Bersihkan",
+    "remove": "Hapus",
     "open": "Buka",
     "undo": "Batalkan",
     "list": "Daftar",
@@ -245,7 +246,13 @@
       "readOnly": "Hanya Baca",
       "conductor": "Pengurus",
       "administrator": "Admin",
-      "noAccess": "Tidak Ada Akses"
+      "noAccess": "Tidak Ada Akses",
+      "publisher": "Penerbit",
+      "publisherHint": "Penerbit hanya melihat dan mengerjakan peta yang diberikan ke akunnya.",
+      "noAccessHint": "Mengeluarkan orang ini dari sidang.",
+      "readOnlyHint": "Dapat melihat wilayah dan peta, tetapi tidak dapat mengubah apa pun.",
+      "conductorHint": "Dapat memperbarui peta dan membagikannya sebagai tautan.",
+      "administratorHint": "Dapat mengelola semuanya: wilayah, peta, anggota, dan pengaturan."
     },
     "profile": "Profil",
     "account": "Akun",
@@ -311,7 +318,11 @@
     "created": "Dibuat",
     "expires": "Kedaluwarsa",
     "assignedBy": "Ditugaskan oleh",
-    "assignedTo": "Ditugaskan kepada"
+    "assignedTo": "Ditugaskan kepada",
+    "givenTo": "Diberikan kepada {{names}}",
+    "changeMembers": "Ubah anggota",
+    "changeMembersTitle": "Kepada siapa peta ini diberikan?",
+    "membersUpdated": "Anggota diperbarui"
   },
   "messages": {
     "messages": "Pesan",
@@ -435,7 +446,8 @@
   "profile": {
     "updateSuccess": "Profil diperbarui.",
     "title": "Profil Saya",
-    "updateButton": "Perbarui"
+    "updateButton": "Perbarui",
+    "emailOnAssignment": "Kirimi saya email saat saya diberi peta"
   },
   "slip": {
     "selectExpiryValidation": "Silakan pilih tanggal kedaluwarsa.",
@@ -446,7 +458,14 @@
     "confirmButton": "Konfirmasi",
     "linkReadyTitle": "Tautan peta siap",
     "alreadyAssigned": "Sudah ditugaskan",
-    "moreAssignees": "+{{count}} lainnya"
+    "moreAssignees": "+{{count}} lainnya",
+    "memberLabel": "Berikan kepada anggota (opsional)",
+    "memberPlaceholder": "Cari anggota",
+    "memberHint": "Mereka akan menemukan peta ini di Peta saya.",
+    "recentMembers": "Terbaru",
+    "allMembers": "Anggota",
+    "memberOpenLinks": "Peta aktif: {{count}}",
+    "givenTo": "Diberikan kepada {{names}}"
   },
   "password": {
     "number": "Kata sandi harus mengandung angka.",
@@ -991,5 +1010,20 @@
       "failed": "Foto itu tidak dapat digunakan. Coba JPEG atau PNG.",
       "alt": "Foto yang Anda lampirkan"
     }
+  },
+  "myLinks": {
+    "title": "Peta saya",
+    "description": "Ketuk peta untuk mulai.",
+    "personal": "Daerah pribadi",
+    "assigned": "Ditugaskan",
+    "emptyTitle": "Belum ada peta",
+    "emptyMessage": "Peta yang diberikan kepada Anda akan muncul di sini.",
+    "refresh": "Periksa lagi",
+    "from": "Ditugaskan oleh {{name}}",
+    "with": "Bersama {{names}}",
+    "loadFailed": "Peta Anda tidak dapat dimuat.",
+    "accountMenu": "Menu akun",
+    "given": "Anda diberi sebuah peta",
+    "open": "Buka"
   }
 }

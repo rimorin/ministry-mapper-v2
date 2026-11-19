@@ -25,6 +25,65 @@ function ComboboxInputGroup({
   );
 }
 
+// The multi-select layout: chips and the input wrap inside a ComboboxInputGroup
+// that is given `h-auto min-h-9`.
+function ComboboxChips({ className, ...props }: ComboboxPrimitive.Chips.Props) {
+  return (
+    <ComboboxPrimitive.Chips
+      data-slot="combobox-chips"
+      className={cn(
+        "flex min-w-0 flex-1 flex-wrap items-center gap-1 py-1 pl-1.5 pr-9",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+function ComboboxChip({
+  className,
+  children,
+  ...props
+}: ComboboxPrimitive.Chip.Props) {
+  const { t } = useTranslation();
+
+  return (
+    <ComboboxPrimitive.Chip
+      data-slot="combobox-chip"
+      className={cn(
+        "flex h-6 max-w-full items-center gap-0.5 rounded-sm bg-muted pl-2 pr-0.5 text-xs font-medium text-foreground outline-none data-highlighted:bg-accent data-highlighted:text-accent-foreground",
+        className
+      )}
+      {...props}
+    >
+      <span className="min-w-0 truncate">{children}</span>
+      <ComboboxPrimitive.ChipRemove
+        data-slot="combobox-chip-remove"
+        aria-label={t("common.remove", "Remove")}
+        className="flex size-5 shrink-0 items-center justify-center rounded-sm text-muted-foreground hover:text-foreground"
+      >
+        <X className="size-3" />
+      </ComboboxPrimitive.ChipRemove>
+    </ComboboxPrimitive.Chip>
+  );
+}
+
+function ComboboxChipsInput({
+  className,
+  ...props
+}: ComboboxPrimitive.Input.Props) {
+  return (
+    <ComboboxPrimitive.Input
+      data-slot="combobox-chips-input"
+      className={cn(
+        "h-6 min-w-12 flex-1 border-0 bg-transparent px-1.5 text-sm outline-none placeholder:text-muted-foreground",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
 function ComboboxInput({ className, ...props }: ComboboxPrimitive.Input.Props) {
   return (
     <ComboboxPrimitive.Input
@@ -163,6 +222,38 @@ function ComboboxList({ ...props }: ComboboxPrimitive.List.Props) {
   return <ComboboxPrimitive.List data-slot="combobox-list" {...props} />;
 }
 
+function ComboboxGroup({ className, ...props }: ComboboxPrimitive.Group.Props) {
+  return (
+    <ComboboxPrimitive.Group
+      data-slot="combobox-group"
+      className={cn(
+        "not-first:mt-1 not-first:border-t not-first:pt-1",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+function ComboboxLabel({
+  className,
+  ...props
+}: ComboboxPrimitive.GroupLabel.Props) {
+  return (
+    <ComboboxPrimitive.GroupLabel
+      data-slot="combobox-label"
+      className={cn(
+        "px-3 py-1.5 text-xs font-medium text-muted-foreground",
+        className
+      )}
+      {...props}
+    />
+  );
+}
+
+// Renders no element of its own, like Root.
+const ComboboxCollection = ComboboxPrimitive.Collection;
+
 function ComboboxItem({
   className,
   children,
@@ -188,12 +279,18 @@ function ComboboxItem({
 export {
   Combobox,
   ComboboxActions,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
   ComboboxClear,
+  ComboboxCollection,
   ComboboxContent,
   ComboboxEmpty,
+  ComboboxGroup,
   ComboboxInput,
   ComboboxInputGroup,
   ComboboxItem,
+  ComboboxLabel,
   ComboboxList,
   ComboboxStatus,
   ComboboxTrigger

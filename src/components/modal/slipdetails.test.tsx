@@ -17,9 +17,29 @@ import type { LinkSession, Policy } from "../../utils/policies";
 const link = (publisherName: string, linkType: string) =>
   ({ publisherName, linkType }) as LinkSession;
 
-const { createDataMock } = vi.hoisted(() => ({
-  createDataMock: vi.fn(() => Promise.resolve({ id: "mocklink" }))
+const { createDataMock, membersMock, flag } = vi.hoisted(() => ({
+  flag: { publisherRole: true },
+  createDataMock: vi.fn(() => Promise.resolve({ id: "mocklink" })),
+  membersMock: vi.fn(() =>
+    Promise.resolve(
+      [] as { id: string; name: string; email: string; openLinks: number }[]
+    )
+  )
 }));
+
+vi.mock("../../hooks/usePublisherRoleEnabled", () => ({
+  default: () => flag.publisherRole
+}));
+
+vi.mock(
+  "../../utils/helpers/getcongregationmembers",
+  async (importOriginal) => ({
+    ...(await importOriginal<
+      typeof import("../../utils/helpers/getcongregationmembers")
+    >()),
+    default: membersMock
+  })
+);
 
 vi.mock("../../utils/pocketbase", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../../utils/pocketbase")>()),
@@ -72,9 +92,16 @@ const openAndCreateLink = async (overrides: Record<string, unknown> = {}) => {
   return view;
 };
 
+const roster = [
+  { id: "user9", name: "Sam Publisher", email: "sam@alpha.test", openLinks: 2 },
+  { id: "user8", name: "Rita Reader", email: "rita@alpha.test", openLinks: 0 }
+];
+
 describe("ConfirmSlipDetails", () => {
   beforeEach(() => {
+    flag.publisherRole = true;
     vi.clearAllMocks();
+    localStorage.clear();
   });
 
   afterEach(() => {
@@ -124,6 +151,91 @@ describe("ConfirmSlipDetails", () => {
       expect(screen.queryByText("Map link is ready")).not.toBeInTheDocument()
     );
     unmount();
+  });
+
+  it("gives the link to members picked by typing and Enter, with no share step", async () => {
+    membersMock.mockResolvedValueOnce(roster);
+    render(<></>);
+    show();
+
+    const picker = await screen.findByPlaceholderText("Search members");
+    await waitFor(() => expect(picker).toHaveFocus());
+    await userEvent.type(picker, "Sam{Enter}");
+    // A shared name is settled by the email, so the search matches it too.
+    await userEvent.type(picker, "rita@{Enter}");
+
+    expect(
+      screen.getByPlaceholderText("Names of the assigned publishers")
+    ).toHaveValue("Sam Publisher, Rita Reader");
+    expect(
+      screen.getByText("They will find this map under My maps.")
+    ).toBeInTheDocument();
+    // The share screen is skipped, so its warning moves to the form.
+    expect(screen.getByText("Already assigned")).toBeInTheDocument();
+
+    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    await waitFor(() =>
+      expect(
+        screen.queryByText("Confirm slip details for Sunset Towers")
+      ).not.toBeInTheDocument()
+    );
+    expect(screen.queryByText("Map link is ready")).toBeNull();
+    expect(createDataMock).toHaveBeenCalledWith(
+      "assignments",
+      expect.objectContaining({
+        assignees: ["user9", "user8"],
+        publisher: "Sam Publisher, Rita Reader"
+      }),
+      expect.anything()
+    );
+    expect(JSON.parse(localStorage.getItem("recentAssignees:cong1")!)).toEqual([
+      "user9",
+      "user8"
+    ]);
+  });
+
+  it("offers recently chosen members first and shows who holds a map", async () => {
+    localStorage.setItem("recentAssignees:cong1", JSON.stringify(["user8"]));
+    membersMock.mockResolvedValueOnce(roster);
+    render(<></>);
+    show();
+
+    await userEvent.click(await screen.findByRole("button", { name: "Open" }));
+
+    const options = await screen.findAllByRole("option");
+    expect(options.map((option) => option.textContent)).toEqual([
+      expect.stringContaining("Rita Reader"),
+      expect.stringContaining("Sam Publisher")
+    ]);
+    expect(screen.getByText("Recent")).toBeInTheDocument();
+    expect(screen.getByLabelText("Open maps: 2")).toBeInTheDocument();
+    expect(screen.getByText("sam@alpha.test")).toBeInTheDocument();
+  });
+
+  it("leaves the member picker out and sends no assignees without a roster", async () => {
+    await openAndCreateLink();
+
+    expect(screen.queryByPlaceholderText("Search members")).toBeNull();
+    expect(createDataMock).toHaveBeenCalledWith(
+      "assignments",
+      expect.not.objectContaining({ assignees: expect.anything() }),
+      expect.anything()
+    );
+  });
+
+  it("leaves the member picker out where the publisher role is switched off", async () => {
+    flag.publisherRole = false;
+    membersMock.mockResolvedValue([
+      { id: "u1", name: "Sam Lee", email: "sam@example.com", openLinks: 0 }
+    ]);
+    await openAndCreateLink();
+
+    expect(membersMock).not.toHaveBeenCalled();
+    expect(createDataMock).toHaveBeenCalledWith(
+      "assignments",
+      expect.not.objectContaining({ assignees: expect.anything() }),
+      expect.anything()
+    );
   });
 
   it("hides the type badge when only normal assignments exist", async () => {

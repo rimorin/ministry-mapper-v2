@@ -110,6 +110,8 @@ export class LinkSession {
   name: string;
   publisherName: string;
   assignerName: string;
+  // The accounts the link was given to; empty for one shared by hand.
+  holders: Array<{ id: string; name: string }>;
   constructor(linkData?: RecordModel, key?: string) {
     this.id = "";
     this.tokenEndtime = 0;
@@ -123,6 +125,7 @@ export class LinkSession {
     this.name = "";
     this.publisherName = "";
     this.assignerName = "";
+    this.holders = [];
     if (!linkData) return;
     this.id = linkData?.id || "";
     this.key = key || "";
@@ -135,6 +138,18 @@ export class LinkSession {
     );
     this.publisherName = linkData.publisher;
     this.assignerName = linkData.expand?.user?.name ?? "";
+    this.congregation = linkData.congregation ?? "";
+    // The expand drops accounts the caller may not see, so names can be fewer
+    // than the ids.
+    const names = new Map<string, string>(
+      (linkData.expand?.assignees ?? []).map(
+        (user: { id: string; name: string }) => [user.id, user.name]
+      )
+    );
+    this.holders = ((linkData.assignees as string[]) ?? []).map((id) => ({
+      id,
+      name: names.get(id) ?? ""
+    }));
     this.tokenEndtime = new Date(linkData.expiry_date).getTime();
   }
 }

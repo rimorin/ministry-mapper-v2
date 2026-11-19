@@ -10,6 +10,7 @@
     "select": "Select",
     "submit": "Submit",
     "clear": "Clear",
+    "remove": "Remove",
     "open": "Open",
     "undo": "Undo",
     "list": "List",
@@ -275,7 +276,13 @@
       "readOnly": "Read Only",
       "conductor": "Conductor",
       "administrator": "Admin",
-      "noAccess": "No Access"
+      "noAccess": "No Access",
+      "publisher": "Publisher",
+      "publisherHint": "A publisher only sees and works the maps given to their account.",
+      "noAccessHint": "Removes this person from the congregation.",
+      "readOnlyHint": "Can view territories and maps, but cannot change anything.",
+      "conductorHint": "Can update maps and give them out as links.",
+      "administratorHint": "Can manage everything: territories, maps, members and settings."
     },
     "invite": "Invite",
     "dontInviteSelf": "Please do not invite yourself.",
@@ -337,7 +344,11 @@
     "assignedTo": "Assigned to",
     "expiresIn": "Expires in {{time}}",
     "normalAssignment": "Good {{greeting}}, {{publisherName}}!!\n\nYou are assigned to {{address}}.\n\nPlease click on the link below to proceed.",
-    "personalSlip": "Good {{greeting}}, {{publisherName}}!!\n\nYou have a personal slip for {{address}}.\n\nThis link expires in {{expiryHrs}}.\n\nPlease click on the link below to proceed."
+    "personalSlip": "Good {{greeting}}, {{publisherName}}!!\n\nYou have a personal slip for {{address}}.\n\nThis link expires in {{expiryHrs}}.\n\nPlease click on the link below to proceed.",
+    "givenTo": "Given to {{names}}",
+    "changeMembers": "Change members",
+    "changeMembersTitle": "Who is this map given to?",
+    "membersUpdated": "Members updated"
   },
   "messages": {
     "messages": "Messages",
@@ -435,7 +446,8 @@
   "profile": {
     "updateSuccess": "Profile updated.",
     "title": "My Profile",
-    "updateButton": "Update"
+    "updateButton": "Update",
+    "emailOnAssignment": "Email me when I am given a map"
   },
   "slip": {
     "selectExpiryValidation": "Please select an expiry date.",
@@ -446,7 +458,14 @@
     "confirmButton": "Confirm",
     "linkReadyTitle": "Map link is ready",
     "alreadyAssigned": "Already assigned",
-    "moreAssignees": "+{{count}} more"
+    "moreAssignees": "+{{count}} more",
+    "memberLabel": "Give to members (optional)",
+    "memberPlaceholder": "Search members",
+    "memberHint": "They will find this map under My maps.",
+    "recentMembers": "Recent",
+    "allMembers": "Members",
+    "memberOpenLinks": "Open maps: {{count}}",
+    "givenTo": "Given to {{names}}"
   },
   "password": {
     "number": "Password must contain numbers.",
@@ -991,5 +1010,20 @@
       "failed": "That photo could not be used. Try a JPEG or PNG.",
       "alt": "The photo you attached"
     }
+  },
+  "myLinks": {
+    "title": "My maps",
+    "description": "Tap a map to start working.",
+    "personal": "Personal territory",
+    "assigned": "Assigned",
+    "emptyTitle": "No maps right now",
+    "emptyMessage": "Maps given to you show up here.",
+    "refresh": "Check again",
+    "from": "Assigned by {{name}}",
+    "with": "With {{names}}",
+    "loadFailed": "Your maps could not be loaded.",
+    "accountMenu": "Account menu",
+    "given": "You were given a map",
+    "open": "Open"
   }
 }

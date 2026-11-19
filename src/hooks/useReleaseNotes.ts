@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import useLocalStorage from "./useLocalStorage";
 
 export type LocalizedString = string | Record<string, string>;
@@ -27,14 +27,32 @@ interface UseReleaseNotesReturn {
   markAsSeen: () => void;
 }
 
+const seenKey = (audience: ReleaseAudience) => `lastSeenReleaseId:${audience}`;
+
+const readSeenId = (audience: ReleaseAudience): string | null => {
+  try {
+    const item = window.localStorage.getItem(seenKey(audience));
+    return item ? JSON.parse(item) : null;
+  } catch {
+    return null;
+  }
+};
+
 export function useReleaseNotes(
   audience: ReleaseAudience
 ): UseReleaseNotesReturn {
-  const [lastSeenReleaseId, setLastSeenReleaseId] = useLocalStorage<
-    string | null
-  >(`lastSeenReleaseId:${audience}`, null);
-  const lastSeenRef = useRef(lastSeenReleaseId);
-  const [newReleases, setNewReleases] = useState<ReleaseEntry[]>([]);
+  const [, setLastSeenReleaseId] = useLocalStorage<string | null>(
+    seenKey(audience),
+    null
+  );
+  // A signed-in account moves between its links and a map without a reload,
+  // so the audience changes under this hook. What is new is kept with the
+  // audience it was worked out for, and never shown to the other one.
+  const [fresh, setFresh] = useState<{
+    audience: ReleaseAudience;
+    releases: ReleaseEntry[];
+  }>({ audience, releases: [] });
+  const newReleases = fresh.audience === audience ? fresh.releases : [];
   const [allReleases, setAllReleases] = useState<ReleaseEntry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -62,7 +80,9 @@ export function useReleaseNotes(
         if (!ignore) setAllReleases(releases);
 
         const latestId = releases[0].id;
-        const seenId = lastSeenRef.current;
+        // Read at fetch time: the marker belongs to this audience and may
+        // have been written since the hook mounted.
+        const seenId = readSeenId(audience);
 
         if (seenId === latestId) return;
 
@@ -74,7 +94,9 @@ export function useReleaseNotes(
           : releases.filter(
               (r) => r.id.substring(0, 10) === latestId.substring(0, 10)
             );
-        if (filtered.length > 0 && !ignore) setNewReleases(filtered);
+        if (filtered.length > 0 && !ignore) {
+          setFresh({ audience, releases: filtered });
+        }
       } catch {
         // Silent fail — no noise for offline or missing file.
       } finally {
@@ -89,9 +111,9 @@ export function useReleaseNotes(
   }, [audience]);
 
   const markAsSeen = useCallback(() => {
-    setNewReleases((prev) => {
-      if (prev.length > 0) setLastSeenReleaseId(prev[0].id);
-      return [];
+    setFresh((prev) => {
+      if (prev.releases.length > 0) setLastSeenReleaseId(prev.releases[0].id);
+      return { ...prev, releases: [] };
     });
   }, [setLastSeenReleaseId]);
 

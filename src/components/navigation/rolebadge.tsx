@@ -10,6 +10,8 @@ const UserRoleBadge = ({ role }: UserRoleBadgeProps) => {
   if (!role) return <Badge variant="secondary">?</Badge>;
 
   switch (role) {
+    case USER_ACCESS_LEVELS.PUBLISHER.CODE:
+      return <Badge variant="outline">{t("user.roles.publisher")}</Badge>;
     case USER_ACCESS_LEVELS.READ_ONLY.CODE:
       return <Badge variant="secondary">{t("user.roles.readOnly")}</Badge>;
     case USER_ACCESS_LEVELS.CONDUCTOR.CODE:

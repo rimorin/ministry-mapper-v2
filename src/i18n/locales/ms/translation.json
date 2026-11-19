@@ -10,6 +10,7 @@
     "select": "Pilih",
     "submit": "Hantar",
     "clear": "Kosong",
+    "remove": "Buang",
     "open": "Buka",
     "undo": "Buat Asal",
     "list": "Senarai",
@@ -275,7 +276,13 @@
       "readOnly": "Baca Sahaja",
       "conductor": "Konduktor",
       "administrator": "Pentadbir",
-      "noAccess": "Tiada Akses"
+      "noAccess": "Tiada Akses",
+      "publisher": "Penerbit",
+      "publisherHint": "Penerbit hanya melihat dan mengerjakan peta yang diberikan kepada akaunnya.",
+      "noAccessHint": "Mengeluarkan orang ini daripada sidang.",
+      "readOnlyHint": "Boleh melihat kawasan dan peta, tetapi tidak boleh mengubah apa-apa.",
+      "conductorHint": "Boleh mengemas kini peta dan memberikannya sebagai pautan.",
+      "administratorHint": "Boleh mengurus semuanya: kawasan, peta, ahli dan tetapan."
     },
     "invite": "Jemput",
     "dontInviteSelf": "Sila jangan jemput diri sendiri.",
@@ -337,7 +344,11 @@
     "assignedTo": "Ditugaskan kepada",
     "expiresIn": "Tamat dalam {{time}}",
     "normalAssignment": "Selamat {{greeting}}, {{publisherName}}!!\n\nAnda ditugaskan ke {{address}}.\n\nSila klik pada pautan di bawah untuk meneruskan.",
-    "personalSlip": "Selamat {{greeting}}, {{publisherName}}!!\n\nAnda mempunyai slip peribadi untuk {{address}}.\n\nPautan ini tamat dalam {{expiryHrs}}.\n\nSila klik pada pautan di bawah untuk meneruskan."
+    "personalSlip": "Selamat {{greeting}}, {{publisherName}}!!\n\nAnda mempunyai slip peribadi untuk {{address}}.\n\nPautan ini tamat dalam {{expiryHrs}}.\n\nSila klik pada pautan di bawah untuk meneruskan.",
+    "givenTo": "Diberikan kepada {{names}}",
+    "changeMembers": "Tukar ahli",
+    "changeMembersTitle": "Peta ini diberikan kepada siapa?",
+    "membersUpdated": "Ahli dikemas kini"
   },
   "messages": {
     "messages": "Mesej",
@@ -435,7 +446,8 @@
   "profile": {
     "updateSuccess": "Profil dikemas kini.",
     "title": "Profil Saya",
-    "updateButton": "Kemas kini"
+    "updateButton": "Kemas kini",
+    "emailOnAssignment": "E-mel saya apabila saya diberi peta"
   },
   "slip": {
     "selectExpiryValidation": "Sila pilih tarikh tamat.",
@@ -446,7 +458,14 @@
     "confirmButton": "Sahkan",
     "linkReadyTitle": "Pautan peta sedia",
     "alreadyAssigned": "Sudah ditugaskan",
-    "moreAssignees": "+{{count}} lagi"
+    "moreAssignees": "+{{count}} lagi",
+    "memberLabel": "Beri kepada ahli (pilihan)",
+    "memberPlaceholder": "Cari ahli",
+    "memberHint": "Mereka akan menemui peta ini di Peta saya.",
+    "recentMembers": "Terkini",
+    "allMembers": "Ahli",
+    "memberOpenLinks": "Peta aktif: {{count}}",
+    "givenTo": "Diberikan kepada {{names}}"
   },
   "password": {
     "number": "Kata laluan mesti mengandungi nombor.",
@@ -991,5 +1010,20 @@
       "failed": "Foto itu tidak dapat digunakan. Cuba JPEG atau PNG.",
       "alt": "Foto yang anda lampirkan"
     }
+  },
+  "myLinks": {
+    "title": "Peta saya",
+    "description": "Ketik peta untuk bermula.",
+    "personal": "Kawasan peribadi",
+    "assigned": "Ditugaskan",
+    "emptyTitle": "Tiada peta buat masa ini",
+    "emptyMessage": "Peta yang diberikan kepada anda akan dipaparkan di sini.",
+    "refresh": "Semak lagi",
+    "from": "Ditugaskan oleh {{name}}",
+    "with": "Bersama {{names}}",
+    "loadFailed": "Peta anda tidak dapat dimuatkan.",
+    "accountMenu": "Menu akaun",
+    "given": "Anda diberi sebuah peta",
+    "open": "Buka"
   }
 }

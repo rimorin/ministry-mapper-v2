@@ -10,6 +10,7 @@
     "select": "選択",
     "submit": "送信",
     "clear": "クリア",
+    "remove": "削除",
     "open": "開く",
     "undo": "元に戻す",
     "list": "リスト",
@@ -273,7 +274,13 @@
       "readOnly": "閲覧のみ",
       "conductor": "管理者",
       "administrator": "管理者",
-      "noAccess": "アクセス不可"
+      "noAccess": "アクセス不可",
+      "publisher": "伝道者",
+      "publisherHint": "伝道者は、自分のアカウントに割り当てられた地図だけを見て作業できます。",
+      "noAccessHint": "このユーザーを会衆から外します。",
+      "readOnlyHint": "区域と地図を閲覧できますが、変更はできません。",
+      "conductorHint": "地図を更新し、リンクとして割り当てることができます。",
+      "administratorHint": "区域、地図、メンバー、設定のすべてを管理できます。"
     },
     "invite": "招待",
     "dontInviteSelf": "自分自身を招待しないでください。",
@@ -337,7 +344,11 @@
     "created": "作成",
     "expires": "期限",
     "assignedBy": "割当者",
-    "assignedTo": "担当者"
+    "assignedTo": "担当者",
+    "givenTo": "{{names}}に割り当て済み",
+    "changeMembers": "メンバーを変更",
+    "changeMembersTitle": "この地図を誰に割り当てますか？",
+    "membersUpdated": "メンバーを更新しました"
   },
   "messages": {
     "messages": "メッセージ",
@@ -435,7 +446,8 @@
   "profile": {
     "updateSuccess": "プロフィール更新。",
     "title": "マイプロフィール",
-    "updateButton": "更新"
+    "updateButton": "更新",
+    "emailOnAssignment": "地図が割り当てられたらメールで知らせる"
   },
   "slip": {
     "selectExpiryValidation": "期限日を選択してください。",
@@ -446,7 +458,14 @@
     "confirmButton": "確認",
     "linkReadyTitle": "マップのリンクが準備できました",
     "alreadyAssigned": "すでに割り当て済み",
-    "moreAssignees": "他{{count}}名"
+    "moreAssignees": "他{{count}}名",
+    "memberLabel": "メンバーに割り当てる（任意）",
+    "memberPlaceholder": "メンバーを検索",
+    "memberHint": "この地図はマイマップに表示されます。",
+    "recentMembers": "最近",
+    "allMembers": "メンバー",
+    "memberOpenLinks": "進行中の地図：{{count}}",
+    "givenTo": "{{names}} に割り当てました"
   },
   "password": {
     "number": "パスワードには数字を含める必要があります。",
@@ -991,5 +1010,20 @@
       "failed": "その写真は使用できませんでした。JPEG または PNG をお試しください。",
       "alt": "添付した写真"
     }
+  },
+  "myLinks": {
+    "title": "マイマップ",
+    "description": "地図をタップして始めてください。",
+    "personal": "個人区域",
+    "assigned": "割り当て済み",
+    "emptyTitle": "現在、地図はありません",
+    "emptyMessage": "地図が割り当てられると、ここに表示されます。",
+    "refresh": "再確認",
+    "from": "割り当て: {{name}}",
+    "with": "{{names}}と一緒",
+    "loadFailed": "地図を読み込めませんでした。",
+    "accountMenu": "アカウントメニュー",
+    "given": "地図が渡されました",
+    "open": "開く"
   }
 }

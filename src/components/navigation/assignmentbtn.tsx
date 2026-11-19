@@ -44,7 +44,7 @@ const useAssignments = (mapId: string) => {
     const mapAssignments = await getList("assignments", {
       filter: `map='${mapId}'`,
       requestKey: `assignments-${mapId}`,
-      expand: "map,user",
+      expand: "map,user,assignees",
       fields: PB_FIELDS.ASSIGNMENTS
     });
     const personalLinks = new Map<string, LinkSession>();
@@ -104,7 +104,7 @@ const useAssignments = (mapId: string) => {
     {
       filter: `map='${mapId}'`,
       fields: PB_FIELDS.ASSIGNMENTS,
-      expand: "map,user"
+      expand: "map,user,assignees"
     },
     [mapId],
     !!mapId,

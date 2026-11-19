@@ -40,6 +40,7 @@ const mockSetSelectedTerritory = vi.fn();
 const mockSetTerritoryCodeCache = vi.fn();
 const mockSetUserAccessLevel = vi.fn();
 const mockSetIsUnauthorised = vi.fn();
+const mockSetIsPublisherOnly = vi.fn();
 const mockNotifyError = vi.fn();
 const mockNotifyWarning = vi.fn();
 const mockT = vi.fn((key: string, defaultValue: string) => defaultValue) as any;
@@ -66,6 +67,7 @@ describe("useAdminData", () => {
     setTerritoryCodeCache: mockSetTerritoryCodeCache,
     setUserAccessLevel: mockSetUserAccessLevel,
     setIsUnauthorised: mockSetIsUnauthorised,
+    setIsPublisherOnly: mockSetIsPublisherOnly,
     notifyError: mockNotifyError,
     notifyWarning: mockNotifyWarning,
     processCongregationTerritories: mockProcessCongregationTerritories,
@@ -104,7 +106,7 @@ describe("useAdminData", () => {
           id: "role-1",
           collectionId: "roles",
           collectionName: "roles",
-          role: "ADMIN",
+          role: "administrator",
           expand: {
             congregation: {
               id: "cong-1",
@@ -124,7 +126,7 @@ describe("useAdminData", () => {
         expect(mockSetUserCongregationAccesses).toHaveBeenCalledWith([
           {
             code: "cong-1",
-            access: "ADMIN",
+            access: "administrator",
             name: "Test Congregation"
           }
         ]);
@@ -145,6 +147,45 @@ describe("useAdminData", () => {
           true
         );
       });
+    });
+
+    it("should hand an account with only publisher roles to the publisher view", async () => {
+      vi.mocked(getList).mockResolvedValueOnce([
+        { id: "role-1", role: "publisher", expand: { congregation: {} } }
+      ] as any);
+
+      const { result } = renderHook(() => useAdminData(defaultProps));
+
+      await result.current.fetchData();
+
+      await waitFor(() => {
+        expect(mockSetIsPublisherOnly).toHaveBeenCalledWith(true);
+      });
+      expect(mockSetIsUnauthorised).not.toHaveBeenCalled();
+      expect(mockSetUserCongregationAccesses).not.toHaveBeenCalled();
+      await waitFor(() => expect(result.current.isLoading).toBe(false));
+    });
+
+    it("should leave publisher roles out of a staff member's congregations", async () => {
+      vi.mocked(getList).mockResolvedValueOnce([
+        {
+          id: "role-1",
+          role: "conductor",
+          expand: { congregation: { id: "cong-1", name: "Staff Congregation" } }
+        },
+        { id: "role-2", role: "publisher", expand: { congregation: {} } }
+      ] as any);
+
+      const { result } = renderHook(() => useAdminData(defaultProps));
+
+      await result.current.fetchData();
+
+      await waitFor(() => {
+        expect(mockSetUserCongregationAccesses).toHaveBeenCalledWith([
+          { code: "cong-1", access: "conductor", name: "Staff Congregation" }
+        ]);
+      });
+      expect(mockSetIsPublisherOnly).not.toHaveBeenCalled();
     });
 
     it("should reset isLoading to false when getList throws a network error", async () => {
@@ -182,7 +223,7 @@ describe("useAdminData", () => {
           id: "role-1",
           collectionId: "roles",
           collectionName: "roles",
-          role: "ADMIN",
+          role: "administrator",
           expand: {
             congregation: {
               id: "cong-cached",
@@ -240,7 +281,7 @@ describe("useAdminData", () => {
           id: "role-1",
           collectionId: "roles",
           collectionName: "roles",
-          role: "ADMIN",
+          role: "administrator",
           expand: {
             congregation: {
               id: "cong-1",
@@ -370,7 +411,7 @@ describe("useAdminData", () => {
           id: "role-1",
           collectionId: "roles",
           collectionName: "roles",
-          role: "ADMIN",
+          role: "administrator",
           expand: {
             congregation: {
               id: "cong-1",
@@ -406,7 +447,7 @@ describe("useAdminData", () => {
       const propsWithAccess = {
         ...defaultProps,
         congregationAccessRef: {
-          current: { "cong-1": "ADMIN" }
+          current: { "cong-1": "administrator" }
         } as React.RefObject<Record<string, string>>
       };
 
@@ -418,7 +459,7 @@ describe("useAdminData", () => {
       await result.current.loadAllCongregationData("cong-1");
 
       await waitFor(() => {
-        expect(mockSetUserAccessLevel).toHaveBeenCalledWith("ADMIN");
+        expect(mockSetUserAccessLevel).toHaveBeenCalledWith("administrator");
         expect(result.current.isLoading).toBe(false);
       });
     });
