@@ -7,6 +7,7 @@ import {
   BarChart3,
   ChevronDown,
   ClipboardList,
+  Link2,
   FilePlus,
   Home,
   KeyRound,
@@ -174,11 +175,16 @@ interface AppSidebarProps {
   };
   onAccountActions: {
     onShowProfile: () => void;
+    onShowMyLinks: () => void;
     onShowAssignments: () => void;
     onPasswordReset: () => void;
     onLogout: () => void;
   };
   pendingCount?: number;
+  // Off where the publisher role is switched off and the account holds no links.
+  showMyLinks?: boolean;
+  isShowingMyLinks: boolean;
+  myLinksCount: number;
   // Present only when the assistant is enabled for the congregation.
   onOpenAssistant?: () => void;
   // The docked assistant is open, so its button shows as pressed.
@@ -204,6 +210,9 @@ export function AppSidebar({
   onCreateTerritory,
   onTerritoryActions,
   onCongregationActions,
+  showMyLinks = true,
+  isShowingMyLinks,
+  myLinksCount,
   onAccountActions,
   onOpenAssistant,
   assistantOpen = false
@@ -277,7 +286,7 @@ export function AppSidebar({
                 {congregationTerritoryList.length > 0 && (
                   <SidebarMenuItem>
                     <SidebarMenuButton
-                      isActive={!!selectedTerritory.code}
+                      isActive={!!selectedTerritory.code && !isShowingMyLinks}
                       onClick={handleAction(onToggleTerritoryListing)}
                       className="gap-2"
                     >
@@ -297,6 +306,27 @@ export function AppSidebar({
                         </div>
                       ) : (
                         t("territory.selectTerritory", "Select Territory")
+                      )}
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                )}
+
+                {showMyLinks && (
+                  <SidebarMenuItem>
+                    <SidebarMenuButton
+                      onClick={handleAction(onAccountActions.onShowMyLinks)}
+                      isActive={isShowingMyLinks}
+                      aria-pressed={isShowingMyLinks}
+                      className="gap-2"
+                    >
+                      <Link2 className="size-4 shrink-0 text-muted-foreground" />
+                      <span className="min-w-0 flex-1 truncate">
+                        {t("myLinks.title", "My maps")}
+                      </span>
+                      {myLinksCount > 0 && (
+                        <span className="rounded-full bg-primary px-1.5 text-xs font-medium text-primary-foreground tabular-nums">
+                          {myLinksCount}
+                        </span>
                       )}
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -349,7 +379,9 @@ export function AppSidebar({
           </SidebarGroup>
         </m.div>
 
-        {selectedTerritory.code && policy.hasOptions() && (
+        {/* Territory actions act on the territory on screen, so they go while
+            the links are showing instead. */}
+        {selectedTerritory.code && policy.hasOptions() && !isShowingMyLinks && (
           <ComponentAuthorizer
             requiredPermission={USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE}
             userPermission={userAccessLevel}

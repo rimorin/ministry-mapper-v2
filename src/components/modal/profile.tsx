@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import SubmitButton from "../common/submit-button";
 import useNotification from "../../hooks/useNotification";
@@ -28,19 +29,29 @@ import { updateDataById } from "../../utils/pocketbase";
 const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
   const { t } = useTranslation();
   const { notifySuccess, runAction } = useNotification();
-  const form = useForm<{ name: string }>({
-    values: { name: user?.name ?? "" }
+  const form = useForm<{ name: string; emailOnAssignment: boolean }>({
+    values: {
+      name: user?.name ?? "",
+      // Stored as the "off" switch so that accounts default to getting it.
+      emailOnAssignment: !user?.assignment_emails_off
+    }
   });
   const { modal, dialogProps, contentProps } = useBaseUiDialog({
     onClose: () => form.reset()
   });
 
-  const onSubmit = async (values: { name: string }) => {
+  const onSubmit = async (values: {
+    name: string;
+    emailOnAssignment: boolean;
+  }) => {
     await runAction(async () => {
       await updateDataById(
         "users",
         user?.id as string,
-        { name: values.name },
+        {
+          name: values.name,
+          assignment_emails_off: !values.emailOnAssignment
+        },
         { requestKey: `update-name-${user?.id}` }
       );
       notifySuccess(t("profile.updateSuccess"));
@@ -76,6 +87,26 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
                     <Input {...field} aria-required="true" />
                   </FormControl>
                   <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="emailOnAssignment"
+              render={({ field }) => (
+                <FormItem className="flex items-center justify-between gap-3">
+                  <FormLabel className="font-normal">
+                    {t(
+                      "profile.emailOnAssignment",
+                      "Email me when I am given a map"
+                    )}
+                  </FormLabel>
+                  <FormControl>
+                    <Switch
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  </FormControl>
                 </FormItem>
               )}
             />

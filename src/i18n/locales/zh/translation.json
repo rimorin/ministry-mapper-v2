@@ -10,6 +10,7 @@
     "select": "选择",
     "submit": "提交",
     "clear": "清除",
+    "remove": "移除",
     "open": "打开",
     "undo": "撤销",
     "list": "列表",
@@ -273,7 +274,13 @@
       "readOnly": "只读",
       "conductor": "负责人",
       "administrator": "管理员",
-      "noAccess": "无权限"
+      "noAccess": "无权限",
+      "publisher": "发布者",
+      "publisherHint": "发布者只能查看并处理分配给其账户的地图。",
+      "noAccessHint": "将此人从会众中移除。",
+      "readOnlyHint": "可以查看区域和地图，但不能做任何更改。",
+      "conductorHint": "可以更新地图，并以链接形式分配出去。",
+      "administratorHint": "可以管理一切：区域、地图、成员和设置。"
     },
     "invite": "邀请",
     "dontInviteSelf": "请不要邀请自己。",
@@ -337,7 +344,11 @@
     "created": "创建于",
     "expires": "到期于",
     "assignedBy": "指派人",
-    "assignedTo": "被指派人"
+    "assignedTo": "被指派人",
+    "givenTo": "已分配给{{names}}",
+    "changeMembers": "更改成员",
+    "changeMembersTitle": "这张地图分配给谁？",
+    "membersUpdated": "成员已更新"
   },
   "messages": {
     "messages": "消息",
@@ -435,7 +446,8 @@
   "profile": {
     "updateSuccess": "个人资料已更新。",
     "title": "我的个人资料",
-    "updateButton": "更新"
+    "updateButton": "更新",
+    "emailOnAssignment": "有地图分配给我时发邮件通知我"
   },
   "slip": {
     "selectExpiryValidation": "请选择到期日期。",
@@ -446,7 +458,14 @@
     "confirmButton": "确认",
     "linkReadyTitle": "地图链接已就绪",
     "alreadyAssigned": "已有分配",
-    "moreAssignees": "还有 {{count}} 人"
+    "moreAssignees": "还有 {{count}} 人",
+    "memberLabel": "分配给成员（可选）",
+    "memberPlaceholder": "搜索成员",
+    "memberHint": "对方会在“我的地图”中看到这张地图。",
+    "recentMembers": "最近",
+    "allMembers": "成员",
+    "memberOpenLinks": "进行中的地图：{{count}}",
+    "givenTo": "已分配给 {{names}}"
   },
   "password": {
     "number": "密码必须包含数字。",
@@ -991,5 +1010,20 @@
       "failed": "无法使用该照片。请尝试 JPEG 或 PNG。",
       "alt": "您添加的照片"
     }
+  },
+  "myLinks": {
+    "title": "我的地图",
+    "description": "点按地图即可开始。",
+    "personal": "个人区域",
+    "assigned": "已分配",
+    "emptyTitle": "目前没有地图",
+    "emptyMessage": "分配给您的地图会显示在这里。",
+    "refresh": "再次检查",
+    "from": "分配人：{{name}}",
+    "with": "与{{names}}一起",
+    "loadFailed": "无法加载您的地图。",
+    "accountMenu": "账户菜单",
+    "given": "您收到了一张地图",
+    "open": "打开"
   }
 }

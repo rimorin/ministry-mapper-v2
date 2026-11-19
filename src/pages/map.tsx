@@ -21,7 +21,7 @@ import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
 import { duration, tapFeedback, enterTransition } from "@/lib/motion";
 import useAnimatedCounter from "../hooks/useAnimatedCounter";
-import { configureHeader, clearHeader } from "../utils/pocketbase";
+import { configureHeader, clearHeader, getUser } from "../utils/pocketbase";
 import { ReleaseNotifier } from "../components/statics/releasenotifier";
 import { cn } from "@/lib/utils";
 import { resolveLocalized } from "../utils/resolveLocalized";
@@ -45,6 +45,7 @@ import LanguageSelector from "../i18n/LanguageSelector";
 import { useModalManagement } from "../hooks/useModalManagement";
 import useRealtimeSubscription from "../hooks/useRealtime";
 import useMapLink from "../hooks/useMapLink";
+import useMyLinks from "../hooks/useMyLinks";
 import { ANALYTICS_EVENTS, trackEvent } from "../utils/analytics";
 import { useSmartSync, SmartSyncProvider } from "../hooks/useSmartSync";
 import { Progress } from "@/components/ui/progress";
@@ -73,6 +74,8 @@ const Map = () => {
   const [addressFilter, setAddressFilter] = useAddressFilter(id ?? "");
 
   const { showModal } = useModalManagement();
+  // Only for its announcement: a signed-in account hears of another map here.
+  useMyLinks();
   const {
     isLinkExpired,
     tokenEndTime,
@@ -191,6 +194,23 @@ const Map = () => {
     0,
     mapId
   );
+  // A link taken back while it is open closes, as one that runs out does.
+  useRealtimeSubscription(
+    "assignments",
+    ({ action }) => {
+      if (action === "delete") markLinkExpired();
+    },
+    {
+      fields: "id",
+      headers: {
+        [PB_SECURITY_HEADER_KEY]: id as string
+      }
+    },
+    [id],
+    !!mapId && !!id && !isLinkExpired,
+    0,
+    id
+  );
   useEffect(() => {
     if (isLinkExpired) document.title = "Ministry Mapper";
   }, [isLinkExpired]);
@@ -250,6 +270,7 @@ const Map = () => {
           tokenEndTime={tokenEndTime}
           pendingCount={displayPendingCount}
           onTokenExpired={markLinkExpired}
+          showMyLinks={!!getUser("id")}
         />
         <div className="flex-1 overflow-hidden relative">
           {mapDetails && (

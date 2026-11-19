@@ -582,6 +582,26 @@ describe("LinkSession class", () => {
   });
 
   describe("constructor", () => {
+    it("names the accounts a link was given to, by id when a name is hidden", () => {
+      const linkSession = new LinkSession({
+        id: "link1",
+        collectionId: "c",
+        collectionName: "assignments",
+        congregation: "cong1",
+        assignees: ["sam", "hidden"],
+        expand: {
+          map: { description: "Blk 100A" },
+          assignees: [{ id: "sam", name: "Sam Lee" }]
+        }
+      });
+      expect(linkSession.congregation).toBe("cong1");
+      expect(linkSession.holders).toEqual([
+        { id: "sam", name: "Sam Lee" },
+        { id: "hidden", name: "" }
+      ]);
+      expect(new LinkSession().holders).toEqual([]);
+    });
+
     it("should initialize with default values when no parameters provided", () => {
       const linkSession = new LinkSession();
       expect(linkSession.id).toBe("");

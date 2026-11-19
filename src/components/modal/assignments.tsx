@@ -1,5 +1,5 @@
 import NiceModal from "@ebay/nice-modal-react";
-import { useEffect, useState } from "react";
+import { lazy, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Copy,
@@ -8,7 +8,9 @@ import {
   Clock,
   CalendarCheck,
   BookUser,
-  UserCog
+  UserCog,
+  UserPen,
+  Users
 } from "lucide-react";
 import { useBaseUiDialog } from "@/components/common/base-ui-dialog";
 import { Button } from "@/components/ui/button";
@@ -32,6 +34,19 @@ import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 import buildMapLink from "../../utils/helpers/maplink";
 import useNotification from "../../hooks/useNotification";
 import useShareLink from "../../hooks/useShareLink";
+import { useModalManagement } from "../../hooks/useModalManagement";
+import usePublisherRoleEnabled from "../../hooks/usePublisherRoleEnabled";
+import { namesOf } from "../../utils/helpers/getcongregationmembers";
+import type { ChangedAssignees } from "./changeassignees";
+
+const ChangeAssignees = lazy(() => import("./changeassignees"));
+
+// Who holds the link, or nothing when its name already says so. Holders the
+// caller may not see come back without a name.
+const givenTo = (assignment: LinkSession) => {
+  const names = namesOf(assignment.holders.filter((holder) => holder.name));
+  return names === assignment.publisherName ? "" : names;
+};
 
 const GetAssignments = NiceModal.create(
   ({
@@ -43,6 +58,8 @@ const GetAssignments = NiceModal.create(
     const { t } = useTranslation();
     const { runAction } = useNotification();
     const { copyText } = useShareLink();
+    const { showModal } = useModalManagement();
+    const isPublisherRoleEnabled = usePublisherRoleEnabled();
 
     const [currentAssignments, setCurrentAssignments] =
       useState<LinkSession[]>(assignments);
@@ -53,6 +70,18 @@ const GetAssignments = NiceModal.create(
       });
       // deleteDataById returns false on abort and 404 rather than throwing.
       if (deleted) trackEvent(ANALYTICS_EVENTS.ASSIGNMENT_DELETED);
+    };
+
+    const changeMembers = async (assignment: LinkSession) => {
+      const changed = (await showModal(ChangeAssignees, {
+        assignment
+      })) as ChangedAssignees | undefined;
+      if (!changed) return;
+      setCurrentAssignments((prev) =>
+        prev.map((item) =>
+          item.id === assignment.id ? { ...item, ...changed } : item
+        )
+      );
     };
 
     useEffect(() => {
@@ -138,6 +167,16 @@ const GetAssignments = NiceModal.create(
                           </span>
                         </div>
                       )}
+                      {givenTo(assignment) && (
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                          <Users className="size-3 shrink-0" />
+                          <span>
+                            {t("assignments.givenTo", "Given to {{names}}", {
+                              names: givenTo(assignment)
+                            })}
+                          </span>
+                        </div>
+                      )}
                       <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                         <CalendarCheck className="size-3 shrink-0" />
                         <span>
@@ -171,6 +210,20 @@ const GetAssignments = NiceModal.create(
                     >
                       <Copy className="size-4" />
                     </Button>
+                    {isPublisherRoleEnabled && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="size-8 text-muted-foreground hover:text-foreground"
+                        onClick={() => changeMembers(assignment)}
+                        aria-label={t(
+                          "assignments.changeMembers",
+                          "Change members"
+                        )}
+                      >
+                        <UserPen className="size-4" />
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="icon"

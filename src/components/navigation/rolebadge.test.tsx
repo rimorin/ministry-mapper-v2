@@ -12,6 +12,15 @@ describe("UserRoleBadge", () => {
       expect(badge).toHaveClass("bg-secondary");
     });
 
+    it("should display publisher badge", () => {
+      render(<UserRoleBadge role="publisher" />);
+
+      expect(screen.getByText(/publisher/i)).toHaveAttribute(
+        "data-slot",
+        "badge"
+      );
+    });
+
     it("should display conductor badge", () => {
       render(<UserRoleBadge role="conductor" />);
 

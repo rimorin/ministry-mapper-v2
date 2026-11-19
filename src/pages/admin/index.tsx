@@ -26,6 +26,8 @@ import useMapManagement from "../../hooks/useMapManagement";
 import useCongregationManagement from "../../hooks/useCongManagement";
 import useUIState from "../../hooks/useUIManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
+import usePublisherRoleEnabled from "../../hooks/usePublisherRoleEnabled";
+import useMyLinks from "../../hooks/useMyLinks";
 import { useModalManagement } from "../../hooks/useModalManagement";
 import useAdminData from "../../hooks/useAdminData";
 import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
@@ -68,8 +70,16 @@ const TerritoryContent = SuspenseComponent(
 const UnauthorizedPage = SuspenseComponent(
   lazy(() => import("../../components/statics/unauth"))
 );
+const MyLinksPanel = SuspenseComponent(
+  lazy(() => import("../../components/common/my-links-panel"))
+);
+const PublisherDashboard = SuspenseComponent(
+  lazy(() => import("../publisher/index"))
+);
 const UpdateUser = lazy(() => import("../../components/modal/updateuser"));
 const AssistantModal = lazy(() => import("../../components/modal/assistant"));
+
+const PUBLISHER_VIEW_KEY = "publisherView";
 
 const UpdateCongregationSettings = lazy(
   () => import("../../components/modal/congsettings")
@@ -158,6 +168,7 @@ function Admin({ user }: adminProps) {
   // Targeted per congregation; without the LaunchDarkly provider useFlags()
   // returns {} and the assistant stays hidden.
   const { enableAdminAssistant } = useFlags();
+  const isPublisherRoleEnabled = usePublisherRoleEnabled();
   const isMobile = useIsMobile();
   // Docked beside the page on desktop; a drawer on phones.
   const [assistantOpen, setAssistantOpen] = useState(false);
@@ -167,6 +178,20 @@ function Admin({ user }: adminProps) {
   const mapInViewRef = useRef("");
   const [mapInView, setMapInView] = useState("");
   useAnalyticsIdentity(userCongregationAccesses, congregationCode);
+  // Fetched here once: the sidebar counts them and the panel lists them.
+  const myLinks = useMyLinks();
+  // The account holds only the publisher role, so it gets its links, not the shell.
+  const [isPublisherOnly, setIsPublisherOnly] = useState(false);
+  // A staff account looking at the links given to it, in place of a territory.
+  // Kept for the tab so coming back from a map lands on the links again.
+  const [showPublisherView, setShowPublisherView] = useState(
+    () => sessionStorage.getItem(PUBLISHER_VIEW_KEY) === "1"
+  );
+  const togglePublisherView = (show: boolean) => {
+    if (show) sessionStorage.setItem(PUBLISHER_VIEW_KEY, "1");
+    else sessionStorage.removeItem(PUBLISHER_VIEW_KEY);
+    setShowPublisherView(show);
+  };
 
   const {
     selectedTerritory,
@@ -216,6 +241,7 @@ function Admin({ user }: adminProps) {
     setHasAnyMaps
   } = useAdminData({
     userId,
+    setIsPublisherOnly,
     congregationCodeCache,
     congregationAccessRef: congregationAccess,
     setUserCongregationAccesses,
@@ -237,7 +263,10 @@ function Admin({ user }: adminProps) {
     t
   });
 
-  const logoutUser = () => cleanupSession();
+  const logoutUser = () => {
+    sessionStorage.removeItem(PUBLISHER_VIEW_KEY);
+    return cleanupSession();
+  };
 
   // Tracks which territory ID had setupMaps fired directly in the event handler,
   // so the subsequent useEffect can skip the duplicate call and avoid re-fetching.
@@ -257,6 +286,7 @@ function Admin({ user }: adminProps) {
     _: React.SyntheticEvent<unknown>
   ) => {
     if (!id) return;
+    togglePublisherView(false);
     selectTerritory(id);
   };
 
@@ -359,7 +389,7 @@ function Admin({ user }: adminProps) {
       const assignments = await getList("assignments", {
         filter: `user="${uid}"`,
         sort: "created",
-        expand: "map",
+        expand: "map,assignees",
         fields: PB_FIELDS.ASSIGNMENTS,
         requestKey: `get-usr-assignments-${uid}`
       });
@@ -401,6 +431,7 @@ function Admin({ user }: adminProps) {
   };
 
   const toggleCongregation = (selectedCode: string | null) => {
+    togglePublisherView(false);
     handleCongregationSelect(selectedCode);
     clearTerritorySelection();
     loadAllCongregationData(selectedCode);
@@ -508,6 +539,8 @@ function Admin({ user }: adminProps) {
       user: getUser()
     });
   };
+
+  const handleShowMyLinks = () => togglePublisherView(!showPublisherView);
 
   const handleShowAssignments = () => {
     getAssignments(congregationCode, getUser("id") as string);
@@ -781,6 +814,15 @@ function Admin({ user }: adminProps) {
   if (isUnauthorised) {
     return <UnauthorizedPage handleClick={logoutUser} />;
   }
+  if (isPublisherOnly) {
+    return (
+      <PublisherDashboard
+        userName={userName}
+        onLogout={logoutUser}
+        myLinks={myLinks}
+      />
+    );
+  }
   const isReadonly = userAccessLevel === USER_ACCESS_LEVELS.READ_ONLY.CODE;
 
   return (
@@ -838,7 +880,12 @@ function Admin({ user }: adminProps) {
         isShowingUserListing={isShowingUserListing}
         pendingCount={displayPendingCount}
         onToggleCongregationListing={toggleCongregationListing}
-        onToggleTerritoryListing={toggleTerritoryListing}
+        onToggleTerritoryListing={
+          // From the links, the territory row goes back to its territory.
+          showPublisherView && selectedTerritory.code
+            ? () => togglePublisherView(false)
+            : toggleTerritoryListing
+        }
         onToggleLanguageSelector={toggleLanguageSelector}
         onCreateTerritory={handleCreateTerritory}
         onTerritoryActions={{
@@ -858,11 +905,15 @@ function Admin({ user }: adminProps) {
         }}
         onAccountActions={{
           onShowProfile: handleShowProfile,
+          onShowMyLinks: handleShowMyLinks,
           onShowAssignments: handleShowAssignments,
           onPasswordReset: handlePasswordReset,
           onLogout: logoutUser
         }}
         assistantOpen={assistantOpen && !isMobile}
+        showMyLinks={isPublisherRoleEnabled || myLinks.links.length > 0}
+        isShowingMyLinks={showPublisherView}
+        myLinksCount={myLinks.links.length}
         onOpenAssistant={
           enableAdminAssistant === true ? handleOpenAssistant : undefined
         }
@@ -870,6 +921,16 @@ function Admin({ user }: adminProps) {
       <SidebarInset className="h-dvh min-w-0">
         {isLoading ? (
           <Loader />
+        ) : showPublisherView ? (
+          <>
+            <AdminNavbar
+              congregationName={congregationName}
+              title={t("myLinks.title", "My maps")}
+              pendingCount={displayPendingCount}
+              hasLinks={myLinks.links.length > 0}
+            />
+            <MyLinksPanel myLinks={myLinks} />
+          </>
         ) : (
           <>
             <AdminNavbar
@@ -877,6 +938,7 @@ function Admin({ user }: adminProps) {
               territoryName={selectedTerritory.name}
               onSwitchTerritory={toggleTerritoryListing}
               pendingCount={displayPendingCount}
+              hasLinks={myLinks.links.length > 0}
             />
             <SmartSyncProvider value={smartSync}>
               <TerritoryContent

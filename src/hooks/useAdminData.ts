@@ -12,7 +12,8 @@ import {
   DEFAULT_CONGREGATION_MAX_TRIES,
   DEFAULT_SELF_DESTRUCT_HOURS,
   PB_FIELDS,
-  DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION
+  DEFAULT_MAP_DIRECTION_CONGREGATION_LOCATION,
+  STAFF_ROLES
 } from "../utils/constants";
 import { Policy } from "../utils/policies";
 import { territoryDetails } from "../utils/interface";
@@ -41,6 +42,7 @@ interface UseAdminDataProps {
   setTerritoryCodeCache: (code: string) => void;
   setUserAccessLevel: (level: string) => void;
   setIsUnauthorised: (unauthorised: boolean) => void;
+  setIsPublisherOnly: (publisherOnly: boolean) => void;
   notifyError: (message: string, silent?: boolean) => void;
   notifyWarning: (message: string) => void;
   processCongregationTerritories: (
@@ -66,6 +68,7 @@ export default function useAdminData({
   setTerritoryCodeCache,
   setUserAccessLevel,
   setIsUnauthorised,
+  setIsPublisherOnly,
   notifyError,
   notifyWarning,
   processCongregationTerritories,
@@ -93,8 +96,17 @@ export default function useAdminData({
       if (!isAbortError(err)) setIsLoading(false);
       throw err;
     }
-    if (userRoles.length === 0) {
+    // A publisher's role opens no congregation, so only staff roles reach the
+    // shell; an account with nothing else gets the links given to it instead.
+    const staffRoles = userRoles.filter((record) =>
+      STAFF_ROLES.includes(record.role)
+    );
+    if (staffRoles.length === 0) {
       setIsLoading(false);
+      if (userRoles.length > 0) {
+        setIsPublisherOnly(true);
+        return;
+      }
       setIsUnauthorised(true);
       notifyError(`Unauthorised access by ${userEmail}`, true);
       return;
@@ -105,7 +117,7 @@ export default function useAdminData({
       name: string;
     }> = [];
 
-    userRoles.forEach((record) => {
+    staffRoles.forEach((record) => {
       const cong = record.expand?.congregation;
       if (!cong) return;
       congregationAccesses.push({

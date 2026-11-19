@@ -171,6 +171,29 @@ export const sortableItemEnter: Variants = {
   }
 };
 
+// A card in a list that changes while it is on screen: staggers in by position
+// on load, rises in alone when it arrives later, and fades out quickly when it
+// goes. Pass custom={index} on each item, under an AnimatePresence.
+export const listItemPresence: Variants = {
+  hidden: { opacity: 0, y: 12 },
+  show: (index: number) => {
+    const delay = Math.min(index * 0.05, 0.3);
+    return {
+      opacity: 1,
+      y: 0,
+      transition: {
+        default: { ...springCalm, delay },
+        opacity: { duration: duration.base, ease: "linear", delay }
+      }
+    };
+  },
+  exit: {
+    opacity: 0,
+    scale: 0.98,
+    transition: { duration: duration.fast, ease: "easeIn" }
+  }
+};
+
 // Completion checkmark entrance — spring with intentional overshoot for reward feedback.
 export const checkEnter: Variants = {
   hidden: { opacity: 0, scale: 0.5, rotate: -15 },
