@@ -51,6 +51,112 @@ const show = (
 describe("AssistantProposalCard", () => {
   beforeEach(() => vi.clearAllMocks());
 
+  describe("a share link's accounts", () => {
+    const link: AssistantProposal = {
+      id: "p1",
+      kind: "share_link",
+      candidates: [],
+      from: "",
+      to: "",
+      warnings: [],
+      target: { id: "m1", name: "Blk 100B" },
+      value: "John Tan, Sis Ong",
+      linkType: "normal",
+      hours: 4,
+      people: [
+        { name: "John Tan", picked: "u1" },
+        { name: "Sis Ong", suggested: ["u2"] }
+      ]
+    };
+    const members = [
+      { id: "u1", name: "John Tan", email: "john@example.com", openLinks: 0 },
+      { id: "u2", name: "Ong Mei Ling", email: "", openLinks: 0 }
+    ];
+    const showLink = (state?: ProposalState, roster = members) =>
+      render(
+        <AssistantProposalCard
+          proposal={link}
+          state={state}
+          actionable
+          online
+          members={roster}
+          {...handlers}
+        />
+      );
+
+    it("starts with the sure match and offers the unsure one", async () => {
+      showLink();
+
+      // Chosen: a chip. Only suggested: a button to add it.
+      expect(screen.getByText("Sis Ong may be")).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "John Tan" })
+      ).not.toBeInTheDocument();
+      await userEvent.click(
+        screen.getByRole("button", { name: "Ong Mei Ling" })
+      );
+      expect(handlers.onStatus).toHaveBeenCalledWith({
+        assignees: ["u1", "u2"]
+      });
+    });
+
+    it("says when a pick is remembered, and tells same-named members apart", () => {
+      const twins = [
+        { id: "u1", name: "John Tan", email: "john@example.com", openLinks: 0 },
+        { id: "u3", name: "John Tan", email: "jt@example.com", openLinks: 0 },
+        { id: "u2", name: "Ong Mei Ling", email: "", openLinks: 0 }
+      ];
+      render(
+        <AssistantProposalCard
+          proposal={{
+            ...link,
+            people: [
+              { name: "John", suggested: ["u1", "u3"] },
+              { name: "Sis Ong", picked: "u2", remembered: true }
+            ]
+          }}
+          actionable
+          online
+          members={twins}
+          {...handlers}
+        />
+      );
+
+      expect(
+        screen.getByRole("button", { name: "John Tan · john@example.com" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "John Tan · jt@example.com" })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByText("Sis Ong is Ong Mei Ling, as chosen before.")
+      ).toBeInTheDocument();
+    });
+
+    it("shows no accounts until the roster has loaded", () => {
+      showLink(undefined, []);
+      expect(screen.queryByText("Accounts")).not.toBeInTheDocument();
+    });
+
+    it("keeps Share while someone named has no account", () => {
+      showLink({ status: "done", recordId: "link1", assignees: ["u1"] });
+      expect(screen.getByText("In My maps for John Tan")).toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Copy link" })
+      ).toBeInTheDocument();
+    });
+
+    it("drops Share once everyone named has the map in their account", () => {
+      showLink({ status: "done", recordId: "link1", assignees: ["u1", "u2"] });
+      expect(
+        screen.getByText("In My maps for John Tan, Ong Mei Ling")
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByRole("button", { name: "Copy link" })
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it("confirms a plain change straight away", async () => {
     show(change);
     expect(screen.getByText("Bro Lee")).toBeInTheDocument();

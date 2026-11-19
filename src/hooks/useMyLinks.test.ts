@@ -8,6 +8,7 @@ const { callFunctionMock, notifyInfoMock, navigateMock, realtime } = vi.hoisted(
     notifyInfoMock: vi.fn(),
     realtime: {} as {
       onEvent?: (data: { action: string; record: { id: string } }) => void;
+      onTakenOff?: () => void;
       options?: { filter: string };
     }
   })
@@ -15,10 +16,14 @@ const { callFunctionMock, notifyInfoMock, navigateMock, realtime } = vi.hoisted(
 
 vi.mock("./useRealtime", () => ({
   default: (
-    _collection: string,
+    collection: string,
     onEvent: typeof realtime.onEvent,
     options: typeof realtime.options
   ) => {
+    if (collection === "my-maps") {
+      realtime.onTakenOff = onEvent as () => void;
+      return;
+    }
     realtime.onEvent = onEvent;
     realtime.options = options;
   }
@@ -152,6 +157,53 @@ describe("useMyLinks", () => {
 
     await waitFor(() => expect(callFunctionMock).toHaveBeenCalledTimes(2));
     expect(notifyInfoMock).not.toHaveBeenCalled();
+  });
+
+  it("announces every link when a newer load replaces an earlier one", async () => {
+    callFunctionMock.mockResolvedValueOnce({ assignments: [] });
+    const { result } = renderHook(() => useMyLinks());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    const second = { ...link, id: "link2", map_description: "Blk 200B" };
+    callFunctionMock
+      .mockRejectedValueOnce({ isAbort: true })
+      .mockResolvedValueOnce({ assignments: [link, second] });
+    act(() => {
+      realtime.onEvent?.({ action: "create", record: { id: "link1" } });
+      realtime.onEvent?.({ action: "create", record: { id: "link2" } });
+    });
+
+    await waitFor(() => expect(notifyInfoMock).toHaveBeenCalledTimes(2));
+    expect(notifyInfoMock.mock.calls.map((call) => call[1])).toEqual([
+      "Blk 100A",
+      "Blk 200B"
+    ]);
+  });
+
+  it("stays quiet about a link the account gave itself", async () => {
+    callFunctionMock.mockResolvedValueOnce({ assignments: [] });
+    const { result } = renderHook(() => useMyLinks());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+
+    const own = { ...link, own: true };
+    callFunctionMock.mockResolvedValueOnce({ assignments: [own] });
+    act(() =>
+      realtime.onEvent?.({ action: "create", record: { id: "link1" } })
+    );
+
+    await waitFor(() => expect(result.current.links).toEqual([own]));
+    expect(notifyInfoMock).not.toHaveBeenCalled();
+  });
+
+  it("drops a link when the backend says the account was taken off it", async () => {
+    callFunctionMock.mockResolvedValueOnce({ assignments: [link] });
+    const { result } = renderHook(() => useMyLinks());
+    await waitFor(() => expect(result.current.links).toEqual([link]));
+
+    callFunctionMock.mockResolvedValueOnce({ assignments: [] });
+    act(() => realtime.onTakenOff?.());
+
+    await waitFor(() => expect(result.current.links).toEqual([]));
   });
 
   it("stays quiet about a link the account only created", async () => {

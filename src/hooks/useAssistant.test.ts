@@ -13,8 +13,12 @@ const {
   countMock,
   createDataMock,
   updateDataByIdMock,
-  deleteDataByIdMock
+  deleteDataByIdMock,
+  membersMock,
+  flag
 } = vi.hoisted(() => ({
+  membersMock: vi.fn(),
+  flag: { publisherRole: false },
   callFunctionMock: vi.fn(),
   captureExceptionMock: vi.fn(),
   cancelRequestMock: vi.fn(),
@@ -45,6 +49,14 @@ vi.mock("../utils/pocketbase", () => ({
 
 vi.mock("@sentry/react", () => ({ captureException: captureExceptionMock }));
 
+vi.mock("./usePublisherRoleEnabled", () => ({
+  default: () => flag.publisherRole
+}));
+
+vi.mock("../utils/helpers/getcongregationmembers", () => ({
+  default: membersMock
+}));
+
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (_key: string, defaultValue: string) => defaultValue,
@@ -52,7 +64,7 @@ vi.mock("react-i18next", () => ({
   })
 }));
 
-const { default: useAssistant } = await import("./useAssistant");
+const { default: useAssistant, pairNames } = await import("./useAssistant");
 
 const answer = (overrides: Record<string, unknown> = {}) => ({
   answer: "T01 has not been completed.",
@@ -148,6 +160,7 @@ describe("useAssistant", () => {
           question: "Which territory is overdue?",
           locale: "zh",
           people: {},
+          memberLinks: false,
           conversation: expect.stringMatching(/^[a-z0-9]{15}$/)
         }
       })
@@ -1272,6 +1285,135 @@ describe("useAssistant record proposals", () => {
       "link1",
       expect.anything()
     );
+  });
+
+  it("gives a share link to the accounts on the card and reports the pairings", async () => {
+    flag.publisherRole = true;
+    const member = (id: string, name: string) => ({
+      id,
+      name,
+      email: "",
+      openLinks: 0
+    });
+    membersMock.mockResolvedValue([
+      member("u1", "John Tan"),
+      member("u2", "Ong Mei Ling")
+    ]);
+    const p = proposal({
+      kind: "share_link",
+      from: "",
+      to: "",
+      value: "John Tan, Sis Ong, Bro Lim",
+      previous: undefined,
+      linkType: "normal",
+      hours: 4,
+      people: [
+        { name: "John Tan", picked: "u1" },
+        { name: "Sis Ong", suggested: ["u2", "gone"] },
+        { name: "Bro Lim" }
+      ]
+    });
+    callFunctionMock.mockResolvedValue({});
+    callFunctionMock.mockResolvedValueOnce(
+      answer({ questionId: "q1", proposals: [p] })
+    );
+    const congregation = nextCongregation();
+    const hook = renderHook(() => useAssistant(congregation));
+    await act(() => hook.result.current.ask("Give it out"));
+    const turnId = hook.result.current.turns[0].id;
+    await waitFor(() => expect(hook.result.current.members).toHaveLength(2));
+    expect(callFunctionMock.mock.calls[0][1].body.memberLinks).toBe(true);
+    getFirstItemOfListMock.mockResolvedValueOnce({ id: "m1" });
+    createDataMock.mockResolvedValueOnce({ id: "link1" });
+
+    // The admin adds the suggested account; one no longer on the roster is
+    // left out.
+    act(() =>
+      hook.result.current.setAction(turnId, "p1", {
+        assignees: ["u1", "u2", "gone"]
+      })
+    );
+    await act(() => hook.result.current.confirmProposal(turnId, p));
+
+    expect(createDataMock).toHaveBeenCalledWith(
+      "assignments",
+      expect.objectContaining({ assignees: ["u1", "u2"] }),
+      expect.anything()
+    );
+    expect(callFunctionMock.mock.lastCall?.[1].body).toMatchObject({
+      proposal: "p1",
+      outcome: "done",
+      pairs: [
+        { name: "John Tan", user: "u1" },
+        { name: "Sis Ong", user: "u2" },
+        { name: "Bro Lim", user: "" }
+      ]
+    });
+
+    // Undoing the link reports the same pairings, to be forgotten.
+    deleteDataByIdMock.mockResolvedValueOnce(true);
+    await act(() =>
+      hook.result.current.undoProposal(
+        turnId,
+        p,
+        hook.result.current.turns[0].actions!.p1
+      )
+    );
+    expect(callFunctionMock.mock.lastCall?.[1].body).toMatchObject({
+      proposal: "p1",
+      outcome: "undone",
+      pairs: [
+        { name: "John Tan", user: "u1" },
+        { name: "Sis Ong", user: "u2" },
+        { name: "Bro Lim", user: "" }
+      ]
+    });
+    flag.publisherRole = false;
+  });
+
+  it("marks a share link out of date when an account has left", async () => {
+    membersMock.mockResolvedValue([
+      { id: "u1", name: "John Tan", email: "", openLinks: 0 }
+    ]);
+    const p = proposal({
+      kind: "share_link",
+      from: "",
+      to: "",
+      value: "John Tan",
+      previous: undefined,
+      linkType: "normal",
+      hours: 4,
+      people: [{ name: "John Tan", picked: "u1" }]
+    });
+    const { hook, turnId } = await withProposal(p);
+    await waitFor(() => expect(hook.result.current.members).toHaveLength(1));
+    getFirstItemOfListMock.mockResolvedValueOnce({ id: "m1" });
+    createDataMock.mockRejectedValueOnce(
+      new ClientResponseError({ status: 400 })
+    );
+
+    await act(() => hook.result.current.confirmProposal(turnId, p));
+    expect(hook.result.current.turns[0].actions?.p1.status).toBe("stale");
+  });
+
+  it("pairs each name with the account the admin settled on", () => {
+    const people = [
+      { name: "John", suggested: ["u1", "u9"] },
+      { name: "Sis Ong", picked: "u2" },
+      { name: "Bro Lim" }
+    ];
+    // A suggestion taken, a pick removed, and an account added by hand, which
+    // goes to the one name still without one... except two are without.
+    expect(pairNames(people, ["u9", "u5"])).toEqual([
+      { name: "John", user: "u9" },
+      { name: "Sis Ong", user: "" },
+      { name: "Bro Lim", user: "" }
+    ]);
+    expect(pairNames(people, ["u1", "u2", "u5"])).toEqual([
+      { name: "John", user: "u1" },
+      { name: "Sis Ong", user: "u2" },
+      { name: "Bro Lim", user: "u5" }
+    ]);
   });
 
   it("posts a pinned instruction as an administrator message", async () => {

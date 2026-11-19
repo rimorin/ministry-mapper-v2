@@ -185,7 +185,8 @@ describe("useAdminData", () => {
           { code: "cong-1", access: "conductor", name: "Staff Congregation" }
         ]);
       });
-      expect(mockSetIsPublisherOnly).not.toHaveBeenCalled();
+      // Cleared, so an account promoted while signed in leaves the publisher page.
+      expect(mockSetIsPublisherOnly).toHaveBeenLastCalledWith(false);
     });
 
     it("should reset isLoading to false when getList throws a network error", async () => {
