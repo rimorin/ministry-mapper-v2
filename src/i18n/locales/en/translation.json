@@ -857,7 +857,7 @@
       "linkLasts": "lasts {{duration}}",
       "accounts": "Accounts",
       "accountFor": "{{name}} may be",
-      "accountRemembered": "{{name}} is {{account}}, as chosen before.",
+      "accountIs": "{{name}} is {{account}}.",
       "accountsHint": "They are emailed and find the map under My maps. Undo takes the map back, not the email.",
       "accountsNone": "No account chosen, so you share the link yourself.",
       "inMyMaps": "In My maps for {{names}}",

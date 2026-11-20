@@ -857,7 +857,7 @@
       "linkLasts": "tamat dalam {{duration}}",
       "accounts": "Akaun",
       "accountFor": "{{name}} mungkin",
-      "accountRemembered": "{{name}} ialah {{account}}, seperti yang dipilih sebelum ini.",
+      "accountIs": "{{name}} ialah {{account}}.",
       "accountsHint": "Mereka menerima e-mel dan menemui peta di Peta saya. Buat asal menarik balik peta, bukan e-mel.",
       "accountsNone": "Tiada akaun dipilih, jadi anda berkongsi pautan sendiri.",
       "inMyMaps": "Dalam Peta saya untuk {{names}}",
