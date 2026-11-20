@@ -464,11 +464,23 @@ const AssistantProposalCard = ({
                       "The best map near you in {{code}}, picked when you confirm.",
                       { code: target }
                     )
-                  : t(
-                      "assistant.action.quickLinkAhead",
-                      "The best map in {{code}} with the fewest people on it, picked when you confirm.",
-                      { code: target }
-                    )}
+                  : proposal.data?.near
+                    ? t(
+                        "assistant.action.quickLinkNear",
+                        "The best map in {{code}} near {{place}}, picked when you confirm.",
+                        { code: target, place: String(proposal.data.near) }
+                      )
+                    : proposal.data?.together
+                      ? t(
+                          "assistant.action.quickLinkTogether",
+                          "A map in {{code}} close to the others in this answer, picked when you confirm.",
+                          { code: target }
+                        )
+                      : t(
+                          "assistant.action.quickLinkAhead",
+                          "The best map in {{code}} with the fewest people on it, picked when you confirm.",
+                          { code: target }
+                        )}
             </span>
             {linkAccounts}
           </div>

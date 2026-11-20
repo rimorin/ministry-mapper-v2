@@ -880,6 +880,8 @@
       "linkUntil": "until {{date}}",
       "quickLinkBody": "The best map near you in {{code}}, picked when you confirm.",
       "quickLinkAhead": "The best map in {{code}} with the fewest people on it, picked when you confirm.",
+      "quickLinkNear": "The best map in {{code}} near {{place}}, picked when you confirm.",
+      "quickLinkTogether": "A map in {{code}} close to the others in this answer, picked when you confirm.",
       "note": "Note",
       "noteCleared": "(no note)",
       "needLocation": "Share your location again, then ask again.",

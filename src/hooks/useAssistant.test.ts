@@ -1711,6 +1711,83 @@ describe("useAssistant assisting actions", () => {
     });
   });
 
+  it("looks for a quick link's map from the place the admin named", async () => {
+    const p = proposal({
+      kind: "quick_link",
+      target: { ...map, id: "t1", name: "T01" },
+      value: "Sis Ong",
+      data: {
+        near_me: false,
+        near: "Blk 301",
+        origin: { lat: 1.4, lng: 103.9 }
+      }
+    });
+    const { hook, turnId } = await withProposal(p);
+    callFunctionMock.mockResolvedValueOnce({
+      linkId: "q1",
+      mapName: "Blk 302"
+    });
+    await act(() => hook.result.current.confirmProposal(turnId, p));
+
+    expect(callFunctionMock).toHaveBeenLastCalledWith("/territory/link", {
+      method: "POST",
+      requestKey: expect.any(String),
+      body: {
+        territory: "t1",
+        publisher: "Sis Ong",
+        coordinates: { lat: 1.4, lng: 103.9 }
+      }
+    });
+  });
+
+  it("keeps a group's quick links near the first map given out", async () => {
+    const card = (id: string, value: string) =>
+      proposal({
+        id,
+        kind: "quick_link",
+        target: { ...map, id: "t1", name: "T01" },
+        value,
+        data: { near_me: false, together: true }
+      });
+    const first = card("p1", "Sis Ong");
+    const second = card("p2", "Bro Tan");
+    callFunctionMock.mockResolvedValueOnce(
+      answer({ proposals: [first, second] })
+    );
+    const congregation = nextCongregation();
+    const hook = renderHook(() => useAssistant(congregation));
+    await act(() => hook.result.current.ask("Maps close together"));
+    const turnId = hook.result.current.turns[0].id;
+
+    callFunctionMock.mockResolvedValueOnce({
+      linkId: "q1",
+      mapName: "Blk 301",
+      coordinates: { lat: 1.31, lng: 103.81 }
+    });
+    await act(() => hook.result.current.confirmProposal(turnId, first));
+    expect(callFunctionMock).toHaveBeenLastCalledWith("/territory/link", {
+      method: "POST",
+      requestKey: expect.any(String),
+      body: { territory: "t1", publisher: "Sis Ong" }
+    });
+
+    callFunctionMock.mockResolvedValueOnce({
+      linkId: "q2",
+      mapName: "Blk 302",
+      coordinates: { lat: 1.32, lng: 103.82 }
+    });
+    await act(() => hook.result.current.confirmProposal(turnId, second));
+    expect(callFunctionMock).toHaveBeenLastCalledWith("/territory/link", {
+      method: "POST",
+      requestKey: expect.any(String),
+      body: {
+        territory: "t1",
+        publisher: "Bro Tan",
+        coordinates: { lat: 1.31, lng: 103.81 }
+      }
+    });
+  });
+
   it("makes a quick link planned ahead with its accounts and no position", async () => {
     flag.publisherRole = true;
     membersMock.mockResolvedValue([

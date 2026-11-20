@@ -880,6 +880,8 @@
       "linkUntil": "hingga {{date}}",
       "quickLinkBody": "Peta terbaik berhampiran anda di {{code}}, dipilih apabila anda mengesahkan.",
       "quickLinkAhead": "Peta terbaik di {{code}} dengan paling sedikit orang, dipilih apabila anda mengesahkan.",
+      "quickLinkNear": "Peta terbaik di {{code}} berhampiran {{place}}, dipilih apabila anda mengesahkan.",
+      "quickLinkTogether": "Peta di {{code}} yang dekat dengan peta lain dalam jawapan ini, dipilih apabila anda mengesahkan.",
       "note": "Nota",
       "noteCleared": "(tiada nota)",
       "needLocation": "Kongsi lokasi anda semula, kemudian tanya semula.",

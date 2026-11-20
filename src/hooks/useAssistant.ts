@@ -896,7 +896,8 @@ export default function useAssistant(
         candidate,
         location,
         locations: chosen?.locations,
-        assignees
+        assignees,
+        group: turnId
       });
       setAction(
         turnId,

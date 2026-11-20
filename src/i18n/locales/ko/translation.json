@@ -880,6 +880,8 @@
       "linkUntil": "{{date}}까지",
       "quickLinkBody": "{{code}}에서 가까운 가장 좋은 지도. 확인할 때 선택됩니다.",
       "quickLinkAhead": "{{code}}에서 사람이 가장 적은 가장 좋은 지도. 확인할 때 선택됩니다.",
+      "quickLinkNear": "{{code}}에서 {{place}} 근처의 가장 좋은 지도. 확인할 때 선택됩니다.",
+      "quickLinkTogether": "{{code}}에서 이 답변의 다른 지도와 가까운 지도. 확인할 때 선택됩니다.",
       "note": "메모",
       "noteCleared": "(메모 없음)",
       "needLocation": "위치를 다시 공유한 뒤 다시 질문하세요.",
