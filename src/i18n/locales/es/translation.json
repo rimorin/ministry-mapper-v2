@@ -857,7 +857,7 @@
       "linkLasts": "dura {{duration}}",
       "accounts": "Cuentas",
       "accountFor": "{{name}} puede ser",
-      "accountRemembered": "{{name}} es {{account}}, como se eligió antes.",
+      "accountIs": "{{name}} es {{account}}.",
       "accountsHint": "Reciben un correo y encuentran el mapa en Mis mapas. Deshacer retira el mapa, no el correo.",
       "accountsNone": "No se eligió ninguna cuenta, así que compartes el enlace tú mismo.",
       "inMyMaps": "En Mis mapas de {{names}}",

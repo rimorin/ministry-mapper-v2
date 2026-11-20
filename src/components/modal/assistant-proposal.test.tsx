@@ -100,7 +100,7 @@ describe("AssistantProposalCard", () => {
       });
     });
 
-    it("says when a pick is remembered, and tells same-named members apart", () => {
+    it("says who a partial name was taken to be, and tells same-named members apart", () => {
       const twins = [
         { id: "u1", name: "John Tan", email: "john@example.com", openLinks: 0 },
         { id: "u3", name: "John Tan", email: "jt@example.com", openLinks: 0 },
@@ -112,7 +112,8 @@ describe("AssistantProposalCard", () => {
             ...link,
             people: [
               { name: "John", suggested: ["u1", "u3"] },
-              { name: "Sis Ong", picked: "u2", remembered: true }
+              { name: "Sis Ong", picked: "u2" },
+              { name: "ong mei ling", picked: "u2" }
             ]
           }}
           actionable
@@ -128,9 +129,11 @@ describe("AssistantProposalCard", () => {
       expect(
         screen.getByRole("button", { name: "John Tan · jt@example.com" })
       ).toBeInTheDocument();
+      expect(screen.getByText("Sis Ong is Ong Mei Ling.")).toBeInTheDocument();
+      // A member's own name needs no saying.
       expect(
-        screen.getByText("Sis Ong is Ong Mei Ling, as chosen before.")
-      ).toBeInTheDocument();
+        screen.queryByText("ong mei ling is Ong Mei Ling.")
+      ).not.toBeInTheDocument();
     });
 
     it("shows no accounts until the roster has loaded", () => {

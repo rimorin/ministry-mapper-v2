@@ -857,7 +857,7 @@
       "linkLasts": "berlaku {{duration}}",
       "accounts": "Akun",
       "accountFor": "{{name}} mungkin",
-      "accountRemembered": "{{name}} adalah {{account}}, seperti yang dipilih sebelumnya.",
+      "accountIs": "{{name}} adalah {{account}}.",
       "accountsHint": "Mereka menerima email dan menemukan peta di Peta saya. Urungkan menarik kembali peta, bukan emailnya.",
       "accountsNone": "Tidak ada akun yang dipilih, jadi Anda membagikan tautannya sendiri.",
       "inMyMaps": "Di Peta saya milik {{names}}",

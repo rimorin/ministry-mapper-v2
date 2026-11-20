@@ -14,9 +14,9 @@ interface AssistantLinkAccountsProps {
   onChange: (assignees: string[]) => void;
 }
 
-// The accounts a link card gives its map to. Names the assistant was sure of
-// arrive chosen; a name that only may be someone's is offered beside it, since
-// a first name often fits one member with an account and others without.
+// The accounts a link card gives its map to. A name that fits one member
+// arrives chosen, and the card says who it was taken to be; a name that fits
+// several is offered beside them for the admin to choose.
 const AssistantLinkAccounts = ({
   people,
   members,
@@ -36,14 +36,17 @@ const AssistantLinkAccounts = ({
     )
       ? `${member.name} · ${member.email}`
       : member.name;
-  // Picks that rest on an earlier choice, not on the name: the admin may mean
-  // someone else this time, so the card says where the pick came from.
-  const remembered = people.flatMap((person) => {
+  // Picks made from less than the member's own name: the admin may mean
+  // someone else, so the card says who each was taken to be.
+  const taken = people.flatMap((person) => {
     const member =
-      person.remembered && person.picked && value.includes(person.picked)
+      person.picked && value.includes(person.picked)
         ? memberOf(person.picked)
         : undefined;
-    return member ? [{ name: person.name, member }] : [];
+    return member &&
+      member.name.trim().toLowerCase() !== person.name.trim().toLowerCase()
+      ? [{ name: person.name, member }]
+      : [];
   });
   const offers = people
     .map((person) => ({
@@ -88,13 +91,12 @@ const AssistantLinkAccounts = ({
           ))}
         </div>
       ))}
-      {remembered.map(({ name, member }) => (
+      {taken.map(({ name, member }) => (
         <span key={name} className="text-muted-foreground">
-          {t(
-            "assistant.action.accountRemembered",
-            "{{name}} is {{account}}, as chosen before.",
-            { name, account: labelOf(member) }
-          )}
+          {t("assistant.action.accountIs", "{{name}} is {{account}}.", {
+            name,
+            account: labelOf(member)
+          })}
         </span>
       ))}
       <p className="text-xs text-muted-foreground">

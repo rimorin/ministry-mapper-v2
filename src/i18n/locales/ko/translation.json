@@ -857,7 +857,7 @@
       "linkLasts": "유효 기간 {{duration}}",
       "accounts": "계정",
       "accountFor": "{{name}} 후보",
-      "accountRemembered": "{{name}} 님은 이전 선택대로 {{account}}입니다.",
+      "accountIs": "{{name}} 님은 {{account}}입니다.",
       "accountsHint": "이메일이 전송되고 내 지도에 지도가 표시됩니다. 실행 취소는 지도만 회수하며 이메일은 취소되지 않습니다.",
       "accountsNone": "선택된 계정이 없어 링크를 직접 공유해야 합니다.",
       "inMyMaps": "{{names}} 님의 내 지도에 표시",

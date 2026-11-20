@@ -857,7 +857,7 @@
       "linkLasts": "有効期間 {{duration}}",
       "accounts": "アカウント",
       "accountFor": "{{name}}の候補",
-      "accountRemembered": "{{name}}は以前の選択どおり{{account}}です。",
+      "accountIs": "{{name}}は{{account}}です。",
       "accountsHint": "メールが届き、マイマップに地図が表示されます。元に戻すと地図は取り消されますが、メールは取り消せません。",
       "accountsNone": "アカウントが選ばれていないため、リンクはご自身で共有してください。",
       "inMyMaps": "{{names}}のマイマップに表示",

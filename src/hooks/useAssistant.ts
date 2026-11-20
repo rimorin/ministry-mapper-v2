@@ -234,12 +234,10 @@ export interface ProposalItem {
 }
 
 // A person a share link names. picked is the account chosen for them without
-// asking, remembered when that rests on an earlier choice and not on the name;
-// suggested are accounts the name may also be. Both are user ids.
+// asking; suggested are accounts the name may be. Both are user ids.
 export interface ProposalPerson {
   name: string;
   picked?: string;
-  remembered?: boolean;
   suggested?: string[];
 }
 
