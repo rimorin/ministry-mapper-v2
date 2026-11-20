@@ -805,6 +805,64 @@ describe("AssistantModal", () => {
     expect(await screen.findByText("Canvas: Nearby maps")).toBeInTheDocument();
   });
 
+  it("gives out a group's maps with one press, one link after another", async () => {
+    const quickLink = (id: string, value: string) => ({
+      id,
+      kind: "quick_link",
+      candidates: [],
+      warnings: [],
+      target: { kind: "territory", id: "t1", name: "T01" },
+      value,
+      data: { near_me: false }
+    });
+    const links: string[] = [];
+    let open_ = 0;
+    callFunctionMock.mockImplementation(
+      async (path: string, options: { body: { publisher: string } }) => {
+        if (path !== "/territory/link") {
+          return {
+            ...overdueAnswer,
+            steps: [],
+            answer: "The links are ready to confirm on the cards below.",
+            proposals: [
+              quickLink("p1", "Bro Lee, Sis Tan"),
+              quickLink("p2", "Sis Ong")
+            ]
+          };
+        }
+        // The second link must not start until the first is made: it is
+        // given the map with the fewest people on it.
+        expect(open_).toBe(0);
+        open_++;
+        await Promise.resolve();
+        open_--;
+        links.push(options.body.publisher);
+        return { linkId: `q${links.length}`, mapName: `Blk 30${links.length}` };
+      }
+    );
+    await open();
+    await userEvent.type(
+      screen.getByLabelText("Ask a question…"),
+      "Give Bro Lee and Sis Tan a map in T01, and Sis Ong another{Enter}"
+    );
+
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Confirm all 2" })
+    );
+
+    await visible(screen.findByText("Blk 302"));
+    expect(links).toEqual(["Bro Lee, Sis Tan", "Sis Ong"]);
+    // Planned ahead: no position is sent, so the map is picked by workload.
+    expect(
+      callFunctionMock.mock.calls
+        .filter(([path]) => path === "/territory/link")
+        .every(([, options]) => !("coordinates" in options.body))
+    ).toBe(true);
+    expect(
+      screen.queryByRole("button", { name: /Confirm all/ })
+    ).not.toBeInTheDocument();
+  });
+
   it("confirms a prepared change from its card", async () => {
     callFunctionMock.mockResolvedValue({
       ...overdueAnswer,

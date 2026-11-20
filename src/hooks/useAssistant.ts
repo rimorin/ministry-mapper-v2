@@ -14,6 +14,7 @@ import {
   parseSettings,
   isRoleProposal,
   runProposal,
+  usesLocation,
   undoProposal as undoRecord,
   type CongregationSettings
 } from "../utils/assistantActions";
@@ -872,10 +873,7 @@ export default function useAssistant(
     setAction(turnId, proposal.id, { status: "running", candidate });
     try {
       const location = sharedLocations.get(congregation);
-      if (
-        !location &&
-        (proposal.kind === "map_location" || proposal.kind === "quick_link")
-      ) {
+      if (!location && usesLocation(proposal)) {
         setAction(turnId, proposal.id, {
           status: "failed",
           error: t(

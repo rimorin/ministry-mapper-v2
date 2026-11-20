@@ -65,6 +65,8 @@ import {
   useValueLabel,
   weekdayName
 } from "./assistant-shared";
+import { usesLocation } from "../../utils/assistantActions";
+import { isLinkProposal } from "../../hooks/useAssistant";
 import type useAssistant from "../../hooks/useAssistant";
 import type {
   RatingReason,
@@ -242,6 +244,20 @@ const AssistantReply = ({
       setTimeout(() => setCopied(undefined), 2000);
     } catch {
       // Clipboard access can be refused; the text is still on screen.
+    }
+  };
+
+  // One after another, never together: each quick link is given the map with
+  // the fewest people on it, so it has to see the links made before it.
+  const [confirmingAll, setConfirmingAll] = useState(false);
+  const confirmAll = async (proposals: AssistantProposal[]) => {
+    setConfirmingAll(true);
+    try {
+      for (const proposal of proposals) {
+        await confirmProposal(turn.id, proposal);
+      }
+    } finally {
+      setConfirmingAll(false);
     }
   };
 
@@ -605,6 +621,13 @@ const AssistantReply = ({
   }
   const response = turn.response;
   if (!response) return null;
+  // The answer's link cards nobody has decided yet: a group's maps are given
+  // out with one press.
+  const waitingLinks = (response.proposals ?? []).filter(
+    (proposal) =>
+      isLinkProposal(proposal) &&
+      (turn.actions?.[proposal.id]?.status ?? "idle") === "idle"
+  );
   const steps = settledSteps(response.steps);
   const answerCopied = copied === turn.id;
   // Checks the answer asked to draw; their tables stay above as the data.
@@ -726,6 +749,20 @@ const AssistantReply = ({
                 )}
               </div>
             )}
+            {waitingLinks.length > 1 && (
+              <Button
+                type="button"
+                size="sm"
+                className={cn(STEADY_HOVER, "self-start")}
+                disabled={!isOnline || busy || confirmingAll}
+                onClick={() => void confirmAll(waitingLinks)}
+              >
+                {confirmingAll ? <Spinner /> : <Check />}
+                {t("assistant.action.confirmAll", "Confirm all {{count}}", {
+                  count: waitingLinks.length
+                })}
+              </Button>
+            )}
             {(response.proposals ?? []).map((proposal) => {
               const state = turn.actions?.[proposal.id];
               return (
@@ -753,8 +790,7 @@ const AssistantReply = ({
                       : undefined
                   }
                   onShareLocation={
-                    (proposal.kind === "map_location" ||
-                      proposal.kind === "quick_link") &&
+                    usesLocation(proposal) &&
                     !location &&
                     isLast &&
                     isOnline &&
