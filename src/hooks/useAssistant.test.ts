@@ -983,6 +983,8 @@ describe("useAssistant proposals", () => {
     const done = hook.result.current.turns[0].actions?.p1;
     expect(done?.status).toBe("done");
 
+    // Undo goes ahead only while the role is still what the card left.
+    getFirstItemOfListMock.mockResolvedValue({ id: "r1", role: "read_only" });
     await act(() => hook.result.current.undoProposal(turnId, p, done!));
     expect(updateDataByIdMock).toHaveBeenLastCalledWith(
       "roles",
@@ -991,6 +993,27 @@ describe("useAssistant proposals", () => {
       expect.anything()
     );
     expect(hook.result.current.turns[0].actions?.p1.status).toBe("undone");
+  });
+
+  it("leaves a role another administrator changed again", async () => {
+    const p = proposal();
+    const { hook, turnId } = await withProposal(p);
+    getFirstItemOfListMock.mockResolvedValue({ id: "r1", role: "conductor" });
+    await act(() => hook.result.current.confirmProposal(turnId, p, lee));
+    const done = hook.result.current.turns[0].actions?.p1;
+    updateDataByIdMock.mockClear();
+
+    getFirstItemOfListMock.mockResolvedValue({
+      id: "r1",
+      role: "administrator"
+    });
+    await act(() => hook.result.current.undoProposal(turnId, p, done!));
+
+    expect(updateDataByIdMock).not.toHaveBeenCalled();
+    expect(hook.result.current.turns[0].actions?.p1).toMatchObject({
+      status: "done",
+      error: "It has changed again since, so it was left as it is."
+    });
   });
 
   it("removes access and restores it on undo", async () => {
@@ -1008,6 +1031,8 @@ describe("useAssistant proposals", () => {
     );
     const done = hook.result.current.turns[0].actions?.p1;
 
+    // Restored only while the person still has no role here.
+    getFirstItemOfListMock.mockResolvedValue(null);
     await act(() => hook.result.current.undoProposal(turnId, p, done!));
     expect(createDataMock).toHaveBeenCalledWith(
       "roles",
@@ -1041,6 +1066,8 @@ describe("useAssistant proposals", () => {
     const done = hook.result.current.turns[0].actions?.p1;
     expect(done).toMatchObject({ status: "done", roleId: "r5" });
 
+    getFirstItemOfListMock.mockResolvedValue({ id: "r5", role: "conductor" });
+    deleteDataByIdMock.mockResolvedValue(true);
     await act(() => hook.result.current.undoProposal(turnId, p, done!));
     expect(deleteDataByIdMock).toHaveBeenCalledWith(
       "roles",
@@ -1074,6 +1101,7 @@ describe("useAssistant proposals", () => {
       requestKey: "assistant-outcome-p1"
     });
 
+    getFirstItemOfListMock.mockResolvedValue({ id: "r1", role: "read_only" });
     await act(() =>
       hook.result.current.undoProposal(
         turnId,
@@ -1125,6 +1153,7 @@ describe("useAssistant proposals", () => {
     const done = hook.result.current.turns[0].actions?.p1;
     expect(done?.status).toBe("done");
 
+    getFirstItemOfListMock.mockResolvedValue({ id: "r3", role: "read_only" });
     await act(() => hook.result.current.undoProposal(turnId, p, done!));
     expect(updateDataByIdMock).toHaveBeenLastCalledWith(
       "roles",

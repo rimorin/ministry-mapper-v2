@@ -2,16 +2,7 @@ import { useEffect, useState, useSyncExternalStore } from "react";
 import { useTranslation } from "react-i18next";
 import * as Sentry from "@sentry/react";
 import { ClientResponseError } from "pocketbase";
-import {
-  callFunction,
-  createData,
-  deleteDataById,
-  getFirstItemOfList,
-  isAbortError,
-  pb,
-  updateDataById
-} from "../utils/pocketbase";
-import { ANALYTICS_EVENTS, trackEvent } from "../utils/analytics";
+import { callFunction, isAbortError, pb } from "../utils/pocketbase";
 import { sendFeedback } from "../utils/assistantFeedback";
 import { generateRecordId } from "../utils/recordId";
 import { safeStorage } from "../utils/safeStorage";
@@ -21,8 +12,9 @@ import getCongregationMembers, {
 import usePublisherRoleEnabled from "./usePublisherRoleEnabled";
 import {
   parseSettings,
-  runRecordProposal,
-  undoRecordProposal,
+  isRoleProposal,
+  runProposal,
+  undoProposal as undoRecord,
   type CongregationSettings
 } from "../utils/assistantActions";
 
@@ -265,24 +257,8 @@ export const pairNames = (people: ProposalPerson[], assignees: string[]) => {
   return pairs;
 };
 
-export const isRoleProposal = (proposal: AssistantProposal) =>
-  proposal.kind === "role_change" ||
-  proposal.kind === "role_revoke" ||
-  proposal.kind === "role_grant";
-
 export const isLinkProposal = (proposal: AssistantProposal) =>
   proposal.kind === "share_link" || proposal.kind === "quick_link";
-
-// A role change as it applies to the picked person; before a pick, as the
-// proposal states it.
-export const roleChangeFor = (
-  proposal: AssistantProposal,
-  candidate?: ProposalCandidate
-) => ({
-  from: candidate?.role ?? proposal.from,
-  warnings: candidate?.warnings ?? proposal.warnings,
-  blocked: candidate?.blocked ?? proposal.blocked
-});
 
 // Where a proposal's card stands. Kept with the turn, so it survives the panel
 // closing and the next question can say what the admin decided.
@@ -891,149 +867,53 @@ export default function useAssistant(
     proposal: AssistantProposal,
     candidate?: ProposalCandidate
   ) => {
-    if (isRoleProposal(proposal) && !candidate) return;
+    const isRole = isRoleProposal(proposal);
+    if (isRole && !candidate) return;
     setAction(turnId, proposal.id, { status: "running", candidate });
     try {
-      if (!isRoleProposal(proposal)) {
-        const location = sharedLocations.get(congregation);
-        if (
-          !location &&
-          (proposal.kind === "map_location" || proposal.kind === "quick_link")
-        ) {
-          setAction(turnId, proposal.id, {
-            status: "failed",
-            error: t(
-              "assistant.action.needLocation",
-              "Share your location again, then ask again."
-            )
-          });
-          return;
-        }
-        const chosen = turns.find((turn) => turn.id === turnId)?.actions?.[
-          proposal.id
-        ];
-        // Only accounts the card showed: with no roster it showed none.
-        const assignees = (
-          chosen?.assignees ?? pickedAccounts(proposal)
-        ).filter((id) => members.some((member) => member.id === id));
-        const outcome = await runRecordProposal(
-          proposal,
-          congregation,
-          location,
-          chosen?.locations,
-          assignees
-        );
-        setAction(turnId, proposal.id, { ...outcome, assignees });
-        if (proposal.kind === "settings" && outcome.status === "done") {
-          onSettingsChange?.(parseSettings(proposal.value));
-        }
-        return;
-      }
-      const person = candidate!;
-      if (proposal.kind === "role_grant") {
-        const existing = await getFirstItemOfList(
-          "roles",
-          `user="${person.userId}" && congregation="${congregation}"`,
-          { fields: "id", requestKey: `assistant-grant-check-${proposal.id}` }
-        );
-        if (existing) {
-          setAction(turnId, proposal.id, { status: "stale" });
-          return;
-        }
-        const created = await createData(
-          "roles",
-          { user: person.userId, congregation, role: proposal.to },
-          { requestKey: `assistant-grant-${proposal.id}` }
-        );
-        trackEvent(ANALYTICS_EVENTS.USER_INVITED, { role: proposal.to });
+      const location = sharedLocations.get(congregation);
+      if (
+        !location &&
+        (proposal.kind === "map_location" || proposal.kind === "quick_link")
+      ) {
         setAction(turnId, proposal.id, {
-          status: "done",
-          roleId: created.id,
-          doneAt: Date.now()
+          status: "failed",
+          error: t(
+            "assistant.action.needLocation",
+            "Share your location again, then ask again."
+          )
         });
         return;
       }
-
-      const current = await getFirstItemOfList(
-        "roles",
-        `id="${person.roleId}" && congregation="${congregation}"`,
-        { fields: "id,role", requestKey: `assistant-role-check-${proposal.id}` }
+      const chosen = turns.find((turn) => turn.id === turnId)?.actions?.[
+        proposal.id
+      ];
+      // Only accounts the card showed: with no roster it showed none.
+      const assignees = (chosen?.assignees ?? pickedAccounts(proposal)).filter(
+        (id) => members.some((member) => member.id === id)
       );
-      if (!current || current.role !== roleChangeFor(proposal, person).from) {
-        setAction(turnId, proposal.id, { status: "stale" });
-        return;
-      }
-      if (proposal.kind === "role_revoke") {
-        const deleted = await deleteDataById("roles", String(person.roleId), {
-          requestKey: `assistant-revoke-${proposal.id}`
-        });
-        if (!deleted) {
-          setAction(turnId, proposal.id, { status: "stale" });
-          return;
-        }
-      } else {
-        await updateDataById(
-          "roles",
-          String(person.roleId),
-          { role: proposal.to },
-          { requestKey: `assistant-change-${proposal.id}` }
-        );
-      }
-      setAction(turnId, proposal.id, {
-        status: "done",
-        roleId: person.roleId,
-        doneAt: Date.now()
+      const outcome = await runProposal({
+        proposal,
+        congregation,
+        candidate,
+        location,
+        locations: chosen?.locations,
+        assignees
       });
+      setAction(
+        turnId,
+        proposal.id,
+        isRole ? outcome : { ...outcome, assignees }
+      );
+      if (proposal.kind === "settings" && outcome.status === "done") {
+        onSettingsChange?.(parseSettings(proposal.value));
+      }
     } catch (error) {
       setAction(turnId, proposal.id, {
         status: "failed",
         error: actionError(error)
       });
     }
-  };
-
-  // What Undo leaves: the record kinds in assistantActions, roles here.
-  const undoChange = async (
-    proposal: AssistantProposal,
-    state: ProposalState
-  ): Promise<Partial<ProposalState>> => {
-    if (!isRoleProposal(proposal)) {
-      return undoRecordProposal(
-        proposal,
-        state,
-        congregation,
-        t(
-          "assistant.action.changedSince",
-          "It has changed again since, so it was left as it is."
-        )
-      );
-    }
-    const { candidate, roleId } = state;
-    if (!candidate || !roleId) return { status: "done" };
-    const requestKey = `assistant-undo-${proposal.id}`;
-    if (proposal.kind === "role_grant") {
-      await deleteDataById("roles", roleId, { requestKey });
-      return { status: "undone" };
-    }
-    if (proposal.kind === "role_revoke") {
-      const restored = await createData(
-        "roles",
-        {
-          user: candidate.userId,
-          congregation,
-          role: roleChangeFor(proposal, candidate).from
-        },
-        { requestKey }
-      );
-      return { status: "undone", roleId: restored.id };
-    }
-    await updateDataById(
-      "roles",
-      roleId,
-      { role: roleChangeFor(proposal, candidate).from },
-      { requestKey }
-    );
-    return { status: "undone" };
   };
 
   // Puts things back as they were before the change.
@@ -1044,7 +924,15 @@ export default function useAssistant(
   ) => {
     setAction(turnId, proposal.id, { status: "undoing" });
     try {
-      const outcome = await undoChange(proposal, state);
+      const outcome = await undoRecord(
+        proposal,
+        state,
+        congregation,
+        t(
+          "assistant.action.changedSince",
+          "It has changed again since, so it was left as it is."
+        )
+      );
       setAction(turnId, proposal.id, outcome);
       if (proposal.kind === "settings" && outcome.status === "undone") {
         onSettingsChange?.(parseSettings(proposal.previous));

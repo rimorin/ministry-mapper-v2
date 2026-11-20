@@ -17,9 +17,7 @@ import { Spinner } from "@/components/ui/spinner";
 import {
   UNDO_WINDOW_MS,
   isLinkProposal,
-  isRoleProposal,
   pickedAccounts,
-  roleChangeFor,
   type AssistantProposal,
   type ProposalCandidate,
   type ProposalState
@@ -31,7 +29,14 @@ import assignmentMessage, {
 } from "../../utils/helpers/assignmentmsg";
 import { resolveLocalized } from "../../utils/resolveLocalized";
 import LinkDateFormatter from "../../utils/helpers/linkdateformatter";
-import { listOf, parseHome, parseSettings } from "../../utils/assistantActions";
+import {
+  isRoleProposal,
+  listOf,
+  parseHome,
+  parseSettings,
+  roleChangeFor,
+  undoable
+} from "../../utils/assistantActions";
 import type { CongregationMember } from "../../utils/helpers/getcongregationmembers";
 import AssistantLinkAccounts from "./assistant-link-accounts";
 import AssistantNewMaps, { allMapsPlaced } from "./assistant-new-maps";
@@ -254,11 +259,7 @@ const AssistantProposalCard = ({
   // Without administrator access there is nothing left to undo it with; an
   // email cannot be taken back.
   const canUndo =
-    proposal.kind !== "report_email" &&
-    proposal.kind !== "link_revoke" &&
-    proposal.kind !== "map_reset" &&
-    proposal.kind !== "territory_reset" &&
-    !(has("self") && role.from === "administrator");
+    undoable(proposal.kind) && !(has("self") && role.from === "administrator");
   const ready =
     proposal.kind === "territory_create" || proposal.kind === "maps_create"
       ? allMapsPlaced(proposal, state)
