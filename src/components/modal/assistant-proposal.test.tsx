@@ -149,6 +149,15 @@ describe("AssistantProposalCard", () => {
       ).toBeInTheDocument();
     });
 
+    it("claims no accounts for a link reopened from history", () => {
+      // History keeps the link, not who it went to: the picks are no record.
+      showLink({ status: "done", recordId: "link1" });
+      expect(screen.queryByText(/In My maps for/)).not.toBeInTheDocument();
+      expect(
+        screen.getByRole("button", { name: "Copy link" })
+      ).toBeInTheDocument();
+    });
+
     it("drops Share once everyone named has the map in their account", () => {
       showLink({ status: "done", recordId: "link1", assignees: ["u1", "u2"] });
       expect(

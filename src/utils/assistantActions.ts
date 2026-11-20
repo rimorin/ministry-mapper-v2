@@ -476,10 +476,12 @@ const RUN: Partial<Record<Kind, (ctx: Context) => Promise<Outcome>>> = {
       return done({ recordId: link.id });
     } catch (error) {
       // An account that left the congregation since the card was prepared.
+      // Any other refusal is shown as it is, not as a card gone stale.
       if (
         assignees.length > 0 &&
         error instanceof ClientResponseError &&
-        error.status === 400
+        error.status === 400 &&
+        /assignee/i.test(error.message)
       ) {
         return STALE;
       }

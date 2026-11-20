@@ -513,6 +513,20 @@ describe("useAssistant", () => {
     expect(callFunctionMock.mock.calls[1][1].body.image).toBeUndefined();
   });
 
+  it("asks again with the photo the failed question carried", async () => {
+    callFunctionMock.mockRejectedValueOnce(pbError(500, "Something failed."));
+    callFunctionMock.mockResolvedValueOnce(answer());
+    const congregation = nextCongregation();
+    const { result } = renderHook(() => useAssistant(congregation));
+    const photo = "data:image/jpeg;base64,/9j/4AAQ";
+
+    await act(() => result.current.ask("What is this?", undefined, photo));
+    await act(async () => result.current.retry(result.current.turns[0].id));
+    await waitFor(() => expect(result.current.turns[0]?.status).toBe("done"));
+
+    expect(callFunctionMock.mock.calls[1][1].body.image).toBe(photo);
+  });
+
   it("sends no names from an answer that was not grounded", async () => {
     callFunctionMock.mockResolvedValueOnce(
       answer({
@@ -1389,11 +1403,62 @@ describe("useAssistant record proposals", () => {
     await waitFor(() => expect(hook.result.current.members).toHaveLength(1));
     getFirstItemOfListMock.mockResolvedValueOnce({ id: "m1" });
     createDataMock.mockRejectedValueOnce(
-      new ClientResponseError({ status: 400 })
+      new ClientResponseError({
+        status: 400,
+        response: {
+          message: "An assignee is not a member of this congregation."
+        }
+      })
     );
 
     await act(() => hook.result.current.confirmProposal(turnId, p));
     expect(hook.result.current.turns[0].actions?.p1.status).toBe("stale");
+
+    // Any other refusal is the backend's to explain, not a stale card.
+    getFirstItemOfListMock.mockResolvedValueOnce({ id: "m1" });
+    createDataMock.mockRejectedValueOnce(
+      new ClientResponseError({
+        status: 400,
+        response: { message: "Failed to create record." }
+      })
+    );
+    act(() => hook.result.current.setAction(turnId, "p1", { status: "idle" }));
+    await act(() => hook.result.current.confirmProposal(turnId, p));
+    expect(hook.result.current.turns[0].actions?.p1.status).toBe("failed");
+  });
+
+  it("leaves pairings alone when the roster never loaded", async () => {
+    flag.publisherRole = true;
+    membersMock.mockRejectedValue(new Error("offline"));
+    const p = proposal({
+      kind: "share_link",
+      from: "",
+      to: "",
+      value: "John Tan",
+      previous: undefined,
+      linkType: "normal",
+      hours: 4,
+      people: [{ name: "John Tan", picked: "u1" }]
+    });
+    callFunctionMock.mockResolvedValue({});
+    callFunctionMock.mockResolvedValueOnce(
+      answer({ questionId: "q1", proposals: [p] })
+    );
+    const congregation = nextCongregation();
+    const hook = renderHook(() => useAssistant(congregation));
+    await act(() => hook.result.current.ask("Give it out"));
+    getFirstItemOfListMock.mockResolvedValueOnce({ id: "m1" });
+    createDataMock.mockResolvedValueOnce({ id: "link1" });
+
+    await act(() =>
+      hook.result.current.confirmProposal(hook.result.current.turns[0].id, p)
+    );
+
+    // The card showed no accounts, so "none chosen" is not what the admin said.
+    const report = callFunctionMock.mock.lastCall?.[1].body;
+    expect(report).toMatchObject({ proposal: "p1", outcome: "done" });
+    expect(report).not.toHaveProperty("pairs");
+    flag.publisherRole = false;
   });
 
   it("pairs each name with the account the admin settled on", () => {

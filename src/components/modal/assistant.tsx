@@ -143,7 +143,7 @@ import useAssistant, {
 const AssistantCanvas = lazy(() => import("./assistant-canvas"));
 
 // Mirrors maxAssistantQuestionLength in the backend handler.
-const MAX_QUESTION_LENGTH = 500;
+const MAX_QUESTION_LENGTH = 1000;
 
 // Rows shown before a table's "Show all" button.
 const TABLE_PREVIEW_ROWS = 10;

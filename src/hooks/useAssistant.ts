@@ -778,7 +778,7 @@ export default function useAssistant(
     update(congregation, (previous) =>
       previous.filter((candidate) => candidate.id !== turnId)
     );
-    void ask(turn.question, turn.view);
+    void ask(turn.question, turn.view, turn.image);
   };
 
   // Records a rating or a card's outcome on the logged question, for history
@@ -841,7 +841,10 @@ export default function useAssistant(
             ...link,
             // Kept when the link is made, and dropped again if it is undone:
             // a link taken back may have gone to the wrong account.
+            // Not without the roster: the card then showed no accounts, and
+            // "none chosen" would wipe pairings the admin never saw.
             ...(proposal.people &&
+              roster?.congregation === congregation &&
               (patch.status === "done" || patch.status === "undone") && {
                 pairs: pairNames(proposal.people, action?.assignees ?? [])
               })
