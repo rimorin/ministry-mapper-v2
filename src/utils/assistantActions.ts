@@ -1,5 +1,6 @@
 import type {
   AssistantProposal,
+  ProposalCandidate,
   ProposalItem,
   ProposalState,
   SharedLocation
@@ -21,9 +22,10 @@ import {
 } from "./pocketbase";
 
 // Changes the assistant prepared, run with the admin's own session. Each
-// makes the same call its admin screen makes, so the backend's checks apply,
-// after re-reading the record: one that is gone, or changed since the
-// proposal was prepared, stops the change.
+// makes the same call its admin screen makes, so the backend's checks, guards
+// and logs apply, after re-reading the record: one that is gone, or changed
+// since the proposal was prepared, stops the change. RUN makes each kind of
+// change and UNDO takes it back; a kind missing from UNDO cannot be undone.
 
 type Outcome = Partial<ProposalState>;
 type Kind = AssistantProposal["kind"];
@@ -37,8 +39,26 @@ interface Context {
   locations?: Record<string, SharedLocation>;
   // The accounts a share link is given to.
   assignees?: string[];
+  // The person a role change applies to, picked on the card.
+  candidate?: ProposalCandidate;
   key: (step: string) => string;
 }
+
+export const isRoleProposal = (proposal: AssistantProposal) =>
+  proposal.kind === "role_change" ||
+  proposal.kind === "role_revoke" ||
+  proposal.kind === "role_grant";
+
+// A role change as it applies to the picked person; before a pick, as the
+// proposal states it.
+export const roleChangeFor = (
+  proposal: AssistantProposal,
+  candidate?: ProposalCandidate
+) => ({
+  from: candidate?.role ?? proposal.from,
+  warnings: candidate?.warnings ?? proposal.warnings,
+  blocked: candidate?.blocked ?? proposal.blocked
+});
 
 // A map to create, as the backend planned it (proposals_create.go).
 export interface MapPlan {
@@ -440,7 +460,60 @@ const rename = async (ctx: Context) =>
     ? done()
     : STALE;
 
+// The role record a change is about, as it stands now.
+const roleNow = (
+  { congregation, key }: Context,
+  filter: string,
+  step: string
+) =>
+  getFirstItemOfList("roles", `${filter} && congregation="${congregation}"`, {
+    fields: "id,role",
+    requestKey: key(step)
+  });
+
+// Changes or removes the picked person's role, if it is still what the card showed.
+const changeRole = async (ctx: Context) => {
+  const { proposal, candidate, key } = ctx;
+  if (!candidate?.roleId) return STALE;
+  const current = await roleNow(ctx, `id="${candidate.roleId}"`, "role-check");
+  if (!current || current.role !== roleChangeFor(proposal, candidate).from) {
+    return STALE;
+  }
+  if (proposal.kind === "role_revoke") {
+    const deleted = await deleteDataById("roles", candidate.roleId, {
+      requestKey: key("revoke")
+    });
+    if (!deleted) return STALE;
+  } else {
+    await updateDataById(
+      "roles",
+      candidate.roleId,
+      { role: proposal.to },
+      { requestKey: key("change") }
+    );
+  }
+  return done({ roleId: candidate.roleId });
+};
+
 const RUN: Partial<Record<Kind, (ctx: Context) => Promise<Outcome>>> = {
+  role_change: changeRole,
+  role_revoke: changeRole,
+
+  role_grant: async (ctx) => {
+    const { proposal, congregation, candidate, key } = ctx;
+    if (!candidate) return STALE;
+    if (await roleNow(ctx, `user="${candidate.userId}"`, "grant-check")) {
+      return STALE;
+    }
+    const created = await createData(
+      "roles",
+      { user: candidate.userId, congregation, role: proposal.to },
+      { requestKey: key("grant") }
+    );
+    trackEvent(ANALYTICS_EVENTS.USER_INVITED, { role: proposal.to });
+    return done({ roleId: created.id });
+  },
+
   report_email: async ({ congregation }) => {
     await callFunction("/report/generate", {
       method: "POST",
@@ -708,169 +781,241 @@ const untouched = (homes: Array<Record<string, unknown>>) =>
 
 const unitsOf = (proposal: AssistantProposal) => listOf(proposal.data?.units);
 
-export const runRecordProposal = async (
-  proposal: AssistantProposal,
-  congregation: string,
-  location?: SharedLocation,
-  locations?: Record<string, SharedLocation>,
-  assignees?: string[]
-): Promise<Outcome> => {
-  const run = RUN[proposal.kind];
+type RunInput = Omit<Context, "key">;
+
+export const runProposal = async (input: RunInput): Promise<Outcome> => {
+  const run = RUN[input.proposal.kind];
   if (!run) return STALE;
   return run({
-    proposal,
-    congregation,
-    location,
-    locations,
-    assignees,
-    key: (step) => `assistant-${step}-${proposal.id}`
+    ...input,
+    key: (step) => `assistant-${step}-${input.proposal.id}`
   });
 };
 
-// Takes a change back. A rename, location or home is restored only if no one
-// has changed it again since; otherwise `changedSince` says why it was left.
-export const undoRecordProposal = async (
+// What takes each kind of change back. A record is restored only if no one has
+// changed it again since; otherwise the card says it was left (`left`).
+type Undo = (
+  ctx: Context,
+  state: ProposalState,
+  left: Outcome
+) => Promise<Outcome>;
+
+const UNDONE: Outcome = { status: "undone" };
+const undone = (swapped: boolean, left: Outcome) => (swapped ? UNDONE : left);
+
+const undoRename: Undo = async (ctx, _state, left) =>
+  undone(
+    await swapName(ctx, ctx.proposal.value ?? "", ctx.proposal.previous ?? ""),
+    left
+  );
+
+const undoHomes: Undo = (ctx, state) => updateHomes(ctx, state);
+
+const undoNewMaps: Undo = async (ctx, state, left) => {
+  const { proposal } = ctx;
+  const maps = state.recordIds ?? [];
+  if (!(await mapsUnused(maps, ctx.key("used")))) return left;
+  if (proposal.kind === "territory_create" && state.recordId) {
+    // Deleting the territory takes every map and home in it, so it must hold
+    // nothing but the maps this card made: one moved or added there since
+    // stays, and so does the territory.
+    const inside = await getList("maps", {
+      filter: `territory="${state.recordId}"`,
+      fields: "id",
+      requestKey: ctx.key("territory-maps")
+    });
+    if (inside.some((map) => !maps.includes(map.id))) return left;
+    await callFunction("/territory/delete", {
+      method: "POST",
+      requestKey: ctx.key("territory-delete"),
+      body: { territory: state.recordId }
+    });
+  } else {
+    for (const map of maps) {
+      await deleteDataById("maps", map, {
+        requestKey: ctx.key(`map-delete-${map}`)
+      });
+    }
+  }
+  return UNDONE;
+};
+
+const undoMessages: Undo = async (ctx, state) =>
+  undoneOrLeft(
+    (
+      await changeEach(
+        (state.recordIds ?? []).map((id) => ({ id })),
+        async ({ id }) => {
+          await updateDataById(
+            "messages",
+            id,
+            ctx.proposal.kind === "mark_read"
+              ? { read: false }
+              : { pinned: true },
+            { requestKey: ctx.key(`message-${id}`) }
+          );
+          return true;
+        }
+      )
+    ).failed
+  );
+
+// Removes what the change created: a link, or a pinned instruction.
+const undoCreated: Undo = async (ctx, state) => {
+  if (state.recordId) {
+    await deleteDataById(
+      ctx.proposal.kind === "pin_message" ? "messages" : "assignments",
+      state.recordId,
+      { requestKey: ctx.key("delete") }
+    );
+  }
+  return UNDONE;
+};
+
+// A role goes back only while it is still what the card left: another
+// administrator may have changed it again in the minutes Undo is offered.
+const undoRole: Undo = async (ctx, state, left) => {
+  const { proposal, congregation } = ctx;
+  const { candidate, roleId } = state;
+  if (!candidate || !roleId) return { status: "done" };
+  const from = roleChangeFor(proposal, candidate).from;
+  if (proposal.kind === "role_revoke") {
+    if (await roleNow(ctx, `user="${candidate.userId}"`, "role-check")) {
+      return left;
+    }
+    const restored = await createData(
+      "roles",
+      { user: candidate.userId, congregation, role: from },
+      { requestKey: ctx.key("role") }
+    );
+    return { status: "undone", roleId: restored.id };
+  }
+  const current = await roleNow(ctx, `id="${roleId}"`, "role-check");
+  if (!current || current.role !== proposal.to) return left;
+  if (proposal.kind === "role_grant") {
+    const deleted = await deleteDataById("roles", roleId, {
+      requestKey: ctx.key("role")
+    });
+    return undone(!!deleted, left);
+  }
+  await updateDataById(
+    "roles",
+    roleId,
+    { role: from },
+    { requestKey: ctx.key("role") }
+  );
+  return UNDONE;
+};
+
+const UNDO: Partial<Record<Kind, Undo>> = {
+  role_change: undoRole,
+  role_revoke: undoRole,
+  role_grant: undoRole,
+  map_rename: undoRename,
+  territory_rename: undoRename,
+  tries_reset: undoHomes,
+  homes_status: undoHomes,
+  dnc_return: undoHomes,
+  territory_create: undoNewMaps,
+  maps_create: undoNewMaps,
+  mark_read: undoMessages,
+  unpin_message: undoMessages,
+  share_link: undoCreated,
+  pin_message: undoCreated,
+  quick_link: undoCreated,
+
+  map_location: async (ctx, state, left) =>
+    undone(
+      await swapLocation(ctx, state.applied, ctx.proposal.previous || null),
+      left
+    ),
+
+  settings: async (ctx, _state, left) =>
+    undone(
+      await swapSettings(ctx, ctx.proposal.value, ctx.proposal.previous),
+      left
+    ),
+
+  map_move: async (ctx, _state, left) =>
+    undone(
+      await swapTerritory(
+        ctx,
+        String(ctx.proposal.value),
+        String(ctx.proposal.previous)
+      ),
+      left
+    ),
+
+  home_update: async (ctx, _state, left) =>
+    undone(
+      await writeHome(
+        ctx,
+        ctx.proposal.items?.[0],
+        parseHome(ctx.proposal.value),
+        parseHome(ctx.proposal.previous)
+      ),
+      left
+    ),
+
+  floor_add: async (ctx, _state, left) => {
+    const target = ctx.proposal.target;
+    const floor = Number(ctx.proposal.data?.floor);
+    if (!target || !Number.isFinite(floor)) return { status: "done" };
+    const homes = await homesOn(
+      target.id,
+      `floor=${floor}`,
+      ctx.key("floor-check")
+    );
+    if (!homes.length || !untouched(homes)) return left;
+    await callFunction("/map/floor/remove", {
+      method: "POST",
+      requestKey: ctx.key("floor-remove"),
+      body: { map: target.id, floor }
+    });
+    return UNDONE;
+  },
+
+  unit_add: async (ctx, _state, left) => {
+    const target = ctx.proposal.target;
+    const units = unitsOf(ctx.proposal);
+    if (!target || !units.length) return { status: "done" };
+    const homes = await homesOn(
+      target.id,
+      `(${units.map((code) => `code="${code}"`).join(" || ")})`,
+      ctx.key("unit-check")
+    );
+    if (!untouched(homes)) return left;
+    for (const code of units) {
+      await callFunction("/map/code/delete", {
+        method: "POST",
+        requestKey: ctx.key(`unit-delete-${code}`),
+        body: { map: target.id, code }
+      });
+    }
+    return UNDONE;
+  }
+};
+
+// Whether a kind of change can be taken back at all: an email sent, a link
+// ended or a reset cannot.
+export const undoable = (kind: Kind) => kind in UNDO;
+
+// Takes a change back; `changedSince` is what the card says when it could not.
+export const undoProposal = async (
   proposal: AssistantProposal,
   state: ProposalState,
   congregation: string,
   changedSince: string
 ): Promise<Outcome> => {
-  const ctx: Context = {
-    proposal,
-    congregation,
-    key: (step) => `assistant-undo-${step}-${proposal.id}`
-  };
-  const target = proposal.target;
-  const leftAsItIs: Outcome = { status: "done", error: changedSince };
-  const undone = (swapped: boolean): Outcome =>
-    swapped ? { status: "undone" } : leftAsItIs;
-  switch (proposal.kind) {
-    case "map_rename":
-    case "territory_rename":
-      return undone(
-        await swapName(ctx, proposal.value ?? "", proposal.previous ?? "")
-      );
-    case "map_location":
-      return undone(
-        await swapLocation(ctx, state.applied, proposal.previous || null)
-      );
-    case "tries_reset":
-    case "homes_status":
-    case "dnc_return":
-      return updateHomes(ctx, state);
-    case "settings":
-      return undone(await swapSettings(ctx, proposal.value, proposal.previous));
-    case "map_move":
-      return undone(
-        await swapTerritory(
-          ctx,
-          String(proposal.value),
-          String(proposal.previous)
-        )
-      );
-    case "floor_add": {
-      const floor = Number(proposal.data?.floor);
-      if (!target || !Number.isFinite(floor)) return { status: "done" };
-      const homes = await homesOn(
-        target.id,
-        `floor=${floor}`,
-        ctx.key("floor-check")
-      );
-      if (!homes.length || !untouched(homes)) return leftAsItIs;
-      await callFunction("/map/floor/remove", {
-        method: "POST",
-        requestKey: ctx.key("floor-remove"),
-        body: { map: target.id, floor }
-      });
-      return { status: "undone" };
-    }
-    case "unit_add": {
-      const units = unitsOf(proposal);
-      if (!target || !units.length) return { status: "done" };
-      const homes = await homesOn(
-        target.id,
-        `(${units.map((code) => `code="${code}"`).join(" || ")})`,
-        ctx.key("unit-check")
-      );
-      if (!untouched(homes)) return leftAsItIs;
-      for (const code of units) {
-        await callFunction("/map/code/delete", {
-          method: "POST",
-          requestKey: ctx.key(`unit-delete-${code}`),
-          body: { map: target.id, code }
-        });
-      }
-      return { status: "undone" };
-    }
-    case "territory_create":
-    case "maps_create": {
-      const maps = state.recordIds ?? [];
-      if (!(await mapsUnused(maps, ctx.key("used")))) return leftAsItIs;
-      if (proposal.kind === "territory_create" && state.recordId) {
-        // Deleting the territory takes every map and home in it, so it must
-        // hold nothing but the maps this card made: one moved or added there
-        // since stays, and so does the territory.
-        const inside = await getList("maps", {
-          filter: `territory="${state.recordId}"`,
-          fields: "id",
-          requestKey: ctx.key("territory-maps")
-        });
-        if (inside.some((map) => !maps.includes(map.id))) return leftAsItIs;
-        await callFunction("/territory/delete", {
-          method: "POST",
-          requestKey: ctx.key("territory-delete"),
-          body: { territory: state.recordId }
-        });
-      } else {
-        for (const map of maps) {
-          await deleteDataById("maps", map, {
-            requestKey: ctx.key(`map-delete-${map}`)
-          });
-        }
-      }
-      return { status: "undone" };
-    }
-    case "home_update":
-      return undone(
-        await writeHome(
-          ctx,
-          proposal.items?.[0],
-          parseHome(proposal.value),
-          parseHome(proposal.previous)
-        )
-      );
-    case "mark_read":
-    case "unpin_message":
-      return undoneOrLeft(
-        (
-          await changeEach(
-            (state.recordIds ?? []).map((id) => ({ id })),
-            async ({ id }) => {
-              await updateDataById(
-                "messages",
-                id,
-                proposal.kind === "mark_read"
-                  ? { read: false }
-                  : { pinned: true },
-                { requestKey: ctx.key(`message-${id}`) }
-              );
-              return true;
-            }
-          )
-        ).failed
-      );
-    case "share_link":
-    case "pin_message":
-    case "quick_link":
-      if (state.recordId) {
-        await deleteDataById(
-          proposal.kind === "pin_message" ? "messages" : "assignments",
-          state.recordId,
-          { requestKey: ctx.key("delete") }
-        );
-      }
-      return { status: "undone" };
-    default:
-      return { status: "done" };
-  }
+  const undo = UNDO[proposal.kind];
+  if (!undo) return { status: "done" };
+  return undo(
+    {
+      proposal,
+      congregation,
+      key: (step) => `assistant-undo-${step}-${proposal.id}`
+    },
+    state,
+    { status: "done", error: changedSince }
+  );
 };
