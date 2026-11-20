@@ -46,7 +46,8 @@ describe("OAuthCallback", () => {
     await waitFor(() => {
       expect(mocks.completeOAuth2Flow).toHaveBeenCalledWith(
         "code123",
-        "state123"
+        "state123",
+        undefined
       );
     });
     expect(mocks.trackEvent).toHaveBeenCalledWith("login-oauth", {
@@ -54,6 +55,28 @@ describe("OAuthCallback", () => {
     });
     expect(mocks.notifyError).not.toHaveBeenCalled();
     expect(mocks.navigate).toHaveBeenCalledWith("/", { replace: true });
+  });
+
+  it("passes on the name Apple gives with a first sign-in", async () => {
+    await renderCallback("?code=code123&state=state123&name=Mei+Ling+Tan");
+
+    await waitFor(() => {
+      expect(mocks.completeOAuth2Flow).toHaveBeenCalledWith(
+        "code123",
+        "state123",
+        "Mei Ling Tan"
+      );
+    });
+  });
+
+  it("returns quietly when the user dismisses Apple's screen", async () => {
+    await renderCallback("?error=user_cancelled_authorize");
+
+    await waitFor(() => {
+      expect(mocks.navigate).toHaveBeenCalledWith("/", { replace: true });
+    });
+    expect(mocks.notifyError).not.toHaveBeenCalled();
+    expect(mocks.completeOAuth2Flow).not.toHaveBeenCalled();
   });
 
   it("returns quietly when the user dismisses the provider's screen", async () => {
@@ -71,7 +94,7 @@ describe("OAuthCallback", () => {
 
     await waitFor(() => {
       expect(mocks.notifyError).toHaveBeenCalledWith(
-        "Google sign-in could not be completed. Please try again."
+        "Sign-in could not be completed. Please try again."
       );
     });
     expect(mocks.completeOAuth2Flow).not.toHaveBeenCalled();

@@ -203,7 +203,14 @@ const authenticateOTP = async (
  * Not the SDK's all-in-one authWithOAuth2(): that waits for the code on a
  * realtime channel and aborts the login the moment it drops, which is every
  * time iOS suspends a home screen web app behind the provider's sign-in UI.
+ *
+ * Apple answers with a form post, which a page here cannot read, so its reply
+ * goes to the backend, which hands it on to the same callback page.
  */
+const OAUTH2_BACKEND_RETURN: Record<string, string> = {
+  apple: "/auth/apple/callback"
+};
+
 const startOAuth2Flow = async (provider: string) => {
   const authMethods = await pb.collection("users").listAuthMethods({
     requestKey: "auth-methods"
@@ -214,7 +221,10 @@ const startOAuth2Flow = async (provider: string) => {
   if (!providerInfo) {
     throw new Error(`Missing or invalid provider "${provider}".`);
   }
-  const redirectURL = window.location.origin + OAUTH2_REDIRECT_PATH;
+  const backendReturn = OAUTH2_BACKEND_RETURN[providerInfo.name];
+  const redirectURL = backendReturn
+    ? VITE_POCKETBASE_URL.replace(/\/+$/, "") + backendReturn
+    : window.location.origin + OAUTH2_REDIRECT_PATH;
   localStorage.setItem(
     OAUTH2_PENDING_KEY,
     JSON.stringify({
@@ -231,8 +241,15 @@ const startOAuth2Flow = async (provider: string) => {
  * Exchanges the provider's authorization code for a session using the handshake
  * parked by startOAuth2Flow. Returns the provider name, or null when no sign-in
  * is in progress — revisiting the callback URL is not a failure.
+ *
+ * name is what the provider called the person, when it says so only in its
+ * reply (Apple, on a first sign-in). It is used for a new account alone.
  */
-const completeOAuth2Flow = async (code: string, state: string) => {
+const completeOAuth2Flow = async (
+  code: string,
+  state: string,
+  name?: string
+) => {
   const pending = localStorage.getItem(OAUTH2_PENDING_KEY);
   if (!pending) return null;
   localStorage.removeItem(OAUTH2_PENDING_KEY);
@@ -250,10 +267,33 @@ const completeOAuth2Flow = async (code: string, state: string) => {
   if (state !== expectedState) throw new Error("State parameters don't match.");
   await pb
     .collection("users")
-    .authWithOAuth2Code(provider, code, codeVerifier, redirectURL, undefined, {
-      requestKey: "oauth2-code"
-    });
+    .authWithOAuth2Code(
+      provider,
+      code,
+      codeVerifier,
+      redirectURL,
+      name ? { name } : undefined,
+      { requestKey: "oauth2-code" }
+    );
   return provider;
+};
+
+/**
+ * Whether the backend offers sign-in with this provider. A provider is
+ * switched on per environment in the backend, so its button follows this and
+ * needs no release. Any failure reads as not offered.
+ */
+const oauth2ProviderOffered = async (provider: string) => {
+  try {
+    const authMethods = await pb.collection("users").listAuthMethods({
+      requestKey: `auth-methods-${provider}`
+    });
+    return authMethods.oauth2.providers.some(
+      (candidate) => candidate.name === provider
+    );
+  } catch {
+    return false;
+  }
 };
 
 const authListener = (callback: (model: AuthRecord) => void) => {
@@ -409,6 +449,7 @@ export {
   authenticateOTP,
   startOAuth2Flow,
   completeOAuth2Flow,
+  oauth2ProviderOffered,
   authListener,
   configureHeader,
   clearHeader,

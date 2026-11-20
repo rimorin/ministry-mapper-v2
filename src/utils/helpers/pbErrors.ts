@@ -124,7 +124,7 @@ export function mapPbAuthError(err: unknown, t: TFunction): string | null {
     if (/oauth2/i.test(message)) {
       return t(
         "auth.oauthDisabled",
-        "Google sign-in is not enabled for this account."
+        "This sign-in method is not enabled for this account."
       );
     }
     if (/otp/i.test(message)) {
