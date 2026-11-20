@@ -85,7 +85,10 @@ const AssistantProposalCard = ({
   const target = proposal.target?.name ?? "";
   // A share link: the accounts it goes to, and whether anyone it names is
   // left to be sent the link by hand.
-  const accounts = state?.assignees ?? pickedAccounts(proposal);
+  // A link reopened from history does not say which accounts it went to, so
+  // it claims none and stays shareable.
+  const accounts =
+    state?.assignees ?? (state?.recordId ? [] : pickedAccounts(proposal));
   const accountNames = accounts
     .flatMap((id) => members.find((member) => member.id === id)?.name ?? [])
     .join(", ");
@@ -791,6 +794,16 @@ const AssistantProposalCard = ({
         return (
           <p className="text-muted-foreground">
             {t("assistant.action.undone", "Undone.")}
+            {!!state?.skipped && (
+              <>
+                {" "}
+                {t(
+                  "assistant.action.skipped",
+                  "{{count}} homes had changed since and were left.",
+                  { count: state.skipped }
+                )}
+              </>
+            )}
           </p>
         );
       case "cancelled":
