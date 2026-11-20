@@ -156,6 +156,7 @@ const TOOL_ICONS: Record<string, LucideIcon> = {
   data_quality: Wrench,
   change_history: History,
   people_and_roles: UserCog,
+  members: Users,
   household_types: Tags,
   congregation_settings: Settings,
   calculate: Calculator,
