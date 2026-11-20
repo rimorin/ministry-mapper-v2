@@ -44,6 +44,14 @@ interface Context {
   key: (step: string) => string;
 }
 
+// Whether a change needs to know where the admin stands: setting a map's
+// location does, and so does a quick link asked for "near me". One planned
+// ahead is picked by workload alone. A card logged before that choice existed
+// was always for a map nearby.
+export const usesLocation = (proposal: AssistantProposal) =>
+  proposal.kind === "map_location" ||
+  (proposal.kind === "quick_link" && proposal.data?.near_me !== false);
+
 export const isRoleProposal = (proposal: AssistantProposal) =>
   proposal.kind === "role_change" ||
   proposal.kind === "role_revoke" ||
@@ -460,6 +468,13 @@ const rename = async (ctx: Context) =>
     ? done()
     : STALE;
 
+// An account that left the congregation since a link card was prepared. Any
+// other refusal is shown as it is, not as a card gone stale.
+const assigneeLeft = (error: unknown) =>
+  error instanceof ClientResponseError &&
+  error.status === 400 &&
+  /assignee/i.test(error.message);
+
 // The role record a change is about, as it stands now.
 const roleNow = (
   { congregation, key }: Context,
@@ -548,16 +563,7 @@ const RUN: Partial<Record<Kind, (ctx: Context) => Promise<Outcome>>> = {
       );
       return done({ recordId: link.id });
     } catch (error) {
-      // An account that left the congregation since the card was prepared.
-      // Any other refusal is shown as it is, not as a card gone stale.
-      if (
-        assignees.length > 0 &&
-        error instanceof ClientResponseError &&
-        error.status === 400 &&
-        /assignee/i.test(error.message)
-      ) {
-        return STALE;
-      }
+      if (assignees.length > 0 && assigneeLeft(error)) return STALE;
       throw error;
     }
   },
@@ -626,20 +632,30 @@ const RUN: Partial<Record<Kind, (ctx: Context) => Promise<Outcome>>> = {
       : STALE;
   },
 
-  quick_link: async ({ proposal, location, key }) => {
+  quick_link: async ({ proposal, location, assignees = [], key }) => {
     const target = proposal.target;
-    if (!target || !location) return STALE;
-    const link = await callFunction("/territory/link", {
-      method: "POST",
-      requestKey: key("quick-link"),
-      body: {
-        territory: target.id,
-        publisher: proposal.value,
-        coordinates: { lat: location.lat, lng: location.lng }
-      }
-    });
-    trackEvent(ANALYTICS_EVENTS.QUICK_LINK_GENERATED);
-    return done({ recordId: link.linkId, label: link.mapName });
+    const nearby = usesLocation(proposal);
+    if (!target || (nearby && !location)) return STALE;
+    try {
+      const link = await callFunction("/territory/link", {
+        method: "POST",
+        requestKey: key("quick-link"),
+        body: {
+          territory: target.id,
+          publisher: proposal.value,
+          ...(nearby &&
+            location && {
+              coordinates: { lat: location.lat, lng: location.lng }
+            }),
+          ...(assignees.length > 0 && { assignees })
+        }
+      });
+      trackEvent(ANALYTICS_EVENTS.QUICK_LINK_GENERATED);
+      return done({ recordId: link.linkId, label: link.mapName });
+    } catch (error) {
+      if (assignees.length > 0 && assigneeLeft(error)) return STALE;
+      throw error;
+    }
   },
 
   home_update: async (ctx) =>

@@ -1711,6 +1711,45 @@ describe("useAssistant assisting actions", () => {
     });
   });
 
+  it("makes a quick link planned ahead with its accounts and no position", async () => {
+    flag.publisherRole = true;
+    membersMock.mockResolvedValue([
+      { id: "u1", name: "John Tan", email: "", openLinks: 0 }
+    ]);
+    const p = proposal({
+      kind: "quick_link",
+      target: { ...map, id: "t1", name: "T01" },
+      value: "John Tan, Sis Ong",
+      data: { near_me: false },
+      people: [{ name: "John Tan", picked: "u1" }, { name: "Sis Ong" }]
+    });
+    const { hook, turnId } = await withProposal(p);
+    await waitFor(() => expect(hook.result.current.members).toHaveLength(1));
+
+    callFunctionMock.mockResolvedValueOnce({
+      linkId: "q1",
+      mapName: "Blk 412"
+    });
+    await act(() => hook.result.current.confirmProposal(turnId, p));
+
+    expect(callFunctionMock).toHaveBeenLastCalledWith("/territory/link", {
+      method: "POST",
+      requestKey: expect.any(String),
+      body: {
+        territory: "t1",
+        publisher: "John Tan, Sis Ong",
+        assignees: ["u1"]
+      }
+    });
+    expect(action(hook)).toMatchObject({
+      status: "done",
+      recordId: "q1",
+      label: "Blk 412",
+      assignees: ["u1"]
+    });
+    flag.publisherRole = false;
+  });
+
   it("updates a home with all its fields, and restores them on undo", async () => {
     const before = {
       status: "not_home",

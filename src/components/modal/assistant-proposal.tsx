@@ -35,7 +35,8 @@ import {
   parseHome,
   parseSettings,
   roleChangeFor,
-  undoable
+  undoable,
+  usesLocation
 } from "../../utils/assistantActions";
 import type { CongregationMember } from "../../utils/helpers/getcongregationmembers";
 import AssistantLinkAccounts from "./assistant-link-accounts";
@@ -100,6 +101,26 @@ const AssistantProposalCard = ({
   const sharesByHand =
     !proposal.people || accounts.length < proposal.people.length;
   const role = roleChangeFor(proposal, candidate);
+  // A link's accounts: picked on the card until it is confirmed, named after.
+  const linkAccounts =
+    proposal.people &&
+    members.length > 0 &&
+    (status === "idle" ? (
+      <AssistantLinkAccounts
+        people={proposal.people}
+        members={members}
+        value={accounts}
+        onChange={(assignees) => onStatus({ assignees })}
+      />
+    ) : (
+      accountNames && (
+        <span className="text-muted-foreground">
+          {t("assistant.action.inMyMaps", "In My maps for {{names}}", {
+            names: accountNames
+          })}
+        </span>
+      )
+    ));
 
   // Undo is offered for a while after the change, showing the minutes left,
   // then the button goes and the clock stops.
@@ -358,26 +379,7 @@ const AssistantProposalCard = ({
                 duration: formatExpiry(proposal.hours ?? 0)
               })}
             </span>
-            {proposal.people &&
-              members.length > 0 &&
-              (status === "idle" ? (
-                <AssistantLinkAccounts
-                  people={proposal.people}
-                  members={members}
-                  value={accounts}
-                  onChange={(assignees) => onStatus({ assignees })}
-                />
-              ) : (
-                accountNames && (
-                  <span className="text-muted-foreground">
-                    {t(
-                      "assistant.action.inMyMaps",
-                      "In My maps for {{names}}",
-                      { names: accountNames }
-                    )}
-                  </span>
-                )
-              ))}
+            {linkAccounts}
           </div>
         );
       case "pin_message":
@@ -456,12 +458,19 @@ const AssistantProposalCard = ({
             <span className="text-muted-foreground">
               {pickedMap
                 ? pickedMap
-                : t(
-                    "assistant.action.quickLinkBody",
-                    "The best map near you in {{code}}, picked when you confirm.",
-                    { code: target }
-                  )}
+                : usesLocation(proposal)
+                  ? t(
+                      "assistant.action.quickLinkBody",
+                      "The best map near you in {{code}}, picked when you confirm.",
+                      { code: target }
+                    )
+                  : t(
+                      "assistant.action.quickLinkAhead",
+                      "The best map in {{code}} with the fewest people on it, picked when you confirm.",
+                      { code: target }
+                    )}
             </span>
+            {linkAccounts}
           </div>
         );
       case "territory_create":
