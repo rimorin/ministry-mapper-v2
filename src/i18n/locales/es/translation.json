@@ -880,6 +880,8 @@
       "linkUntil": "hasta {{date}}",
       "quickLinkBody": "El mejor mapa cerca de ti en {{code}}, elegido al confirmar.",
       "quickLinkAhead": "El mejor mapa de {{code}} con menos personas, elegido al confirmar.",
+      "quickLinkNear": "El mejor mapa de {{code}} cerca de {{place}}, elegido al confirmar.",
+      "quickLinkTogether": "Un mapa de {{code}} cerca de los demás de esta respuesta, elegido al confirmar.",
       "note": "Nota",
       "noteCleared": "(sin nota)",
       "needLocation": "Vuelve a compartir tu ubicación y pregunta otra vez.",

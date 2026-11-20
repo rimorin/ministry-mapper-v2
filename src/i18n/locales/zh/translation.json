@@ -880,6 +880,8 @@
       "linkUntil": "直到 {{date}}",
       "quickLinkBody": "{{code}} 中离你最近的最佳地图，确认时选出。",
       "quickLinkAhead": "{{code}} 中人数最少的最佳地图，确认时选出。",
+      "quickLinkNear": "{{code}} 中靠近 {{place}} 的最佳地图，确认时选出。",
+      "quickLinkTogether": "{{code}} 中靠近本次回答其他地图的地图，确认时选出。",
       "note": "备注",
       "noteCleared": "（无备注）",
       "needLocation": "请重新分享你的位置，然后再问一次。",

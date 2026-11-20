@@ -41,6 +41,8 @@ interface Context {
   assignees?: string[];
   // The person a role change applies to, picked on the card.
   candidate?: ProposalCandidate;
+  // The answer the card came in: quick links kept together share it.
+  group?: string;
   key: (step: string) => string;
 }
 
@@ -51,6 +53,30 @@ interface Context {
 export const usesLocation = (proposal: AssistantProposal) =>
   proposal.kind === "map_location" ||
   (proposal.kind === "quick_link" && proposal.data?.near_me !== false);
+
+const isPoint = (value: unknown): value is SharedLocation => {
+  const point = value as SharedLocation | undefined;
+  return (
+    typeof point?.lat === "number" &&
+    typeof point.lng === "number" &&
+    (point.lat !== 0 || point.lng !== 0)
+  );
+};
+
+// The first map given out by an answer whose quick links are kept together,
+// by answer. The links after it look for a map from there. Kept for the
+// session only: after a reload the rest are picked by workload again.
+const groupMaps = new Map<string, SharedLocation>();
+
+// Where a quick link's map is looked for from: where the admin stands, the
+// place the admin named, or the group's first map; nowhere for a map picked
+// by workload alone. The backend measures the distances.
+const quickLinkFrom = ({ proposal, location, group }: Context) => {
+  if (usesLocation(proposal)) return location;
+  const named = proposal.data?.origin;
+  if (isPoint(named)) return named;
+  return proposal.data?.together && group ? groupMaps.get(group) : undefined;
+};
 
 export const isRoleProposal = (proposal: AssistantProposal) =>
   proposal.kind === "role_change" ||
@@ -632,10 +658,11 @@ const RUN: Partial<Record<Kind, (ctx: Context) => Promise<Outcome>>> = {
       : STALE;
   },
 
-  quick_link: async ({ proposal, location, assignees = [], key }) => {
+  quick_link: async (ctx) => {
+    const { proposal, assignees = [], group, key } = ctx;
     const target = proposal.target;
-    const nearby = usesLocation(proposal);
-    if (!target || (nearby && !location)) return STALE;
+    const from = quickLinkFrom(ctx);
+    if (!target || (usesLocation(proposal) && !from)) return STALE;
     try {
       const link = await callFunction("/territory/link", {
         method: "POST",
@@ -643,13 +670,18 @@ const RUN: Partial<Record<Kind, (ctx: Context) => Promise<Outcome>>> = {
         body: {
           territory: target.id,
           publisher: proposal.value,
-          ...(nearby &&
-            location && {
-              coordinates: { lat: location.lat, lng: location.lng }
-            }),
+          ...(from && { coordinates: { lat: from.lat, lng: from.lng } }),
           ...(assignees.length > 0 && { assignees })
         }
       });
+      if (
+        proposal.data?.together &&
+        group &&
+        !groupMaps.has(group) &&
+        isPoint(link.coordinates)
+      ) {
+        groupMaps.set(group, link.coordinates);
+      }
       trackEvent(ANALYTICS_EVENTS.QUICK_LINK_GENERATED);
       return done({ recordId: link.linkId, label: link.mapName });
     } catch (error) {

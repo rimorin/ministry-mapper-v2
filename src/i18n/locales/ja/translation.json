@@ -880,6 +880,8 @@
       "linkUntil": "{{date}} まで",
       "quickLinkBody": "{{code}} であなたの近くの最適な地図。確定時に選ばれます。",
       "quickLinkAhead": "{{code}} で担当者が最も少ない最適な地図。確定時に選ばれます。",
+      "quickLinkNear": "{{code}} で {{place}} に近い最適な地図。確定時に選ばれます。",
+      "quickLinkTogether": "{{code}} で、この回答の他の地図に近い地図。確定時に選ばれます。",
       "note": "メモ",
       "noteCleared": "（メモなし）",
       "needLocation": "位置情報をもう一度共有してから、もう一度質問してください。",
