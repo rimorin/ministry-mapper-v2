@@ -28,6 +28,7 @@ import {
   pb,
   startOAuth2Flow,
   completeOAuth2Flow,
+  oauth2ProviderOffered,
   setupRealtimeListener
 } from "./pocketbase";
 import { OAUTH2_PENDING_KEY } from "./constants";
@@ -332,6 +333,28 @@ describe("OAuth2 redirect flow", () => {
       );
     });
 
+    it("sends Apple's reply to the backend, which a page here cannot receive", async () => {
+      const appleProvider = {
+        ...googleProvider,
+        name: "apple",
+        authURL: "https://appleid.apple.com/auth/authorize?redirect_uri="
+      };
+      vi.mocked(collection().listAuthMethods).mockResolvedValue({
+        oauth2: { enabled: true, providers: [googleProvider, appleProvider] }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+
+      await startOAuth2Flow("apple");
+
+      const parked = JSON.parse(localStorage.getItem(OAUTH2_PENDING_KEY)!);
+      expect(parked.provider).toBe("apple");
+      expect(parked.redirectURL).toMatch(/\/auth\/apple\/callback$/);
+      expect(parked.redirectURL).not.toContain("https://app.test");
+      expect(assign).toHaveBeenCalledWith(
+        appleProvider.authURL + parked.redirectURL
+      );
+    });
+
     it("throws and navigates nowhere when the provider is not configured", async () => {
       vi.mocked(collection().listAuthMethods).mockResolvedValue({
         oauth2: { enabled: true, providers: [] }
@@ -343,6 +366,26 @@ describe("OAuth2 redirect flow", () => {
       );
       expect(localStorage.getItem(OAUTH2_PENDING_KEY)).toBeNull();
       expect(assign).not.toHaveBeenCalled();
+    });
+  });
+
+  describe("oauth2ProviderOffered", () => {
+    it("follows what the backend has switched on", async () => {
+      vi.mocked(collection().listAuthMethods).mockResolvedValue({
+        oauth2: { enabled: true, providers: [googleProvider] }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+
+      await expect(oauth2ProviderOffered("google")).resolves.toBe(true);
+      await expect(oauth2ProviderOffered("apple")).resolves.toBe(false);
+    });
+
+    it("reads a failure as not offered", async () => {
+      vi.mocked(collection().listAuthMethods).mockRejectedValue(
+        new Error("offline")
+      );
+
+      await expect(oauth2ProviderOffered("apple")).resolves.toBe(false);
     });
   });
 
@@ -374,6 +417,21 @@ describe("OAuth2 redirect flow", () => {
         { requestKey: "oauth2-code" }
       );
       expect(localStorage.getItem(OAUTH2_PENDING_KEY)).toBeNull();
+    });
+
+    it("gives a new account the name the provider sent with its reply", async () => {
+      park();
+
+      await completeOAuth2Flow("code123", "state123", "Mei Ling Tan");
+
+      expect(collection().authWithOAuth2Code).toHaveBeenCalledWith(
+        "google",
+        "code123",
+        "verifier123",
+        "https://app.test/auth/callback",
+        { name: "Mei Ling Tan" },
+        { requestKey: "oauth2-code" }
+      );
     });
 
     it("rejects a mismatched state without exchanging", async () => {

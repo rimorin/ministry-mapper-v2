@@ -15,6 +15,7 @@ export default function useAuthentication() {
   const { notifyError, notifyInfo, runAction } = useNotification();
   const [isLogin, setIsLogin] = useState(false);
   const [isOAuthLoading, setIsOAuthLoading] = useState(false);
+  const [oauthProvider, setOAuthProvider] = useState("");
   const [otpSessionId, setOtpSessionId] = useState("");
   const [otpCode, setOtpCode] = useState("");
   const [mfaId, setMfaId] = useState("");
@@ -71,6 +72,7 @@ export default function useAuthentication() {
   };
 
   const handleOAuthSignIn = (provider: string) => {
+    setOAuthProvider(provider);
     runAction(() => startOAuth2Flow(provider), {
       setLoading: setIsOAuthLoading
     });
@@ -85,6 +87,7 @@ export default function useAuthentication() {
   return {
     isLogin,
     isOAuthLoading,
+    oauthProvider,
     otpSessionId,
     otpCode,
     setOtpCode,
