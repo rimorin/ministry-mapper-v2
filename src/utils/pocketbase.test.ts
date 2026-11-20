@@ -344,12 +344,14 @@ describe("OAuth2 redirect flow", () => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } as any);
 
+      vi.stubEnv("VITE_POCKETBASE_URL", "https://be.test/");
+
       await startOAuth2Flow("apple");
+      vi.unstubAllEnvs();
 
       const parked = JSON.parse(localStorage.getItem(OAUTH2_PENDING_KEY)!);
       expect(parked.provider).toBe("apple");
-      expect(parked.redirectURL).toMatch(/\/auth\/apple\/callback$/);
-      expect(parked.redirectURL).not.toContain("https://app.test");
+      expect(parked.redirectURL).toBe("https://be.test/auth/apple/callback");
       expect(assign).toHaveBeenCalledWith(
         appleProvider.authURL + parked.redirectURL
       );

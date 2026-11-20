@@ -223,7 +223,7 @@ const startOAuth2Flow = async (provider: string) => {
   }
   const backendReturn = OAUTH2_BACKEND_RETURN[providerInfo.name];
   const redirectURL = backendReturn
-    ? VITE_POCKETBASE_URL.replace(/\/+$/, "") + backendReturn
+    ? import.meta.env.VITE_POCKETBASE_URL.replace(/\/+$/, "") + backendReturn
     : window.location.origin + OAUTH2_REDIRECT_PATH;
   localStorage.setItem(
     OAUTH2_PENDING_KEY,
