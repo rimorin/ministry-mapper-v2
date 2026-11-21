@@ -348,7 +348,7 @@ export function AppSidebar({
                     >
                       <Link2 className="size-4 shrink-0 text-muted-foreground" />
                       <span className="min-w-0 flex-1 truncate">
-                        {t("myLinks.title", "My maps")}
+                        {t("myLinks.title", "My Maps")}
                       </span>
                       {myLinksCount > 0 && (
                         <span className="rounded-full bg-primary px-1.5 text-xs font-medium text-primary-foreground tabular-nums">

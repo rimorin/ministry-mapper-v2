@@ -33,7 +33,7 @@ const TopNavbar = ({
           <Link
             href="/"
             replace
-            aria-label={t("myLinks.title", "My maps")}
+            aria-label={t("myLinks.title", "My Maps")}
             className={cn(
               buttonVariants({ variant: "outline", size: "icon" }),
               "shrink-0"

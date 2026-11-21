@@ -168,7 +168,7 @@ describe("ConfirmSlipDetails", () => {
       screen.getByPlaceholderText("Names of the assigned publishers")
     ).toHaveValue("Sam Publisher, Rita Reader");
     expect(
-      screen.getByText("They will find this map under My maps.")
+      screen.getByText("They will find this map under My Maps.")
     ).toBeInTheDocument();
     // The share screen is skipped, so its warning moves to the form.
     expect(screen.getByText("Already assigned")).toBeInTheDocument();

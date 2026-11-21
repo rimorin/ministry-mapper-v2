@@ -135,7 +135,7 @@ const PublisherDashboard = ({
             </DropdownMenuContent>
           </DropdownMenu>
           <h1 className="min-w-0 flex-1 truncate px-1 text-base font-semibold">
-            {t("myLinks.title", "My maps")}
+            {t("myLinks.title", "My Maps")}
           </h1>
         </header>
         <MyLinksPanel myLinks={myLinks} />

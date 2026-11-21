@@ -13,7 +13,7 @@ const InvalidPage = () => {
         // A signed-in account came from its links and can go back to them.
         <div className="mt-4 flex justify-center">
           <Link href="/" className={buttonVariants({ variant: "outline" })}>
-            {t("myLinks.title", "My maps")}
+            {t("myLinks.title", "My Maps")}
           </Link>
         </div>
       ) : (
