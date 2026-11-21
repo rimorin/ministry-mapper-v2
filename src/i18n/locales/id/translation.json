@@ -141,6 +141,7 @@
     "notHome": "Tidak Ada di Rumah",
     "completed": "Selesai",
     "assignees": "Yang Ditugaskan",
+    "alreadyHolds": "{{publisher}} sudah memiliki tautan terbuka ke {{map}}.",
     "publisherPlaceholder": "Masukkan nama pemberita",
     "noTerritories": "Tidak Ada Wilayah",
     "territoryCode": "Kode Wilayah",

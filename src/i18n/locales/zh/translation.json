@@ -141,6 +141,7 @@
     "notHome": "不在家",
     "completed": "已完成",
     "assignees": "指派人员",
+    "alreadyHolds": "{{publisher}} 已有 {{map}} 的有效链接。",
     "publisherPlaceholder": "输入传道员姓名",
     "noTerritories": "没有领土",
     "territoryCode": "领土代码",

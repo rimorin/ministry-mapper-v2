@@ -141,6 +141,7 @@
     "notHome": "வீட்டில் இல்லை",
     "completed": "முடிந்தது",
     "assignees": "பணியாளர்கள்",
+    "alreadyHolds": "{{publisher}} ஏற்கனவே {{map}}-க்கான திறந்த இணைப்பைக் கொண்டுள்ளார்.",
     "publisherPlaceholder": "பிரசாரகரின் பெயரை உள்ளிடவும்",
     "noTerritories": "பிரதேசங்கள் இல்லை",
     "territoryCode": "பிரதேச குறியீடு",

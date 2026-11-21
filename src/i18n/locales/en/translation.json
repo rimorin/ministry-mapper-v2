@@ -141,6 +141,7 @@
     "notHome": "Not Home",
     "completed": "Completed",
     "assignees": "Assignees",
+    "alreadyHolds": "{{publisher}} already has an open link to {{map}}.",
     "publisherPlaceholder": "Enter publisher name",
     "noTerritories": "No Territories",
     "territoryCode": "Territory Code",

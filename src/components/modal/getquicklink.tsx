@@ -53,6 +53,8 @@ interface MapDataType {
   not_done: number;
   not_home: number;
   assignees: string[];
+  // Open links in the territory that someone on this link still holds.
+  already?: { publisher: string; map: string }[];
   coordinates: latlongInterface;
   origin: latlongInterface;
 }
@@ -297,6 +299,22 @@ const QuickLinkModal = NiceModal.create(
                                 </Badge>
                               ))}
                             </div>
+                          </div>
+                        )}
+                        {(mapData.already ?? []).length > 0 && (
+                          <div className="mt-2 flex flex-col gap-1 border-t pt-2">
+                            {mapData.already?.map((held, index) => (
+                              <p
+                                key={index}
+                                className="text-center text-xs text-muted-foreground"
+                              >
+                                {t(
+                                  "territory.alreadyHolds",
+                                  "{{publisher}} already has an open link to {{map}}.",
+                                  { publisher: held.publisher, map: held.map }
+                                )}
+                              </p>
+                            ))}
                           </div>
                         )}
                         {routeInfo && (

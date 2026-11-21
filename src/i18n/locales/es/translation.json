@@ -141,6 +141,7 @@
     "notHome": "No en casa",
     "completed": "Completado",
     "assignees": "Asignados",
+    "alreadyHolds": "{{publisher}} ya tiene un enlace abierto a {{map}}.",
     "publisherPlaceholder": "Ingresa el nombre del publicador",
     "noTerritories": "Sin territorios",
     "territoryCode": "Código de territorio",

@@ -258,6 +258,10 @@ const AssistantProposalCard = ({
     )
   };
   const has = (code: string) => role.warnings.includes(code);
+  // Open links in the territory that someone on a quick link still holds.
+  const heldLinks = (
+    Array.isArray(proposal.data?.already) ? proposal.data.already : []
+  ) as { publisher: string; map: string }[];
   const warnings = [
     ...(proposal.kind === "role_revoke"
       ? [
@@ -268,7 +272,15 @@ const AssistantProposalCard = ({
           )
         ]
       : []),
-    ...role.warnings.map((code) => warningText[code]).filter(Boolean)
+    ...role.warnings.map((code) => warningText[code]).filter(Boolean),
+    // A quick link is given all the same; the conductor is only told.
+    ...heldLinks.map((held) =>
+      t(
+        "territory.alreadyHolds",
+        "{{publisher}} already has an open link to {{map}}.",
+        { publisher: held.publisher, map: held.map }
+      )
+    )
   ];
 
   // Removing an administrator or touching your own access asks twice.

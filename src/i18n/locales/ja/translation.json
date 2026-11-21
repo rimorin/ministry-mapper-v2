@@ -141,6 +141,7 @@
     "notHome": "不在",
     "completed": "完了",
     "assignees": "担当者",
+    "alreadyHolds": "{{publisher}} はすでに {{map}} への有効なリンクを持っています。",
     "publisherPlaceholder": "奉仕者名を入力",
     "noTerritories": "区域がありません",
     "territoryCode": "区域コード",

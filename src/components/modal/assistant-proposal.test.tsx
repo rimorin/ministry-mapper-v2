@@ -573,6 +573,33 @@ describe("AssistantProposalCard for assisting actions", () => {
     ).toBeInTheDocument();
   });
 
+  it("says who on a quick link already holds an open link, until it is made", () => {
+    const held = card({
+      kind: "quick_link",
+      target: { ...target, name: "T01" },
+      value: "Sis Ong",
+      data: {
+        near_me: false,
+        already: [{ publisher: "Sis Ong", map: "Blk 301" }]
+      }
+    });
+    const { unmount } = show(held);
+    expect(
+      screen.getByText("Sis Ong already has an open link to Blk 301.")
+    ).toBeInTheDocument();
+    // Still confirmable: it is a notice, not a refusal.
+    expect(screen.getByRole("button", { name: "Confirm" })).toBeEnabled();
+    unmount();
+
+    show(held, {
+      status: "done",
+      recordId: "q1",
+      label: "Blk 412",
+      doneAt: Date.now()
+    });
+    expect(screen.queryByText(/already has an open link/)).toBeNull();
+  });
+
   it("warns when a new map location is far from the old one", () => {
     show(card({ kind: "map_location", warnings: ["moves_far"] }));
     expect(
