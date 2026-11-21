@@ -293,6 +293,9 @@
     "accessLevel": "접근 수준",
     "inviteDescription": "사용자를 검색하고 액세스 수준을 할당하세요.",
     "searchByNameOrEmail": "이름 또는 이메일로 사용자 검색",
+    "allRoles": "전체",
+    "filterByRole": "역할별 필터",
+    "searchNameOrEmail": "이름 또는 이메일 검색",
     "updateRoleDescription": "이 사용자의 액세스 수준을 선택하세요.",
     "alreadyInCongregation": "이 사용자는 이미 회중에 속해 있습니다."
   },

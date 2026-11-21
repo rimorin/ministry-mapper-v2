@@ -293,6 +293,9 @@
     "updateRole": "Kemas kini Peranan {{name}}",
     "inviteDescription": "Cari pengguna dan tetapkan tahap akses mereka.",
     "searchByNameOrEmail": "Cari pengguna mengikut nama atau e-mel",
+    "allRoles": "Semua",
+    "filterByRole": "Tapis mengikut peranan",
+    "searchNameOrEmail": "Cari nama atau e-mel",
     "updateRoleDescription": "Pilih tahap akses untuk pengguna ini.",
     "alreadyInCongregation": "Pengguna ini sudah menjadi sebahagian daripada sidang."
   },

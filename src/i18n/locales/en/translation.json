@@ -293,6 +293,9 @@
     "updateRole": "Update {{name}} Role",
     "inviteDescription": "Search for a user and assign their access level.",
     "searchByNameOrEmail": "Search for user by name or email",
+    "allRoles": "All",
+    "filterByRole": "Filter by role",
+    "searchNameOrEmail": "Search name or email",
     "updateRoleDescription": "Select the access level for this user.",
     "alreadyInCongregation": "This user is already part of the congregation."
   },

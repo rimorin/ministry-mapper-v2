@@ -293,6 +293,9 @@
     "accessLevel": "アクセスレベル",
     "inviteDescription": "ユーザーを検索して、アクセスレベルを割り当てます。",
     "searchByNameOrEmail": "名前またはメールアドレスでユーザーを検索",
+    "allRoles": "すべて",
+    "filterByRole": "役割で絞り込む",
+    "searchNameOrEmail": "名前またはメールで検索",
     "updateRoleDescription": "このユーザーのアクセスレベルを選択してください。",
     "alreadyInCongregation": "このユーザーはすでに会衆の一員です。"
   },
