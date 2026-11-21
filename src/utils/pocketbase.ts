@@ -20,6 +20,11 @@ const { VITE_POCKETBASE_URL } = import.meta.env;
 const pb = new PocketBase(VITE_POCKETBASE_URL);
 
 // Auto-logout when the admin JWT expires mid-session.
+// The SDK (0.29+) would clear the auth store on any 401 by itself. That is
+// wrong here: a 401 on a publisher's link request means the link expired, not
+// the admin's session. The interceptor below decides instead.
+pb.autoClearAuthStore(false);
+
 // Checks the outgoing request headers directly: if PB_SECURITY_HEADER_KEY is present,
 // this is a publisher map request — a 401 there means the link expired, not the admin
 // session, so we leave the admin auth store untouched.
