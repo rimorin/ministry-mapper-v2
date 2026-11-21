@@ -1,5 +1,14 @@
 # Notas de versión (Español)
 
+## 2026-11-23
+
+[NEW:ADMIN] Inicia sesión con Apple.
+  La página de inicio de sesión ahora tiene un botón Iniciar sesión con Apple. No necesitas contraseña.
+
+  ¿Ya tienes una cuenta? Funciona si tu cuenta de Apple usa el mismo correo. Elige Compartir mi correo cuando Apple pregunte; si no, se crea una cuenta aparte.
+
+---
+
 ## 2026-10-01
 
 [NEW] Filtra las direcciones de un mapa.

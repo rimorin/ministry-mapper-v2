@@ -180,7 +180,9 @@ const ReleaseNotesModal = NiceModal.create(
                               : `/${release.screenshot}`
                           }
                           alt={`release screenshot ${release.id}`}
-                          className="w-full block max-h-[300px] object-contain"
+                          // Space below, so a picture cropped close to its
+                          // subject does not sit on the line under it.
+                          className="mb-4 block max-h-[300px] w-full object-contain"
                         />
                       )}
                       <CardContent className="px-0">

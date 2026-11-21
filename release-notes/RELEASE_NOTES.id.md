@@ -1,5 +1,14 @@
 # Catatan Rilis (Bahasa Indonesia)
 
+## 2026-11-23
+
+[NEW:ADMIN] Masuk dengan Apple.
+  Halaman masuk kini memiliki tombol Masuk dengan Apple. Tidak perlu kata sandi.
+
+  Sudah punya akun? Ini bisa dipakai jika akun Apple Anda memakai email yang sama. Pilih Bagikan Email Saya saat Apple bertanya; jika tidak, akun terpisah akan dibuat.
+
+---
+
 ## 2026-10-01
 
 [NEW] Filter alamat di peta.
