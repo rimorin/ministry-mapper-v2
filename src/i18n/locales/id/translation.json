@@ -267,6 +267,9 @@
     "accessLevel": "Tingkat Akses",
     "inviteDescription": "Cari pengguna dan tetapkan tingkat aksesnya.",
     "searchByNameOrEmail": "Cari pengguna berdasarkan nama atau email",
+    "allRoles": "Semua",
+    "filterByRole": "Filter berdasarkan peran",
+    "searchNameOrEmail": "Cari nama atau email",
     "updateRoleDescription": "Pilih tingkat akses untuk pengguna ini.",
     "alreadyInCongregation": "Pengguna ini sudah menjadi bagian dari sidang."
   },

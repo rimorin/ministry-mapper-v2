@@ -293,6 +293,9 @@
     "updateRole": "Actualizar rol de {{name}}",
     "inviteDescription": "Busca un usuario y asigna su nivel de acceso.",
     "searchByNameOrEmail": "Buscar usuario por nombre o correo electrónico",
+    "allRoles": "Todos",
+    "filterByRole": "Filtrar por rol",
+    "searchNameOrEmail": "Buscar nombre o correo",
     "updateRoleDescription": "Selecciona el nivel de acceso para este usuario.",
     "alreadyInCongregation": "Este usuario ya forma parte de la congregación."
   },

@@ -293,6 +293,9 @@
     "accessLevel": "访问级别",
     "inviteDescription": "搜索用户并分配其访问级别。",
     "searchByNameOrEmail": "按姓名或电子邮箱搜索用户",
+    "allRoles": "全部",
+    "filterByRole": "按角色筛选",
+    "searchNameOrEmail": "搜索姓名或邮箱",
     "updateRoleDescription": "选择此用户的访问级别。",
     "alreadyInCongregation": "此用户已属于该会众。"
   },
