@@ -143,7 +143,7 @@ describe("AssistantProposalCard", () => {
 
     it("keeps Share while someone named has no account", () => {
       showLink({ status: "done", recordId: "link1", assignees: ["u1"] });
-      expect(screen.getByText("In My maps for John Tan")).toBeInTheDocument();
+      expect(screen.getByText("In My Maps for John Tan")).toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: "Copy link" })
       ).toBeInTheDocument();
@@ -152,7 +152,7 @@ describe("AssistantProposalCard", () => {
     it("claims no accounts for a link reopened from history", () => {
       // History keeps the link, not who it went to: the picks are no record.
       showLink({ status: "done", recordId: "link1" });
-      expect(screen.queryByText(/In My maps for/)).not.toBeInTheDocument();
+      expect(screen.queryByText(/In My Maps for/)).not.toBeInTheDocument();
       expect(
         screen.getByRole("button", { name: "Copy link" })
       ).toBeInTheDocument();
@@ -161,7 +161,7 @@ describe("AssistantProposalCard", () => {
     it("drops Share once everyone named has the map in their account", () => {
       showLink({ status: "done", recordId: "link1", assignees: ["u1", "u2"] });
       expect(
-        screen.getByText("In My maps for John Tan, Ong Mei Ling")
+        screen.getByText("In My Maps for John Tan, Ong Mei Ling")
       ).toBeInTheDocument();
       expect(
         screen.queryByRole("button", { name: "Copy link" })

@@ -145,7 +145,7 @@ const ConfirmSlipDetails = NiceModal.create(
                 MAX_RECENT_MEMBERS
               )
             );
-            // They find the map under My maps, so there is nothing to send.
+            // They find the map under My Maps, so there is nothing to send.
             // The link can still be copied from the map's assignments.
             notifySuccess(
               t("slip.givenTo", "Given to {{names}}", {
@@ -325,7 +325,7 @@ const ConfirmSlipDetails = NiceModal.create(
                         <p className="text-xs text-muted-foreground">
                           {t(
                             "slip.memberHint",
-                            "They will find this map under My maps."
+                            "They will find this map under My Maps."
                           )}
                         </p>
                       )}

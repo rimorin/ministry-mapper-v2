@@ -933,7 +933,7 @@ function Admin({ user }: adminProps) {
           <>
             <AdminNavbar
               congregationName={congregationName}
-              title={t("myLinks.title", "My maps")}
+              title={t("myLinks.title", "My Maps")}
               pendingCount={displayPendingCount}
               hasLinks={myLinks.links.length > 0}
             />

@@ -103,7 +103,7 @@ const AssistantLinkAccounts = ({
         {value.length > 0
           ? t(
               "assistant.action.accountsHint",
-              "They are emailed and find the map under My maps. Undo takes the map back, not the email."
+              "They are emailed and find the map under My Maps. Undo takes the map back, not the email."
             )
           : t(
               "assistant.action.accountsNone",

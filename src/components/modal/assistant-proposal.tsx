@@ -115,7 +115,7 @@ const AssistantProposalCard = ({
     ) : (
       accountNames && (
         <span className="text-muted-foreground">
-          {t("assistant.action.inMyMaps", "In My maps for {{names}}", {
+          {t("assistant.action.inMyMaps", "In My Maps for {{names}}", {
             names: accountNames
           })}
         </span>
