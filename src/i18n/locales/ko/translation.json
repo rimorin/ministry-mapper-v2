@@ -141,6 +141,7 @@
     "notHome": "부재",
     "completed": "완료",
     "assignees": "담당자",
+    "alreadyHolds": "{{publisher}}에게 이미 {{map}}의 열린 링크가 있습니다.",
     "publisherPlaceholder": "전도인 이름 입력",
     "noTerritories": "구역 없음",
     "territoryCode": "구역 코드",
