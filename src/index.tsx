@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { initAnalytics } from "./utils/analytics";
 import { isAbortError } from "./utils/pocketbase";
 import { initAppUpdates } from "./utils/appUpdate";
-import { reloadForNewDeploy } from "./utils/reloadForNewDeploy";
+import { recoverFromStaleDeploy } from "./utils/reloadForNewDeploy";
 import { initLaunchDarkly } from "./lib/launchdarkly";
 import Loader from "./components/statics/loader";
 import Main from "./pages/index";
@@ -12,19 +12,12 @@ import Main from "./pages/index";
 initAnalytics();
 initAppUpdates();
 
-// Reload once when a chunk fails to load after a fresh deployment (stale hash).
-// The sessionStorage flag prevents an infinite reload loop when the chunk is
-// persistently unavailable (offline, CDN misconfiguration, etc.). On the second
-// failure we let the error propagate so ErrorBoundary shows the fallback UI and
+// A chunk failed to load: after a fresh deployment this page is from the old
+// build. Recovery is bounded (see recoverFromStaleDeploy); once it has nothing
+// left to try the error propagates, so ErrorBoundary shows the fallback UI and
 // Sentry captures the exception.
-const PRELOAD_RELOAD_KEY = "mm:preload-reload";
-sessionStorage.removeItem(PRELOAD_RELOAD_KEY);
 window.addEventListener("vite:preloadError", (event) => {
-  if (!sessionStorage.getItem(PRELOAD_RELOAD_KEY)) {
-    event.preventDefault();
-    sessionStorage.setItem(PRELOAD_RELOAD_KEY, "1");
-    reloadForNewDeploy();
-  }
+  if (recoverFromStaleDeploy()) event.preventDefault();
 });
 
 // Suppress unhandled-rejection noise from PocketBase auto-cancellations and
