@@ -1,5 +1,14 @@
 # Nota Pelepasan (Bahasa Melayu)
 
+## 2026-11-23
+
+[NEW:ADMIN] Log masuk dengan Apple.
+  Halaman log masuk kini mempunyai butang Log masuk dengan Apple. Kata laluan tidak diperlukan.
+
+  Sudah ada akaun? Ia boleh digunakan jika akaun Apple anda menggunakan e-mel yang sama. Pilih Kongsi E-mel Saya apabila Apple bertanya; jika tidak, akaun berasingan akan diwujudkan.
+
+---
+
 ## 2026-10-01
 
 [NEW] Tapis alamat pada peta.

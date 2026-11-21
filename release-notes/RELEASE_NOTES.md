@@ -120,6 +120,17 @@ Add a `>` line anywhere in the release block to show a warning banner at the top
 
 ---
 
+## 2026-11-23
+
+[NEW:ADMIN] Sign in with Apple.
+  The sign-in page now has a Sign in with Apple button. No password needed.
+
+  Already have an account? It works if your Apple account uses the same email. Choose Share My Email when Apple asks, or a separate account is created.
+
+![Sign in with Apple button](https://assets.ministry-mapper.com/release-notes/2026-11-23/sign-in-with-apple.png)
+
+---
+
 ## 2026-10-01
 
 [NEW] Filter addresses on a map.
