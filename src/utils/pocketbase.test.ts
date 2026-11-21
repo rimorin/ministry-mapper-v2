@@ -15,6 +15,7 @@ vi.mock("pocketbase", () => {
       send: vi.fn(),
       beforeSend: null,
       autoCancellation: vi.fn(),
+      autoClearAuthStore: vi.fn(),
       listAuthMethods: vi.fn(),
       authWithOAuth2Code: vi.fn(),
       subscribe: vi.fn()
