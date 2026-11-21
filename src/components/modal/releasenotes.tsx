@@ -204,13 +204,11 @@ const ReleaseNotesModal = NiceModal.create(
                               >
                                 <span
                                   className={cn(
-                                    "rounded fluid-button flex-shrink-0 text-center",
+                                    // The label's line is as tall as its letters,
+                                    // so the padding is what gives it room.
+                                    "fluid-button mt-0.5 min-w-16 shrink-0 rounded-md px-2 py-1 text-center",
                                     config.colorClass
                                   )}
-                                  style={{
-                                    minWidth: "4rem",
-                                    marginTop: "0.15rem"
-                                  }}
                                 >
                                   {t(config.labelKey)}
                                 </span>
