@@ -97,6 +97,10 @@ function runSectionStagger(
   );
 }
 
+// How long the sidebar follows a section that is unfolding: the height
+// animation (--motion-base, 250ms) with room to spare.
+const REVEAL_MS = 450;
+
 // Open/close + persisted state + entrance stagger for a sidebar Collapsible section.
 // persistKey stores/reads its own open state in localStorage; omit it for
 // sections (like Account) that shouldn't remember their state across reloads.
@@ -128,6 +132,29 @@ function useCollapsibleSection(
 
   React.useEffect(() => {
     runSectionStagger(open, scope, animate, shouldReduceMotion, axis);
+    // eslint-disable-next-line @eslint-react/exhaustive-deps -- only re-run when section opens
+  }, [open]);
+
+  // A section that opens near the bottom grows below what the sidebar shows,
+  // so the sidebar follows it down while it unfolds. The panel is looked up on
+  // every frame because it may not be on the page yet when this starts, and
+  // its height is still growing. Only when opened by hand: a section
+  // remembered as open must not move the sidebar on first paint.
+  const wasOpen = React.useRef(open);
+  React.useEffect(() => {
+    const opened = open && !wasOpen.current;
+    wasOpen.current = open;
+    if (!opened) return;
+    const until = performance.now() + REVEAL_MS;
+    let frame = 0;
+    const follow = () => {
+      (scope.current as HTMLElement | null)
+        ?.closest('[data-slot="collapsible-content"]')
+        ?.scrollIntoView({ block: "nearest" });
+      if (performance.now() < until) frame = requestAnimationFrame(follow);
+    };
+    frame = requestAnimationFrame(follow);
+    return () => cancelAnimationFrame(frame);
     // eslint-disable-next-line @eslint-react/exhaustive-deps -- only re-run when section opens
   }, [open]);
 
