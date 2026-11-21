@@ -1,3 +1,24 @@
+## [2.12.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.11.0...v2.12.0) (2026-11-21)
+
+### Features
+
+* add a publisher role with a My maps page ([dcbe7ee](https://github.com/rimorin/ministry-mapper-v2/commit/dcbe7eee7debf9974d2e75c895fc00bcaf5ec031))
+* confirm an answer's link cards together and pick accounts on quick links ([09091f3](https://github.com/rimorin/ministry-mapper-v2/commit/09091f32580eeef5b9088ec2e0a0f9690ba21837))
+* label the assistant's members function and its columns ([70a7c2e](https://github.com/rimorin/ministry-mapper-v2/commit/70a7c2e2d3b049c5e7fb2d0e42c5d484ad72a15e))
+* look for an assistant quick link's map from a named place or the group's first map ([7a77fd8](https://github.com/rimorin/ministry-mapper-v2/commit/7a77fd8b364163bbcbc6b7c25971132479cf8491))
+* offer Sign in with Apple when the backend has it switched on ([42ef783](https://github.com/rimorin/ministry-mapper-v2/commit/42ef783470093b5f95fc43aa039e05245a2396e4))
+* pick member accounts on assistant share link cards ([7b91de3](https://github.com/rimorin/ministry-mapper-v2/commit/7b91de3f12ff22a87fb9209d51557bfc65ef6e89))
+* show who already holds a link when a quick link is given ([61ac08f](https://github.com/rimorin/ministry-mapper-v2/commit/61ac08f7543207e688b5fb0102832a958d42da12))
+* show who each name on an assistant share link was taken to be ([5f1bfb4](https://github.com/rimorin/ministry-mapper-v2/commit/5f1bfb4045a6e2f3270db66938c1613e4d838214))
+
+### Bug Fixes
+
+* capitalise My Maps ([75e9a53](https://github.com/rimorin/ministry-mapper-v2/commit/75e9a53fd32526a18cc0ca6e7f88d1f77ed10256))
+* give release note labels room around their text ([c7aa49d](https://github.com/rimorin/ministry-mapper-v2/commit/c7aa49d09b7a46f9807750fa96ce72b95b902d2f))
+* keep a sidebar section in view while it opens ([0e30608](https://github.com/rimorin/ministry-mapper-v2/commit/0e30608b3fc99d376d5478fe1475043363f1e902))
+* keep assistant photos, pairings and link errors intact ([2e82854](https://github.com/rimorin/ministry-mapper-v2/commit/2e82854532751d4c529bdc774077eafab24c0b1d))
+* stop the app reloading forever after a deployment ([4300007](https://github.com/rimorin/ministry-mapper-v2/commit/43000071259e515d4e845db957bb682abfdc3a93))
+
 ## [2.11.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.10.1...v2.11.0) (2026-11-15)
 
 ### Features
