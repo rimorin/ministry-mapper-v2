@@ -12,6 +12,7 @@ import {
 import {
   ArrowDown,
   ArrowUp,
+  ImageOff,
   ImagePlus,
   Eye,
   History,
@@ -33,6 +34,14 @@ import {
   ResponsiveDialogHeader,
   ResponsiveDialogTitle
 } from "@/components/common/responsive-dialog";
+import {
+  Attachment,
+  AttachmentAction,
+  AttachmentActions,
+  AttachmentContent,
+  AttachmentDescription,
+  AttachmentMedia
+} from "@/components/ui/attachment";
 import { Bubble, BubbleContent } from "@/components/ui/bubble";
 import { Button } from "@/components/ui/button";
 import {
@@ -41,6 +50,7 @@ import {
   InputGroupButton,
   InputGroupTextarea
 } from "@/components/ui/input-group";
+import { Marker, MarkerContent } from "@/components/ui/marker";
 import {
   Empty,
   EmptyContent,
@@ -468,41 +478,57 @@ export const AssistantChat = ({
                           <Message align="end">
                             <MessageContent>
                               {turn.image && (
-                                <img
-                                  src={turn.image}
-                                  alt={t(
-                                    "assistant.photo.alt",
-                                    "The photo you attached"
-                                  )}
-                                  className="max-h-40 max-w-48 self-end rounded-md border object-contain"
-                                />
+                                // Dimmed while the photo is being read.
+                                <Attachment
+                                  orientation="vertical"
+                                  state={
+                                    turn.status === "pending"
+                                      ? "processing"
+                                      : "done"
+                                  }
+                                  className="w-32 self-end"
+                                >
+                                  <AttachmentMedia variant="image">
+                                    <img
+                                      src={turn.image}
+                                      alt={t(
+                                        "assistant.photo.alt",
+                                        "The photo you attached"
+                                      )}
+                                    />
+                                  </AttachmentMedia>
+                                </Attachment>
                               )}
                               <Bubble align="end" variant="muted">
                                 <BubbleContent>{turn.question}</BubbleContent>
                               </Bubble>
                               {turn.view && (
-                                <span className="text-xs text-muted-foreground">
-                                  {t(
-                                    "assistant.view.askedAbout",
-                                    "About {{place}}",
-                                    {
-                                      place: viewLabel(turn.view)
-                                    }
-                                  )}
-                                </span>
+                                <Marker className="justify-end text-xs">
+                                  <MarkerContent>
+                                    {t(
+                                      "assistant.view.askedAbout",
+                                      "About {{place}}",
+                                      {
+                                        place: viewLabel(turn.view)
+                                      }
+                                    )}
+                                  </MarkerContent>
+                                </Marker>
                               )}
                               {turn.askedAt && (
-                                <span className="text-xs text-muted-foreground">
-                                  {t(
-                                    "assistant.history.asked",
-                                    "Asked {{date}}",
-                                    {
-                                      date: LinkDateFormatter.format(
-                                        Date.parse(turn.askedAt)
-                                      )
-                                    }
-                                  )}
-                                </span>
+                                <Marker className="justify-end text-xs">
+                                  <MarkerContent>
+                                    {t(
+                                      "assistant.history.asked",
+                                      "Asked {{date}}",
+                                      {
+                                        date: LinkDateFormatter.format(
+                                          Date.parse(turn.askedAt)
+                                        )
+                                      }
+                                    )}
+                                  </MarkerContent>
+                                </Marker>
                               )}
                             </MessageContent>
                           </Message>
@@ -655,31 +681,46 @@ export const AssistantChat = ({
             </div>
           )}
           {photo && (
-            <div className="relative self-start">
-              <img
-                src={photo}
-                alt={t("assistant.photo.alt", "The photo you attached")}
-                className="max-h-24 max-w-32 rounded-md border object-contain"
-              />
-              <Button
-                type="button"
-                variant="secondary"
-                size="icon-xs"
-                className="absolute -top-2 -right-2 rounded-full"
-                aria-label={t("assistant.photo.remove", "Remove the photo")}
-                onClick={() => setPhoto(undefined)}
-              >
-                <X />
-              </Button>
-            </div>
+            <Attachment orientation="vertical" className="self-start">
+              <AttachmentMedia variant="image">
+                <img
+                  src={photo}
+                  alt={t("assistant.photo.alt", "The photo you attached")}
+                />
+              </AttachmentMedia>
+              {/* On the tile's corner, so it does not cover the photo. */}
+              <AttachmentActions className="-top-2! -right-2!">
+                <AttachmentAction
+                  type="button"
+                  variant="secondary"
+                  className="rounded-full border shadow-sm"
+                  aria-label={t("assistant.photo.remove", "Remove the photo")}
+                  onClick={() => setPhoto(undefined)}
+                >
+                  <X />
+                </AttachmentAction>
+              </AttachmentActions>
+            </Attachment>
           )}
           {photoFailed && (
-            <p role="alert" className="text-xs text-destructive">
-              {t(
-                "assistant.photo.failed",
-                "That photo could not be used. Try a JPEG or PNG."
-              )}
-            </p>
+            <Attachment
+              state="error"
+              size="sm"
+              role="alert"
+              className="self-start"
+            >
+              <AttachmentMedia>
+                <ImageOff />
+              </AttachmentMedia>
+              <AttachmentContent>
+                <AttachmentDescription className="whitespace-normal">
+                  {t(
+                    "assistant.photo.failed",
+                    "That photo could not be used. Try a JPEG or PNG."
+                  )}
+                </AttachmentDescription>
+              </AttachmentContent>
+            </Attachment>
           )}
           <input
             ref={photoInputRef}
