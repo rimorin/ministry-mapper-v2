@@ -20,6 +20,14 @@ export interface MyLink {
   partners: string[];
   // The account made this link and put itself on it.
   own?: boolean;
+  // Where the map stands. total is 0 while its homes have not been counted,
+  // and the other figures then say nothing.
+  not_done?: number;
+  not_home?: number;
+  total?: number;
+  progress?: number;
+  // Instructions the conductor pinned on the map.
+  pinned?: number;
 }
 
 /**

@@ -1044,6 +1044,10 @@
     "loadFailed": "Your maps could not be loaded.",
     "accountMenu": "Account menu",
     "given": "You were given a map",
+    "notDone": "{{count}} not done",
+    "notHome": "{{count}} not home",
+    "allDone": "All done",
+    "instructions": "Has instructions",
     "open": "Open"
   }
 }

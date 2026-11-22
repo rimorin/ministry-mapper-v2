@@ -2,7 +2,13 @@ import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { AnimatePresence } from "motion/react";
 import * as m from "motion/react-m";
-import { ChevronRight, Map as MapIcon, UserRound, Users } from "lucide-react";
+import {
+  ChevronRight,
+  Map as MapIcon,
+  Pin,
+  UserRound,
+  Users
+} from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +27,7 @@ import {
   ItemMedia,
   ItemTitle
 } from "@/components/ui/item";
+import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { fadeSlideUp, listItemPresence } from "@/lib/motion";
 import ExpiryBadge from "../navigation/expirybadge";
@@ -132,6 +139,21 @@ const MyLinks = ({
                       name: link.assigner
                     })
                 ].filter(Boolean);
+                // What is left to do on the map, in the map page's own
+                // words. Nothing is said of a map not yet counted.
+                const counted = (link.total ?? 0) > 0;
+                const notDone = link.not_done ?? 0;
+                const notHome = link.not_home ?? 0;
+                const left = [
+                  notDone > 0 &&
+                    t("myLinks.notDone", "{{count}} not done", {
+                      count: notDone
+                    }),
+                  notHome > 0 &&
+                    t("myLinks.notHome", "{{count}} not home", {
+                      count: notHome
+                    })
+                ].filter(Boolean);
                 return (
                   <m.div
                     key={link.id}
@@ -169,6 +191,16 @@ const MyLinks = ({
                             link.map_description,
                             i18n.language
                           )}
+                          {(link.pinned ?? 0) > 0 && (
+                            <Pin
+                              className="ml-1.5 inline size-3.5 align-[-0.125em] text-muted-foreground"
+                              role="img"
+                              aria-label={t(
+                                "myLinks.instructions",
+                                "Has instructions"
+                              )}
+                            />
+                          )}
                         </ItemTitle>
                         {details.length > 0 && (
                           <ItemDescription className="line-clamp-1 text-xs sm:col-start-1">
@@ -187,6 +219,25 @@ const MyLinks = ({
                               })}
                             </span>
                           </ItemDescription>
+                        )}
+                        {counted && (
+                          <div className="mt-1.5 space-y-1 sm:col-start-1">
+                            <Progress
+                              value={link.progress ?? 0}
+                              className="h-1.5"
+                              aria-label={t("territory.completed", "Completed")}
+                            />
+                            <p className="flex items-baseline justify-between gap-2 text-xs text-muted-foreground">
+                              <span className="min-w-0 truncate">
+                                {left.length > 0
+                                  ? left.join(" · ")
+                                  : t("myLinks.allDone", "All done")}
+                              </span>
+                              <span className="shrink-0 tabular-nums">
+                                {link.progress ?? 0}%
+                              </span>
+                            </p>
+                          </div>
                         )}
                         <span className="mt-1 w-fit sm:col-start-2 sm:row-span-3 sm:row-start-1 sm:mt-0">
                           <ExpiryBadge

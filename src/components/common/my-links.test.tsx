@@ -29,6 +29,63 @@ const show = (props: Partial<React.ComponentProps<typeof MyLinks>> = {}) =>
   );
 
 describe("MyLinks", () => {
+  it("says what is left on a map, and when it carries an instruction", () => {
+    show({
+      links: [
+        link({
+          id: "working",
+          map_description: "Blk 301",
+          not_done: 14,
+          not_home: 4,
+          total: 28,
+          progress: 35,
+          pinned: 1
+        })
+      ]
+    });
+
+    expect(screen.getByText("14 not done · 4 not home")).toBeInTheDocument();
+    expect(screen.getByText("35%")).toBeInTheDocument();
+    expect(screen.getByRole("progressbar")).toHaveAttribute(
+      "aria-valuenow",
+      "35"
+    );
+    expect(screen.getByLabelText("Has instructions")).toBeInTheDocument();
+  });
+
+  it("says a finished map is done, and leaves out a count of nothing", () => {
+    show({
+      links: [
+        link({
+          id: "done",
+          not_done: 0,
+          not_home: 0,
+          total: 20,
+          progress: 100
+        }),
+        link({
+          id: "nohome",
+          not_done: 0,
+          not_home: 2,
+          total: 20,
+          progress: 90
+        })
+      ]
+    });
+
+    expect(screen.getByText("All done")).toBeInTheDocument();
+    expect(screen.getByText("2 not home")).toBeInTheDocument();
+    expect(screen.queryByText(/0 not done/)).toBeNull();
+  });
+
+  it("says nothing of a map whose homes have not been counted", () => {
+    show({ links: [link({ id: "new", total: 0, progress: 0 })] });
+
+    expect(screen.queryByRole("progressbar")).toBeNull();
+    expect(screen.queryByText("All done")).toBeNull();
+    expect(screen.queryByLabelText("Has instructions")).toBeNull();
+  });
+
   it("links each map to its link page, grouped by type", () => {
     show({
       links: [
