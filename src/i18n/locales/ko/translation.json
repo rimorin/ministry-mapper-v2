@@ -1044,6 +1044,10 @@
     "loadFailed": "지도를 불러오지 못했습니다.",
     "accountMenu": "계정 메뉴",
     "given": "지도를 배정받았습니다",
+    "notDone": "미방문 {{count}}",
+    "notHome": "부재 {{count}}",
+    "allDone": "모두 완료",
+    "instructions": "지시 사항 있음",
     "open": "열기"
   }
 }

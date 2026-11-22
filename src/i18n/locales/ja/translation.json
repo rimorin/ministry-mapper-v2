@@ -1044,6 +1044,10 @@
     "loadFailed": "地図を読み込めませんでした。",
     "accountMenu": "アカウントメニュー",
     "given": "地図が渡されました",
+    "notDone": "未訪問 {{count}}",
+    "notHome": "不在 {{count}}",
+    "allDone": "すべて完了",
+    "instructions": "指示あり",
     "open": "開く"
   }
 }

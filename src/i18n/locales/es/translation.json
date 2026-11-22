@@ -1044,6 +1044,10 @@
     "loadFailed": "No se pudieron cargar tus mapas.",
     "accountMenu": "Menú de la cuenta",
     "given": "Te asignaron un mapa",
+    "notDone": "{{count}} sin hacer",
+    "notHome": "{{count}} no en casa",
+    "allDone": "Todo hecho",
+    "instructions": "Tiene instrucciones",
     "open": "Abrir"
   }
 }

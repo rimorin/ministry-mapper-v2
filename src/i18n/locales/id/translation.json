@@ -1044,6 +1044,10 @@
     "loadFailed": "Peta Anda tidak dapat dimuat.",
     "accountMenu": "Menu akun",
     "given": "Anda diberi sebuah peta",
+    "notDone": "{{count}} belum selesai",
+    "notHome": "{{count}} tidak ada di rumah",
+    "allDone": "Semua selesai",
+    "instructions": "Ada instruksi",
     "open": "Buka"
   }
 }

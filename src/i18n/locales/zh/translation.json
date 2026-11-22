@@ -1044,6 +1044,10 @@
     "loadFailed": "无法加载您的地图。",
     "accountMenu": "账户菜单",
     "given": "您收到了一张地图",
+    "notDone": "未访问 {{count}}",
+    "notHome": "不在家 {{count}}",
+    "allDone": "全部完成",
+    "instructions": "有指示",
     "open": "打开"
   }
 }
