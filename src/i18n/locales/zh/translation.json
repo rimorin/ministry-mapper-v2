@@ -1031,6 +1031,8 @@
   },
   "myLinks": {
     "title": "我的地图",
+    "congregationCount": "{{total}} 个会众",
+    "congregationsTitle": "你的会众",
     "description": "点按地图即可开始。",
     "personal": "个人区域",
     "assigned": "已分配",

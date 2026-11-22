@@ -1031,6 +1031,8 @@
   },
   "myLinks": {
     "title": "マイマップ",
+    "congregationCount": "{{total}}つの会衆",
+    "congregationsTitle": "あなたの会衆",
     "description": "地図をタップして始めてください。",
     "personal": "個人区域",
     "assigned": "割り当て済み",

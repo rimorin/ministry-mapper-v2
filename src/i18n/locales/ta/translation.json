@@ -1031,6 +1031,8 @@
   },
   "myLinks": {
     "title": "என் வரைபடங்கள்",
+    "congregationCount": "{{total}} சபைகள்",
+    "congregationsTitle": "உங்கள் சபைகள்",
     "description": "தொடங்க ஒரு வரைபடத்தைத் தட்டவும்.",
     "personal": "தனிப்பட்ட பிராந்தியம்",
     "assigned": "ஒதுக்கப்பட்டவை",

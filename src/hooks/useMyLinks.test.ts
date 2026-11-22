@@ -66,6 +66,25 @@ describe("useMyLinks", () => {
     expect(result.current.hasFailed).toBe(false);
   });
 
+  it("carries the congregations the account is a publisher in", async () => {
+    callFunctionMock.mockResolvedValueOnce({
+      assignments: [],
+      congregations: ["Alpha Congregation"]
+    });
+
+    const { result } = renderHook(() => useMyLinks());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.congregations).toEqual(["Alpha Congregation"]);
+  });
+
+  it("names no congregation for a backend that sends none", async () => {
+    callFunctionMock.mockResolvedValueOnce({ assignments: [link] });
+
+    const { result } = renderHook(() => useMyLinks());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.congregations).toEqual([]);
+  });
+
   it("reports a failed load and recovers on refresh", async () => {
     callFunctionMock.mockRejectedValueOnce(new Error("offline"));
 

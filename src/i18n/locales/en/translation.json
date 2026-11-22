@@ -1031,6 +1031,8 @@
   },
   "myLinks": {
     "title": "My Maps",
+    "congregationCount": "{{total}} congregations",
+    "congregationsTitle": "Your congregations",
     "description": "Tap a map to start working.",
     "personal": "Personal territory",
     "assigned": "Assigned",

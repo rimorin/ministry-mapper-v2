@@ -1031,6 +1031,8 @@
   },
   "myLinks": {
     "title": "Peta saya",
+    "congregationCount": "{{total}} sidang",
+    "congregationsTitle": "Sidang Anda",
     "description": "Ketuk peta untuk mulai.",
     "personal": "Daerah pribadi",
     "assigned": "Ditugaskan",
