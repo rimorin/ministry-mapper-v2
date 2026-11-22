@@ -26,12 +26,16 @@ export interface MyLink {
  * The unexpired links given to the signed-in account, across every
  * congregation. Follows them live and refetches when the tab comes back into
  * view: links are handed out and expire while the app sits in the background.
+ * With them come the congregations the account is a publisher in.
  * Every load announces the links it finds new (made for the account, or an
  * existing one it was added to). The map page mounts it too, only for the
  * announcement, so a second map is not missed while working the first.
  */
 export default function useMyLinks() {
   const [links, setLinks] = useState<MyLink[]>([]);
+  // The congregations the account is a publisher in, by name. A publisher may
+  // read nothing of a congregation otherwise, so the route says it.
+  const [congregations, setCongregations] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasFailed, setHasFailed] = useState(false);
 
@@ -52,11 +56,12 @@ export default function useMyLinks() {
       const response = (await callFunction("/assignments/mine", {
         method: "POST",
         requestKey: "my-links"
-      })) as { assignments?: MyLink[] };
+      })) as { assignments?: MyLink[]; congregations?: string[] };
       const latest = response.assignments ?? [];
       const known = knownIds.current;
       knownIds.current = new Set(latest.map((link) => link.id));
       setLinks(latest);
+      setCongregations(response.congregations ?? []);
       setHasFailed(false);
       setIsLoading(false);
       if (!known) return;
@@ -114,5 +119,5 @@ export default function useMyLinks() {
     !!userId
   );
 
-  return { links, isLoading, hasFailed, refresh: load };
+  return { links, congregations, isLoading, hasFailed, refresh: load };
 }

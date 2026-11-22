@@ -1,6 +1,18 @@
 import { lazy, use, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Languages, LogOut, Palette, UserRound } from "lucide-react";
+import {
+  ChevronDown,
+  Languages,
+  LogOut,
+  Palette,
+  UserRound
+} from "lucide-react";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTitle,
+  PopoverTrigger
+} from "@/components/ui/popover";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,7 +52,7 @@ const initialsOf = (name: string) =>
     .join("");
 
 // What an account with only the publisher role sees after signing in: the
-// links given to it, and nothing of the congregation behind them. Staff see
+// links given to it, and of the congregation behind them only its name. Staff see
 // the same panel inside their own shell.
 const PublisherDashboard = ({
   userName,
@@ -48,6 +60,7 @@ const PublisherDashboard = ({
   myLinks
 }: PublisherDashboardProps) => {
   const { t } = useTranslation();
+  const { congregations } = myLinks;
   const { currentLanguage, changeLanguage, languageOptions } =
     use(LanguageContext);
   const { showModal } = useModalManagement();
@@ -134,9 +147,49 @@ const PublisherDashboard = ({
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <h1 className="min-w-0 flex-1 truncate px-1 text-base font-semibold">
-            {t("myLinks.title", "My Maps")}
-          </h1>
+          {/* The congregations sit under the title, where a workspace's name
+              goes: there with maps and with none, and out of the list's way. */}
+          <div className="min-w-0 flex-1 px-1">
+            <h1 className="truncate text-base leading-tight font-semibold">
+              {t("myLinks.title", "My Maps")}
+            </h1>
+            {congregations.length === 1 && (
+              <p className="truncate text-xs text-muted-foreground">
+                {congregations[0]}
+              </p>
+            )}
+            {/* Several names do not fit a phone's header, and cut short they
+                say less than a count does. The count opens the list. */}
+            {congregations.length > 1 && (
+              <Popover>
+                <PopoverTrigger
+                  render={
+                    <button
+                      type="button"
+                      className="-mx-1 flex max-w-full items-center gap-0.5 rounded-sm px-1 text-xs text-muted-foreground outline-none hover:text-foreground focus-visible:ring-[3px] focus-visible:ring-ring/50"
+                    />
+                  }
+                >
+                  <span className="truncate">
+                    {t("myLinks.congregationCount", "{{total}} congregations", {
+                      total: congregations.length
+                    })}
+                  </span>
+                  <ChevronDown className="size-3 shrink-0" aria-hidden="true" />
+                </PopoverTrigger>
+                <PopoverContent align="start" className="w-64 gap-2">
+                  <PopoverTitle className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+                    {t("myLinks.congregationsTitle", "Your congregations")}
+                  </PopoverTitle>
+                  <ul className="max-h-64 space-y-1.5 overflow-y-auto text-sm">
+                    {congregations.map((name) => (
+                      <li key={name}>{name}</li>
+                    ))}
+                  </ul>
+                </PopoverContent>
+              </Popover>
+            )}
+          </div>
         </header>
         <MyLinksPanel myLinks={myLinks} />
       </div>

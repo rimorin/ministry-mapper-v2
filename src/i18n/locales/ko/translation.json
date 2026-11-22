@@ -1031,6 +1031,8 @@
   },
   "myLinks": {
     "title": "내 지도",
+    "congregationCount": "회중 {{total}}개",
+    "congregationsTitle": "내 회중",
     "description": "지도를 눌러 시작하세요.",
     "personal": "개인 구역",
     "assigned": "배정됨",
