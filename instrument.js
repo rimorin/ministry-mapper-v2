@@ -9,6 +9,7 @@
 import * as Sentry from "@sentry/react";
 import { ClientResponseError } from "pocketbase";
 import { isReloadingForNewDeploy } from "./src/utils/reloadForNewDeploy";
+import { scrubBreadcrumb, scrubEvent } from "./src/utils/helpers/scrubsentry";
 
 // Sentry's own denylist for identifying headers (IP, forwarding, user), as
 // applied in v10 when sendDefaultPii was off.
@@ -59,6 +60,9 @@ Sentry.init({
     /runtime\.sendMessage/
   ],
 
+  // Addresses are recorded without share link ids or queries.
+  beforeBreadcrumb: scrubBreadcrumb,
+
   beforeSend(event, hint) {
     // Status 0 is a network failure. ignoreErrors misses it because
     // "Load failed" is only on the linked cause.
@@ -78,6 +82,6 @@ Sentry.init({
     ) {
       return null;
     }
-    return event;
+    return scrubEvent(event);
   }
 });
