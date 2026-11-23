@@ -5,6 +5,7 @@ import { addressDetails, AssignmentStatus } from "../../utils/interface";
 import { LINK_TYPES } from "../../utils/constants";
 import { getList, ignoreAbort } from "../../utils/pocketbase";
 import useRealtimeSubscription from "../../hooks/useRealtime";
+import escapeHtml from "../../utils/helpers/escapehtml";
 
 interface AddressMarkerProps {
   addressElement: addressDetails;
@@ -25,11 +26,11 @@ const trackFill = (progress: number) =>
 // class from a runtime value. Dials precede the value so the number paints over
 // them; CSS hides each until its wrapper class applies.
 export const buildProgressMarkerHtml = (display: string, progress: number) =>
-  `<div class="map-progress" style="--progress:${progress}">` +
+  `<div class="map-progress" style="--progress:${Number(progress) || 0}">` +
   `<span class="map-progress-track" data-fill="${trackFill(progress)}"></span>` +
   `<span class="map-progress-dial" data-dial="assignment"></span>` +
   `<span class="map-progress-dial" data-dial="personal"></span>` +
-  `<span class="map-progress-value">${display}</span>` +
+  `<span class="map-progress-value">${escapeHtml(display)}</span>` +
   `</div>`;
 
 export const buildMarkerClasses = (
