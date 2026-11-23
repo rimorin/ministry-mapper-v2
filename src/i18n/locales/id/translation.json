@@ -253,7 +253,7 @@
       "publisherHint": "Penerbit hanya melihat dan mengerjakan peta yang diberikan ke akunnya.",
       "noAccessHint": "Mengeluarkan orang ini dari sidang.",
       "readOnlyHint": "Dapat melihat wilayah dan peta, tetapi tidak dapat mengubah apa pun.",
-      "conductorHint": "Dapat memperbarui peta dan membagikannya sebagai tautan.",
+      "conductorHint": "Dapat memperbarui peta dan memberikannya kepada penerbit.",
       "administratorHint": "Dapat mengelola semuanya: wilayah, peta, anggota, dan pengaturan."
     },
     "profile": "Profil",

@@ -139,7 +139,7 @@ describe("UserRoleField", () => {
     ],
     [
       USER_ACCESS_LEVELS.CONDUCTOR.CODE,
-      "Can update maps and give them out as links."
+      "Can update maps and give them out to publishers."
     ],
     [
       USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE,

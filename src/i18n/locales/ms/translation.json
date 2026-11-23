@@ -283,7 +283,7 @@
       "publisherHint": "Penerbit hanya melihat dan mengerjakan peta yang diberikan kepada akaunnya.",
       "noAccessHint": "Mengeluarkan orang ini daripada sidang.",
       "readOnlyHint": "Boleh melihat kawasan dan peta, tetapi tidak boleh mengubah apa-apa.",
-      "conductorHint": "Boleh mengemas kini peta dan memberikannya sebagai pautan.",
+      "conductorHint": "Boleh mengemas kini peta dan memberikannya kepada penerbit.",
       "administratorHint": "Boleh mengurus semuanya: kawasan, peta, ahli dan tetapan."
     },
     "invite": "Jemput",
