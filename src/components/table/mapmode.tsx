@@ -24,6 +24,7 @@ import {
   countAddressFilters,
   matchesAddressFilter
 } from "../../hooks/useAddressFilter";
+import escapeHtml from "../../utils/helpers/escapehtml";
 
 // Inline SVG strings for Leaflet divIcon markers — avoids react-dom/server entirely.
 // SVG paths sourced from lucide-icons/lucide@main. Tailwind classes are applied by the
@@ -44,7 +45,7 @@ const hasPin = (
 
 const getStatusIconHtml = (status: string, nhcount: string): string => {
   if (status === STATUS_CODES.NOT_HOME) {
-    return `<span class="relative inline-flex items-center justify-center"><svg ${SVG_BASE} class="size-5 text-status-nothome"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>${nhcount ? `<span class="absolute -right-1.5 -top-1.5 z-[9999] flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-0.5 text-[10px] font-bold leading-none bg-zinc-900 text-white border border-white shadow-sm">${nhcount}</span>` : ""}</span>`;
+    return `<span class="relative inline-flex items-center justify-center"><svg ${SVG_BASE} class="size-5 text-status-nothome"><path d="m22 7-8.991 5.727a2 2 0 0 1-2.009 0L2 7"/><rect x="2" y="4" width="20" height="16" rx="2"/></svg>${nhcount ? `<span class="absolute -right-1.5 -top-1.5 z-[9999] flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-0.5 text-[10px] font-bold leading-none bg-zinc-900 text-white border border-white shadow-sm">${escapeHtml(nhcount)}</span>` : ""}</span>`;
   }
   return STATIC_ICON_HTML[status] ?? "";
 };
@@ -96,8 +97,8 @@ const TerritoryMapView = ({
           element.nhcount
         );
         const houseIcon = divIcon({
-          html: `<div data-id="${element.id}" data-floor="${element.floor}" class="map-marker ${className}">
-          <div class="map-marker-label">${houseType}</div>
+          html: `<div data-id="${escapeHtml(element.id)}" data-floor="${escapeHtml(element.floor)}" class="map-marker ${escapeHtml(className)}">
+          <div class="map-marker-label">${escapeHtml(houseType)}</div>
           ${statusIconHtml ? `<div class="map-marker-status">${statusIconHtml}</div>` : ""}
         </div>`,
           className: "",

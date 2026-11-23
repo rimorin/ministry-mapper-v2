@@ -21,6 +21,7 @@ import { useTranslation } from "react-i18next";
 import { ThemedTileLayer } from "../map/themedtilelayer";
 import UnboundedTerritories from "./unboundedterritories";
 import "leaflet/dist/leaflet.css";
+import escapeHtml from "../../utils/helpers/escapehtml";
 
 const DEFAULT_MAP_ZOOM =
   typeof window !== "undefined" && window.innerWidth < 768 ? 16 : 17;
@@ -119,7 +120,7 @@ const createLabelIcon = (
             0 1px 4px rgb(0 0 0 / 0.6);
           margin-bottom: 4px;
           letter-spacing: 1px;
-        ">${territory.code}</div>
+        ">${escapeHtml(territory.code)}</div>
         <div style="
           font-size: ${percentSize}px;
           font-weight: 700;
@@ -129,7 +130,7 @@ const createLabelIcon = (
           border-radius: 12px;
           display: inline-block;
           box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-        ">${territory.aggregates || 0}%</div>
+        ">${escapeHtml(territory.aggregates || 0)}%</div>
       </div>
     `,
     iconSize: [Math.min(codeAvailableWidth, 200), 60],
