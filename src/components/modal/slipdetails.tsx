@@ -32,6 +32,7 @@ import { createData } from "../../utils/pocketbase";
 import ComponentAuthorizer from "../navigation/authorizer";
 import getCongregationMembers, {
   CongregationMember,
+  namesBesides,
   namesOf
 } from "../../utils/helpers/getcongregationmembers";
 
@@ -54,6 +55,8 @@ const ConfirmSlipDetails = NiceModal.create(
     const { modal, dialogProps, contentProps } = useBaseUiDialog();
     const { shareLink, isSharing, shareButtonLabel } = useShareLink();
     const [linkExpiryHrs, setLinkExpiryHrs] = useState<number | undefined>();
+    // What is typed: every name where links are not given to accounts, and
+    // otherwise only the people who have no account.
     const [name, setName] = useState<string>("");
     const [isCreating, setIsCreating] = useState(false);
     const [members, setMembers] = useState<CongregationMember[]>([]);
@@ -80,9 +83,19 @@ const ConfirmSlipDetails = NiceModal.create(
       message: string;
       linkType: string;
       expiryDate: string;
+      // Set when some of the link's people got it on their account: who they
+      // are, and who is left to send it to.
+      given?: string;
+      others?: string;
     } | null>(null);
 
     const { id: mapId, name: addressName, aggregates } = addressElement;
+    // The people typed in who have no account, and the names the link
+    // carries: its members', then theirs.
+    const others = namesBesides(name, assignees);
+    const publisherText = [namesOf(assignees), others]
+      .filter(Boolean)
+      .join(", ");
 
     const existingAssignmentRows = [
       LINK_TYPES.PERSONAL,
@@ -127,7 +140,7 @@ const ConfirmSlipDetails = NiceModal.create(
               user: userId,
               type: linkType,
               expiry_date: expiryDate,
-              publisher: name,
+              publisher: publisherText,
               congregation: policy.congregation,
               ...(assignees.length > 0 && {
                 assignees: assignees.map((member) => member.id)
@@ -145,19 +158,41 @@ const ConfirmSlipDetails = NiceModal.create(
                 MAX_RECENT_MEMBERS
               )
             );
-            // They find the map under My Maps, so there is nothing to send.
-            // The link can still be copied from the map's assignments.
             notifySuccess(
               t("slip.givenTo", "Given to {{names}}", {
                 names: namesOf(assignees)
               })
             );
-            modal.hide();
+            // Members find the map under My Maps, so there is nothing to
+            // send them. Anyone typed in beside them has no account to find
+            // it under, and still needs the link.
+            if (!others) {
+              modal.hide();
+              return;
+            }
+            setCreatedLink({
+              linkId: linkRecord.id,
+              message: assignmentMessage(
+                addressName,
+                others,
+                expiryHrs,
+                linkType
+              ),
+              linkType,
+              expiryDate,
+              given: namesOf(assignees),
+              others
+            });
             return;
           }
           setCreatedLink({
             linkId: linkRecord.id,
-            message: assignmentMessage(addressName, name, expiryHrs, linkType),
+            message: assignmentMessage(
+              addressName,
+              publisherText,
+              expiryHrs,
+              linkType
+            ),
             linkType,
             expiryDate
           });
@@ -241,7 +276,8 @@ const ConfirmSlipDetails = NiceModal.create(
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                       <BookUser className="size-3 shrink-0" />
                       <span>
-                        {t("assignments.assignedTo", "Assigned to")} {name}
+                        {t("assignments.assignedTo", "Assigned to")}{" "}
+                        {publisherText}
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -254,6 +290,18 @@ const ConfirmSlipDetails = NiceModal.create(
                       </span>
                     </div>
                   </div>
+                  {createdLink.others && (
+                    <p className="rounded-md border border-info/30 bg-info/10 p-2 text-xs">
+                      {t(
+                        "slip.shareWithOthers",
+                        "{{given}} will find it under My Maps. Share the link with {{others}}.",
+                        {
+                          given: createdLink.given,
+                          others: createdLink.others
+                        }
+                      )}
+                    </p>
+                  )}
                   {existingWarning}
                   {aggregates && (
                     <div className="border-t pt-2">
@@ -305,21 +353,23 @@ const ConfirmSlipDetails = NiceModal.create(
                     />
                   )}
                   {members.length > 0 && (
+                    <p className="mb-3 text-sm text-muted-foreground">
+                      {t(
+                        "slip.whoHint",
+                        "Fill in one or both, for the publishers working this map."
+                      )}
+                    </p>
+                  )}
+                  {members.length > 0 && (
                     <div className="mb-3 space-y-1.5">
                       <Label>
-                        {t("slip.memberLabel", "Give to members (optional)")}
+                        {t("slip.memberLabel", "Send to their account")}
                       </Label>
                       <MemberPicker
                         members={members}
                         value={assignees}
                         recentIds={recentIds}
-                        onValueChange={(chosen) => {
-                          setAssignees(chosen);
-                          // Follow the picker unless the name was typed by hand.
-                          if (name === namesOf(assignees)) {
-                            setName(namesOf(chosen));
-                          }
-                        }}
+                        onValueChange={setAssignees}
                       />
                       {assignees.length > 0 && (
                         <p className="text-xs text-muted-foreground">
@@ -331,18 +381,41 @@ const ConfirmSlipDetails = NiceModal.create(
                       )}
                     </div>
                   )}
+                  {/* With accounts on offer the two kinds of people get a box
+                      each, so nothing has to be worked out from what is
+                      typed. Without them this is the one box it always was. */}
                   <GenericInputField
-                    label={t("slip.publisherNameLabel")}
+                    label={
+                      members.length > 0
+                        ? t("slip.othersLabel", "Others without an account")
+                        : t("slip.publisherNameLabel")
+                    }
                     name="name"
                     handleChange={(event) => {
                       const { value } = event.target as HTMLInputElement;
                       setName(value);
                     }}
-                    placeholder={t("slip.publisherNamePlaceholder")}
+                    placeholder={
+                      members.length > 0
+                        ? t(
+                            "slip.othersPlaceholder",
+                            "Names, separated by commas"
+                          )
+                        : t("slip.publisherNamePlaceholder")
+                    }
                     changeValue={name}
                     focus={members.length === 0}
-                    required={true}
+                    // Someone has to be on the link.
+                    required={assignees.length === 0}
                   />
+                  {assignees.length > 0 && others && (
+                    <p className="mt-1.5 text-xs text-muted-foreground">
+                      {t(
+                        "slip.othersHint",
+                        "You will be given a link to send them."
+                      )}
+                    </p>
+                  )}
                 </div>
                 {assignees.length > 0 && existingWarning}
                 <ResponsiveDialogFooter>
