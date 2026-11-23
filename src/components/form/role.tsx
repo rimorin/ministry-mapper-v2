@@ -57,7 +57,7 @@ const UserRoleField = ({
       label: t("user.roles.conductor", "Conductor"),
       hint: t(
         "user.roles.conductorHint",
-        "Can update maps and give them out as links."
+        "Can update maps and give them out to publishers."
       )
     },
     {

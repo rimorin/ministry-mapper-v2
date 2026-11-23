@@ -283,7 +283,7 @@
       "publisherHint": "A publisher only sees and works the maps given to their account.",
       "noAccessHint": "Removes this person from the congregation.",
       "readOnlyHint": "Can view territories and maps, but cannot change anything.",
-      "conductorHint": "Can update maps and give them out as links.",
+      "conductorHint": "Can update maps and give them out to publishers.",
       "administratorHint": "Can manage everything: territories, maps, members and settings."
     },
     "invite": "Invite",

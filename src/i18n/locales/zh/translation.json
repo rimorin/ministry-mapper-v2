@@ -281,7 +281,7 @@
       "publisherHint": "发布者只能查看并处理分配给其账户的地图。",
       "noAccessHint": "将此人从会众中移除。",
       "readOnlyHint": "可以查看区域和地图，但不能做任何更改。",
-      "conductorHint": "可以更新地图，并以链接形式分配出去。",
+      "conductorHint": "可以更新地图，并分配给发布者。",
       "administratorHint": "可以管理一切：区域、地图、成员和设置。"
     },
     "invite": "邀请",
