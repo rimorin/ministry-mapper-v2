@@ -105,11 +105,13 @@ const MemberPicker = ({
           <ComboboxTrigger />
         </ComboboxActions>
       </ComboboxInputGroup>
-      <ComboboxContent>
+      {/* The list scrolls and the footer sits below it, outside the scroll,
+          so no row can show through around the Done button. */}
+      <ComboboxContent className="flex flex-col overflow-hidden pb-0">
         <ComboboxEmpty>
           {t("common.noResults", "No results found.")}
         </ComboboxEmpty>
-        <ComboboxList>
+        <ComboboxList className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-1">
           {(group: MemberGroup) => (
             <ComboboxGroup key={group.value} items={group.items}>
               <ComboboxLabel>{group.value}</ComboboxLabel>
@@ -143,7 +145,7 @@ const MemberPicker = ({
             </ComboboxGroup>
           )}
         </ComboboxList>
-        <div className="sticky bottom-0 -mb-1 border-t bg-popover p-1.5">
+        <div className="shrink-0 border-t p-1.5">
           <Button
             type="button"
             variant="secondary"
