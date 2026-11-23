@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from "vitest";
-import { screen, waitFor } from "@testing-library/react";
+import { fireEvent, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import {
   render,
@@ -101,6 +101,9 @@ describe("ConfirmSlipDetails", () => {
   beforeEach(() => {
     flag.publisherRole = true;
     vi.clearAllMocks();
+    // A roster set by one test must not put the picker into the next.
+    membersMock.mockReset();
+    membersMock.mockResolvedValue([]);
     localStorage.clear();
   });
 
@@ -165,15 +168,16 @@ describe("ConfirmSlipDetails", () => {
     await userEvent.type(picker, "rita@{Enter}");
 
     expect(
-      screen.getByPlaceholderText("Names of the assigned publishers")
-    ).toHaveValue("Sam Publisher, Rita Reader");
-    expect(
       screen.getByText("They will find this map under My Maps.")
     ).toBeInTheDocument();
+    // Their names are not copied into the box for people without an account.
+    expect(
+      screen.getByPlaceholderText("Names, separated by commas")
+    ).toHaveValue("");
     // The share screen is skipped, so its warning moves to the form.
     expect(screen.getByText("Already assigned")).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole("button", { name: "Confirm" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
     await waitFor(() =>
       expect(
         screen.queryByText("Confirm slip details for Sunset Towers")
@@ -192,6 +196,117 @@ describe("ConfirmSlipDetails", () => {
       "user9",
       "user8"
     ]);
+  });
+
+  it("puts people without an account on the link too, and offers the link to send them", async () => {
+    membersMock.mockResolvedValueOnce(roster);
+    render(<></>);
+    show();
+
+    const picker = await screen.findByPlaceholderText("Search members");
+    await waitFor(() => expect(picker).toHaveFocus());
+    await userEvent.type(picker, "Sam{Enter}");
+    await userEvent.type(
+      screen.getByLabelText("Others without an account"),
+      "Sis Ong"
+    );
+    expect(
+      screen.getByText("You will be given a link to send them.")
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+
+    // Sis Ong has no account to find the map under, so the link is offered.
+    expect(await screen.findByText("Map link is ready")).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        "Sam Publisher will find it under My Maps. Share the link with Sis Ong."
+      )
+    ).toBeInTheDocument();
+    expect(createDataMock).toHaveBeenCalledWith(
+      "assignments",
+      expect.objectContaining({
+        assignees: ["user9"],
+        publisher: "Sam Publisher, Sis Ong"
+      }),
+      expect.anything()
+    );
+  });
+
+  it("counts someone picked and typed as well once, as a member", async () => {
+    membersMock.mockResolvedValueOnce(roster);
+    render(<></>);
+    show();
+
+    const picker = await screen.findByPlaceholderText("Search members");
+    await waitFor(() => expect(picker).toHaveFocus());
+    await userEvent.type(picker, "Sam{Enter}");
+    await userEvent.type(
+      screen.getByLabelText("Others without an account"),
+      "sam  publisher"
+    );
+    // Nobody is left to send a link to.
+    expect(
+      screen.queryByText("You will be given a link to send them.")
+    ).toBeNull();
+
+    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+
+    await waitFor(() =>
+      expect(createDataMock).toHaveBeenCalledWith(
+        "assignments",
+        expect.objectContaining({
+          assignees: ["user9"],
+          publisher: "Sam Publisher"
+        }),
+        expect.anything()
+      )
+    );
+    expect(screen.queryByText("Map link is ready")).toBeNull();
+  });
+
+  it("still takes a typed name alone, where nobody on the link has an account", async () => {
+    membersMock.mockResolvedValueOnce(roster);
+    render(<></>);
+    show();
+
+    const others = await screen.findByLabelText("Others without an account");
+    // With no account picked, someone has to be typed.
+    expect(others).toBeRequired();
+    await userEvent.type(others, "Sis Ong");
+    fireEvent.click(screen.getByRole("button", { name: "Confirm" }));
+
+    expect(await screen.findByText("Map link is ready")).toBeInTheDocument();
+    expect(createDataMock).toHaveBeenCalledWith(
+      "assignments",
+      expect.objectContaining({ publisher: "Sis Ong" }),
+      expect.anything()
+    );
+    expect(createDataMock).toHaveBeenCalledWith(
+      "assignments",
+      expect.not.objectContaining({ assignees: expect.anything() }),
+      expect.anything()
+    );
+  });
+
+  // The list covers the other box and Confirm while it is open.
+  it("closes the member list with its Done button, keeping the picks", async () => {
+    membersMock.mockResolvedValueOnce(roster);
+    render(<></>);
+    show();
+
+    const picker = await screen.findByPlaceholderText("Search members");
+    await waitFor(() => expect(picker).toHaveFocus());
+    await userEvent.type(picker, "Sam{Enter}");
+    // Opened here, so the test does not lean on the list staying open after
+    // a pick, which varies with what else is running.
+    await userEvent.keyboard("{ArrowDown}");
+
+    // fireEvent: the list takes no pointer events while it animates open.
+    fireEvent.click(await screen.findByRole("button", { name: "Done" }));
+
+    await waitFor(() => expect(screen.queryByRole("listbox")).toBeNull());
+    expect(screen.getByText("Sam Publisher")).toBeInTheDocument();
   });
 
   it("offers recently chosen members first and shows who holds a map", async () => {

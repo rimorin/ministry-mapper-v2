@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Map as MapIcon } from "lucide-react";
 import { Combobox as ComboboxPrimitive } from "@base-ui/react/combobox";
@@ -17,6 +18,7 @@ import {
   ComboboxList,
   ComboboxTrigger
 } from "@/components/ui/combobox";
+import { Button } from "@/components/ui/button";
 import type { CongregationMember } from "../../utils/helpers/getcongregationmembers";
 
 interface MemberGroup {
@@ -44,6 +46,9 @@ const MemberPicker = ({
   autoFocus = true
 }: MemberPickerProps) => {
   const { t } = useTranslation();
+  // The list stays open while several people are picked and covers the rest
+  // of the form, so it carries its own way out.
+  const [open, setOpen] = useState(false);
   // Base UI's own matching: ignores case and accents.
   const { contains } = ComboboxPrimitive.useFilter();
 
@@ -72,6 +77,8 @@ const MemberPicker = ({
         a.id === b.id
       }
       onValueChange={onValueChange}
+      open={open}
+      onOpenChange={setOpen}
     >
       <ComboboxInputGroup className="h-auto min-h-9">
         <ComboboxChips>
@@ -136,6 +143,17 @@ const MemberPicker = ({
             </ComboboxGroup>
           )}
         </ComboboxList>
+        <div className="sticky bottom-0 -mb-1 border-t bg-popover p-1.5">
+          <Button
+            type="button"
+            variant="secondary"
+            size="sm"
+            className="w-full"
+            onClick={() => setOpen(false)}
+          >
+            {t("common.done", "Done")}
+          </Button>
+        </div>
       </ComboboxContent>
     </Combobox>
   );

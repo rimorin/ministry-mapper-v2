@@ -14,6 +14,21 @@ export interface CongregationMember {
 export const namesOf = (members: Array<{ name: string }>) =>
   members.map((member) => member.name).join(", ");
 
+const sameName = (a: string, b: string) =>
+  a.trim().replace(/\s+/g, " ").toLowerCase() ===
+  b.trim().replace(/\s+/g, " ").toLowerCase();
+
+// The typed names with those of the link's members left out: someone picked
+// from the list and typed in as well is on the link once, as a member.
+export const namesBesides = (typed: string, members: Array<{ name: string }>) =>
+  typed
+    .split(",")
+    .map((name) => name.trim())
+    .filter(
+      (name) => name && !members.some((member) => sameName(member.name, name))
+    )
+    .join(", ");
+
 // Everyone with a role in the congregation, publishers included, by name: the
 // accounts a link can be given to.
 const getCongregationMembers = async (
