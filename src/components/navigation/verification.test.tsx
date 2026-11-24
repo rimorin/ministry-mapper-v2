@@ -1,19 +1,32 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen } from "../../utils/test";
+import { render, screen, waitFor } from "../../utils/test";
 import userEvent from "@testing-library/user-event";
 import VerificationPage from "./verification";
+import {
+  cleanupSession,
+  refreshAuth,
+  verifyEmail
+} from "../../utils/pocketbase";
 
 vi.mock("../../utils/pocketbase", () => ({
   cleanupSession: vi.fn(),
+  refreshAuth: vi.fn(),
   verifyEmail: vi.fn()
 }));
 
-vi.mock("../../hooks/useNotification", () => ({
-  default: () => ({
-    notifyError: vi.fn(),
-    notifySuccess: vi.fn()
-  })
+// The shared frame brings the app's footer with it, which needs providers
+// this page has no part in.
+vi.mock("./authlayout", () => ({
+  default: ({ children }: { children: React.ReactNode }) => children
 }));
+
+const notify = vi.hoisted(() => ({
+  notifyError: vi.fn(),
+  notifySuccess: vi.fn(),
+  notifyWarning: vi.fn()
+}));
+
+vi.mock("../../hooks/useNotification", () => ({ default: () => notify }));
 
 describe("VerificationPage", () => {
   const mockUser = {
@@ -31,65 +44,79 @@ describe("VerificationPage", () => {
     vi.clearAllMocks();
   });
 
-  it("should render verification message", () => {
+  it("says what to do and shows the address the link went to", () => {
     render(<VerificationPage user={mockUser} />);
 
     expect(
-      screen.getByText(/Please verify your email address to continue/i)
+      screen.getByRole("heading", { name: /Verify your email/i })
     ).toBeInTheDocument();
+    expect(screen.getByText("test@example.com")).toBeInTheDocument();
+    expect(screen.getByText(/check your spam folder/i)).toBeInTheDocument();
   });
 
-  it("should render ministry mapper logo", () => {
+  it("reads the account again when the person says they have verified", async () => {
+    vi.mocked(refreshAuth).mockResolvedValue({
+      record: { ...mockUser, verified: true },
+      token: "t"
+    } as never);
     render(<VerificationPage user={mockUser} />);
 
-    const logo = screen.getByAltText(/Ministry Mapper logo/i);
-    expect(logo).toBeInTheDocument();
-    expect(logo).toHaveAttribute(
-      "src",
-      expect.stringContaining("android-chrome")
+    await userEvent.click(
+      screen.getByRole("button", { name: /I've verified, continue/i })
+    );
+
+    expect(refreshAuth).toHaveBeenCalledTimes(1);
+    expect(notify.notifyWarning).not.toHaveBeenCalled();
+  });
+
+  it("says so when the account is still not verified", async () => {
+    vi.mocked(refreshAuth).mockResolvedValue({
+      record: mockUser,
+      token: "t"
+    } as never);
+    render(<VerificationPage user={mockUser} />);
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /I've verified, continue/i })
+    );
+
+    await waitFor(() =>
+      expect(notify.notifyWarning).toHaveBeenCalledWith(
+        expect.stringMatching(/Not verified yet/i)
+      )
     );
   });
 
-  it("should render resend verification email link", () => {
+  it("sends the link again", async () => {
+    vi.mocked(verifyEmail).mockResolvedValue(true);
     render(<VerificationPage user={mockUser} />);
 
-    expect(
-      screen.getByRole("button", { name: /Resend verification email/i })
-    ).toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole("button", { name: /Send the link again/i })
+    );
+
+    expect(verifyEmail).toHaveBeenCalledWith("test@example.com");
+    await waitFor(() => expect(notify.notifySuccess).toHaveBeenCalled());
   });
 
-  it("should render use another account button", () => {
+  it("reports a failed resend", async () => {
+    const error = new Error("nope");
+    vi.mocked(verifyEmail).mockRejectedValue(error);
     render(<VerificationPage user={mockUser} />);
 
-    expect(
-      screen.getByRole("button", { name: /use another account/i })
-    ).toBeInTheDocument();
+    await userEvent.click(
+      screen.getByRole("button", { name: /Send the link again/i })
+    );
+
+    await waitFor(() => expect(notify.notifyError).toHaveBeenCalledWith(error));
   });
 
-  it("should call verifyEmail when resend link is clicked", async () => {
-    const { verifyEmail } = await import("../../utils/pocketbase");
-    const user = userEvent.setup();
-
+  it("lets the person switch to another account", async () => {
     render(<VerificationPage user={mockUser} />);
 
-    const resendLink = screen.getByRole("button", {
-      name: /Resend verification email/i
-    });
-    await user.click(resendLink);
-
-    expect(verifyEmail).toHaveBeenCalledWith(mockUser.email);
-  });
-
-  it("should call cleanupSession when use another account is clicked", async () => {
-    const { cleanupSession } = await import("../../utils/pocketbase");
-    const user = userEvent.setup();
-
-    render(<VerificationPage user={mockUser} />);
-
-    const button = screen.getByRole("button", {
-      name: /use another account/i
-    });
-    await user.click(button);
+    await userEvent.click(
+      screen.getByRole("button", { name: /Use another account/i })
+    );
 
     expect(cleanupSession).toHaveBeenCalledTimes(1);
   });

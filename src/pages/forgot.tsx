@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { Link, Redirect } from "wouter";
+import { KeyRound } from "lucide-react";
 import SubmitButton from "../components/common/submit-button";
 import { Input } from "@/components/ui/input";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Field,
   FieldDescription,
   FieldGroup,
-  FieldLabel,
-  FieldSeparator
+  FieldLabel
 } from "@/components/ui/field";
 import { useTranslation } from "react-i18next";
 
 import { getUser } from "../utils/pocketbase";
 import AuthContainer from "../components/form/authcontainer";
+import EmailSent from "../components/form/email-sent";
 import AuthLayout from "../components/navigation/authlayout";
 import usePasswordReset from "../hooks/usePasswordReset";
 
@@ -20,6 +22,8 @@ const ForgotComponent = () => {
   const { t } = useTranslation();
   const [loginEmail, setLoginEmail] = useState("");
   const [validated, setValidated] = useState(false);
+  // The address a reset link was asked for, once it has been.
+  const [sentTo, setSentTo] = useState("");
   const { isProcessing, handleForgotPassword } = usePasswordReset();
 
   if (getUser()) return <Redirect to="/" />;
@@ -33,8 +37,38 @@ const ForgotComponent = () => {
     if (!form.checkValidity()) {
       return;
     }
-    await handleForgotPassword(loginEmail);
+    if (await handleForgotPassword(loginEmail)) setSentTo(loginEmail);
   };
+
+  if (sentTo) {
+    return (
+      <AuthLayout>
+        <EmailSent
+          message={t(
+            "auth.resetEmailSent",
+            "If {{email}} has an account, we sent a link to reset the password.",
+            { email: sentTo }
+          )}
+        >
+          <Field>
+            <Link href="/" replace className={buttonVariants()}>
+              {t("auth.backToSignIn", "Back to sign in")}
+            </Link>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={() => {
+                setSentTo("");
+                setValidated(false);
+              }}
+            >
+              {t("auth.useDifferentEmail", "Use a different email")}
+            </Button>
+          </Field>
+        </EmailSent>
+      </AuthLayout>
+    );
+  }
 
   return (
     <AuthLayout>
@@ -44,8 +78,7 @@ const ForgotComponent = () => {
           "auth.resetInstructions",
           "Enter your email address below and we will send you a link to reset your password."
         )}
-        icon="🔑"
-        iconColor="secondary"
+        icon={<KeyRound className="size-6" aria-hidden="true" />}
         validated={validated}
         onSubmit={handleSubmitForgotPassword}
       >
@@ -66,30 +99,19 @@ const ForgotComponent = () => {
               disabled={isProcessing}
               onChange={(e) => setLoginEmail(e.target.value)}
             />
-            <FieldDescription id="email-help">
-              {t(
-                "auth.resetEmailHelp",
-                "We'll send a password reset link to this email if an account exists."
-              )}
-            </FieldDescription>
           </Field>
 
           <Field>
             <SubmitButton pending={isProcessing}>
               {t("auth.continue", "Continue")}
             </SubmitButton>
+            <FieldDescription className="text-center">
+              {t("auth.rememberPassword", "Remember your password?")}{" "}
+              <Link href="/" replace>
+                {t("auth.signIn", "Sign in")}
+              </Link>
+            </FieldDescription>
           </Field>
-
-          <FieldSeparator className="sm:*:data-[slot=field-separator-content]:bg-card">
-            {t("auth.or", "Or")}
-          </FieldSeparator>
-
-          <FieldDescription className="text-center">
-            {t("auth.rememberPassword", "Remember your password?")}{" "}
-            <Link href="/" replace>
-              {t("auth.signIn", "Sign in")}
-            </Link>
-          </FieldDescription>
         </FieldGroup>
       </AuthContainer>
     </AuthLayout>

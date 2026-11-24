@@ -12,6 +12,12 @@ vi.mock("../../utils/pocketbase", () => ({
   getUser: (field?: "name" | "email") => (field ? account[field] : account)
 }));
 
+// The shared frame brings the app's footer with it, which needs providers
+// this page has no part in.
+vi.mock("../navigation/authlayout", () => ({
+  default: ({ children }: { children: React.ReactNode }) => children
+}));
+
 describe("UnauthorizedPage", () => {
   const mockHandleClick = vi.fn();
 
@@ -76,15 +82,6 @@ describe("UnauthorizedPage", () => {
     expect(screen.getByRole("link", { name: /contact us/i })).toHaveAttribute(
       "href",
       "mailto:rimorin@gmail.com"
-    );
-  });
-
-  it("renders the logo", () => {
-    render(<UnauthorizedPage handleClick={mockHandleClick} />);
-
-    expect(screen.getByAltText(/Ministry Mapper logo/i)).toHaveAttribute(
-      "src",
-      expect.stringContaining("android-chrome")
     );
   });
 });
