@@ -37,8 +37,6 @@ interface PasswordFieldProps {
   children?: ReactNode;
 }
 
-// A password box with its own show and hide, so a typing slip can be seen
-// before the two are compared.
 const PasswordField = ({
   id,
   label,
@@ -86,13 +84,11 @@ const PasswordField = ({
 interface ResultProps {
   ok: boolean;
   heading: string;
-  // Left out where the heading says it all.
   detail?: string;
   action: string;
   onAction: () => void;
 }
 
-// How a link from an email turned out, and the one way on from there.
 const Result = ({ ok, heading, detail, action, onAction }: ResultProps) => (
   <Card className={authCardClass}>
     <CardContent className="flex flex-col items-center gap-4 pt-8 pb-6 text-center">
@@ -102,7 +98,7 @@ const Result = ({ ok, heading, detail, action, onAction }: ResultProps) => (
         <XCircle className="size-16 text-destructive" aria-hidden="true" />
       )}
       <div className="space-y-1">
-        <h1 className="text-lg font-semibold">{heading}</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">{heading}</h1>
         {detail && <p className="text-sm text-muted-foreground">{detail}</p>}
       </div>
       <Button className="w-full" onClick={onAction}>
@@ -112,7 +108,6 @@ const Result = ({ ok, heading, detail, action, onAction }: ResultProps) => (
   </Card>
 );
 
-// Where the links in the verification and password reset emails land.
 const UserManagementComponent = () => {
   const { t } = useTranslation();
   const [, navigate] = useLocation();
@@ -145,12 +140,14 @@ const UserManagementComponent = () => {
   const goHome = () => navigate("/");
   const backToSignIn = t("auth.backToLogin", "Back to sign in");
 
-  if (isProcessing) return <Loader />;
+  // The first render precedes the verify request; without this the
+  // failure screen flashes.
+  if (isProcessing || (mode === MODE_VERIFY_EMAIL && !message)) {
+    return <Loader />;
+  }
 
   let content: ReactNode;
   if (message) {
-    // Success says what was done and nothing more. A failure keeps the
-    // reason under a heading that says what did not happen.
     const failedHeading =
       mode === MODE_VERIFY_EMAIL
         ? t("auth.linkFailed", "This link didn't work")
@@ -190,8 +187,6 @@ const UserManagementComponent = () => {
               setLoginPassword(value);
             }}
           >
-            {/* Says what the button is waiting for before anything is typed;
-                the checklist takes over once it is. */}
             {!passwordTouched && (
               <FieldDescription>
                 {t(
@@ -212,30 +207,25 @@ const UserManagementComponent = () => {
           />
 
           {passwordTouched && (
-            <div id="password-requirements">
-              <PasswordChecklist
-                password={loginPassword}
-                passwordConfirm={confirmPassword}
-                minLength={MINIMUM_PASSWORD_LENGTH}
-                onChange={setIsLoginPasswordOk}
-                messages={{
-                  minLength: t(
-                    "password.minLength",
-                    "Password must be at least {{length}} characters long.",
-                    { length: MINIMUM_PASSWORD_LENGTH }
-                  ),
-                  number: t(
-                    "password.number",
-                    "Password must contain numbers."
-                  ),
-                  capital: t(
-                    "password.capital",
-                    "Password must contain uppercase letters."
-                  ),
-                  match: t("password.match", "Passwords must match.")
-                }}
-              />
-            </div>
+            <PasswordChecklist
+              password={loginPassword}
+              passwordConfirm={confirmPassword}
+              minLength={MINIMUM_PASSWORD_LENGTH}
+              onChange={setIsLoginPasswordOk}
+              messages={{
+                minLength: t(
+                  "password.minLength",
+                  "Password must be at least {{length}} characters long.",
+                  { length: MINIMUM_PASSWORD_LENGTH }
+                ),
+                number: t("password.number", "Password must contain numbers."),
+                capital: t(
+                  "password.capital",
+                  "Password must contain uppercase letters."
+                ),
+                match: t("password.match", "Passwords must match.")
+              }}
+            />
           )}
 
           <Field>
@@ -250,7 +240,6 @@ const UserManagementComponent = () => {
       </AuthContainer>
     );
   } else {
-    // Neither kind of link, or the verification one before it has answered.
     content = (
       <Result
         ok={false}

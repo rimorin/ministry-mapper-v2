@@ -5,14 +5,10 @@ import { FieldDescription, FieldGroup } from "@/components/ui/field";
 import AuthContainer from "./authcontainer";
 
 interface EmailSentProps {
-  // What was sent and to whom.
   message: string;
-  // The ways on from here.
   children: ReactNode;
 }
 
-// What a form turns into once it has sent an email: the person's next step is
-// in their inbox, and a passing notice is too easy to miss.
 const EmailSent = ({ message, children }: EmailSentProps) => {
   const { t } = useTranslation();
   return (

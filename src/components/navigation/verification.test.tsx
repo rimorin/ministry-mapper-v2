@@ -14,8 +14,6 @@ vi.mock("../../utils/pocketbase", () => ({
   verifyEmail: vi.fn()
 }));
 
-// The shared frame brings the app's footer with it, which needs providers
-// this page has no part in.
 vi.mock("./authlayout", () => ({
   default: ({ children }: { children: React.ReactNode }) => children
 }));

@@ -16,7 +16,6 @@ export default function usePasswordReset() {
   const [message, setMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Resolves to whether the request went through, for the page to say so.
   const handleForgotPassword = async (email: string) => {
     try {
       setIsProcessing(true);

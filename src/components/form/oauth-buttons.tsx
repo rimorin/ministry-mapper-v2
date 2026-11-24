@@ -21,14 +21,11 @@ const AppleLogo = () => (
 
 interface OAuthButtonsProps {
   disabled: boolean;
-  // The provider a sign-in is under way with, or "" when none is.
   pendingProvider: string;
   onSignIn: (provider: string) => void;
 }
 
-// The one-tap ways in, shared by the sign-in and sign-up pages: the same
-// buttons make an account for someone new and open it for someone returning.
-// Renders the buttons alone, for a Field to lay out.
+// Renders bare buttons, for the caller's Field to lay out.
 const OAuthButtons = ({
   disabled,
   pendingProvider,

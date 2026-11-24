@@ -22,7 +22,6 @@ const ForgotComponent = () => {
   const { t } = useTranslation();
   const [loginEmail, setLoginEmail] = useState("");
   const [validated, setValidated] = useState(false);
-  // The address a reset link was asked for, once it has been.
   const [sentTo, setSentTo] = useState("");
   const { isProcessing, handleForgotPassword } = usePasswordReset();
 

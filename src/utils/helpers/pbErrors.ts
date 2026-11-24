@@ -67,6 +67,13 @@ export function mapPbAuthError(err: unknown, t: TFunction): string | null {
   // 1. Field-level validation errors (data has entries)
   if (data && typeof data === "object" && Object.keys(data).length > 0) {
     for (const [field, fieldErr] of Object.entries(data)) {
+      // PocketBase reports a bad email link on the token field.
+      if (field === "token") {
+        return t(
+          "auth.invalidToken",
+          "This link is invalid or has expired. Please request a new one."
+        );
+      }
       const code = fieldErr?.code;
       if (!code) continue;
       const msg = FIELD_CODE_MAP[field]?.[code];

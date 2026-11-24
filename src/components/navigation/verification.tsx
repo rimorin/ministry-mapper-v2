@@ -15,9 +15,6 @@ import {
   verifyEmail
 } from "../../utils/pocketbase";
 
-// What an account sees until its email is verified: the address the link
-// went to, a way on once it has been opened, and a way to get another. It
-// sits in the sign-in pages' frame, so the language and theme stay in reach.
 const VerificationPage = ({ user }: userInterface) => {
   const { t } = useTranslation();
   const { notifyError, notifySuccess, notifyWarning } = useNotification();
@@ -25,9 +22,8 @@ const VerificationPage = ({ user }: userInterface) => {
   const [isSending, setIsSending] = useState(false);
   const [isChecking, setIsChecking] = useState(false);
 
-  // Reading the account again is what moves this page on: the front page
-  // listens to the auth store and leaves once the account reads as verified.
-  // The link is opened in a mail app, so coming back to the tab checks too.
+  // The front page leaves this screen once the refreshed account reads as
+  // verified.
   useOnTabFocus(() => void refreshAuth().catch(() => {}));
 
   const handleContinue = async () => {
@@ -75,11 +71,9 @@ const VerificationPage = ({ user }: userInterface) => {
           <div className="flex size-12 items-center justify-center rounded-full bg-muted">
             <Mail className="size-6" aria-hidden="true" />
           </div>
-          <h1 className="text-xl font-semibold">
+          <h1 className="text-2xl font-semibold tracking-tight">
             {t("auth.verifyEmailMessage", "Verify your email")}
           </h1>
-          {/* A mistyped address shows here, and "Use another account" is the
-              way out of it. */}
           <div className="w-full rounded-lg border bg-muted/40 px-4 py-3">
             <p className="text-sm break-all select-all">{userEmail}</p>
           </div>
