@@ -53,10 +53,7 @@ function renderDescription(text: string) {
   const flushBullets = () => {
     if (bullets.length === 0) return;
     nodes.push(
-      <ul
-        key={key++}
-        className="mb-0 mt-2 pl-3 fluid-small text-muted-foreground"
-      >
+      <ul key={key++} className="mb-0 mt-2 pl-3 text-sm text-muted-foreground">
         {bullets.map((b, i) => (
           <li key={i} className="mb-1">
             {b.slice(2)}
@@ -77,7 +74,7 @@ function renderDescription(text: string) {
       nodes.push(
         <p
           key={key++}
-          className="mb-0 mt-3 fluid-small font-semibold uppercase tracking-wide text-muted-foreground"
+          className="mb-0 mt-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground"
         >
           {line.slice(0, -1)}
         </p>
@@ -85,7 +82,10 @@ function renderDescription(text: string) {
     } else {
       flushBullets();
       nodes.push(
-        <p key={key++} className="mb-0 mt-2 fluid-small text-muted-foreground">
+        <p
+          key={key++}
+          className="mb-0 mt-2 text-sm font-normal text-muted-foreground"
+        >
           {line}
         </p>
       );
@@ -136,14 +136,14 @@ const ReleaseNotesModal = NiceModal.create(
           <DialogHeader>
             <DialogTitle
               id="release-notes-title"
-              className="fluid-text font-bold"
+              className="text-lg font-semibold"
             >
               {t("releaseNotes.title", "What's New")}
             </DialogTitle>
           </DialogHeader>
           <ScrollArea className="max-h-[80dvh]" withFade>
             <m.div
-              className="flex flex-col gap-4 p-4"
+              className="flex flex-col gap-4 p-1 sm:p-4"
               variants={staggerContainer(0.07, 0.15)}
               initial="hidden"
               animate="show"
@@ -154,7 +154,7 @@ const ReleaseNotesModal = NiceModal.create(
                   <m.div key={release.id} variants={fadeSlideUp}>
                     <Card className="overflow-hidden gap-0 py-0">
                       <CardHeader className="flex items-center gap-2 py-3 px-4">
-                        <strong className="fluid-small">
+                        <strong className="text-sm">
                           {formatDate(release.id.substring(0, 10))}
                         </strong>
                         {idx === 0 && (
@@ -173,17 +173,17 @@ const ReleaseNotesModal = NiceModal.create(
                         </Alert>
                       )}
                       {release.screenshot && (
-                        <img
-                          src={
-                            release.screenshot.startsWith("http")
-                              ? release.screenshot
-                              : `/${release.screenshot}`
-                          }
-                          alt={`release screenshot ${release.id}`}
-                          // Space below, so a picture cropped close to its
-                          // subject does not sit on the line under it.
-                          className="mb-4 block max-h-[300px] w-full object-contain"
-                        />
+                        <div className="flex justify-center border-t bg-muted/40 p-4">
+                          <img
+                            src={
+                              release.screenshot.startsWith("http")
+                                ? release.screenshot
+                                : `/${release.screenshot}`
+                            }
+                            alt={`release screenshot ${release.id}`}
+                            className="block max-h-72 w-auto max-w-full rounded-md sm:max-w-md"
+                          />
+                        </div>
                       )}
                       <CardContent className="px-0">
                         <m.ul
@@ -199,20 +199,20 @@ const ReleaseNotesModal = NiceModal.create(
                             return (
                               <m.li
                                 key={`${item.type}-${i}`}
-                                className="flex items-start gap-3 py-3 px-4"
+                                className="flex flex-col items-start gap-2 px-4 py-3 sm:flex-row sm:gap-3"
                                 variants={fadeSlideUp}
                               >
                                 <span
                                   className={cn(
                                     // The label's line is as tall as its letters,
                                     // so the padding is what gives it room.
-                                    "fluid-button mt-0.5 min-w-16 shrink-0 rounded-md px-2 py-1 text-center",
+                                    "shrink-0 rounded-md px-2 py-1.5 text-center text-xs leading-none font-bold sm:mt-0.5 sm:min-w-16",
                                     config.colorClass
                                   )}
                                 >
                                   {t(config.labelKey)}
                                 </span>
-                                <span className="fluid-text leading-[1.4] font-semibold">
+                                <span className="text-base leading-snug font-semibold">
                                   {text}
                                   {description &&
                                     renderDescription(description)}

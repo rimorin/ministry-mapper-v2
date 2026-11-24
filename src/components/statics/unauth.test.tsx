@@ -12,8 +12,6 @@ vi.mock("../../utils/pocketbase", () => ({
   getUser: (field?: "name" | "email") => (field ? account[field] : account)
 }));
 
-// The shared frame brings the app's footer with it, which needs providers
-// this page has no part in.
 vi.mock("../navigation/authlayout", () => ({
   default: ({ children }: { children: React.ReactNode }) => children
 }));

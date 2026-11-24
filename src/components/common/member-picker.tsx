@@ -105,8 +105,6 @@ const MemberPicker = ({
           <ComboboxTrigger />
         </ComboboxActions>
       </ComboboxInputGroup>
-      {/* The list scrolls and the footer sits below it, outside the scroll,
-          so no row can show through around the Done button. */}
       <ComboboxContent className="flex flex-col overflow-hidden pb-0">
         <ComboboxEmpty>
           {t("common.noResults", "No results found.")}

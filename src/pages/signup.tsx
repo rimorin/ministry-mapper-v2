@@ -24,8 +24,6 @@ import useSignup from "../hooks/useSignup";
 
 const { VITE_PRIVACY_URL, VITE_TERMS_URL } = import.meta.env;
 
-// What a name may be, for the input's own check and for knowing when to
-// say so: starts with a letter, 2 to 50 characters.
 const NAME_PATTERN = "[A-Za-z][\\w\\s.\\-']*";
 const NAME_REGEX = new RegExp(`^(?=.{2,50}$)${NAME_PATTERN}$`);
 
@@ -33,7 +31,6 @@ const SignupComponent = () => {
   const { t } = useTranslation();
   const [nameTouched, setNameTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
-  // The address the verification link went to, once the account is made.
   const [sentTo, setSentTo] = useState("");
   const {
     formData,
@@ -93,8 +90,6 @@ const SignupComponent = () => {
         onSubmit={handleFormSubmit}
       >
         <FieldGroup className="gap-5">
-          {/* The one-tap ways in come first here too: they make the account
-              with no form to fill and no email to verify. */}
           <Field>
             <OAuthButtons
               disabled={isBusy}
@@ -175,8 +170,6 @@ const SignupComponent = () => {
                 handleInputChange(e);
               }}
             />
-            {/* Says what the button is waiting for before anything is typed;
-                the checklist takes over once it is. */}
             {!(passwordTouched || validated) && (
               <FieldDescription>
                 {t(

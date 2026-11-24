@@ -7,9 +7,6 @@ import AuthLayout from "../navigation/authlayout";
 import { SignInDifferentProps } from "../../utils/interface";
 import { getUser } from "../../utils/pocketbase";
 
-// What a signed-in account sees while no congregation has added it: one
-// message, the email to pass on, and one thing to do. It sits in the sign-in
-// pages' frame, so the language and theme stay within reach.
 const UnauthorizedPage = ({ handleClick }: SignInDifferentProps) => {
   const { t } = useTranslation();
   const name = getUser("name") as string | null;
@@ -23,7 +20,7 @@ const UnauthorizedPage = ({ handleClick }: SignInDifferentProps) => {
             <UserCheck className="size-6" aria-hidden="true" />
           </div>
           <div className="space-y-1.5">
-            <h1 className="text-xl font-semibold">
+            <h1 className="text-2xl font-semibold tracking-tight">
               {t("auth.unauthorizedAccessTitle", "You're signed in")}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -33,9 +30,6 @@ const UnauthorizedPage = ({ handleClick }: SignInDifferentProps) => {
               )}
             </p>
           </div>
-          {/* The administrator finds the account by this, and someone who
-              signed in with Google or Apple may not know which address it
-              was. */}
           {email && (
             <div className="w-full rounded-lg border bg-muted/40 px-4 py-3">
               <p className="text-xs text-muted-foreground">
@@ -51,8 +45,7 @@ const UnauthorizedPage = ({ handleClick }: SignInDifferentProps) => {
               "Ask your congregation administrator to add you using this email, then check again."
             )}
           </p>
-          {/* Being added does not reach this page by itself: a reload reads
-              the account's roles again. */}
+          {/* A reload re-reads the account's roles. */}
           <div className="flex w-full flex-col gap-2">
             <Button
               type="button"

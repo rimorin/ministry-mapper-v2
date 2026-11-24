@@ -1,7 +1,6 @@
 /* Main page styles - uses centralized variables from variables.css */
 
-/* Field-level validation — red border on invalid inputs after first submit attempt.
-   An input group carries the border for the control inside it. */
+/* Field-level validation — red border on invalid inputs after first submit attempt */
 form[data-validated="true"] [data-slot="input"]:invalid,
 form[data-validated="true"] [data-slot="input-group"]:has(:invalid) {
   border-color: var(--destructive);

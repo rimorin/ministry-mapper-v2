@@ -28,7 +28,6 @@ import AuthContainer from "../components/form/authcontainer";
 import OAuthButtons from "../components/form/oauth-buttons";
 import useAuthentication from "../hooks/useAuthentication";
 
-// The emailed code's length, as the backend issues it.
 const OTP_LENGTH = 4;
 
 const LoginComponent = () => {
@@ -85,8 +84,6 @@ const LoginComponent = () => {
           onSubmit={handleLoginSubmit}
         >
           <FieldGroup className="gap-5">
-            {/* The one-tap ways in come first: someone new has no password to
-                type, and these make the account as well as open it. */}
             <Field>
               <OAuthButtons
                 disabled={isDisabled}
@@ -185,8 +182,6 @@ const LoginComponent = () => {
               <FieldLabel htmlFor="otp-code" className="sr-only">
                 {t("auth.oneTimePassword", "One-time code")}
               </FieldLabel>
-              {/* The last digit sends the code, so nobody has to find a
-                  button; Verify stays for anyone who wants it. */}
               <InputOTP
                 id="otp-code"
                 maxLength={OTP_LENGTH}

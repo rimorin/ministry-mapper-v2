@@ -1,11 +1,8 @@
 import type { Breadcrumb, ErrorEvent } from "@sentry/react";
 
-// A share link's id is the whole of a publisher's access. It sits in the map
-// page's address and in the path of its own record.
+// A share link's id is in /map/:id and in its assignment record's path.
 const LINK_ID_IN_PATH = /(\/map\/|\/assignments\/records\/)[a-z0-9]{15}\b/g;
 
-// A URL as it may go to Sentry: no query or fragment (filters and sign-in
-// replies carry ids, names and codes) and no share link id.
 export const scrubUrl = (url: string): string =>
   url.split(/[?#]/)[0].replace(LINK_ID_IN_PATH, "$1:id");
 

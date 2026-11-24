@@ -60,7 +60,6 @@ Sentry.init({
     /runtime\.sendMessage/
   ],
 
-  // Addresses are recorded without share link ids or queries.
   beforeBreadcrumb: scrubBreadcrumb,
 
   beforeSend(event, hint) {
