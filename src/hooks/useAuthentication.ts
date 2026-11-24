@@ -68,7 +68,7 @@ export default function useAuthentication() {
 
   const handleResendOtp = async (email: string) => {
     await handleOtpRequest(processEmail(email));
-    notifyInfo("OTP sent to your email");
+    notifyInfo(t("auth.codeSent", "A new code is on its way."));
   };
 
   const handleOAuthSignIn = (provider: string) => {

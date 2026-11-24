@@ -1,18 +1,24 @@
 /* Main page styles - uses centralized variables from variables.css */
 
-/* Field-level validation — red border on invalid inputs after first submit attempt */
-form[data-validated="true"] [data-slot="input"]:invalid {
+/* Field-level validation — red border on invalid inputs after first submit attempt.
+   An input group carries the border for the control inside it. */
+form[data-validated="true"] [data-slot="input"]:invalid,
+form[data-validated="true"] [data-slot="input-group"]:has(:invalid) {
   border-color: var(--destructive);
   box-shadow: 0 0 0 3px color-mix(in oklch, var(--destructive) 20%, transparent);
 }
 
-.dark form[data-validated="true"] [data-slot="input"]:invalid {
+.dark form[data-validated="true"] [data-slot="input"]:invalid,
+.dark form[data-validated="true"] [data-slot="input-group"]:has(:invalid) {
   border-color: color-mix(in oklch, var(--destructive) 50%, transparent);
   box-shadow: 0 0 0 3px color-mix(in oklch, var(--destructive) 40%, transparent);
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  form[data-validated="true"]:has([data-slot="input"]:invalid) {
+  form[data-validated="true"]:has(
+      [data-slot="input"]:invalid,
+      [data-slot="input-group-control"]:invalid
+    ) {
     animation: shake var(--motion-slow) cubic-bezier(0.36, 0.07, 0.19, 0.97)
       both;
   }

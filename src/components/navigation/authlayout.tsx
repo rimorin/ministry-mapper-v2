@@ -77,7 +77,7 @@ const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
       >
         <span className="flex flex-col items-center gap-0.5">
           <Button
-            variant="ghost"
+            variant="outline"
             size="icon"
             onClick={() => window.open(AboutURL)}
           >

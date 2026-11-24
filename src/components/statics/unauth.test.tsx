@@ -1,87 +1,90 @@
-import { describe, it, expect, vi } from "vitest";
+import { beforeEach, describe, it, expect, vi } from "vitest";
+import userEvent from "@testing-library/user-event";
 import { render, screen } from "../../utils/test";
 import UnauthorizedPage from "./unauth";
+
+const account = vi.hoisted(() => ({
+  name: "Mei Ling" as string | null,
+  email: "meiling@example.test" as string | null
+}));
+
+vi.mock("../../utils/pocketbase", () => ({
+  getUser: (field?: "name" | "email") => (field ? account[field] : account)
+}));
 
 describe("UnauthorizedPage", () => {
   const mockHandleClick = vi.fn();
 
-  describe("rendering", () => {
-    it("should render access denied title", () => {
-      render(<UnauthorizedPage handleClick={mockHandleClick} />);
-
-      expect(screen.getByText(/Access Denied/i)).toBeInTheDocument();
-    });
-
-    it("should render unauthorized message", () => {
-      render(<UnauthorizedPage handleClick={mockHandleClick} />);
-
-      expect(
-        screen.getByText(/You don't have permission to access this system/i)
-      ).toBeInTheDocument();
-    });
-
-    it("should render ministry mapper logo", () => {
-      render(<UnauthorizedPage handleClick={mockHandleClick} />);
-
-      const logo = screen.getByAltText(/Ministry Mapper logo/i);
-      expect(logo).toBeInTheDocument();
-      expect(logo).toHaveAttribute(
-        "src",
-        expect.stringContaining("android-chrome")
-      );
-    });
+  beforeEach(() => {
+    mockHandleClick.mockClear();
+    account.name = "Mei Ling";
+    account.email = "meiling@example.test";
   });
 
-  describe("instructions", () => {
-    it("should show existing user instructions", () => {
-      render(<UnauthorizedPage handleClick={mockHandleClick} />);
+  it("says the account is signed in, not that access was denied", () => {
+    render(<UnauthorizedPage handleClick={mockHandleClick} />);
 
-      expect(
-        screen.getByText(/Already part of a congregation/i)
-      ).toBeInTheDocument();
-      expect(
-        screen.getByText(/Ask your administrator to grant you access/i)
-      ).toBeInTheDocument();
-    });
-
-    it("should show new user instructions", () => {
-      render(<UnauthorizedPage handleClick={mockHandleClick} />);
-
-      expect(screen.getByText(/Need a new account/i)).toBeInTheDocument();
-    });
-
-    it("should display contact email link", () => {
-      render(<UnauthorizedPage handleClick={mockHandleClick} />);
-
-      const emailLink = screen.getByRole("link", { name: /contact us/i });
-      expect(emailLink).toBeInTheDocument();
-      expect(emailLink).toHaveAttribute("href", "mailto:rimorin@gmail.com");
-    });
+    expect(
+      screen.getByRole("heading", { name: /You're signed in/i })
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/isn't part of a congregation yet/i)
+    ).toBeInTheDocument();
+    expect(screen.queryByText(/denied/i)).not.toBeInTheDocument();
   });
 
-  describe("alert section", () => {
-    it("should render warning alert", () => {
-      const { container } = render(
-        <UnauthorizedPage handleClick={mockHandleClick} />
-      );
+  it("shows the account to pass on to the administrator", () => {
+    render(<UnauthorizedPage handleClick={mockHandleClick} />);
 
-      const alert = container.querySelector('[class*="bg-warning"]');
-      expect(alert).toBeInTheDocument();
-    });
-
-    it("should show what can you do heading", () => {
-      render(<UnauthorizedPage handleClick={mockHandleClick} />);
-
-      expect(screen.getByText(/What can you do/i)).toBeInTheDocument();
-    });
+    expect(screen.getByText("Mei Ling")).toBeInTheDocument();
+    expect(screen.getByText("meiling@example.test")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Ask your congregation administrator to add you/i)
+    ).toBeInTheDocument();
   });
 
-  describe("use another button", () => {
-    it("should render use another account button", () => {
-      render(<UnauthorizedPage handleClick={mockHandleClick} />);
+  it("leaves the account box out when there is no email to show", () => {
+    account.email = null;
+    render(<UnauthorizedPage handleClick={mockHandleClick} />);
 
-      const buttons = screen.getAllByRole("button");
-      expect(buttons.length).toBeGreaterThan(0);
-    });
+    expect(screen.queryByText(/Signed in as/i)).not.toBeInTheDocument();
+  });
+
+  it("offers to check again", () => {
+    render(<UnauthorizedPage handleClick={mockHandleClick} />);
+
+    expect(
+      screen.getByRole("button", { name: /Check again/i })
+    ).toBeInTheDocument();
+  });
+
+  it("lets the person switch to another account", async () => {
+    render(<UnauthorizedPage handleClick={mockHandleClick} />);
+
+    await userEvent.click(
+      screen.getByRole("button", { name: /Use another account/i })
+    );
+    expect(mockHandleClick).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps a way to reach us for a new congregation", () => {
+    render(<UnauthorizedPage handleClick={mockHandleClick} />);
+
+    expect(
+      screen.getByText(/Setting up a new congregation/i)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /contact us/i })).toHaveAttribute(
+      "href",
+      "mailto:rimorin@gmail.com"
+    );
+  });
+
+  it("renders the logo", () => {
+    render(<UnauthorizedPage handleClick={mockHandleClick} />);
+
+    expect(screen.getByAltText(/Ministry Mapper logo/i)).toHaveAttribute(
+      "src",
+      expect.stringContaining("android-chrome")
+    );
   });
 });

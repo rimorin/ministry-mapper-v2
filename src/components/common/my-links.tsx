@@ -203,14 +203,14 @@ const MyLinks = ({
                           )}
                         </ItemTitle>
                         {details.length > 0 && (
-                          <ItemDescription className="line-clamp-1 text-xs sm:col-start-1">
+                          <ItemDescription className="line-clamp-1 text-sm sm:col-start-1">
                             {details.join(" · ")}
                           </ItemDescription>
                         )}
                         {link.partners.length > 0 && (
-                          <ItemDescription className="flex items-center gap-1.5 text-xs sm:col-start-1">
+                          <ItemDescription className="flex items-center gap-1.5 text-sm sm:col-start-1">
                             <Users
-                              className="size-3 shrink-0"
+                              className="size-3.5 shrink-0"
                               aria-hidden="true"
                             />
                             <span className="min-w-0 truncate">
@@ -227,7 +227,7 @@ const MyLinks = ({
                               className="h-1.5"
                               aria-label={t("territory.completed", "Completed")}
                             />
-                            <p className="flex items-baseline justify-between gap-2 text-xs text-muted-foreground">
+                            <p className="flex items-baseline justify-between gap-2 text-sm text-muted-foreground">
                               <span className="min-w-0 truncate">
                                 {left.length > 0
                                   ? left.join(" · ")

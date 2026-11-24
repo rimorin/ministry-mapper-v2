@@ -9,7 +9,7 @@ const UseAnotherButton = ({ handleClick }: SignInDifferentProps) => {
     <GenericButton
       variant="secondary"
       onClick={handleClick}
-      label={t("auth.useAnotherAccount", "Use Another Account")}
+      label={t("auth.useAnotherAccount", "Use another account")}
     />
   );
 };

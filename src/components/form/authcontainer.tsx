@@ -29,7 +29,9 @@ const AuthContainer: FC<AuthContainerProps> = ({
   validated = false,
   onSubmit
 }) => (
-  <Card className="w-full shadow-md">
+  // On a phone the card is the whole page, so its outline only boxes the
+  // form in; it frames the card from the sm breakpoint up.
+  <Card className="w-full shadow-md max-sm:bg-transparent max-sm:shadow-none max-sm:ring-0">
     <CardHeader className="text-center pb-2">
       {icon && (
         <div
