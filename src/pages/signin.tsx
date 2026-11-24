@@ -1,47 +1,42 @@
-import { useEffect, useState } from "react";
-import { useLocation } from "wouter";
+import { useState } from "react";
+import { Link } from "wouter";
 import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import {
+  Field,
+  FieldDescription,
+  FieldGroup,
+  FieldLabel,
+  FieldSeparator
+} from "@/components/ui/field";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupButton,
+  InputGroupInput
+} from "@/components/ui/input-group";
 import {
   InputOTP,
   InputOTPGroup,
   InputOTPSlot
 } from "@/components/ui/input-otp";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, Mail } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { getAssetUrl } from "../utils/helpers/assetpath";
 import AuthContainer from "../components/form/authcontainer";
-import Divider from "../components/form/divider";
+import OAuthButtons from "../components/form/oauth-buttons";
 import useAuthentication from "../hooks/useAuthentication";
-import useNotification from "../hooks/useNotification";
-import { oauth2ProviderOffered } from "../utils/pocketbase";
 
-// Apple's mark, drawn in the text colour so it follows the theme.
-const AppleLogo = () => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    viewBox="0 0 256 315"
-    width="16"
-    height="18"
-    fill="currentColor"
-    aria-hidden="true"
-  >
-    <path d="M213.8 167c.4 47.6 41.7 63.4 42.2 63.6-.3 1.2-6.6 22.6-21.8 44.8-13 19.1-26.7 38.2-48 38.6-21.1.4-28-12.5-52-12.5s-31.6 12.1-51.5 12.9c-20.7.8-36.4-20.7-49.6-39.8-27-39-47.7-110.3-20-158.4a77 77 0 0 1 65.1-39.4c20.3-.4 39.5 13.6 51.9 13.6s35.7-16.9 60.2-14.4c10.2.4 39 4.2 57.5 31.2-1.5 1-34.4 20-34 59.8M174.2 50.2A69 69 0 0 0 190.6 0c-15.8.6-35 10.5-46.3 23.8-10.2 11.8-19.1 30.6-16.7 48.7 17.6 1.3 35.7-9 46.6-22.3" />
-  </svg>
-);
+// The emailed code's length, as the backend issues it.
+const OTP_LENGTH = 4;
 
 const LoginComponent = () => {
   const { t } = useTranslation();
-  const { notifyWarning } = useNotification();
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [validated, setValidated] = useState(false);
-
-  const [, navigate] = useLocation();
 
   const {
     isLogin,
@@ -56,18 +51,6 @@ const LoginComponent = () => {
     handleOAuthSignIn,
     clearOtpState
   } = useAuthentication();
-
-  // Apple is offered once the backend has it switched on.
-  const [appleOffered, setAppleOffered] = useState(false);
-  useEffect(() => {
-    let current = true;
-    void oauth2ProviderOffered("apple").then((offered) => {
-      if (current) setAppleOffered(offered);
-    });
-    return () => {
-      current = false;
-    };
-  }, []);
 
   const handleOtpFormSubmit = async (
     event: React.FormEvent<HTMLFormElement>
@@ -85,26 +68,6 @@ const LoginComponent = () => {
     await loginInWithEmailAndPassword(loginEmail, loginPassword);
   };
 
-  const isClipboardAvailable = "clipboard" in navigator;
-
-  const handleClipboardPaste = async () => {
-    try {
-      const text = await navigator.clipboard.readText();
-      setOtpCode(text);
-    } catch (err) {
-      if (err instanceof Error && err.name === "NotAllowedError") {
-        notifyWarning(
-          t(
-            "auth.clipboardDenied",
-            "Permission to access clipboard was denied."
-          )
-        );
-        return;
-      }
-      notifyWarning(String(err));
-    }
-  };
-
   const handleBackToSignIn = () => {
     clearOtpState();
     setValidated(false);
@@ -116,165 +79,123 @@ const LoginComponent = () => {
     <>
       {!otpSessionId ? (
         <AuthContainer
-          title={t("auth.signIn", "Sign In")}
-          subtitle={t(
-            "auth.signInWelcome",
-            "Welcome back! Please enter your credentials."
-          )}
+          title={t("auth.signIn", "Sign in")}
+          subtitle={t("auth.signInWelcome", "Welcome! Choose how to sign in.")}
           validated={validated}
           onSubmit={handleLoginSubmit}
         >
-          <div className="space-y-1.5">
-            <Label htmlFor="login-email">
-              {t("auth.emailAddress", "Email Address")}
-            </Label>
-            <Input
-              id="login-email"
-              type="email"
-              placeholder={t("auth.enterEmail", "Enter email")}
-              value={loginEmail}
-              required
-              aria-required="true"
-              autoComplete="email"
-              autoFocus
-              disabled={isDisabled}
-              onChange={(e) => setLoginEmail(e.target.value)}
-            />
-          </div>
+          <FieldGroup className="gap-5">
+            {/* The one-tap ways in come first: someone new has no password to
+                type, and these make the account as well as open it. */}
+            <Field>
+              <OAuthButtons
+                disabled={isDisabled}
+                pendingProvider={isOAuthLoading ? oauthProvider : ""}
+                onSignIn={handleOAuthSignIn}
+              />
+            </Field>
 
-          <div className="space-y-1.5">
-            <Label htmlFor="login-password">
-              {t("auth.password", "Password")}
-            </Label>
-            <div className="relative">
+            <FieldSeparator className="sm:*:data-[slot=field-separator-content]:bg-card">
+              {t("auth.orUseEmail", "Or use your email")}
+            </FieldSeparator>
+
+            <Field>
+              <FieldLabel htmlFor="login-email">
+                {t("auth.emailAddress", "Email address")}
+              </FieldLabel>
               <Input
-                id="login-password"
-                type={showPassword ? "text" : "password"}
-                placeholder={t("auth.password", "Password")}
-                value={loginPassword}
+                id="login-email"
+                type="email"
+                placeholder={t("auth.enterEmail", "Enter email")}
+                value={loginEmail}
                 required
                 aria-required="true"
-                autoComplete="current-password"
+                autoComplete="email"
                 disabled={isDisabled}
-                onChange={(e) => setLoginPassword(e.target.value)}
-                className="pr-10"
+                onChange={(e) => setLoginEmail(e.target.value)}
               />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowPassword(!showPassword)}
-                aria-label={
-                  showPassword
-                    ? t("auth.hidePassword", "Hide password")
-                    : t("auth.showPassword", "Show password")
-                }
-                className="absolute right-1 top-1/2 size-7 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                disabled={isDisabled}
-              >
-                {showPassword ? (
-                  <EyeOff className="size-4" />
-                ) : (
-                  <Eye className="size-4" />
+            </Field>
+
+            <Field>
+              <div className="flex items-center">
+                <FieldLabel htmlFor="login-password">
+                  {t("auth.password", "Password")}
+                </FieldLabel>
+                <Link
+                  href="/forgot"
+                  className="ml-auto text-sm underline underline-offset-4"
+                >
+                  {t("auth.forgotPassword", "Forgot password?")}
+                </Link>
+              </div>
+              <InputGroup>
+                <InputGroupInput
+                  id="login-password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder={t("auth.password", "Password")}
+                  value={loginPassword}
+                  required
+                  aria-required="true"
+                  autoComplete="current-password"
+                  disabled={isDisabled}
+                  onChange={(e) => setLoginPassword(e.target.value)}
+                />
+                <InputGroupAddon align="inline-end">
+                  <InputGroupButton
+                    size="icon-xs"
+                    onClick={() => setShowPassword(!showPassword)}
+                    aria-label={
+                      showPassword
+                        ? t("auth.hidePassword", "Hide password")
+                        : t("auth.showPassword", "Show password")
+                    }
+                    disabled={isDisabled}
+                  >
+                    {showPassword ? <EyeOff /> : <Eye />}
+                  </InputGroupButton>
+                </InputGroupAddon>
+              </InputGroup>
+            </Field>
+
+            <Field>
+              <Button type="submit" disabled={isDisabled}>
+                {isLogin && (
+                  <Spinner data-icon="inline-start" aria-hidden="true" />
                 )}
+                {t("auth.signIn", "Sign in")}
               </Button>
-            </div>
-            <div className="text-right">
-              <Button
-                variant="link"
-                className="h-auto p-0 text-sm"
-                disabled={isDisabled}
-                onClick={() => navigate("/forgot")}
-              >
-                {t("auth.forgotPassword", "Forgot Password")}
-              </Button>
-            </div>
-          </div>
-
-          <Button type="submit" className="w-full" disabled={isDisabled}>
-            {isLogin && <Spinner data-icon="inline-start" aria-hidden="true" />}
-            {t("auth.signIn", "Sign In")}
-          </Button>
-
-          <Divider text={t("auth.orContinueWith", "Or continue with")} />
-          <Button
-            variant="outline"
-            type="button"
-            className="w-full gap-2"
-            disabled={isDisabled}
-            onClick={() => handleOAuthSignIn("google")}
-          >
-            {isOAuthLoading && oauthProvider === "google" ? (
-              <Spinner aria-hidden="true" />
-            ) : (
-              <img
-                src={getAssetUrl("google.svg")}
-                alt="Google logo"
-                width="18"
-                height="18"
-              />
-            )}
-            {isOAuthLoading && oauthProvider === "google"
-              ? t("auth.signingIn", "Signing in...")
-              : t("auth.signInWithGoogle", "Sign in with Google")}
-          </Button>
-          {appleOffered && (
-            <Button
-              variant="outline"
-              type="button"
-              className="w-full gap-2"
-              disabled={isDisabled}
-              onClick={() => handleOAuthSignIn("apple")}
-            >
-              {isOAuthLoading && oauthProvider === "apple" ? (
-                <Spinner aria-hidden="true" />
-              ) : (
-                <AppleLogo />
-              )}
-              {isOAuthLoading && oauthProvider === "apple"
-                ? t("auth.signingIn", "Signing in...")
-                : t("auth.signInWithApple", "Sign in with Apple")}
-            </Button>
-          )}
-
-          <p className="text-center text-sm text-muted-foreground">
-            {t("auth.noAccountQuestion", "Don't have an account?")}{" "}
-            <Button
-              variant="link"
-              className="h-auto p-0 font-semibold"
-              disabled={isDisabled}
-              onClick={() => navigate("/signup")}
-            >
-              {t("auth.signUp", "Sign Up")}
-            </Button>
-          </p>
+              <FieldDescription className="text-center">
+                {t("auth.noAccountQuestion", "Don't have an account?")}{" "}
+                <Link href="/signup">{t("auth.signUp", "Sign up")}</Link>
+              </FieldDescription>
+            </Field>
+          </FieldGroup>
         </AuthContainer>
       ) : (
         <AuthContainer
-          title={t("auth.otpVerification", "One Time Password Verification")}
-          subtitle={t(
-            "auth.otpSent",
-            "An OTP has been sent to your email address."
-          )}
-          icon="🔒"
+          title={t("auth.otpVerification", "Check your email")}
+          subtitle={t("auth.otpSent", "We sent a 4-digit code to {{email}}.", {
+            email: loginEmail
+          })}
+          icon={<Mail className="size-6" aria-hidden="true" />}
           onSubmit={handleOtpFormSubmit}
         >
-          <p className="text-center text-sm font-medium text-muted-foreground">
-            {loginEmail}
-          </p>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="otp-code" className="sr-only">
-              {t("auth.oneTimePassword", "One-time Password")}
-            </Label>
-            <div className="flex flex-col items-center gap-3">
+          <FieldGroup className="gap-5">
+            <Field>
+              <FieldLabel htmlFor="otp-code" className="sr-only">
+                {t("auth.oneTimePassword", "One-time code")}
+              </FieldLabel>
+              {/* The last digit sends the code, so nobody has to find a
+                  button; Verify stays for anyone who wants it. */}
               <InputOTP
                 id="otp-code"
-                maxLength={4}
+                maxLength={OTP_LENGTH}
                 value={otpCode}
                 onChange={(value) => setOtpCode(value)}
+                onComplete={(code: string) => submitOtp(otpSessionId, code)}
                 disabled={isLogin}
                 autoFocus
+                containerClassName="justify-center"
               >
                 <InputOTPGroup>
                   <InputOTPSlot index={0} />
@@ -283,63 +204,40 @@ const LoginComponent = () => {
                   <InputOTPSlot index={3} />
                 </InputOTPGroup>
               </InputOTP>
-              <p
-                id="otp-help"
-                className="text-center text-xs text-muted-foreground"
-              >
-                {t("auth.otpHelp", "Enter the 4-digit code sent to your email")}
-              </p>
-            </div>
-            <div className="text-center">
+            </Field>
+
+            <Field>
               <Button
-                variant="link"
-                className="h-auto p-0 text-sm"
-                disabled={isLogin}
-                onClick={() => handleResendOtp(loginEmail)}
+                type="submit"
+                disabled={isLogin || otpCode.length < OTP_LENGTH}
               >
-                {t("auth.resendOTP", "Resend OTP")}
+                {isLogin && (
+                  <Spinner data-icon="inline-start" aria-hidden="true" />
+                )}
+                {t("auth.verify", "Verify")}
               </Button>
-            </div>
-          </div>
+              <FieldDescription className="text-center">
+                {t("auth.noCode", "Didn't get it?")}{" "}
+                <Button
+                  variant="link"
+                  className="h-auto p-0 underline"
+                  disabled={isLogin}
+                  onClick={() => handleResendOtp(loginEmail)}
+                >
+                  {t("auth.resendOTP", "Send a new code")}
+                </Button>
+              </FieldDescription>
+            </Field>
 
-          <Button type="submit" className="w-full" disabled={isLogin}>
-            {isLogin && <Spinner data-icon="inline-start" aria-hidden="true" />}
-            {t("auth.verify", "Verify")}
-          </Button>
-
-          <div className="flex gap-2">
-            {isClipboardAvailable && (
-              <Button
-                variant="outline"
-                className="flex-1"
-                type="button"
-                onClick={handleClipboardPaste}
-                disabled={isLogin}
-              >
-                {t("auth.paste", "Paste")}
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              className="flex-1"
-              type="reset"
-              onClick={() => setOtpCode("")}
-              disabled={isLogin}
-            >
-              {t("common.clear", "Clear")}
-            </Button>
-          </div>
-
-          <div className="text-center">
             <Button
               variant="link"
-              className="h-auto p-0 text-sm text-muted-foreground hover:text-foreground"
+              className="h-auto self-center p-0 text-muted-foreground hover:text-foreground"
               disabled={isLogin}
               onClick={handleBackToSignIn}
             >
-              {t("auth.backToSignIn", "Back to Sign In")}
+              {t("auth.backToSignIn", "Back to sign in")}
             </Button>
-          </div>
+          </FieldGroup>
         </AuthContainer>
       )}
     </>
