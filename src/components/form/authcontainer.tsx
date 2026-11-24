@@ -7,6 +7,8 @@ import {
   CardTitle
 } from "@/components/ui/card";
 
+import { authCardClass } from "./authcard";
+
 interface AuthContainerProps {
   children: ReactNode;
   title: string;
@@ -29,9 +31,7 @@ const AuthContainer: FC<AuthContainerProps> = ({
   validated = false,
   onSubmit
 }) => (
-  // On a phone the card is the whole page, so its outline only boxes the
-  // form in; it frames the card from the sm breakpoint up.
-  <Card className="w-full shadow-md max-sm:bg-transparent max-sm:shadow-none max-sm:ring-0">
+  <Card className={authCardClass}>
     <CardHeader className="text-center pb-2">
       {icon && (
         <div

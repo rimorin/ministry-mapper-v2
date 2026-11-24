@@ -82,9 +82,7 @@ describe("usePasswordReset", () => {
       );
       expect(result.current.isResetting).toBe(false);
       expect(result.current.isSuccess).toBe(true);
-      expect(result.current.message).toBe(
-        "Your password has been successfully reset."
-      );
+      expect(result.current.message).toBe("Your password has been reset");
     });
 
     it("should handle password reset errors", async () => {
@@ -122,9 +120,7 @@ describe("usePasswordReset", () => {
       );
       expect(result.current.isProcessing).toBe(false);
       expect(result.current.isSuccess).toBe(true);
-      expect(result.current.message).toBe(
-        "Your email address has been verified."
-      );
+      expect(result.current.message).toBe("Your email is verified");
     });
 
     it("should handle email verification errors", async () => {

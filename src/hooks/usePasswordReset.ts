@@ -10,19 +10,21 @@ import { mapPbAuthError } from "../utils/helpers/pbErrors";
 
 export default function usePasswordReset() {
   const { t } = useTranslation();
-  const { notifyError, notifyWarning } = useNotification();
+  const { notifyError } = useNotification();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [message, setMessage] = useState("");
   const [isSuccess, setIsSuccess] = useState(false);
 
+  // Resolves to whether the request went through, for the page to say so.
   const handleForgotPassword = async (email: string) => {
     try {
       setIsProcessing(true);
       await requestPasswordReset(email);
-      notifyWarning(`Password reset email sent to ${email}.`);
+      return true;
     } catch (error) {
       notifyError(mapPbAuthError(error, t) ?? error);
+      return false;
     } finally {
       setIsProcessing(false);
     }
@@ -36,7 +38,7 @@ export default function usePasswordReset() {
     try {
       setIsResetting(true);
       await confirmPasswordReset(actionCode, newPassword, confirmPassword);
-      setMessage("Your password has been successfully reset.");
+      setMessage(t("auth.passwordResetDone", "Your password has been reset"));
       setIsSuccess(true);
     } catch (error) {
       setMessage(mapPbAuthError(error, t) ?? formatErrorMessage(error));
@@ -50,7 +52,7 @@ export default function usePasswordReset() {
     try {
       setIsProcessing(true);
       await confirmVerification(actionCode);
-      setMessage("Your email address has been verified.");
+      setMessage(t("auth.emailVerified", "Your email is verified"));
       setIsSuccess(true);
     } catch (error) {
       setMessage(mapPbAuthError(error, t) ?? formatErrorMessage(error));

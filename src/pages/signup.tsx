@@ -8,13 +8,14 @@ import {
   FieldLabel,
   FieldSeparator
 } from "@/components/ui/field";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { useTranslation } from "react-i18next";
-import { Link, Redirect, useLocation } from "wouter";
+import { Link, Redirect } from "wouter";
 
 import { MINIMUM_PASSWORD_LENGTH } from "../utils/constants";
 import { getUser } from "../utils/pocketbase";
 import AuthContainer from "../components/form/authcontainer";
+import EmailSent from "../components/form/email-sent";
 import OAuthButtons from "../components/form/oauth-buttons";
 import AuthLayout from "../components/navigation/authlayout";
 import PasswordChecklist from "../components/form/passwordchecklist";
@@ -30,9 +31,10 @@ const NAME_REGEX = new RegExp(`^(?=.{2,50}$)${NAME_PATTERN}$`);
 
 const SignupComponent = () => {
   const { t } = useTranslation();
-  const [, navigate] = useLocation();
   const [nameTouched, setNameTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
+  // The address the verification link went to, once the account is made.
+  const [sentTo, setSentTo] = useState("");
   const {
     formData,
     validated,
@@ -49,6 +51,26 @@ const SignupComponent = () => {
 
   if (getUser()) return <Redirect to="/" />;
 
+  if (sentTo) {
+    return (
+      <AuthLayout>
+        <EmailSent
+          message={t(
+            "auth.signupEmailSent",
+            "We sent a link to {{email}}. Open it to verify your account, then sign in.",
+            { email: sentTo }
+          )}
+        >
+          <Field>
+            <Link href="/" replace className={buttonVariants()}>
+              {t("auth.backToSignIn", "Back to sign in")}
+            </Link>
+          </Field>
+        </EmailSent>
+      </AuthLayout>
+    );
+  }
+
   const isBusy = isCreating || isOAuthLoading;
   const isNameValid = NAME_REGEX.test(formData.name);
 
@@ -59,7 +81,7 @@ const SignupComponent = () => {
     if (!form.checkValidity()) {
       return;
     }
-    await handleCreateSubmit(() => navigate("/", { replace: true }));
+    await handleCreateSubmit(() => setSentTo(formData.email));
   };
 
   return (
