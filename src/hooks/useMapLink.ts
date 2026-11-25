@@ -23,6 +23,10 @@ import {
 
 type CachedLinkMap = Omit<LinkMapResponse, "addresses">;
 
+// Why a link stopped working: its time ran out, the conductor took it back,
+// or the server refused it without saying which.
+export type LinkEnd = "expired" | "taken-back" | "unknown";
+
 type GetMapDataResult = {
   mapId: string;
   preloadedAddresses: mapAddressResponse[];
@@ -31,8 +35,9 @@ type GetMapDataResult = {
 export default function useMapLink() {
   const { i18n } = useTranslation();
   const { notifyError } = useNotification();
-  const [isLinkExpired, setIsLinkExpired] = useState(false);
+  const [linkEnd, setLinkEnd] = useState<LinkEnd | null>(null);
   const [tokenEndTime, setTokenEndTime] = useState(0);
+  const endTimeRef = useRef(0);
   const [isLoading, setIsLoading] = useState(true);
   const [coordinates, setCoordinates] = useState<latlongInterface>(
     DEFAULT_COORDINATES.Singapore
@@ -43,14 +48,19 @@ export default function useMapLink() {
   const [hasPinnedMessages, setHasPinnedMessages] = useState(false);
   const linkIdRef = useRef<string | undefined>(undefined);
 
-  const markLinkExpired = () => {
+  // A link past its time ended because of it, whatever reported the end: the
+  // cleanup job deletes expired links, and a phone left asleep hears of that
+  // after the time is up.
+  const markLinkExpired = (reason: LinkEnd = "unknown") => {
     if (linkIdRef.current) deleteAssignmentCache(linkIdRef.current);
-    setIsLinkExpired(true);
+    const timeUp = endTimeRef.current > 0 && Date.now() >= endTimeRef.current;
+    setLinkEnd(timeUp ? "expired" : reason);
   };
 
   useEffect(() => {
-    window.addEventListener("mm-auth-expired", markLinkExpired);
-    return () => window.removeEventListener("mm-auth-expired", markLinkExpired);
+    const onAuthExpired = () => markLinkExpired();
+    window.addEventListener("mm-auth-expired", onAuthExpired);
+    return () => window.removeEventListener("mm-auth-expired", onAuthExpired);
   }, []);
 
   const retrieveLinkData = async (
@@ -70,9 +80,10 @@ export default function useMapLink() {
     if (!response?.map?.id) return undefined;
 
     const expiryTimestamp = new Date(response.expiry_date).getTime();
+    endTimeRef.current = expiryTimestamp;
     setTokenEndTime(expiryTimestamp);
     const isExpired = new Date().getTime() > expiryTimestamp;
-    setIsLinkExpired(isExpired);
+    setLinkEnd(isExpired ? "expired" : null);
     if (isExpired) return undefined;
 
     const { map: mapData, congregation } = response;
@@ -129,6 +140,7 @@ export default function useMapLink() {
   ): Promise<GetMapDataResult | undefined> => {
     if (!linkId) return;
     linkIdRef.current = linkId;
+    endTimeRef.current = 0;
     try {
       const result = await retrieveLinkData(linkId);
       if (!result) return;
@@ -153,7 +165,8 @@ export default function useMapLink() {
   };
 
   return {
-    isLinkExpired,
+    isLinkExpired: linkEnd !== null,
+    linkEnd,
     tokenEndTime,
     isLoading,
     coordinates,

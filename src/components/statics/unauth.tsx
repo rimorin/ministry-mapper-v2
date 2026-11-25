@@ -1,16 +1,70 @@
 import { useTranslation } from "react-i18next";
-import { UserCheck } from "lucide-react";
+import { Copy, Send, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { authCardClass } from "../form/authcard";
 import AuthLayout from "../navigation/authlayout";
+import useNotification from "../../hooks/useNotification";
+import useOnTabFocus from "../../hooks/useOnTabFocus";
+import useRealtimeSubscription from "../../hooks/useRealtime";
 import { SignInDifferentProps } from "../../utils/interface";
-import { getUser } from "../../utils/pocketbase";
+import { getList, getUser, isAbortError } from "../../utils/pocketbase";
 
 const UnauthorizedPage = ({ handleClick }: SignInDifferentProps) => {
   const { t } = useTranslation();
+  const { notifySuccess } = useNotification();
+  const userId = (getUser("id") as string | null) ?? "";
   const name = getUser("name") as string | null;
   const email = getUser("email") as string | null;
+  const canShare = typeof navigator.share === "function";
+
+  // A reload starts the app over with the account's new role.
+  const checkAgain = () => window.location.reload();
+
+  // Moves on by itself once the account is added, whether this screen is
+  // open at the time or the person comes back to it afterwards.
+  useRealtimeSubscription(
+    "roles",
+    checkAgain,
+    { filter: `user="${userId}"`, fields: "id" },
+    [userId],
+    !!userId
+  );
+  useOnTabFocus(() => {
+    getList("roles", {
+      filter: `user="${userId}"`,
+      fields: "id",
+      requestKey: `waiting-roles-${userId}`
+    })
+      .then((roles) => {
+        if (roles.length > 0) checkAgain();
+      })
+      .catch(() => {});
+  });
+
+  const sendEmail = async () => {
+    if (!email) return;
+    if (canShare) {
+      try {
+        await navigator.share({
+          text: t(
+            "auth.addMeMessage",
+            "Please add me to Ministry Mapper. My email is {{email}}",
+            { email }
+          )
+        });
+        return;
+      } catch (error) {
+        if (isAbortError(error)) return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(email);
+      notifySuccess(t("auth.emailCopied", "Email copied"));
+    } catch {
+      // Clipboard refused: the email is still on screen to copy by hand.
+    }
+  };
 
   return (
     <AuthLayout>
@@ -41,17 +95,34 @@ const UnauthorizedPage = ({ handleClick }: SignInDifferentProps) => {
           )}
           <p className="text-sm">
             {t(
-              "auth.existingUserMessage",
-              "Ask your congregation administrator to add you using this email, then check again."
+              "auth.waitingMessage",
+              "Ask your congregation administrator to add you with this email. This page moves on by itself once they do."
             )}
           </p>
-          {/* A reload re-reads the account's roles. */}
           <div className="flex w-full flex-col gap-2">
+            {email && (
+              <Button
+                type="button"
+                size="lg"
+                className="w-full"
+                onClick={sendEmail}
+              >
+                {canShare ? (
+                  <Send aria-hidden="true" />
+                ) : (
+                  <Copy aria-hidden="true" />
+                )}
+                {canShare
+                  ? t("auth.sendEmail", "Send my email to my administrator")
+                  : t("auth.copyEmail", "Copy my email")}
+              </Button>
+            )}
             <Button
               type="button"
+              variant={email ? "outline" : "default"}
               size="lg"
               className="w-full"
-              onClick={() => window.location.reload()}
+              onClick={checkAgain}
             >
               {t("auth.checkAgain", "Check again")}
             </Button>

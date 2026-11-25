@@ -1,15 +1,37 @@
-import { beforeEach, describe, it, expect, vi } from "vitest";
+import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { render, screen } from "../../utils/test";
+import { render, screen, waitFor } from "../../utils/test";
 import UnauthorizedPage from "./unauth";
 
 const account = vi.hoisted(() => ({
+  id: "user1" as string | null,
   name: "Mei Ling" as string | null,
   email: "meiling@example.test" as string | null
 }));
 
+const listeners = vi.hoisted(() => ({
+  onRole: null as null | (() => void),
+  onFocus: null as null | (() => void),
+  getList: vi.fn()
+}));
+
 vi.mock("../../utils/pocketbase", () => ({
-  getUser: (field?: "name" | "email") => (field ? account[field] : account)
+  getUser: (field?: "id" | "name" | "email") =>
+    field ? account[field] : account,
+  getList: listeners.getList,
+  isAbortError: (error: { name?: string }) => error?.name === "AbortError"
+}));
+
+vi.mock("../../hooks/useRealtime", () => ({
+  default: (_collection: string, callback: () => void) => {
+    listeners.onRole = callback;
+  }
+}));
+
+vi.mock("../../hooks/useOnTabFocus", () => ({
+  default: (callback: () => void) => {
+    listeners.onFocus = callback;
+  }
 }));
 
 vi.mock("../navigation/authlayout", () => ({
@@ -18,11 +40,86 @@ vi.mock("../navigation/authlayout", () => ({
 
 describe("UnauthorizedPage", () => {
   const mockHandleClick = vi.fn();
+  const reload = vi.fn();
+  const realLocation = window.location;
 
   beforeEach(() => {
     mockHandleClick.mockClear();
+    reload.mockClear();
+    listeners.getList.mockReset();
+    account.id = "user1";
     account.name = "Mei Ling";
     account.email = "meiling@example.test";
+    // jsdom's location cannot reload; swap in a stub that records it.
+    Object.defineProperty(window, "location", {
+      value: { reload },
+      writable: true
+    });
+  });
+
+  afterEach(() => {
+    Object.defineProperty(window, "location", {
+      value: realLocation,
+      writable: true
+    });
+    Reflect.deleteProperty(navigator, "share");
+  });
+
+  it("moves on by itself when the account is given a role", () => {
+    render(<UnauthorizedPage handleClick={mockHandleClick} />);
+
+    listeners.onRole?.();
+
+    expect(reload).toHaveBeenCalledTimes(1);
+  });
+
+  it("checks again when the person comes back to the app", async () => {
+    listeners.getList.mockResolvedValue([{ id: "role1" }]);
+    render(<UnauthorizedPage handleClick={mockHandleClick} />);
+
+    listeners.onFocus?.();
+
+    await waitFor(() => expect(reload).toHaveBeenCalledTimes(1));
+    expect(listeners.getList).toHaveBeenCalledWith(
+      "roles",
+      expect.objectContaining({ filter: 'user="user1"' })
+    );
+  });
+
+  it("stays put when coming back before being added", async () => {
+    listeners.getList.mockResolvedValue([]);
+    render(<UnauthorizedPage handleClick={mockHandleClick} />);
+
+    listeners.onFocus?.();
+
+    await waitFor(() => expect(listeners.getList).toHaveBeenCalled());
+    expect(reload).not.toHaveBeenCalled();
+  });
+
+  it("sends the email to the administrator through the phone's share sheet", async () => {
+    const share = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, "share", {
+      value: share,
+      configurable: true
+    });
+    render(<UnauthorizedPage handleClick={mockHandleClick} />);
+
+    await userEvent.click(
+      screen.getByRole("button", { name: "Send my email to my administrator" })
+    );
+
+    expect(share).toHaveBeenCalledWith({
+      text: "Please add me to Ministry Mapper. My email is meiling@example.test"
+    });
+  });
+
+  it("copies the email where there is no share sheet", async () => {
+    const user = userEvent.setup();
+    render(<UnauthorizedPage handleClick={mockHandleClick} />);
+
+    await user.click(screen.getByRole("button", { name: "Copy my email" }));
+
+    expect(await navigator.clipboard.readText()).toBe("meiling@example.test");
   });
 
   it("says the account is signed in, not that access was denied", () => {

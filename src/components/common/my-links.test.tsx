@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, userEvent } from "@/utils/test";
+import { render, screen, userEvent, waitFor } from "@/utils/test";
 import MyLinks from "./my-links";
 import type { MyLink } from "../../hooks/useMyLinks";
 
@@ -182,6 +182,35 @@ describe("MyLinks", () => {
     expect(
       screen.queryByRole("button", { name: "Check again" })
     ).not.toBeInTheDocument();
+  });
+
+  it("hands over from the empty page to the first map given", async () => {
+    const { rerender } = show({});
+    expect(screen.getByText("No maps right now")).toBeInTheDocument();
+
+    rerender(
+      <MyLinks
+        links={[link({ map_description: "Blk 301" })]}
+        isLoading={false}
+        hasFailed={false}
+        onRefresh={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("Blk 301")).toBeInTheDocument();
+    expect(screen.getByText("Tap a map to start working.")).toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.queryByText("No maps right now")).not.toBeInTheDocument()
+    );
+  });
+
+  it("holds the place of the cards while loading", () => {
+    show({ isLoading: true });
+
+    expect(
+      screen.getByRole("status", { name: "Loading..." })
+    ).toBeInTheDocument();
+    expect(screen.queryByText("No maps right now")).not.toBeInTheDocument();
   });
 
   it("offers to check again when the links could not be loaded", async () => {

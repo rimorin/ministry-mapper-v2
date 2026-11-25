@@ -78,6 +78,7 @@ const Map = () => {
   useMyLinks();
   const {
     isLinkExpired,
+    linkEnd,
     tokenEndTime,
     isLoading,
     coordinates,
@@ -198,7 +199,7 @@ const Map = () => {
   useRealtimeSubscription(
     "assignments",
     ({ action }) => {
-      if (action === "delete") markLinkExpired();
+      if (action === "delete") markLinkExpired("taken-back");
     },
     {
       fields: "id",
@@ -219,8 +220,8 @@ const Map = () => {
     mapDetails?.aggregates.value ?? 0
   );
 
-  if (isLinkExpired) {
-    return <InvalidPage />;
+  if (linkEnd) {
+    return <InvalidPage reason={linkEnd} />;
   }
   if (isLoading) {
     return (
@@ -233,6 +234,7 @@ const Map = () => {
 
   const navItemBaseClass =
     "flex min-w-0 flex-1 cursor-pointer select-none flex-col items-center gap-1.5 px-1 py-3 text-center text-xs whitespace-nowrap transition-[background-color,box-shadow,border-radius] duration-150 ease-in motion-reduce:transition-none hover:rounded-[5px] hover:bg-primary/10 hover:ring-[5px] hover:ring-primary/10 focus-visible:rounded-[5px]";
+  // For the buttons that need the server. Filter and theme work on the phone.
   const navItemClass = cn(
     navItemBaseClass,
     !isOnline && "pointer-events-none opacity-50"
@@ -269,7 +271,7 @@ const Map = () => {
           title={mapDetails?.name || ""}
           tokenEndTime={tokenEndTime}
           pendingCount={displayPendingCount}
-          onTokenExpired={markLinkExpired}
+          onTokenExpired={() => markLinkExpired("expired")}
           showMyLinks={!!getUser("id")}
         />
         <div className="flex-1 overflow-hidden relative">
@@ -426,7 +428,7 @@ const Map = () => {
                 trigger={
                   <m.button
                     type="button"
-                    className={navItemClass}
+                    className={navItemBaseClass}
                     whileTap={tapFeedback}
                   >
                     <ListFilter
@@ -463,7 +465,7 @@ const Map = () => {
                   render={
                     <m.button
                       type="button"
-                      className={navItemClass}
+                      className={navItemBaseClass}
                       whileTap={tapFeedback}
                     />
                   }
@@ -478,7 +480,11 @@ const Map = () => {
                   align="end"
                   className="min-w-48"
                 >
-                  <DropdownMenuItem onClick={toggleLanguageSelector}>
+                  {/* A language not used before downloads its words first. */}
+                  <DropdownMenuItem
+                    onClick={toggleLanguageSelector}
+                    disabled={!isOnline}
+                  >
                     <Languages />
                     {t("common.language", "Language")}
                     <span className="ml-auto text-xs text-muted-foreground">
