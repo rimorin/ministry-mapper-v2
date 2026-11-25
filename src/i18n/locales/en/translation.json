@@ -86,7 +86,6 @@
     "resendVerificationEmail": "Send the link again",
     "signInWelcome": "Welcome! Choose how to sign in.",
     "unauthorizedAccessMessage": "Your account isn't part of a congregation yet.",
-    "existingUserMessage": "Ask your congregation administrator to add you using this email, then check again.",
     "createAccount": "Create your account to get started",
     "otpSent": "We sent a 4-digit code to {{email}}.",
     "resetInstructions": "Enter your email address below and we will send you a link to reset your password.",
@@ -134,7 +133,12 @@
     "saveNewPassword": "Save new password",
     "passwordResetDone": "Your password has been reset",
     "resetFailed": "Your password was not changed",
-    "checkEmailTitle": "Check your email"
+    "checkEmailTitle": "Check your email",
+    "waitingMessage": "Ask your congregation administrator to add you with this email. This page moves on by itself once they do.",
+    "sendEmail": "Send my email to my administrator",
+    "copyEmail": "Copy my email",
+    "addMeMessage": "Please add me to Ministry Mapper. My email is {{email}}",
+    "emailCopied": "Email copied"
   },
   "territory": {
     "territory": "Territory",
@@ -413,8 +417,6 @@
   "errors": {
     "missingSetup": "Missing setup",
     "missingPocketBaseUrl": "Missing PocketBase URL",
-    "linkExpired": "This link has expired ⌛",
-    "closeTab": "Please close this tab.",
     "pageNotFound": "404 Page Not Found",
     "unableToGetLocation": "Unable to get your current location. Please check your browser settings.",
     "geolocationNotSupported": "Geolocation is not supported by your browser",
@@ -1066,5 +1068,24 @@
     "instructions": "Read the instructions first",
     "open": "Open",
     "stale": "Couldn't refresh. Showing your maps from {{time}}."
+  },
+  "mapEnded": {
+    "expiredTitle": "Time's up for this map",
+    "expiredBody": "The time given for this map has run out.",
+    "takenBackTitle": "This map was taken back",
+    "takenBackBody": "Your conductor ended this assignment.",
+    "unknownTitle": "This map is no longer available",
+    "unknownBody": "Its time ran out, or your conductor ended it.",
+    "backToMyMaps": "Back to My Maps",
+    "askForLink": "Ask your conductor if you need a new link. You can close this tab."
+  },
+  "install": {
+    "title": "Keep your maps one tap away",
+    "body": "Add Ministry Mapper to your Home Screen.",
+    "add": "Add to Home Screen",
+    "notNow": "Not now",
+    "stepShare": "Tap <share/> <b>Share</b>",
+    "stepAdd": "Choose <add/> <b>Add to Home Screen</b>",
+    "stepShareHint": "Don't see Share? Tap ⋯ first."
   }
 }

@@ -4,6 +4,7 @@ import { createRoot } from "react-dom/client";
 import { initAnalytics } from "./utils/analytics";
 import { isAbortError } from "./utils/pocketbase";
 import { initAppUpdates } from "./utils/appUpdate";
+import { listenForInstall } from "./utils/install";
 import { recoverFromStaleDeploy } from "./utils/reloadForNewDeploy";
 import { initLaunchDarkly } from "./lib/launchdarkly";
 import Loader from "./components/statics/loader";
@@ -11,6 +12,7 @@ import Main from "./pages/index";
 
 initAnalytics();
 initAppUpdates();
+listenForInstall();
 
 // A chunk failed to load: after a fresh deployment this page is from the old
 // build. Recovery is bounded (see recoverFromStaleDeploy); once it has nothing

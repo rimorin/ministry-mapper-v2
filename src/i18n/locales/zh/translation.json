@@ -86,7 +86,6 @@
     "resendVerificationEmail": "重新发送链接",
     "signInWelcome": "欢迎！请选择登录方式。",
     "unauthorizedAccessMessage": "您的账号尚未加入任何会众。",
-    "existingUserMessage": "请让您会众的管理员用此邮箱将您加入，然后再次检查。",
     "createAccount": "创建您的账户以开始使用",
     "otpSent": "我们已向 {{email}} 发送了 4 位验证码。",
     "resetInstructions": "在下方输入您的电子邮箱地址，我们将向您发送重置密码的链接。",
@@ -134,7 +133,12 @@
     "saveNewPassword": "保存新密码",
     "passwordResetDone": "您的密码已重置",
     "resetFailed": "您的密码未更改",
-    "checkEmailTitle": "请查看您的邮箱"
+    "checkEmailTitle": "请查看您的邮箱",
+    "waitingMessage": "请让您会众的管理员用此邮箱将您加入。加入后，此页面会自动继续。",
+    "sendEmail": "将我的邮箱发给管理员",
+    "copyEmail": "复制我的邮箱",
+    "addMeMessage": "请把我加入 Ministry Mapper。我的邮箱是 {{email}}",
+    "emailCopied": "邮箱已复制"
   },
   "territory": {
     "territory": "传道区域",
@@ -413,8 +417,6 @@
   "errors": {
     "missingSetup": "缺少设置",
     "missingPocketBaseUrl": "缺少PocketBase URL",
-    "linkExpired": "此链接已过期 ⌛",
-    "closeTab": "请关闭此标签页。",
     "pageNotFound": "404 页面未找到",
     "unableToGetLocation": "无法获取您的当前位置。请检查您的浏览器设置。",
     "geolocationNotSupported": "您的浏览器不支持地理定位",
@@ -1066,5 +1068,24 @@
     "instructions": "请先阅读指示",
     "open": "打开",
     "stale": "无法刷新。正在显示 {{time}} 的地图。"
+  },
+  "mapEnded": {
+    "expiredTitle": "此地图的时间已到",
+    "expiredBody": "为此地图分配的时间已经结束。",
+    "takenBackTitle": "此地图已被收回",
+    "takenBackBody": "负责人已结束此分配。",
+    "unknownTitle": "此地图已不可用",
+    "unknownBody": "时间已到，或负责人已将其结束。",
+    "backToMyMaps": "返回我的地图",
+    "askForLink": "如需新链接，请联系负责人。您可以关闭此标签页。"
+  },
+  "install": {
+    "title": "一键打开您的地图",
+    "body": "将 Ministry Mapper 添加到主屏幕。",
+    "add": "添加到主屏幕",
+    "notNow": "暂不",
+    "stepShare": "点按 <share/> <b>共享</b>",
+    "stepAdd": "选择 <add/> <b>添加到主屏幕</b>",
+    "stepShareHint": "看不到“共享”？请先点按 ⋯。"
   }
 }

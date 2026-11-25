@@ -86,7 +86,6 @@
     "resendVerificationEmail": "Enviar el enlace de nuevo",
     "signInWelcome": "¡Bienvenido! Elige cómo iniciar sesión.",
     "unauthorizedAccessMessage": "Tu cuenta todavía no forma parte de una congregación.",
-    "existingUserMessage": "Pídele al administrador de tu congregación que te agregue con este correo y luego comprueba de nuevo.",
     "createAccount": "Crea tu cuenta para comenzar",
     "otpSent": "Enviamos un código de 4 dígitos a {{email}}.",
     "resetInstructions": "Ingresa tu dirección de correo electrónico a continuación y te enviaremos un enlace para restablecer tu contraseña.",
@@ -134,7 +133,12 @@
     "saveNewPassword": "Guardar nueva contraseña",
     "passwordResetDone": "Tu contraseña se ha restablecido",
     "resetFailed": "Tu contraseña no se cambió",
-    "checkEmailTitle": "Revisa tu correo"
+    "checkEmailTitle": "Revisa tu correo",
+    "waitingMessage": "Pídele al administrador de tu congregación que te agregue con este correo. Esta página avanzará sola cuando lo haga.",
+    "sendEmail": "Enviar mi correo al administrador",
+    "copyEmail": "Copiar mi correo",
+    "addMeMessage": "Por favor, agrégame a Ministry Mapper. Mi correo es {{email}}",
+    "emailCopied": "Correo copiado"
   },
   "territory": {
     "territory": "Territorio",
@@ -413,8 +417,6 @@
   "errors": {
     "missingSetup": "Configuración faltante",
     "missingPocketBaseUrl": "URL de PocketBase faltante",
-    "linkExpired": "Este enlace ha caducado ⌛",
-    "closeTab": "Por favor, cierre esta pestaña.",
     "pageNotFound": "404 Página no encontrada",
     "unableToGetLocation": "No se puede obtener tu ubicación actual. Por favor, verifica la configuración de tu navegador.",
     "geolocationNotSupported": "Tu navegador no admite la geolocalización",
@@ -1066,5 +1068,24 @@
     "instructions": "Lee primero las instrucciones",
     "open": "Abrir",
     "stale": "No se pudo actualizar. Se muestran tus mapas de las {{time}}."
+  },
+  "mapEnded": {
+    "expiredTitle": "Se acabó el tiempo de este mapa",
+    "expiredBody": "El tiempo asignado para este mapa se terminó.",
+    "takenBackTitle": "Este mapa fue retirado",
+    "takenBackBody": "Tu conductor terminó esta asignación.",
+    "unknownTitle": "Este mapa ya no está disponible",
+    "unknownBody": "Se acabó su tiempo o tu conductor lo terminó.",
+    "backToMyMaps": "Volver a Mis mapas",
+    "askForLink": "Pide a tu conductor un enlace nuevo si lo necesitas. Puedes cerrar esta pestaña."
+  },
+  "install": {
+    "title": "Ten tus mapas a un toque",
+    "body": "Agrega Ministry Mapper a tu pantalla de inicio.",
+    "add": "Agregar a inicio",
+    "notNow": "Ahora no",
+    "stepShare": "Toca <share/> <b>Compartir</b>",
+    "stepAdd": "Elige <add/> <b>Agregar a inicio</b>",
+    "stepShareHint": "¿No ves Compartir? Toca ⋯ primero."
   }
 }

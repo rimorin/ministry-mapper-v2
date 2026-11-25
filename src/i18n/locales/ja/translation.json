@@ -86,7 +86,6 @@
     "resendVerificationEmail": "リンクを再送信",
     "signInWelcome": "ようこそ。サインイン方法を選んでください。",
     "unauthorizedAccessMessage": "あなたのアカウントはまだ会衆に追加されていません。",
-    "existingUserMessage": "会衆の管理者に、このメールアドレスで追加するよう依頼してから、再確認してください。",
     "createAccount": "始めるにはアカウントを作成してください",
     "otpSent": "{{email}} に4桁のコードを送信しました。",
     "resetInstructions": "以下にメールアドレスを入力してください。パスワードを再設定するためのリンクを送信します。",
@@ -134,7 +133,12 @@
     "saveNewPassword": "新しいパスワードを保存",
     "passwordResetDone": "パスワードを再設定しました",
     "resetFailed": "パスワードは変更されませんでした",
-    "checkEmailTitle": "メールを確認してください"
+    "checkEmailTitle": "メールを確認してください",
+    "waitingMessage": "会衆の管理者に、このメールアドレスで追加するよう依頼してください。追加されると、このページは自動で先に進みます。",
+    "sendEmail": "メールアドレスを管理者に送る",
+    "copyEmail": "メールアドレスをコピー",
+    "addMeMessage": "Ministry Mapper に追加してください。メールアドレスは {{email}} です",
+    "emailCopied": "メールアドレスをコピーしました"
   },
   "territory": {
     "territory": "区域",
@@ -413,8 +417,6 @@
   "errors": {
     "missingSetup": "設定不足",
     "missingPocketBaseUrl": "PocketBase URLがありません",
-    "linkExpired": "リンクの有効期限が切れました ⌛",
-    "closeTab": "このタブを閉じてください。",
     "pageNotFound": "404 ページが見つかりません",
     "unableToGetLocation": "現在地を取得できません。ブラウザ設定を確認してください。",
     "geolocationNotSupported": "お使いのブラウザは位置情報に対応していません",
@@ -1066,5 +1068,24 @@
     "instructions": "先に指示を読んでください",
     "open": "開く",
     "stale": "更新できませんでした。{{time}} 時点の地図を表示しています。"
+  },
+  "mapEnded": {
+    "expiredTitle": "この地図の期限が終わりました",
+    "expiredBody": "この地図に与えられた時間が終了しました。",
+    "takenBackTitle": "この地図は割り当てが取り消されました",
+    "takenBackBody": "管理者がこの割り当てを終了しました。",
+    "unknownTitle": "この地図はもう利用できません",
+    "unknownBody": "期限が切れたか、管理者が終了しました。",
+    "backToMyMaps": "マイマップに戻る",
+    "askForLink": "新しいリンクが必要な場合は管理者に依頼してください。このタブは閉じてかまいません。"
+  },
+  "install": {
+    "title": "地図をワンタップで開けるように",
+    "body": "Ministry Mapper をホーム画面に追加しましょう。",
+    "add": "ホーム画面に追加",
+    "notNow": "後で",
+    "stepShare": "<share/> <b>共有</b>をタップ",
+    "stepAdd": "<add/> <b>ホーム画面に追加</b>を選ぶ",
+    "stepShareHint": "共有が見当たらない場合は、先に ⋯ をタップ。"
   }
 }

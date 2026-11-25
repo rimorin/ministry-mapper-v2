@@ -341,6 +341,63 @@ describe("useMapLink", () => {
       await waitFor(() => expect(result.current.isLinkExpired).toBe(true));
       expect(localStorage.getItem("mm-assignment-link123")).toBeNull();
     });
+
+    it("says a link deleted before its time was taken back", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue(mockResponse);
+      const { result } = renderHook(() => useMapLink());
+      await result.current.getMapData("link123");
+
+      act(() => {
+        result.current.markLinkExpired("taken-back");
+      });
+
+      await waitFor(() => expect(result.current.linkEnd).toBe("taken-back"));
+    });
+
+    it("says a link deleted after its time ran out expired", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue(mockResponse);
+      const { result } = renderHook(() => useMapLink());
+      await result.current.getMapData("link123");
+
+      // The cleanup job deletes a link once its time is up; a phone that
+      // slept through the end hears of the deletion first.
+      const now = vi
+        .spyOn(Date, "now")
+        .mockReturnValue(new Date(mockResponse.expiry_date).getTime() + 1000);
+      act(() => {
+        result.current.markLinkExpired("taken-back");
+      });
+
+      await waitFor(() => expect(result.current.linkEnd).toBe("expired"));
+      now.mockRestore();
+    });
+
+    it("does not judge the next map by the previous one's time", async () => {
+      vi.spyOn(pocketbase, "callFunction")
+        .mockResolvedValueOnce({ ...mockResponse, expiry_date: pastDate })
+        .mockRejectedValueOnce(
+          new ClientResponseError({ status: 401, response: {} })
+        );
+      const { result } = renderHook(() => useMapLink());
+      await result.current.getMapData("link123");
+      await waitFor(() => expect(result.current.linkEnd).toBe("expired"));
+
+      await result.current.getMapData("link456");
+
+      await waitFor(() => expect(result.current.linkEnd).toBe("unknown"));
+    });
+
+    it("cannot tell why when the server refuses the link", async () => {
+      vi.spyOn(pocketbase, "callFunction").mockResolvedValue(mockResponse);
+      const { result } = renderHook(() => useMapLink());
+      await result.current.getMapData("link123");
+
+      act(() => {
+        window.dispatchEvent(new CustomEvent("mm-auth-expired"));
+      });
+
+      await waitFor(() => expect(result.current.linkEnd).toBe("unknown"));
+    });
   });
 
   describe("setters", () => {

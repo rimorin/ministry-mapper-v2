@@ -86,7 +86,6 @@
     "resendVerificationEmail": "Kirim tautan lagi",
     "signInWelcome": "Selamat datang! Pilih cara untuk masuk.",
     "unauthorizedAccessMessage": "Akun Anda belum menjadi bagian dari jemaat.",
-    "existingUserMessage": "Minta administrator jemaat Anda untuk menambahkan Anda dengan email ini, lalu periksa lagi.",
     "createAccount": "Buat akun Anda untuk memulai",
     "otpSent": "Kami mengirim kode 4 digit ke {{email}}.",
     "resetInstructions": "Masukkan alamat email Anda di bawah ini dan kami akan mengirimkan tautan untuk mereset kata sandi Anda.",
@@ -134,7 +133,12 @@
     "saveNewPassword": "Simpan kata sandi baru",
     "passwordResetDone": "Kata sandi Anda telah diatur ulang",
     "resetFailed": "Kata sandi Anda tidak diubah",
-    "checkEmailTitle": "Periksa email Anda"
+    "checkEmailTitle": "Periksa email Anda",
+    "waitingMessage": "Minta administrator jemaat Anda untuk menambahkan Anda dengan email ini. Halaman ini akan berlanjut dengan sendirinya setelah ditambahkan.",
+    "sendEmail": "Kirim email saya ke administrator",
+    "copyEmail": "Salin email saya",
+    "addMeMessage": "Tolong tambahkan saya ke Ministry Mapper. Email saya {{email}}",
+    "emailCopied": "Email disalin"
   },
   "territory": {
     "territory": "Wilayah",
@@ -413,8 +417,6 @@
   "errors": {
     "missingSetup": "Pengaturan tidak ditemukan",
     "missingPocketBaseUrl": "URL PocketBase tidak ditemukan",
-    "linkExpired": "Tautan ini telah kedaluwarsa ⌛",
-    "closeTab": "Silakan tutup tab ini.",
     "pageNotFound": "404 Halaman Tidak Ditemukan",
     "unableToGetLocation": "Tidak dapat memperoleh lokasi Anda saat ini. Silakan periksa pengaturan browser Anda.",
     "geolocationNotSupported": "Geolokasi tidak didukung oleh browser Anda",
@@ -1066,5 +1068,24 @@
     "instructions": "Baca instruksinya dulu",
     "open": "Buka",
     "stale": "Gagal memperbarui. Menampilkan peta Anda dari {{time}}."
+  },
+  "mapEnded": {
+    "expiredTitle": "Waktu untuk peta ini sudah habis",
+    "expiredBody": "Waktu yang diberikan untuk peta ini sudah habis.",
+    "takenBackTitle": "Peta ini telah ditarik kembali",
+    "takenBackBody": "Pengurus Anda telah mengakhiri penugasan ini.",
+    "unknownTitle": "Peta ini tidak tersedia lagi",
+    "unknownBody": "Waktunya sudah habis, atau pengurus Anda telah mengakhirinya.",
+    "backToMyMaps": "Kembali ke Peta saya",
+    "askForLink": "Minta tautan baru kepada pengurus Anda jika perlu. Anda dapat menutup tab ini."
+  },
+  "install": {
+    "title": "Buka peta Anda dengan sekali ketuk",
+    "body": "Tambahkan Ministry Mapper ke Layar Utama.",
+    "add": "Tambah ke Layar Utama",
+    "notNow": "Nanti saja",
+    "stepShare": "Ketuk <share/> <b>Bagikan</b>",
+    "stepAdd": "Pilih <add/> <b>Tambah ke Layar Utama</b>",
+    "stepShareHint": "Tidak melihat Bagikan? Ketuk ⋯ terlebih dahulu."
   }
 }

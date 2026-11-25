@@ -1,6 +1,8 @@
-import { useTranslation } from "react-i18next";
+import * as m from "motion/react-m";
 import { cn } from "@/lib/utils";
+import { springCalm } from "@/lib/motion";
 import type useMyLinks from "../../hooks/useMyLinks";
+import InstallCard from "./install-card";
 import MyLinks from "./my-links";
 
 // The page body for the links given to the signed-in account, under whichever
@@ -11,28 +13,20 @@ interface MyLinksPanelProps {
 }
 
 const MyLinksPanel = ({ myLinks }: MyLinksPanelProps) => {
-  const { t } = useTranslation();
   const { links, isLoading, hasFailed, isStale, updatedAt, refresh } = myLinks;
 
-  // The empty and failed states explain themselves, so the hint only goes
-  // with a list.
-  const hasLinks = !isLoading && !hasFailed && links.length > 0;
   const isEmpty = !isLoading && !hasFailed && links.length === 0;
 
   return (
     <main className="min-h-0 flex-1 overflow-y-auto">
+      {/* Relative so a state on its way out stays where it was drawn. */}
       <div
         className={cn(
-          "mx-auto w-full max-w-2xl space-y-3 p-3 sm:p-4",
+          "relative mx-auto w-full max-w-2xl space-y-3 p-3 sm:p-4",
           // An empty page centres its message, as the shell's welcome does.
           isEmpty && "flex min-h-full flex-col justify-center pb-[20%]"
         )}
       >
-        {hasLinks && (
-          <p className="text-sm text-muted-foreground">
-            {t("myLinks.description", "Tap a map to start working.")}
-          </p>
-        )}
         <MyLinks
           links={links}
           isLoading={isLoading}
@@ -41,6 +35,12 @@ const MyLinksPanel = ({ myLinks }: MyLinksPanelProps) => {
           updatedAt={updatedAt}
           onRefresh={refresh}
         />
+        {/* Glides to its new place when the page goes from centred to a list. */}
+        {!isLoading && (
+          <m.div layout="position" transition={{ layout: springCalm }}>
+            <InstallCard />
+          </m.div>
+        )}
       </div>
     </main>
   );
