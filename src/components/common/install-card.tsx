@@ -11,7 +11,7 @@ import {
   ItemTitle
 } from "@/components/ui/item";
 import { duration, fadeSlideUp } from "@/lib/motion";
-import { getAssetUrl } from "../../utils/helpers/assetpath";
+import { BRAND_URL } from "../../utils/constants";
 import {
   canOfferInstall,
   isAppleMobile,
@@ -99,7 +99,7 @@ const InstallCard = () => {
           >
             <div className="flex items-start gap-3 p-4">
               <img
-                src={getAssetUrl("android-chrome-192x192.png")}
+                src={`${BRAND_URL}/apple-touch-icon-180x180.png`}
                 alt=""
                 className="size-10 shrink-0 rounded-[10px] shadow-sm ring-1 ring-foreground/5"
               />

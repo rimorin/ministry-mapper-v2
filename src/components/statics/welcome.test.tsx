@@ -32,6 +32,8 @@ describe("Welcome", () => {
   it("should render the logo", () => {
     render(<Welcome name="John" />);
 
-    expect(screen.getByAltText(/Ministry Mapper logo/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: "Ministry Mapper logo" })
+    ).toBeInTheDocument();
   });
 });

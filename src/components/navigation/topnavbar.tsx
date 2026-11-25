@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Link } from "wouter";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { getAssetUrl } from "../../utils/helpers/assetpath";
+import AppLogo from "../common/app-logo";
 import ExpiryBadge from "./expirybadge";
 import PendingBadge from "./pendingbadge";
 
@@ -42,13 +42,7 @@ const TopNavbar = ({
             <ChevronLeft className="size-5" />
           </Link>
         ) : (
-          <img
-            src={getAssetUrl("favicon-32x32.png")}
-            alt=""
-            width="28"
-            height="28"
-            className="shrink-0"
-          />
+          <AppLogo className="size-7" />
         )}
         <span className="font-bold fluid-text min-w-0 flex-1 line-clamp-2">
           {title}

@@ -1,6 +1,6 @@
 import { WelcomeProps } from "../../utils/interface";
 import { useTranslation } from "react-i18next";
-import { getAssetUrl } from "../../utils/helpers/assetpath";
+import AppLogo from "../common/app-logo";
 import * as m from "motion/react-m";
 import { fadeSlideUp } from "@/lib/motion";
 
@@ -15,10 +15,9 @@ const Welcome = ({ name }: WelcomeProps) => {
         initial="hidden"
         animate="show"
       >
-        <img
-          src={getAssetUrl("android-chrome-192x192.png")}
-          alt={t("branding.logo", "Ministry Mapper logo")}
-          className="mb-2 h-16 w-16 dark:brightness-150"
+        <AppLogo
+          className="mb-2 size-16"
+          label={t("branding.logo", "Ministry Mapper logo")}
         />
         <p className="text-xl font-semibold">
           {t("auth.welcome")} {name || t("auth.welcomeDefault")}! 👋

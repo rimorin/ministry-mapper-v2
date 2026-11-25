@@ -1,3 +1,4 @@
+import release from "../../brand/release.json";
 const DESTINATION_PROXIMITY_THRESHOLD_METERS = 50;
 
 const DEFAULT_REPORT_ROLLING_DAYS = 30;
@@ -142,6 +143,10 @@ const OAUTH2_PENDING_KEY = "pendingOAuth2";
 
 const OAUTH2_REDIRECT_PATH = "/auth/callback";
 
+// The logo's files on R2. `npm run brand` moves release.json to each new logo's
+// folder, so this, index.html and the manifest always agree.
+const BRAND_URL = `https://assets.ministry-mapper.com/${release.folder}`;
+
 const USER_GUIDE_URL = (import.meta.env.VITE_ABOUT_URL ||
   "https://doc.ministry-mapper.com/user-guide") as string;
 
@@ -177,5 +182,6 @@ export {
   PREFERRED_TRAVEL_MODE_KEY,
   OAUTH2_PENDING_KEY,
   OAUTH2_REDIRECT_PATH,
-  USER_GUIDE_URL
+  USER_GUIDE_URL,
+  BRAND_URL
 };
