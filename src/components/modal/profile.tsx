@@ -32,8 +32,7 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
   const form = useForm<{ name: string; emailOnAssignment: boolean }>({
     values: {
       name: user?.name ?? "",
-      // Stored as the "off" switch so that accounts default to getting it.
-      emailOnAssignment: !user?.assignment_emails_off
+      emailOnAssignment: !!user?.assignment_emails
     }
   });
   const { modal, dialogProps, contentProps } = useBaseUiDialog({
@@ -50,7 +49,7 @@ const GetProfile = NiceModal.create(({ user }: UpdateProfileModalProps) => {
         user?.id as string,
         {
           name: values.name,
-          assignment_emails_off: !values.emailOnAssignment
+          assignment_emails: values.emailOnAssignment
         },
         { requestKey: `update-name-${user?.id}` }
       );
