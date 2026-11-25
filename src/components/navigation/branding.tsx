@@ -1,7 +1,7 @@
 import { BrandingProps } from "../../utils/interface";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "react-i18next";
-import { getAssetUrl } from "../../utils/helpers/assetpath";
+import AppLogo from "../common/app-logo";
 
 const NavBarBranding = ({
   naming,
@@ -11,12 +11,9 @@ const NavBarBranding = ({
 
   return (
     <a className="brand-wrap flex min-w-0 items-center gap-2 text-inherit no-underline hover:no-underline">
-      <img
-        alt={t("branding.logo", "Ministry Mapper logo")}
-        src={getAssetUrl("favicon-32x32.png")}
-        width="32"
-        height="32"
-        className="shrink-0 inline-block align-top dark:brightness-150"
+      <AppLogo
+        className="size-8"
+        label={t("branding.logo", "Ministry Mapper logo")}
       />
       {naming && (
         <span

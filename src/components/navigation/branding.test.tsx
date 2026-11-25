@@ -1,19 +1,13 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import NavBarBranding from "./branding";
 
-vi.mock("../../utils/helpers/assetpath", () => ({
-  getAssetUrl: vi.fn((path: string) => `/assets/${path}`)
-}));
-
 describe("NavBarBranding", () => {
-  it("should render logo image", () => {
+  it("draws the logo, with its tile taking the theme's colour", () => {
     render(<NavBarBranding />);
     const logo = screen.getByRole("img", { name: /ministry mapper logo/i });
-    expect(logo).toBeInTheDocument();
-    expect(logo).toHaveAttribute("src", "/assets/favicon-32x32.png");
-    expect(logo).toHaveAttribute("width", "32");
-    expect(logo).toHaveAttribute("height", "32");
+    expect(logo).toHaveClass("size-8");
+    expect(logo).toHaveClass("bg-(--logo-tile)");
   });
 
   it("should render naming text when provided", () => {

@@ -253,6 +253,7 @@ npm start
 | `npm run lint` | Lint source files |
 | `npm run lint:fix` | Auto-fix lint issues |
 | `npm run prettier:fix` | Auto-fix code formatting |
+| `npm run brand -- <file.svg>` | Replace the logo: generate every icon, upload to the asset host and point the app at it (needs `npx wrangler login`) |
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

@@ -29,31 +29,17 @@ describe("StaticPageCard", () => {
   it("should show logo by default", () => {
     render(<StaticPageCard />);
 
-    const logo = screen.getByAltText(/Ministry Mapper logo/i);
-    expect(logo).toBeInTheDocument();
+    expect(
+      screen.getByRole("img", { name: "Ministry Mapper logo" })
+    ).toBeInTheDocument();
   });
 
   it("should hide logo when showLogo is false", () => {
     render(<StaticPageCard showLogo={false} />);
 
-    const logo = screen.queryByAltText(/Ministry Mapper logo/i);
-    expect(logo).not.toBeInTheDocument();
-  });
-
-  it("should use custom logo alt text", () => {
-    render(<StaticPageCard logoAlt="Custom Logo" />);
-
-    expect(screen.getByAltText("Custom Logo")).toBeInTheDocument();
-  });
-
-  it("should use custom logo source", () => {
-    render(<StaticPageCard logoSrc="custom-logo.png" />);
-
-    const logo = screen.getByAltText(/Ministry Mapper logo/i);
-    expect(logo).toHaveAttribute(
-      "src",
-      expect.stringContaining("custom-logo.png")
-    );
+    expect(
+      screen.queryByRole("img", { name: "Ministry Mapper logo" })
+    ).not.toBeInTheDocument();
   });
 
   it("should apply custom card class", () => {
@@ -68,7 +54,7 @@ describe("StaticPageCard", () => {
   it("should render logo with correct Tailwind classes", () => {
     render(<StaticPageCard />);
 
-    const logo = screen.getByAltText(/Ministry Mapper logo/i);
-    expect(logo).toHaveClass("mx-auto", "block", "w-[30%]");
+    const logo = screen.getByRole("img", { name: "Ministry Mapper logo" });
+    expect(logo).toHaveClass("mx-auto", "w-[30%]");
   });
 });

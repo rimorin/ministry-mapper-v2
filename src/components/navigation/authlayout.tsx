@@ -8,7 +8,7 @@ import LanguageSelector from "../../i18n/LanguageSelector";
 import ThemeToggle from "./themetoggle";
 import ReleaseHistoryBtn from "./releasehistorybtn";
 import LanguageBtn from "./languagebtn";
-import { getAssetUrl } from "../../utils/helpers/assetpath";
+import AppLogo from "../common/app-logo";
 import { USER_GUIDE_URL } from "../../utils/constants";
 import * as m from "motion/react-m";
 import { duration, enterTransition, springCalm } from "@/lib/motion";
@@ -47,12 +47,9 @@ const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
         >
-          <img
-            src={getAssetUrl("favicon-32x32.png")}
-            width="28"
-            height="28"
-            alt={t("branding.logo", "Ministry Mapper logo")}
-            className="dark:brightness-150"
+          <AppLogo
+            className="size-7"
+            label={t("branding.logo", "Ministry Mapper logo")}
           />
           <span>{t("branding.name", "Ministry Mapper")}</span>
         </m.a>
