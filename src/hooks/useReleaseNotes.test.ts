@@ -79,10 +79,21 @@ describe("useReleaseNotes", () => {
     localStorage.clear();
   });
 
-  it("shows only the latest release for first-time visitor", async () => {
+  it("shows a first-time visitor nothing and starts them at the latest release", async () => {
     mockLastSeenValue = null;
     mockFetch.mockResolvedValueOnce(mockJsonResponse(sampleChangelog));
-    expect(mockSetLastSeen).not.toHaveBeenCalled();
+    const setItem = vi.spyOn(Storage.prototype, "setItem");
+
+    const { result } = renderHook(() => useReleaseNotes("publisher"));
+    await act(async () => {});
+
+    expect(result.current.hasNewReleases).toBe(false);
+    expect(result.current.allReleases).toHaveLength(2);
+    expect(setItem).toHaveBeenCalledWith(
+      "lastSeenReleaseId:publisher",
+      JSON.stringify("2026-02-19")
+    );
+    setItem.mockRestore();
   });
 
   it("shows nothing when already on latest release", async () => {
@@ -173,7 +184,7 @@ describe("useReleaseNotes", () => {
   });
 
   it("passes LocalizedString entries through unchanged", async () => {
-    mockLastSeenValue = null;
+    mockLastSeenValue = "2026-01-01";
     mockFetch.mockResolvedValueOnce(mockJsonResponse(localizedChangelog));
 
     const { result } = renderHook(() => useReleaseNotes("admin"));
@@ -193,6 +204,7 @@ describe("useReleaseNotes", () => {
   });
 
   it("does not carry one audience's new releases over to the other", async () => {
+    mockLastSeenValue = "2026-01-01";
     mockFetch.mockResolvedValue(mockJsonResponse(sampleChangelog));
 
     const { result, rerender } = renderHook(
@@ -239,8 +251,8 @@ describe("useReleaseNotes", () => {
     ]);
   });
 
-  it("shows all same-day entries to a first-time visitor", async () => {
-    mockLastSeenValue = null;
+  it("shows all of a later day's entries to a returning visitor", async () => {
+    mockLastSeenValue = "2026-07-27";
     mockFetch.mockResolvedValueOnce(
       mockJsonResponse({
         releases: [

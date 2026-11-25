@@ -38,6 +38,14 @@ const readSeenId = (audience: ReleaseAudience): string | null => {
   }
 };
 
+const writeSeenId = (audience: ReleaseAudience, id: string) => {
+  try {
+    window.localStorage.setItem(seenKey(audience), JSON.stringify(id));
+  } catch {
+    // Storage is blocked: the next visit counts as a first one again.
+  }
+};
+
 export function useReleaseNotes(
   audience: ReleaseAudience
 ): UseReleaseNotesReturn {
@@ -86,14 +94,16 @@ export function useReleaseNotes(
 
         if (seenId === latestId) return;
 
-        // Returning users: everything since their last visit. First-time
-        // users: the latest day only — including date-suffixed siblings
-        // (e.g. 2026-08-10-theme).
-        const filtered = seenId
-          ? releases.filter((r) => r.id > seenId)
-          : releases.filter(
-              (r) => r.id.substring(0, 10) === latestId.substring(0, 10)
-            );
+        // Nothing is new to a first visit: the latest release becomes where
+        // this person starts, and only later ones are announced.
+        if (!seenId) {
+          writeSeenId(audience, latestId);
+          return;
+        }
+
+        // Everything since the last visit, date-suffixed siblings included
+        // (2026-08-10-theme sorts after 2026-08-10).
+        const filtered = releases.filter((r) => r.id > seenId);
         if (filtered.length > 0 && !ignore) {
           setFresh({ audience, releases: filtered });
         }
