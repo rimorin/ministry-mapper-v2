@@ -22,7 +22,13 @@ const { createDataMock, membersMock, flag } = vi.hoisted(() => ({
   createDataMock: vi.fn(() => Promise.resolve({ id: "mocklink" })),
   membersMock: vi.fn(() =>
     Promise.resolve(
-      [] as { id: string; name: string; email: string; openLinks: number }[]
+      [] as {
+        id: string;
+        name: string;
+        email: string;
+        role: string;
+        maps: unknown[];
+      }[]
     )
   )
 }));
@@ -93,8 +99,23 @@ const openAndCreateLink = async (overrides: Record<string, unknown> = {}) => {
 };
 
 const roster = [
-  { id: "user9", name: "Sam Publisher", email: "sam@alpha.test", openLinks: 2 },
-  { id: "user8", name: "Rita Reader", email: "rita@alpha.test", openLinks: 0 }
+  {
+    id: "user9",
+    name: "Sam Publisher",
+    email: "sam@alpha.test",
+    role: "publisher",
+    maps: [
+      { link: "l1", map: "m1", name: "Blk 301" },
+      { link: "l2", map: "m2", name: "Blk 305" }
+    ]
+  },
+  {
+    id: "user8",
+    name: "Rita Reader",
+    email: "rita@alpha.test",
+    role: "publisher",
+    maps: []
+  }
 ];
 
 describe("ConfirmSlipDetails", () => {
@@ -322,9 +343,9 @@ describe("ConfirmSlipDetails", () => {
       expect.stringContaining("Rita Reader"),
       expect.stringContaining("Sam Publisher")
     ]);
-    expect(screen.getByText("Recent")).toBeInTheDocument();
-    expect(screen.getByLabelText("Open maps: 2")).toBeInTheDocument();
-    expect(screen.getByText("sam@alpha.test")).toBeInTheDocument();
+    expect(screen.getByText("Recently assigned")).toBeInTheDocument();
+    expect(screen.getByText("2 maps: Blk 301, Blk 305")).toBeInTheDocument();
+    expect(screen.queryByText(/sam@alpha\.test/)).not.toBeInTheDocument();
   });
 
   it("leaves the member picker out and sends no assignees without a roster", async () => {
@@ -341,7 +362,13 @@ describe("ConfirmSlipDetails", () => {
   it("leaves the member picker out where the publisher role is switched off", async () => {
     flag.publisherRole = false;
     membersMock.mockResolvedValue([
-      { id: "u1", name: "Sam Lee", email: "sam@example.com", openLinks: 0 }
+      {
+        id: "u1",
+        name: "Sam Lee",
+        email: "sam@example.com",
+        role: "publisher",
+        maps: []
+      }
     ]);
     await openAndCreateLink();
 

@@ -370,6 +370,7 @@ const ConfirmSlipDetails = NiceModal.create(
                         value={assignees}
                         recentIds={recentIds}
                         onValueChange={setAssignees}
+                        onMap={{ map: addressElement.id }}
                       />
                       {assignees.length > 0 && (
                         <p className="text-xs text-muted-foreground">

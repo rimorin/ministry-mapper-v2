@@ -25,8 +25,20 @@ vi.mock("../../utils/pocketbase", async (importOriginal) => ({
 }));
 
 const roster = [
-  { id: "sam", name: "Sam Lee", email: "sam@alpha.test", openLinks: 1 },
-  { id: "rita", name: "Rita Tan", email: "rita@alpha.test", openLinks: 0 }
+  {
+    id: "sam",
+    name: "Sam Lee",
+    email: "sam@alpha.test",
+    role: "publisher",
+    maps: [{ link: "l1", map: "m1", name: "Blk 301" }]
+  },
+  {
+    id: "rita",
+    name: "Rita Tan",
+    email: "rita@alpha.test",
+    role: "publisher",
+    maps: []
+  }
 ];
 
 const open = (publisherName: string) => {

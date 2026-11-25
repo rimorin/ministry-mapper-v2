@@ -478,10 +478,13 @@
     "othersLabel": "Otros sin cuenta",
     "othersPlaceholder": "Nombres, separados por comas",
     "othersHint": "Recibirás un enlace para enviárselo.",
-    "recentMembers": "Recientes",
-    "allMembers": "Miembros",
-    "memberOpenLinks": "Mapas abiertos: {{count}}",
-    "givenTo": "Asignado a {{names}}"
+    "recentMembers": "Asignados recientemente",
+    "givenTo": "Asignado a {{names}}",
+    "freeMembers": "Sin mapa",
+    "busyMembers": "Trabajando un mapa",
+    "memberMapCount": "{{count}} mapas",
+    "memberOnThisMap": "Ya trabaja este mapa",
+    "memberNoMap": "Sin mapa asignado"
   },
   "password": {
     "number": "La contraseña debe contener números.",
