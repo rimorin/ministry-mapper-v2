@@ -114,10 +114,6 @@
   --warning-foreground: oklch(0.985 0 0);
   --info: oklch(42.4% 0.199 265.638); /* blue-800 */
   --info-foreground: oklch(0.985 0 0);
-
-  /* The logo's tile: sky by day, navy by night. Synced from brand/brand.json
-     by npm run brand. */
-  --logo-tile: #d6ebff;
 }
 
 .dark {
@@ -164,8 +160,6 @@
   --warning-foreground: oklch(0.205 0 0);
   --info: oklch(70.7% 0.165 254.624); /* blue-400 */
   --info-foreground: oklch(0.205 0 0);
-
-  --logo-tile: #1d3557;
 }
 
 /* Color themes override tokens on <html> via data-theme. Every variable in a
