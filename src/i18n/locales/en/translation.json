@@ -478,10 +478,13 @@
     "othersLabel": "Others without an account",
     "othersPlaceholder": "Names, separated by commas",
     "othersHint": "You will be given a link to send them.",
-    "recentMembers": "Recent",
-    "allMembers": "Members",
-    "memberOpenLinks": "Open maps: {{count}}",
-    "givenTo": "Given to {{names}}"
+    "recentMembers": "Recently assigned",
+    "givenTo": "Given to {{names}}",
+    "freeMembers": "Without a map",
+    "busyMembers": "Working a map",
+    "memberMapCount": "{{count}} maps",
+    "memberOnThisMap": "Already working this map",
+    "memberNoMap": "No map assigned"
   },
   "password": {
     "number": "Password must contain numbers.",

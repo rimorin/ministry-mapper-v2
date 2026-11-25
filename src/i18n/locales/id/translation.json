@@ -478,10 +478,13 @@
     "othersLabel": "Lainnya tanpa akun",
     "othersPlaceholder": "Nama, dipisahkan koma",
     "othersHint": "Anda akan mendapat tautan untuk dikirim kepada mereka.",
-    "recentMembers": "Terbaru",
-    "allMembers": "Anggota",
-    "memberOpenLinks": "Peta aktif: {{count}}",
-    "givenTo": "Diberikan kepada {{names}}"
+    "recentMembers": "Baru ditugaskan",
+    "givenTo": "Diberikan kepada {{names}}",
+    "freeMembers": "Belum ada peta",
+    "busyMembers": "Sedang mengerjakan peta",
+    "memberMapCount": "{{count}} peta",
+    "memberOnThisMap": "Sudah mengerjakan peta ini",
+    "memberNoMap": "Belum ditugaskan peta"
   },
   "password": {
     "number": "Kata sandi harus mengandung angka.",

@@ -478,10 +478,13 @@
     "othersLabel": "Lain-lain tanpa akaun",
     "othersPlaceholder": "Nama, dipisahkan dengan koma",
     "othersHint": "Anda akan diberi pautan untuk dihantar kepada mereka.",
-    "recentMembers": "Terkini",
-    "allMembers": "Ahli",
-    "memberOpenLinks": "Peta aktif: {{count}}",
-    "givenTo": "Diberikan kepada {{names}}"
+    "recentMembers": "Baru ditugaskan",
+    "givenTo": "Diberikan kepada {{names}}",
+    "freeMembers": "Belum ada peta",
+    "busyMembers": "Sedang mengerjakan peta",
+    "memberMapCount": "{{count}} peta",
+    "memberOnThisMap": "Sudah mengerjakan peta ini",
+    "memberNoMap": "Belum ditugaskan peta"
   },
   "password": {
     "number": "Kata laluan mesti mengandungi nombor.",

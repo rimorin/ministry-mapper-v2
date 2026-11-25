@@ -69,8 +69,14 @@ describe("AssistantProposalCard", () => {
       ]
     };
     const members = [
-      { id: "u1", name: "John Tan", email: "john@example.com", openLinks: 0 },
-      { id: "u2", name: "Ong Mei Ling", email: "", openLinks: 0 }
+      {
+        id: "u1",
+        name: "John Tan",
+        email: "john@example.com",
+        role: "publisher",
+        maps: []
+      },
+      { id: "u2", name: "Ong Mei Ling", email: "", role: "publisher", maps: [] }
     ];
     const showLink = (state?: ProposalState, roster = members) =>
       render(
@@ -102,9 +108,27 @@ describe("AssistantProposalCard", () => {
 
     it("says who a partial name was taken to be, and tells same-named members apart", () => {
       const twins = [
-        { id: "u1", name: "John Tan", email: "john@example.com", openLinks: 0 },
-        { id: "u3", name: "John Tan", email: "jt@example.com", openLinks: 0 },
-        { id: "u2", name: "Ong Mei Ling", email: "", openLinks: 0 }
+        {
+          id: "u1",
+          name: "John Tan",
+          email: "john@example.com",
+          role: "publisher",
+          maps: []
+        },
+        {
+          id: "u3",
+          name: "John Tan",
+          email: "jt@example.com",
+          role: "publisher",
+          maps: []
+        },
+        {
+          id: "u2",
+          name: "Ong Mei Ling",
+          email: "",
+          role: "publisher",
+          maps: []
+        }
       ];
       render(
         <AssistantProposalCard

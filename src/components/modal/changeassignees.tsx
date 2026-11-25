@@ -42,7 +42,8 @@ const ChangeAssignees = NiceModal.create(
       assignment.holders.map((holder) => ({
         ...holder,
         email: "",
-        openLinks: 0
+        role: "",
+        maps: []
       }))
     );
     const [isSaving, setIsSaving] = useState(false);
@@ -94,6 +95,7 @@ const ChangeAssignees = NiceModal.create(
           <form onSubmit={handleSubmit} className="space-y-4">
             <MemberPicker
               members={members}
+              onMap={{ map: assignment.mapId, link: assignment.id }}
               value={chosen}
               onValueChange={setChosen}
             />

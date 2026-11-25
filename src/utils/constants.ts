@@ -123,7 +123,9 @@ const PB_FIELDS = {
     "id, role, expand.congregation.id, expand.congregation.name, expand.congregation.max_tries, expand.congregation.origin, expand.congregation.expiry_hours, expand.congregation.expand.options_via_congregation.id, expand.congregation.expand.options_via_congregation.code, expand.congregation.expand.options_via_congregation.description, expand.congregation.expand.options_via_congregation.is_countable, expand.congregation.expand.options_via_congregation.is_default, expand.congregation.expand.options_via_congregation.sequence, expand.congregation.expand.territories_via_congregation.id, expand.congregation.expand.territories_via_congregation.code, expand.congregation.expand.territories_via_congregation.description, expand.congregation.expand.territories_via_congregation.progress, expand.congregation.expand.territories_via_congregation.coordinates",
   CONGREGATION_ROLES:
     "id, role, expand.user.name, expand.user.email, expand.user.verified",
-  CONGREGATION_MEMBERS: "id, user, expand.user.name, expand.user.email",
+  CONGREGATION_MEMBERS:
+    "id, user, role, expand.user.name, expand.user.email, expand.user.disabled, expand.user.verified",
+  MEMBER_LINKS: "id, assignees, map, expand.map.description",
   ASSIGNMENT_HOLDERS: "id, assignees",
   TERRITORIES: "id, code, description, progress, coordinates",
   MAPS: "id, sequence, description, type, progress, coordinates, aggregates",
