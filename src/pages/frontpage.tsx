@@ -5,7 +5,6 @@ import { AuthModel } from "pocketbase";
 import AuthLayout from "../components/navigation/authlayout";
 import VerificationPage from "../components/navigation/verification";
 import SuspenseComponent from "../components/utils/suspense";
-import { ReleaseNotifier } from "../components/statics/releasenotifier";
 import { trackPageview } from "../utils/analytics";
 
 // All three render at "/", so the URL alone cannot tell them apart.
@@ -39,12 +38,7 @@ const FrontPage = () => {
   }
 
   if (loginUser) {
-    return (
-      <>
-        <ReleaseNotifier />
-        <Admin user={loginUser} />
-      </>
-    );
+    return <Admin user={loginUser} />;
   }
 
   return (

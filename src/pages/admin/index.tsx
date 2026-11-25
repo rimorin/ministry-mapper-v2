@@ -39,6 +39,7 @@ import UserListing from "../../components/navigation/userlist";
 import Loader from "../../components/statics/loader";
 import SuspenseComponent from "../../components/utils/suspense";
 import CongListing from "../../components/navigation/conglist";
+import { ReleaseNotifier } from "../../components/statics/releasenotifier";
 import LanguageSelector from "../../i18n/LanguageSelector";
 import { LanguageContext } from "../../i18n/LanguageContext";
 import {
@@ -835,6 +836,9 @@ function Admin({ user }: adminProps) {
 
   return (
     <SidebarProvider>
+      {/* Not before the roles load: until then this could be a publisher's
+          account, and these are the staff's release notes. */}
+      {!isLoading && <ReleaseNotifier />}
       <TerritoryListing
         showListing={showTerritoryListing}
         territories={congregationTerritoryList}
