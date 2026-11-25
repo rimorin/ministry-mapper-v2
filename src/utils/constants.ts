@@ -142,6 +142,9 @@ const OAUTH2_PENDING_KEY = "pendingOAuth2";
 
 const OAUTH2_REDIRECT_PATH = "/auth/callback";
 
+const USER_GUIDE_URL = (import.meta.env.VITE_ABOUT_URL ||
+  "https://doc.ministry-mapper.com/user-guide") as string;
+
 export {
   STATUS_CODES,
   DEFAULT_FLOOR_PADDING,
@@ -173,5 +176,6 @@ export {
   REALTIME_DEBOUNCE_MS,
   PREFERRED_TRAVEL_MODE_KEY,
   OAUTH2_PENDING_KEY,
-  OAUTH2_REDIRECT_PATH
+  OAUTH2_REDIRECT_PATH,
+  USER_GUIDE_URL
 };

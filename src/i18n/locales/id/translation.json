@@ -38,7 +38,8 @@
     "noResults": "Tidak ada hasil yang ditemukan.",
     "selectLanguage": "Pilih Bahasa",
     "clickToEdit": "Klik kolom untuk mengedit.",
-    "workspace": "Ruang Kerja"
+    "workspace": "Ruang Kerja",
+    "help": "Bantuan"
   },
   "auth": {
     "signIn": "Masuk",
@@ -278,7 +279,8 @@
     "filterByRole": "Filter berdasarkan peran",
     "searchNameOrEmail": "Cari nama atau email",
     "updateRoleDescription": "Pilih tingkat akses untuk pengguna ini.",
-    "alreadyInCongregation": "Pengguna ini sudah menjadi bagian dari sidang."
+    "alreadyInCongregation": "Pengguna ini sudah menjadi bagian dari sidang.",
+    "profileAndNotifications": "Profil & notifikasi"
   },
   "congregation": {
     "congregation": "Sidang",
@@ -1051,7 +1053,7 @@
     "personal": "Daerah pribadi",
     "assigned": "Ditugaskan",
     "emptyTitle": "Belum ada peta",
-    "emptyMessage": "Peta yang diberikan kepada Anda akan muncul di sini.",
+    "emptyMessage": "Saat pengurus menugaskan peta kepada Anda, peta itu akan muncul di sini dengan sendirinya.",
     "refresh": "Periksa lagi",
     "from": "Ditugaskan oleh {{name}}",
     "with": "Bersama {{names}}",
@@ -1061,7 +1063,8 @@
     "notDone": "{{count}} belum selesai",
     "notHome": "{{count}} tidak ada di rumah",
     "allDone": "Semua selesai",
-    "instructions": "Ada instruksi",
-    "open": "Buka"
+    "instructions": "Baca instruksinya dulu",
+    "open": "Buka",
+    "stale": "Gagal memperbarui. Menampilkan peta Anda dari {{time}}."
   }
 }

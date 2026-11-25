@@ -50,7 +50,7 @@ describe("MyLinks", () => {
       "aria-valuenow",
       "35"
     );
-    expect(screen.getByLabelText("Has instructions")).toBeInTheDocument();
+    expect(screen.getByText("Read the instructions first")).toBeInTheDocument();
   });
 
   it("says a finished map is done, and leaves out a count of nothing", () => {
@@ -83,7 +83,7 @@ describe("MyLinks", () => {
 
     expect(screen.queryByRole("progressbar")).toBeNull();
     expect(screen.queryByText("All done")).toBeNull();
-    expect(screen.queryByLabelText("Has instructions")).toBeNull();
+    expect(screen.queryByText("Read the instructions first")).toBeNull();
   });
 
   it("links each map to its link page, grouped by type", () => {
@@ -111,9 +111,7 @@ describe("MyLinks", () => {
       .map((heading) => heading.textContent);
     expect(headings).toEqual(["Assigned", "Personal territory"]);
     // One congregation: naming it on every card would only repeat itself.
-    expect(
-      screen.getAllByText("T-01 · Assigned by Alpha Conductor")
-    ).toHaveLength(2);
+    expect(screen.getAllByText("T-01")).toHaveLength(2);
     expect(screen.queryByText(/Alpha Congregation/)).toBeNull();
   });
 
@@ -125,14 +123,42 @@ describe("MyLinks", () => {
       ]
     });
 
+    expect(screen.getByText("T-01 · Alpha Congregation")).toBeInTheDocument();
+    expect(screen.getByText("T-01 · Beta Congregation")).toBeInTheDocument();
+  });
+
+  it("names who assigned each map only when more than one person did", () => {
+    show({
+      links: [link({ id: "a" }), link({ id: "b", assigner: "Beta Conductor" })]
+    });
+
     expect(
-      screen.getByText(
-        "T-01 · Alpha Congregation · Assigned by Alpha Conductor"
-      )
+      screen.getByText("T-01 · Assigned by Alpha Conductor")
     ).toBeInTheDocument();
     expect(
-      screen.getByText("T-01 · Beta Congregation · Assigned by Alpha Conductor")
+      screen.getByText("T-01 · Assigned by Beta Conductor")
     ).toBeInTheDocument();
+  });
+
+  it("leaves out the section heading when there is only one kind of map", () => {
+    show({ links: [link({ id: "a" }), link({ id: "b" })] });
+
+    expect(screen.queryByRole("heading", { level: 2 })).toBeNull();
+  });
+
+  it("keeps the maps on screen when a refresh fails, and offers to try again", async () => {
+    const onRefresh = vi.fn();
+    show({
+      links: [link({})],
+      isStale: true,
+      updatedAt: new Date(2026, 10, 29, 10, 42),
+      onRefresh
+    });
+
+    expect(screen.getByRole("link", { name: /Blk 100A/ })).toBeInTheDocument();
+    expect(screen.getByText(/Couldn't refresh/)).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Check again" }));
+    expect(onRefresh).toHaveBeenCalledOnce();
   });
 
   it("names the partners on a shared link, and nobody on one held alone", () => {

@@ -99,6 +99,24 @@ describe("useMyLinks", () => {
     expect(result.current.links).toEqual([link]);
   });
 
+  it("keeps the maps it has when a later refresh fails", async () => {
+    callFunctionMock.mockResolvedValueOnce({ assignments: [link] });
+    const { result } = renderHook(() => useMyLinks());
+    await waitFor(() => expect(result.current.isLoading).toBe(false));
+    expect(result.current.updatedAt).toBeInstanceOf(Date);
+
+    callFunctionMock.mockRejectedValueOnce(new Error("offline"));
+    await act(() => result.current.refresh());
+
+    expect(result.current.links).toEqual([link]);
+    expect(result.current.hasFailed).toBe(false);
+    expect(result.current.isStale).toBe(true);
+
+    callFunctionMock.mockResolvedValueOnce({ assignments: [link] });
+    await act(() => result.current.refresh());
+    expect(result.current.isStale).toBe(false);
+  });
+
   it("keeps waiting when a newer request replaced this one", async () => {
     callFunctionMock.mockRejectedValueOnce({ isAbort: true });
 

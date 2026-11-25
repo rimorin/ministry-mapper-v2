@@ -23,6 +23,7 @@ import {
   ItemActions,
   ItemContent,
   ItemDescription,
+  ItemFooter,
   ItemGroup,
   ItemMedia,
   ItemTitle
@@ -39,6 +40,8 @@ interface MyLinksProps {
   links: MyLink[];
   isLoading: boolean;
   hasFailed: boolean;
+  isStale?: boolean;
+  updatedAt?: Date | null;
   onRefresh: () => void;
   // Called as a link is followed, for a container that has to close first.
   onOpen?: () => void;
@@ -48,6 +51,8 @@ const MyLinks = ({
   links,
   isLoading,
   hasFailed,
+  isStale = false,
+  updatedAt = null,
   onRefresh,
   onOpen
 }: MyLinksProps) => {
@@ -56,12 +61,12 @@ const MyLinks = ({
   if (isLoading) {
     return (
       <div
-        className="space-y-2"
+        className="space-y-3"
         role="status"
         aria-label={t("common.loading", "Loading...")}
       >
-        <Skeleton className="h-15 rounded-lg" />
-        <Skeleton className="h-15 rounded-lg" />
+        <Skeleton className="h-48 rounded-xl" />
+        <Skeleton className="h-48 rounded-xl" />
       </div>
     );
   }
@@ -93,7 +98,10 @@ const MyLinks = ({
               {t("myLinks.emptyTitle", "No maps right now")}
             </EmptyTitle>
             <EmptyDescription>
-              {t("myLinks.emptyMessage", "Maps given to you show up here.")}
+              {t(
+                "myLinks.emptyMessage",
+                "When your conductor assigns you a map, it appears here by itself."
+              )}
             </EmptyDescription>
           </EmptyHeader>
         </Empty>
@@ -105,6 +113,8 @@ const MyLinks = ({
   // than one.
   const showCongregation =
     new Set(links.map((link) => link.congregation_name)).size > 1;
+  // Likewise who assigned them, when one person assigned them all.
+  const showAssigner = new Set(links.map((link) => link.assigner)).size > 1;
 
   const sections = [
     {
@@ -121,20 +131,54 @@ const MyLinks = ({
 
   return (
     <div className="space-y-5">
+      {isStale && (
+        <p className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
+          <span>
+            {updatedAt
+              ? t(
+                  "myLinks.stale",
+                  "Couldn't refresh. Showing your maps from {{time}}.",
+                  {
+                    time: updatedAt.toLocaleTimeString(i18n.language, {
+                      hour: "numeric",
+                      minute: "2-digit"
+                    })
+                  }
+                )
+              : t("myLinks.loadFailed", "Your maps could not be loaded.")}
+          </span>
+          <Button
+            variant="link"
+            type="button"
+            className="h-auto p-0"
+            onClick={onRefresh}
+          >
+            {t("myLinks.refresh", "Check again")}
+          </Button>
+        </p>
+      )}
       {sections.map((section) => (
         <section key={section.key} className="space-y-2">
-          <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            {section.title}
-          </h2>
-          <ItemGroup className="gap-2">
+          {sections.length > 1 && (
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+              {section.title}
+            </h2>
+          )}
+          <ItemGroup className="gap-3">
             {/* Links arrive and leave while the page is open, so each card
                 animates itself in and out instead of relying on the mount. */}
             <AnimatePresence>
               {section.links.map((link, index) => {
+                const title = resolveLocalized(
+                  link.map_description,
+                  i18n.language
+                );
                 const details = [
-                  link.territory,
+                  // Many maps are named with their territory's code already.
+                  !title.includes(link.territory) && link.territory,
                   showCongregation && link.congregation_name,
-                  link.assigner &&
+                  showAssigner &&
+                    link.assigner &&
                     t("myLinks.from", "Assigned by {{name}}", {
                       name: link.assigner
                     })
@@ -167,91 +211,95 @@ const MyLinks = ({
                     <Item
                       variant="outline"
                       size="sm"
-                      className="flex-nowrap rounded-lg bg-card text-foreground no-underline active:scale-[0.99] motion-reduce:transition-none [a]:transition-[background-color,transform] [a]:hover:bg-accent/30"
+                      className="flex-col items-stretch gap-0 overflow-hidden rounded-xl bg-card p-0 text-foreground no-underline active:scale-[0.99] motion-reduce:transition-none [a]:transition-[background-color,transform] [a]:hover:bg-accent/30"
                       render={
                         <Link href={`/map/${link.id}`} onClick={onOpen} />
                       }
                     >
-                      <ItemMedia
-                        variant="icon"
-                        className="size-9 rounded-md bg-primary/10 text-primary"
-                      >
-                        {section.key === LINK_TYPES.PERSONAL ? (
-                          <UserRound aria-hidden="true" />
-                        ) : (
-                          <MapIcon aria-hidden="true" />
-                        )}
-                      </ItemMedia>
-                      {/* The expiry sits under the details on a phone, where
-                          beside them it would squeeze the map's name, and to
-                          the right from the sm breakpoint up. */}
-                      <ItemContent className="min-w-0 sm:grid sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:gap-x-3">
-                        <ItemTitle className="line-clamp-2 font-semibold">
-                          {resolveLocalized(
-                            link.map_description,
-                            i18n.language
+                      <div className="flex items-start gap-3 p-4">
+                        <ItemMedia
+                          variant="icon"
+                          className="size-10 rounded-lg bg-primary/10 text-primary"
+                        >
+                          {section.key === LINK_TYPES.PERSONAL ? (
+                            <UserRound aria-hidden="true" />
+                          ) : (
+                            <MapIcon aria-hidden="true" />
                           )}
-                          {(link.pinned ?? 0) > 0 && (
-                            <Pin
-                              className="ml-1.5 inline size-3.5 align-[-0.125em] text-muted-foreground"
-                              role="img"
-                              aria-label={t(
-                                "myLinks.instructions",
-                                "Has instructions"
-                              )}
-                            />
-                          )}
-                        </ItemTitle>
-                        {details.length > 0 && (
-                          <ItemDescription className="line-clamp-1 text-sm sm:col-start-1">
-                            {details.join(" · ")}
-                          </ItemDescription>
-                        )}
-                        {link.partners.length > 0 && (
-                          <ItemDescription className="flex items-center gap-1.5 text-sm sm:col-start-1">
-                            <Users
-                              className="size-3.5 shrink-0"
-                              aria-hidden="true"
-                            />
-                            <span className="min-w-0 truncate">
-                              {t("myLinks.with", "With {{names}}", {
-                                names: link.partners.join(", ")
-                              })}
-                            </span>
-                          </ItemDescription>
-                        )}
-                        {counted && (
-                          <div className="mt-1.5 space-y-1 sm:col-start-1">
-                            <Progress
-                              value={link.progress ?? 0}
-                              className="h-1.5"
-                              aria-label={t("territory.completed", "Completed")}
-                            />
-                            <p className="flex items-baseline justify-between gap-2 text-sm text-muted-foreground">
-                              <span className="min-w-0 truncate">
+                        </ItemMedia>
+                        <ItemContent className="min-w-0 gap-3">
+                          <div className="space-y-0.5">
+                            <ItemTitle className="line-clamp-2 text-base leading-snug font-semibold">
+                              {title}
+                            </ItemTitle>
+                            {details.length > 0 && (
+                              <ItemDescription className="line-clamp-1 text-sm">
+                                {details.join(" · ")}
+                              </ItemDescription>
+                            )}
+                            {link.partners.length > 0 && (
+                              <ItemDescription className="flex items-center gap-1.5 text-sm">
+                                <Users
+                                  className="size-3.5 shrink-0"
+                                  aria-hidden="true"
+                                />
+                                <span className="min-w-0 truncate">
+                                  {t("myLinks.with", "With {{names}}", {
+                                    names: link.partners.join(", ")
+                                  })}
+                                </span>
+                              </ItemDescription>
+                            )}
+                            {(link.pinned ?? 0) > 0 && (
+                              <p className="flex items-center gap-1.5 pt-0.5 text-sm font-medium text-info">
+                                <Pin
+                                  className="size-3.5 shrink-0"
+                                  aria-hidden="true"
+                                />
+                                {t(
+                                  "myLinks.instructions",
+                                  "Read the instructions first"
+                                )}
+                              </p>
+                            )}
+                          </div>
+                          {counted && (
+                            <div className="space-y-1.5">
+                              <div className="flex items-center gap-3">
+                                <Progress
+                                  value={link.progress ?? 0}
+                                  className="h-1.5 flex-1"
+                                  aria-label={t(
+                                    "territory.completed",
+                                    "Completed"
+                                  )}
+                                />
+                                <span className="shrink-0 text-sm font-medium tabular-nums">
+                                  {link.progress ?? 0}%
+                                </span>
+                              </div>
+                              <p className="text-sm text-muted-foreground">
                                 {left.length > 0
                                   ? left.join(" · ")
                                   : t("myLinks.allDone", "All done")}
-                              </span>
-                              <span className="shrink-0 tabular-nums">
-                                {link.progress ?? 0}%
-                              </span>
-                            </p>
-                          </div>
-                        )}
-                        <span className="mt-1 w-fit sm:col-start-2 sm:row-span-3 sm:row-start-1 sm:mt-0">
-                          <ExpiryBadge
-                            endtime={new Date(link.expiry_date).getTime()}
-                            onExpired={onRefresh}
+                              </p>
+                            </div>
+                          )}
+                        </ItemContent>
+                        <ItemActions className="shrink-0 self-center">
+                          <ChevronRight
+                            className="size-4 text-muted-foreground"
+                            aria-hidden="true"
                           />
-                        </span>
-                      </ItemContent>
-                      <ItemActions className="shrink-0">
-                        <ChevronRight
-                          className="size-4 text-muted-foreground"
-                          aria-hidden="true"
+                        </ItemActions>
+                      </div>
+                      <ItemFooter className="border-t bg-muted/30 px-4 py-2.5">
+                        <ExpiryBadge
+                          plain
+                          endtime={new Date(link.expiry_date).getTime()}
+                          onExpired={onRefresh}
                         />
-                      </ItemActions>
+                      </ItemFooter>
                     </Item>
                   </m.div>
                 );

@@ -1,8 +1,13 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen, userEvent } from "@/utils/test";
 import PublisherDashboard from "./index";
+import { USER_GUIDE_URL } from "../../utils/constants";
 
-vi.mock("../../utils/pocketbase", () => ({ getUser: () => null }));
+const account = vi.hoisted(() => ({ email: null as string | null }));
+
+vi.mock("../../utils/pocketbase", () => ({
+  getUser: (field?: string) => (field === "email" ? account.email : null)
+}));
 
 const show = (congregations: string[]) =>
   render(
@@ -14,6 +19,8 @@ const show = (congregations: string[]) =>
         congregations,
         isLoading: false,
         hasFailed: false,
+        isStale: false,
+        updatedAt: null,
         refresh: vi.fn()
       }}
     />
@@ -42,5 +49,26 @@ describe("PublisherDashboard", () => {
   it("leaves the title alone when none is known", () => {
     show([]);
     expect(screen.queryByText(/congregation/i)).toBeNull();
+  });
+
+  it("shows the account's email, notifications, theme and help in the menu", async () => {
+    account.email = "maria@example.test";
+    const user = userEvent.setup();
+    show(["Alpha Congregation"]);
+
+    await user.click(screen.getByRole("button", { name: "Account menu" }));
+
+    expect(await screen.findByText("maria@example.test")).toBeInTheDocument();
+    expect(
+      screen.getByRole("menuitem", { name: /Profile & notifications/ })
+    ).toBeInTheDocument();
+    expect(screen.getByRole("menuitem", { name: /Theme/ })).toHaveTextContent(
+      "System"
+    );
+    const open = vi.spyOn(window, "open").mockImplementation(() => null);
+    await user.click(screen.getByRole("menuitem", { name: "Help" }));
+    expect(open).toHaveBeenCalledWith(USER_GUIDE_URL, "_blank", "noopener");
+    open.mockRestore();
+    account.email = null;
   });
 });

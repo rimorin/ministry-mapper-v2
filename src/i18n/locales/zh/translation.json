@@ -38,7 +38,8 @@
     "noResults": "未找到结果。",
     "selectLanguage": "选择语言",
     "clickToEdit": "点击字段可编辑。",
-    "workspace": "工作区"
+    "workspace": "工作区",
+    "help": "帮助"
   },
   "auth": {
     "signIn": "登录",
@@ -304,7 +305,8 @@
     "filterByRole": "按角色筛选",
     "searchNameOrEmail": "搜索姓名或邮箱",
     "updateRoleDescription": "选择此用户的访问级别。",
-    "alreadyInCongregation": "此用户已属于该会众。"
+    "alreadyInCongregation": "此用户已属于该会众。",
+    "profileAndNotifications": "个人资料与通知"
   },
   "congregation": {
     "congregation": "会众",
@@ -1051,7 +1053,7 @@
     "personal": "个人区域",
     "assigned": "已分配",
     "emptyTitle": "目前没有地图",
-    "emptyMessage": "分配给您的地图会显示在这里。",
+    "emptyMessage": "当负责人为您分配地图后，它会自动显示在这里。",
     "refresh": "再次检查",
     "from": "分配人：{{name}}",
     "with": "与{{names}}一起",
@@ -1061,7 +1063,8 @@
     "notDone": "未访问 {{count}}",
     "notHome": "不在家 {{count}}",
     "allDone": "全部完成",
-    "instructions": "有指示",
-    "open": "打开"
+    "instructions": "请先阅读指示",
+    "open": "打开",
+    "stale": "无法刷新。正在显示 {{time}} 的地图。"
   }
 }
