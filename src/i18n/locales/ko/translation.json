@@ -38,7 +38,8 @@
     "noResults": "결과를 찾을 수 없습니다.",
     "selectLanguage": "언어 선택",
     "clickToEdit": "필드를 클릭하면 수정할 수 있습니다.",
-    "workspace": "작업 공간"
+    "workspace": "작업 공간",
+    "help": "도움말"
   },
   "auth": {
     "signIn": "로그인",
@@ -304,7 +305,8 @@
     "filterByRole": "역할별 필터",
     "searchNameOrEmail": "이름 또는 이메일 검색",
     "updateRoleDescription": "이 사용자의 액세스 수준을 선택하세요.",
-    "alreadyInCongregation": "이 사용자는 이미 회중에 속해 있습니다."
+    "alreadyInCongregation": "이 사용자는 이미 회중에 속해 있습니다.",
+    "profileAndNotifications": "프로필 및 알림"
   },
   "congregation": {
     "congregation": "회중",
@@ -1051,7 +1053,7 @@
     "personal": "개인 구역",
     "assigned": "배정됨",
     "emptyTitle": "지금은 지도가 없습니다",
-    "emptyMessage": "배정받은 지도가 여기에 표시됩니다.",
+    "emptyMessage": "지휘자가 지도를 배정하면 여기에 자동으로 표시됩니다.",
     "refresh": "다시 확인",
     "from": "{{name}} 님이 배정",
     "with": "{{names}} 님과 함께",
@@ -1061,7 +1063,8 @@
     "notDone": "미방문 {{count}}",
     "notHome": "부재 {{count}}",
     "allDone": "모두 완료",
-    "instructions": "지시 사항 있음",
-    "open": "열기"
+    "instructions": "먼저 지시 사항을 읽으세요",
+    "open": "열기",
+    "stale": "새로고침하지 못했습니다. {{time}} 기준 지도를 표시합니다."
   }
 }

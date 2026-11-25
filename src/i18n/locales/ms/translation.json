@@ -38,7 +38,8 @@
     "weakConnection": "Sambungan lemah",
     "selectLanguage": "Pilih Bahasa",
     "clickToEdit": "Klik medan untuk mengedit.",
-    "workspace": "Ruang Kerja"
+    "workspace": "Ruang Kerja",
+    "help": "Bantuan"
   },
   "auth": {
     "signIn": "Log Masuk",
@@ -304,7 +305,8 @@
     "filterByRole": "Tapis mengikut peranan",
     "searchNameOrEmail": "Cari nama atau e-mel",
     "updateRoleDescription": "Pilih tahap akses untuk pengguna ini.",
-    "alreadyInCongregation": "Pengguna ini sudah menjadi sebahagian daripada sidang."
+    "alreadyInCongregation": "Pengguna ini sudah menjadi sebahagian daripada sidang.",
+    "profileAndNotifications": "Profil & pemberitahuan"
   },
   "congregation": {
     "congregation": "Sidang",
@@ -1051,7 +1053,7 @@
     "personal": "Kawasan peribadi",
     "assigned": "Ditugaskan",
     "emptyTitle": "Tiada peta buat masa ini",
-    "emptyMessage": "Peta yang diberikan kepada anda akan dipaparkan di sini.",
+    "emptyMessage": "Apabila konduktor menugaskan peta kepada anda, ia akan muncul di sini dengan sendirinya.",
     "refresh": "Semak lagi",
     "from": "Ditugaskan oleh {{name}}",
     "with": "Bersama {{names}}",
@@ -1061,7 +1063,8 @@
     "notDone": "{{count}} belum selesai",
     "notHome": "{{count}} tiada di rumah",
     "allDone": "Semua selesai",
-    "instructions": "Ada arahan",
-    "open": "Buka"
+    "instructions": "Baca arahan dahulu",
+    "open": "Buka",
+    "stale": "Tidak dapat dikemas kini. Memaparkan peta anda dari {{time}}."
   }
 }

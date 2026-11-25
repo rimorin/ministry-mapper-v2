@@ -38,7 +38,8 @@
     "weakConnection": "Conexión débil",
     "selectLanguage": "Seleccionar idioma",
     "clickToEdit": "Haz clic en los campos para editar.",
-    "workspace": "Espacio de trabajo"
+    "workspace": "Espacio de trabajo",
+    "help": "Ayuda"
   },
   "auth": {
     "signIn": "Iniciar sesión",
@@ -304,7 +305,8 @@
     "filterByRole": "Filtrar por rol",
     "searchNameOrEmail": "Buscar nombre o correo",
     "updateRoleDescription": "Selecciona el nivel de acceso para este usuario.",
-    "alreadyInCongregation": "Este usuario ya forma parte de la congregación."
+    "alreadyInCongregation": "Este usuario ya forma parte de la congregación.",
+    "profileAndNotifications": "Perfil y notificaciones"
   },
   "congregation": {
     "congregation": "Congregación",
@@ -1051,7 +1053,7 @@
     "personal": "Territorio personal",
     "assigned": "Asignados",
     "emptyTitle": "No hay mapas por ahora",
-    "emptyMessage": "Los mapas que te asignen aparecerán aquí.",
+    "emptyMessage": "Cuando tu conductor te asigne un mapa, aparecerá aquí automáticamente.",
     "refresh": "Comprobar de nuevo",
     "from": "Asignado por {{name}}",
     "with": "Con {{names}}",
@@ -1061,7 +1063,8 @@
     "notDone": "{{count}} sin hacer",
     "notHome": "{{count}} no en casa",
     "allDone": "Todo hecho",
-    "instructions": "Tiene instrucciones",
-    "open": "Abrir"
+    "instructions": "Lee primero las instrucciones",
+    "open": "Abrir",
+    "stale": "No se pudo actualizar. Se muestran tus mapas de las {{time}}."
   }
 }

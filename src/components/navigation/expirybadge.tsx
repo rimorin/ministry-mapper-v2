@@ -34,6 +34,7 @@ const getUrgency = (totalMs: number) => {
   return "safe";
 };
 
+// Seconds only in the final minute, the one stretch that ticks every second.
 const formatDisplay = ({
   days,
   hours,
@@ -41,20 +42,25 @@ const formatDisplay = ({
   seconds,
   totalMs
 }: TimeLeft): string => {
-  if (totalMs <= FIFTEEN_MINUTES_MS) {
-    return `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+  if (totalMs <= ONE_MINUTE_MS) {
+    return `${minutes}:${String(seconds).padStart(2, "0")}`;
   }
   if (days >= 1) return `${days}d ${hours}h`;
   if (hours >= 1) return `${hours}h ${minutes}m`;
-  return `${minutes}m ${seconds}s`;
+  return `${minutes}m`;
 };
 
 interface ExpiryBadgeProps {
   endtime: number;
   onExpired?: () => void;
+  plain?: boolean;
 }
 
-const ExpiryBadge = ({ endtime, onExpired }: ExpiryBadgeProps) => {
+const ExpiryBadge = ({
+  endtime,
+  onExpired,
+  plain = false
+}: ExpiryBadgeProps) => {
   const { t } = useTranslation();
   const [timeLeft, setTimeLeft] = useState(() => calculateTimeLeft(endtime));
   const onExpiredCallback = useEffectEvent(() => {
@@ -107,6 +113,22 @@ const ExpiryBadge = ({ endtime, onExpired }: ExpiryBadgeProps) => {
 
   const urgency = getUrgency(timeLeft.totalMs);
   const display = formatDisplay(timeLeft);
+
+  if (plain) {
+    return (
+      <span
+        className={cn(
+          "inline-flex items-center gap-1.5 text-sm tabular-nums transition-colors duration-700",
+          urgency === "safe" && "text-muted-foreground",
+          urgency === "warning" && "font-medium text-warning",
+          urgency === "critical" && "font-medium text-destructive"
+        )}
+      >
+        <Timer className="size-3.5" aria-hidden="true" />
+        {t("assignments.expiresIn", "Expires in {{time}}", { time: display })}
+      </span>
+    );
+  }
 
   return (
     <Badge

@@ -9,12 +9,9 @@ import ThemeToggle from "./themetoggle";
 import ReleaseHistoryBtn from "./releasehistorybtn";
 import LanguageBtn from "./languagebtn";
 import { getAssetUrl } from "../../utils/helpers/assetpath";
+import { USER_GUIDE_URL } from "../../utils/constants";
 import * as m from "motion/react-m";
 import { duration, enterTransition, springCalm } from "@/lib/motion";
-
-const { VITE_ABOUT_URL } = import.meta.env;
-const AboutURL = (VITE_ABOUT_URL ||
-  "https://doc.ministry-mapper.com/user-guide") as string;
 
 interface AuthLayoutProps {
   children: ReactNode;
@@ -79,7 +76,7 @@ const AuthLayout: FC<AuthLayoutProps> = ({ children }) => {
           <Button
             variant="outline"
             size="icon"
-            onClick={() => window.open(AboutURL)}
+            onClick={() => window.open(USER_GUIDE_URL)}
           >
             <Info className="size-4" />
           </Button>

@@ -12,7 +12,7 @@ interface MyLinksPanelProps {
 
 const MyLinksPanel = ({ myLinks }: MyLinksPanelProps) => {
   const { t } = useTranslation();
-  const { links, isLoading, hasFailed, refresh } = myLinks;
+  const { links, isLoading, hasFailed, isStale, updatedAt, refresh } = myLinks;
 
   // The empty and failed states explain themselves, so the hint only goes
   // with a list.
@@ -37,6 +37,8 @@ const MyLinksPanel = ({ myLinks }: MyLinksPanelProps) => {
           links={links}
           isLoading={isLoading}
           hasFailed={hasFailed}
+          isStale={isStale}
+          updatedAt={updatedAt}
           onRefresh={refresh}
         />
       </div>

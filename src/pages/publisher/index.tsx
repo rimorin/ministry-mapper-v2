@@ -2,6 +2,7 @@ import { lazy, use, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   ChevronDown,
+  CircleHelp,
   Languages,
   LogOut,
   Palette,
@@ -26,6 +27,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import MyLinksPanel from "@/components/common/my-links-panel";
 import { LanguageContext } from "../../i18n/LanguageContext";
+import { ThemeContext } from "../../components/utils/context";
+import { USER_GUIDE_URL } from "../../utils/constants";
 import LanguageSelector from "../../i18n/LanguageSelector";
 import type useMyLinks from "../../hooks/useMyLinks";
 import { useModalManagement } from "../../hooks/useModalManagement";
@@ -36,6 +39,12 @@ const GetProfile = lazy(() => import("../../components/modal/profile"));
 const ThemeSettingsModal = lazy(
   () => import("../../components/modal/themesettings")
 );
+
+const THEME_LABELS = {
+  light: "theme.light",
+  dark: "theme.dark",
+  system: "theme.system"
+} as const;
 
 interface PublisherDashboardProps {
   userName: string;
@@ -64,6 +73,8 @@ const PublisherDashboard = ({
   const { currentLanguage, changeLanguage, languageOptions } =
     use(LanguageContext);
   const { showModal } = useModalManagement();
+  const { theme } = use(ThemeContext);
+  const userEmail = getUser("email") as string | null;
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
 
   useEffect(() => {
@@ -116,8 +127,14 @@ const PublisherDashboard = ({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="start" className="min-w-52">
               <DropdownMenuGroup>
-                <DropdownMenuLabel className="truncate">
-                  {userName}
+                {/* The email tells apart a Google, Apple or email sign-in. */}
+                <DropdownMenuLabel className="flex flex-col">
+                  <span className="truncate text-foreground">{userName}</span>
+                  {userEmail && (
+                    <span className="truncate text-xs font-normal">
+                      {userEmail}
+                    </span>
+                  )}
                 </DropdownMenuLabel>
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
@@ -125,7 +142,7 @@ const PublisherDashboard = ({
                 onClick={() => showModal(GetProfile, { user: getUser() })}
               >
                 <UserRound />
-                {t("user.profile", "Profile")}
+                {t("user.profileAndNotifications", "Profile & notifications")}
               </DropdownMenuItem>
               <DropdownMenuItem onClick={toggleLanguageSelector}>
                 <Languages />
@@ -139,6 +156,17 @@ const PublisherDashboard = ({
               >
                 <Palette />
                 {t("theme.theme", "Theme")}
+                <span className="ml-auto text-xs text-muted-foreground">
+                  {t(THEME_LABELS[theme])}
+                </span>
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() =>
+                  window.open(USER_GUIDE_URL, "_blank", "noopener")
+                }
+              >
+                <CircleHelp />
+                {t("common.help", "Help")}
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem variant="destructive" onClick={onLogout}>

@@ -38,7 +38,8 @@
     "weakConnection": "Weak connection",
     "selectLanguage": "Select Language",
     "clickToEdit": "Click fields to edit.",
-    "workspace": "Workspace"
+    "workspace": "Workspace",
+    "help": "Help"
   },
   "auth": {
     "signIn": "Sign in",
@@ -304,7 +305,8 @@
     "filterByRole": "Filter by role",
     "searchNameOrEmail": "Search name or email",
     "updateRoleDescription": "Select the access level for this user.",
-    "alreadyInCongregation": "This user is already part of the congregation."
+    "alreadyInCongregation": "This user is already part of the congregation.",
+    "profileAndNotifications": "Profile & notifications"
   },
   "congregation": {
     "congregation": "Congregation",
@@ -1051,7 +1053,7 @@
     "personal": "Personal territory",
     "assigned": "Assigned",
     "emptyTitle": "No maps right now",
-    "emptyMessage": "Maps given to you show up here.",
+    "emptyMessage": "When your conductor assigns you a map, it appears here by itself.",
     "refresh": "Check again",
     "from": "Assigned by {{name}}",
     "with": "With {{names}}",
@@ -1061,7 +1063,8 @@
     "notDone": "{{count}} not done",
     "notHome": "{{count}} not home",
     "allDone": "All done",
-    "instructions": "Has instructions",
-    "open": "Open"
+    "instructions": "Read the instructions first",
+    "open": "Open",
+    "stale": "Couldn't refresh. Showing your maps from {{time}}."
   }
 }

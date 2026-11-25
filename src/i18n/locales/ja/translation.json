@@ -38,7 +38,8 @@
     "noResults": "結果が見つかりません。",
     "selectLanguage": "言語を選択",
     "clickToEdit": "項目をクリックして編集します。",
-    "workspace": "ワークスペース"
+    "workspace": "ワークスペース",
+    "help": "ヘルプ"
   },
   "auth": {
     "signIn": "ログイン",
@@ -304,7 +305,8 @@
     "filterByRole": "役割で絞り込む",
     "searchNameOrEmail": "名前またはメールで検索",
     "updateRoleDescription": "このユーザーのアクセスレベルを選択してください。",
-    "alreadyInCongregation": "このユーザーはすでに会衆の一員です。"
+    "alreadyInCongregation": "このユーザーはすでに会衆の一員です。",
+    "profileAndNotifications": "プロフィールと通知"
   },
   "congregation": {
     "congregation": "会衆",
@@ -1051,7 +1053,7 @@
     "personal": "個人区域",
     "assigned": "割り当て済み",
     "emptyTitle": "現在、地図はありません",
-    "emptyMessage": "地図が割り当てられると、ここに表示されます。",
+    "emptyMessage": "管理者が地図を割り当てると、ここに自動で表示されます。",
     "refresh": "再確認",
     "from": "割り当て: {{name}}",
     "with": "{{names}}と一緒",
@@ -1061,7 +1063,8 @@
     "notDone": "未訪問 {{count}}",
     "notHome": "不在 {{count}}",
     "allDone": "すべて完了",
-    "instructions": "指示あり",
-    "open": "開く"
+    "instructions": "先に指示を読んでください",
+    "open": "開く",
+    "stale": "更新できませんでした。{{time}} 時点の地図を表示しています。"
   }
 }

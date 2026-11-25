@@ -46,6 +46,9 @@ export default function useMyLinks() {
   const [congregations, setCongregations] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasFailed, setHasFailed] = useState(false);
+  // Kept when a later refresh fails, so weak signal does not wipe the list.
+  const [updatedAt, setUpdatedAt] = useState<Date | null>(null);
+  const [isStale, setIsStale] = useState(false);
 
   const { t, i18n } = useTranslation();
   const { notifyInfo } = useNotification();
@@ -71,6 +74,8 @@ export default function useMyLinks() {
       setLinks(latest);
       setCongregations(response.congregations ?? []);
       setHasFailed(false);
+      setIsStale(false);
+      setUpdatedAt(new Date());
       setIsLoading(false);
       if (!known) return;
       // Announced by the load, not by the event that started it: a load that
@@ -89,7 +94,8 @@ export default function useMyLinks() {
     } catch (error) {
       // A newer refresh replaced this one and will settle the state itself.
       if (isAbortError(error)) return;
-      setHasFailed(true);
+      if (knownIds.current) setIsStale(true);
+      else setHasFailed(true);
       setIsLoading(false);
     }
   };
@@ -127,5 +133,13 @@ export default function useMyLinks() {
     !!userId
   );
 
-  return { links, congregations, isLoading, hasFailed, refresh: load };
+  return {
+    links,
+    congregations,
+    isLoading,
+    hasFailed,
+    isStale,
+    updatedAt,
+    refresh: load
+  };
 }
