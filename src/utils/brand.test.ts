@@ -49,15 +49,4 @@ describe("logo files", () => {
     expect(favicon).toContain(brand.tile.light);
     expect(favicon).toContain(brand.tile.dark);
   });
-
-  it("colours the in-app tile as brand.json says", () => {
-    const tiles = [
-      ...read("src/index.css").matchAll(/--logo-tile:\s*(#[0-9a-f]+);/gi)
-    ].map((match) => match[1].toLowerCase());
-
-    expect(tiles).toEqual([
-      brand.tile.light.toLowerCase(),
-      brand.tile.dark.toLowerCase()
-    ]);
-  });
 });

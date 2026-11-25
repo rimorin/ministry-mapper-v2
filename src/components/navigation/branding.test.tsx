@@ -3,11 +3,11 @@ import { render, screen } from "@testing-library/react";
 import NavBarBranding from "./branding";
 
 describe("NavBarBranding", () => {
-  it("draws the logo, with its tile taking the theme's colour", () => {
+  it("shows the logo on its own, with no tile", () => {
     render(<NavBarBranding />);
     const logo = screen.getByRole("img", { name: /ministry mapper logo/i });
     expect(logo).toHaveClass("size-8");
-    expect(logo).toHaveClass("bg-(--logo-tile)");
+    expect(logo.tagName).toBe("IMG");
   });
 
   it("should render naming text when provided", () => {

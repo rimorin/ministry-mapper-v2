@@ -7,20 +7,16 @@ interface AppLogoProps {
   label?: string;
 }
 
-// The master logo on its tile. The tile takes the app's own theme rather than
-// the device's; the art is built into the bundle, so it shows offline.
+// The master logo with no tile: its colours hold up on light and dark alike.
+// It is built into the bundle, so it shows offline.
 const AppLogo = ({ className, label }: AppLogoProps) => (
-  <span
-    role={label ? "img" : undefined}
-    aria-label={label}
+  <img
+    src={logo}
+    alt={label ?? ""}
     aria-hidden={label ? undefined : true}
-    className={cn(
-      "inline-grid aspect-square shrink-0 place-items-center rounded-[22%] bg-(--logo-tile)",
-      className
-    )}
-  >
-    <img src={logo} alt="" draggable={false} className="size-[90%]" />
-  </span>
+    draggable={false}
+    className={cn("aspect-square shrink-0", className)}
+  />
 );
 
 export default AppLogo;

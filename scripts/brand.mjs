@@ -102,22 +102,6 @@ function buildFavicon(svg, viewBox, tile) {
 `;
 }
 
-// The in-app tile colours follow brand.json: light first, then dark.
-function syncTileTokens(tile) {
-  const css = read("src/index.css");
-  const pattern = /(--logo-tile:\s*)#[0-9a-fA-F]{3,8}(;)/g;
-  if ((css.match(pattern) ?? []).length !== 2)
-    fail("src/index.css should set --logo-tile twice: in :root and in .dark.");
-  const values = [tile.light, tile.dark];
-  write(
-    "src/index.css",
-    css.replace(
-      pattern,
-      (_, start, end) => `${start}${values.shift().toLowerCase()}${end}`
-    )
-  );
-}
-
 function wrangler(args) {
   return run([...WRANGLER, ...args]);
 }
@@ -161,10 +145,7 @@ async function main() {
   step("Checked the master: plain shapes in a square frame");
 
   write("brand/favicon.svg", buildFavicon(master, viewBox, brand.tile));
-  syncTileTokens(brand.tile);
-  step(
-    "Built brand/favicon.svg and synced the tile colours into src/index.css"
-  );
+  step("Built brand/favicon.svg");
 
   const generated = run(["pwa-assets-generator"]);
   if (generated.status !== 0)
@@ -262,8 +243,8 @@ async function main() {
     previous === folder
       ? "\n✔ Nothing changed: this logo is already live in the app."
       : `\n✔ The app now uses ${base}/
-  Next: npm test, check the logo in npm start, then commit brand/, src/index.css,
-  index.html and public/site.webmanifest.
+  Next: npm test, check the logo in npm start, then commit brand/, index.html
+  and public/site.webmanifest.
   Keep ${previous} on R2 until well after the release: phones running an older
   copy of the app still ask for it.`
   );
