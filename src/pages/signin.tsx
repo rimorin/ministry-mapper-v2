@@ -187,7 +187,7 @@ const LoginComponent = () => {
                 maxLength={OTP_LENGTH}
                 value={otpCode}
                 onChange={(value) => setOtpCode(value)}
-                onComplete={(code: string) => submitOtp(otpSessionId, code)}
+                onComplete={(code) => submitOtp(otpSessionId, code)}
                 disabled={isLogin}
                 autoFocus
                 containerClassName="justify-center"

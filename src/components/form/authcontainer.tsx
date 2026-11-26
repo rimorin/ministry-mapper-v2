@@ -15,7 +15,6 @@ interface AuthContainerProps {
   subtitle?: string;
   icon?: ReactNode;
   iconPlain?: boolean;
-  iconColor?: "primary" | "secondary" | "success" | "danger";
   noValidate?: boolean;
   validated?: boolean;
   onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void;

@@ -353,38 +353,38 @@ const ConfirmSlipDetails = NiceModal.create(
                     />
                   )}
                   {members.length > 0 && (
-                    <p className="mb-3 text-sm text-muted-foreground">
-                      {t(
-                        "slip.whoHint",
-                        "Fill in one or both, for the publishers working this map."
-                      )}
-                    </p>
-                  )}
-                  {members.length > 0 && (
-                    <div className="mb-3 space-y-1.5">
-                      <Label>
-                        {t("slip.memberLabel", "Send to their account")}
-                      </Label>
-                      <MemberPicker
-                        members={members}
-                        value={assignees}
-                        recentIds={recentIds}
-                        onValueChange={setAssignees}
-                        onMap={{ map: addressElement.id }}
-                      />
-                      {assignees.length > 0 && (
-                        <p className="text-xs text-muted-foreground">
-                          {t(
-                            "slip.memberHint",
-                            "They will find this map under My Maps."
-                          )}
-                        </p>
-                      )}
-                    </div>
+                    <>
+                      <p className="mb-3 text-sm text-muted-foreground">
+                        {t(
+                          "slip.whoHint",
+                          "Fill in one or both, for the publishers working this map."
+                        )}
+                      </p>
+                      <div className="mb-3 space-y-1.5">
+                        <Label>
+                          {t("slip.memberLabel", "Send to their account")}
+                        </Label>
+                        <MemberPicker
+                          members={members}
+                          value={assignees}
+                          recentIds={recentIds}
+                          onValueChange={setAssignees}
+                          onMap={{ map: mapId }}
+                        />
+                        {assignees.length > 0 && (
+                          <p className="text-xs text-muted-foreground">
+                            {t(
+                              "slip.memberHint",
+                              "They will find this map under My Maps."
+                            )}
+                          </p>
+                        )}
+                      </div>
+                    </>
                   )}
                   {/* With accounts on offer the two kinds of people get a box
                       each, so nothing has to be worked out from what is
-                      typed. Without them this is the one box it always was. */}
+                      typed. */}
                   <GenericInputField
                     label={
                       members.length > 0

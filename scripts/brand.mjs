@@ -49,8 +49,7 @@ const step = (message) => console.log(`• ${message}`);
 const read = (file) => fs.readFileSync(path.join(ROOT, file), "utf-8");
 const write = (file, text) => fs.writeFileSync(path.join(ROOT, file), text);
 
-const run = (args, options = {}) =>
-  spawnSync("npx", args, { cwd: ROOT, encoding: "utf-8", ...options });
+const run = (args) => spawnSync("npx", args, { cwd: ROOT, encoding: "utf-8" });
 
 // The master has to scale cleanly to every size and convert the same way in
 // every tool: plain shapes in a square frame, nothing loaded or scripted.
