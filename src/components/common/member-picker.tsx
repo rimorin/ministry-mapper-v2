@@ -152,21 +152,23 @@ const MemberList = ({
                   : "";
               return (
                 // Not the registry item: its tick appears only once chosen and shifts the name.
+                // data-[selected], not shadcn's data-selected, which waits for ="true":
+                // Base UI sets the attribute bare.
                 <ComboboxPrimitive.Item
                   key={member.id}
                   value={member}
                   disabled={isOnMap}
                   className={cn(
-                    "group/member cursor-default rounded-md px-3 py-2 outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-selected:bg-primary/5",
+                    "group/member cursor-default rounded-md px-3 py-2 outline-none select-none data-disabled:pointer-events-none data-disabled:opacity-50 data-highlighted:bg-accent data-[selected]:bg-primary/5",
                     roomy && "px-4 py-3"
                   )}
                 >
                   <Item size="xs" className="flex-nowrap gap-3 p-0">
                     <ItemMedia
                       aria-hidden="true"
-                      className="size-5 self-center rounded-full border border-input text-primary-foreground group-data-selected/member:border-primary group-data-selected/member:bg-primary"
+                      className="size-5 self-center rounded-full border border-input text-primary-foreground group-data-[selected]/member:border-primary group-data-[selected]/member:bg-primary"
                     >
-                      <Check className="size-3.5 opacity-0 group-data-selected/member:opacity-100" />
+                      <Check className="size-3.5 opacity-0 group-data-[selected]/member:opacity-100" />
                     </ItemMedia>
                     <ItemContent className="min-w-0 gap-0">
                       <ItemTitle className={cn("w-full", roomy && "text-base")}>
