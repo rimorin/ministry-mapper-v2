@@ -145,6 +145,7 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
             role: roleName
           })
         );
+        modal.resolve(true);
         modal.hide();
       },
       { setLoading: setIsSaving }

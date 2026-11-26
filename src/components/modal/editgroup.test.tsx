@@ -1,26 +1,14 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 import NiceModal from "@ebay/nice-modal-react";
 import { render, screen, waitFor, userEvent } from "../../utils/test";
-import Groups from "./groups";
+import EditGroup from "./editgroup";
+import type { CongregationGroup } from "../../utils/helpers/getcongregationmembers";
 
 const pb = vi.hoisted(() => ({
-  members: vi.fn(),
-  groups: vi.fn(),
   createData: vi.fn(),
   updateDataById: vi.fn(),
   deleteDataById: vi.fn()
 }));
-
-vi.mock(
-  "../../utils/helpers/getcongregationmembers",
-  async (importOriginal) => ({
-    ...(await importOriginal<
-      typeof import("../../utils/helpers/getcongregationmembers")
-    >()),
-    default: pb.members,
-    getCongregationGroups: pb.groups
-  })
-);
 
 vi.mock("../../utils/pocketbase", async (importOriginal) => ({
   ...(await importOriginal<typeof import("../../utils/pocketbase")>()),
@@ -44,63 +32,51 @@ const roster = [
   person("joe", "Joe Ng")
 ];
 
-const open = async () => {
+// "gone" is in the group but not on the roster: it cannot sign in.
+const group3 = { id: "g1", name: "Group 3", members: ["sam", "rita", "gone"] };
+
+const open = (group: CongregationGroup, taken: string[] = []) => {
   render(<></>);
-  void NiceModal.show(Groups, { congregation: "cong1" });
-  return screen.findByRole("dialog");
+  return NiceModal.show(EditGroup, {
+    congregation: "cong1",
+    group,
+    members: roster,
+    taken
+  });
 };
 
-describe("Groups", () => {
+describe("EditGroup", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    pb.members.mockResolvedValue(roster);
-    // "gone" is in the group but not on the roster: it cannot sign in.
-    pb.groups.mockResolvedValue([
-      { id: "g1", name: "Group 3", members: ["sam", "rita", "gone"] }
-    ]);
     pb.createData.mockResolvedValue({});
     pb.updateDataById.mockResolvedValue({});
     pb.deleteDataById.mockResolvedValue(true);
   });
 
-  it("lists each group with who is in it, and who is in none", async () => {
-    await open();
-
-    expect(await screen.findByText("Group 3")).toBeInTheDocument();
-    expect(screen.getByText("3 people")).toBeInTheDocument();
-    expect(screen.getByText("Sam Lee, Rita Tan")).toBeInTheDocument();
-    expect(screen.getByText("1 person isn't in a group")).toBeInTheDocument();
-  });
-
   it("makes a group of the people picked", async () => {
     const user = userEvent.setup();
-    await open();
-    await screen.findByText("Group 3");
+    const done = open({ id: "", name: "", members: [] });
 
-    await user.click(screen.getByRole("button", { name: "New group" }));
-    await user.type(screen.getByLabelText("Name"), "Group 5 ");
+    await user.type(await screen.findByLabelText("Name"), "Group 5 ");
     await user.type(
       screen.getByRole("combobox", { name: "Search members" }),
       "joe@{Enter}"
     );
     await user.click(screen.getByRole("button", { name: "Save" }));
 
-    await waitFor(() =>
-      expect(pb.createData).toHaveBeenCalledWith(
-        "groups",
-        { name: "Group 5", members: ["joe"], congregation: "cong1" },
-        expect.anything()
-      )
+    await expect(done).resolves.toBe(true);
+    expect(pb.createData).toHaveBeenCalledWith(
+      "groups",
+      { name: "Group 5", members: ["joe"], congregation: "cong1" },
+      expect.anything()
     );
-    expect(pb.groups).toHaveBeenCalledTimes(2);
   });
 
   it("keeps the members the roster leaves out", async () => {
     const user = userEvent.setup();
-    await open();
+    void open(group3);
 
-    await user.click(await screen.findByText("Group 3"));
-    const name = screen.getByLabelText("Name");
+    const name = await screen.findByLabelText("Name");
     await user.clear(name);
     await user.type(name, "Group 4");
     await user.click(screen.getByRole("button", { name: "Save" }));
@@ -117,10 +93,9 @@ describe("Groups", () => {
 
   it("lists the members, and takes one out with its button", async () => {
     const user = userEvent.setup();
-    await open();
+    void open(group3);
 
-    await user.click(await screen.findByText("Group 3"));
-    expect(screen.getByText("sam@alpha.test")).toBeInTheDocument();
+    expect(await screen.findByText("sam@alpha.test")).toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Remove Sam Lee" }));
     await waitFor(() =>
       expect(screen.queryByText("sam@alpha.test")).not.toBeInTheDocument()
@@ -139,11 +114,9 @@ describe("Groups", () => {
 
   it("says so, in the form, when a name is taken", async () => {
     const user = userEvent.setup();
-    await open();
-    await screen.findByText("Group 3");
+    void open({ id: "", name: "", members: [] }, ["Group 3"]);
 
-    await user.click(screen.getByRole("button", { name: "New group" }));
-    await user.type(screen.getByLabelText("Name"), "group 3");
+    await user.type(await screen.findByLabelText("Name"), "group 3");
     await user.click(screen.getByRole("button", { name: "Save" }));
 
     expect(
@@ -158,11 +131,9 @@ describe("Groups", () => {
 
   it("asks for a name rather than saving spaces", async () => {
     const user = userEvent.setup();
-    await open();
-    await screen.findByText("Group 3");
+    void open({ id: "", name: "", members: [] });
 
-    await user.click(screen.getByRole("button", { name: "New group" }));
-    await user.type(screen.getByLabelText("Name"), "   ");
+    await user.type(await screen.findByLabelText("Name"), "   ");
     await user.click(screen.getByRole("button", { name: "Save" }));
 
     expect(screen.getByText("Give the group a name.")).toBeInTheDocument();
@@ -171,14 +142,14 @@ describe("Groups", () => {
 
   it("deletes a group once confirmed", async () => {
     const user = userEvent.setup();
-    await open();
+    const done = open(group3);
 
-    await user.click(await screen.findByText("Group 3"));
-    await user.click(screen.getByRole("button", { name: "Delete group" }));
+    await user.click(
+      await screen.findByRole("button", { name: "Delete group" })
+    );
     await user.click(await screen.findByRole("button", { name: "Delete" }));
 
-    await waitFor(() =>
-      expect(pb.deleteDataById).toHaveBeenCalledWith("groups", "g1")
-    );
+    await expect(done).resolves.toBe(true);
+    expect(pb.deleteDataById).toHaveBeenCalledWith("groups", "g1");
   });
 });

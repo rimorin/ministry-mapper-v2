@@ -175,6 +175,34 @@ describe("useCongManagement", () => {
       });
     });
 
+    it("reloads the users without opening or closing the list", async () => {
+      const mockUsers = new Map<string, userDetails>([
+        [
+          "user1",
+          {
+            name: "User 1",
+            email: "user1@test.com",
+            role: "publisher",
+            verified: true,
+            roleId: "role1"
+          }
+        ]
+      ]);
+      (getCongregationUsers as ReturnType<typeof vi.fn>).mockResolvedValue(
+        mockUsers
+      );
+      const { result } = renderHook(() =>
+        useCongregationManagement({ userId: "user-123" })
+      );
+
+      await act(async () => {
+        await result.current.reloadUsers();
+      });
+
+      expect(result.current.congregationUsers).toEqual(mockUsers);
+      expect(result.current.showUserListing).toBe(false);
+    });
+
     it("should handle errors when fetching users", async () => {
       (getCongregationUsers as ReturnType<typeof vi.fn>).mockRejectedValue(
         new Error("Fetch failed")

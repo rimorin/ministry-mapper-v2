@@ -94,7 +94,6 @@ const NewTerritoryCode = lazy(
 );
 const NewMap = lazy(() => import("../../components/modal/newmap"));
 const InviteUser = lazy(() => import("../../components/modal/inviteuser"));
-const Groups = lazy(() => import("../../components/modal/groups"));
 const GetProfile = lazy(() => import("../../components/modal/profile"));
 const GetAssignments = lazy(() => import("../../components/modal/assignments"));
 const ChangeTerritoryDetails = lazy(
@@ -150,6 +149,7 @@ function Admin({ user }: adminProps) {
     toggleCongregationListing,
     toggleUserListing,
     getUsers,
+    reloadUsers,
     userAccessLevel,
     setUserAccessLevel,
     defaultExpiryHours,
@@ -516,16 +516,14 @@ function Admin({ user }: adminProps) {
     await getUsers();
   };
 
-  const handleShowGroups = () => {
-    showModal(Groups, { congregation: congregationCode });
-  };
-
-  const handleInviteUser = () => {
-    showModal(InviteUser, {
+  const handleInviteUser = async () => {
+    const invited = await showModal(InviteUser, {
       uid: userId,
       congregation: congregationCode,
       footerSaveAcl: userAccessLevel
     });
+    // Invited from People, the newcomer joins the list behind the dialog.
+    if (invited && showUserListing) void reloadUsers();
   };
 
   const handleGenerateReport = async () => {
@@ -868,6 +866,11 @@ function Admin({ user }: adminProps) {
         users={Array.from(congregationUsers.values())}
         hideFunction={toggleUserListing}
         handleSelect={handleUserSelect}
+        people={
+          isPublisherRoleEnabled
+            ? { congregation: congregationCode, onInvite: handleInviteUser }
+            : undefined
+        }
       />
       <CongListing
         showListing={showCongregationListing}
@@ -913,11 +916,11 @@ function Admin({ user }: adminProps) {
           onDelete: handleDeleteTerritory,
           onReset: handleResetTerritory
         }}
+        peopleMenu={isPublisherRoleEnabled}
         onCongregationActions={{
           onShowSettings: handleShowCongregationSettings,
           onShowOptions: handleShowCongregationOptions,
           onManageUsers: handleManageUsers,
-          onShowGroups: isPublisherRoleEnabled ? handleShowGroups : undefined,
           onInviteUser: handleInviteUser,
           onGenerateReport: handleGenerateReport
         }}

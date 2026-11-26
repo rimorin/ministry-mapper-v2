@@ -1,7 +1,13 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen, userEvent } from "../../utils/test";
+import { render, screen, userEvent, waitFor } from "../../utils/test";
 import UserListing from "./userlist";
 import { userDetails } from "../../utils/interface";
+
+vi.mock("./grouplist", () => ({
+  default: ({ congregation }: { congregation: string }) => (
+    <p>Groups of {congregation}</p>
+  )
+}));
 
 const person = (name: string, role: string): userDetails => ({
   name,
@@ -37,6 +43,61 @@ const names = () =>
     .map((row) => row.querySelector("[data-slot=item-title]")?.textContent);
 
 describe("UserListing", () => {
+  it("is a list of users, with no tabs, where the publisher role is off", () => {
+    open();
+
+    expect(screen.getByText("Select User")).toBeInTheDocument();
+    expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: "Invite" })
+    ).not.toBeInTheDocument();
+  });
+
+  describe("as People", () => {
+    const openPeople = (onInvite = vi.fn()) => {
+      render(
+        <UserListing
+          showListing
+          hideFunction={vi.fn()}
+          users={users}
+          people={{ congregation: "cong1", onInvite }}
+        />
+      );
+      return onInvite;
+    };
+
+    it("opens on the members, with a Groups tab beside them", async () => {
+      const user = userEvent.setup();
+      openPeople();
+
+      expect(screen.getByText("People")).toBeInTheDocument();
+      expect(screen.getByRole("tab", { name: "Members" })).toHaveAttribute(
+        "aria-selected",
+        "true"
+      );
+      expect(names()).toHaveLength(5);
+
+      await user.click(screen.getByRole("tab", { name: "Groups" }));
+      expect(screen.getByText("Groups of cong1")).toBeInTheDocument();
+      // Each tab carries its own action; Invite belongs to Members. The
+      // Members panel leaves after its tab is switched away from.
+      await waitFor(() =>
+        expect(
+          screen.queryByRole("button", { name: "Invite" })
+        ).not.toBeInTheDocument()
+      );
+    });
+
+    it("invites from its own button", async () => {
+      const user = userEvent.setup();
+      const onInvite = openPeople();
+
+      await user.click(screen.getByRole("button", { name: "Invite" }));
+
+      expect(onInvite).toHaveBeenCalled();
+    });
+  });
+
   it("lists everyone until a filter is chosen", () => {
     open();
     expect(names()).toHaveLength(5);
