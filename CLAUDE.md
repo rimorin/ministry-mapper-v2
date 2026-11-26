@@ -37,7 +37,7 @@ Summarised from Andrej Karpathy's guidelines (github.com/multica-ai/andrej-karpa
 - `cn()` from `@/lib/utils` for conditional classes. Animation variants live in `src/lib/motion.ts`; animate with `import * as m from "motion/react-m"` and `AnimatePresence` from `motion/react`. Don't render elements from `motion/react`; it skips the lazy bundle.
 - Forms use React Hook Form without a schema resolver; Zod is not installed. Validation lives in controller rules or dedicated utilities.
 - Modals: register with `NiceModal.create(...)`, open with `NiceModal.show(...)`, never inline in JSX. Base UI dialogs use `useBaseUiDialog` (`@/components/common/base-ui-dialog`) with its `onClose`/`size` options, not a custom `onOpenChange`.
-- Two components render bottom panels: `Sheet` for the three list panels (all `side="bottom"`), `Drawer` for `ResponsiveDialog` on mobile (own lazy chunk). The overlap is known; follow whichever a screen's neighbours use rather than migrating one screen alone.
+- Two components render bottom panels on a phone: `ListPanel` (`src/components/common/list-panel.tsx`) for the three list panels (territories, congregations, People), a `Sheet` from the bottom on a phone and a centred `Dialog` on a wider screen; and `Drawer` for `ResponsiveDialog` on mobile (own lazy chunk). The overlap is known; follow whichever a screen's neighbours use rather than migrating one screen alone.
 - Analytics (`src/utils/analytics.ts`) is fire-and-forget and swallows its own errors. Never await it or let it affect control flow.
 - Unused variables and parameters take a `_` prefix (ESLint `^_`). Don't drop a parameter that belongs to a public signature to silence the warning.
 
