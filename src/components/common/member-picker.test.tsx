@@ -224,7 +224,7 @@ describe("MemberPicker", () => {
       ).toBeInTheDocument();
     });
 
-    it("closes on Done", async () => {
+    it("closes on Continue", async () => {
       render(
         <MemberPicker members={members} value={[]} onValueChange={vi.fn()} />
       );
@@ -234,7 +234,7 @@ describe("MemberPicker", () => {
       const panel = await screen.findByRole("dialog");
 
       await userEvent.click(
-        within(panel).getByRole("button", { name: "Done" })
+        within(panel).getByRole("button", { name: "Continue" })
       );
 
       await waitFor(() =>

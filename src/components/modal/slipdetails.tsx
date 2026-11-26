@@ -96,6 +96,8 @@ const ConfirmSlipDetails = NiceModal.create(
     const publisherText = [namesOf(assignees), others]
       .filter(Boolean)
       .join(", ");
+    const peopleCount =
+      assignees.length + (others ? others.split(", ").length : 0);
 
     const existingAssignmentRows = [
       LINK_TYPES.PERSONAL,
@@ -428,7 +430,15 @@ const ConfirmSlipDetails = NiceModal.create(
                     userPermission={policy.userRole}
                   >
                     <SubmitButton pending={isCreating}>
-                      {t("slip.confirmButton")}
+                      {assignees.length > 0
+                        ? t(
+                            "slip.confirmPeople",
+                            "Confirm ({{count}} people)",
+                            {
+                              count: peopleCount
+                            }
+                          )
+                        : t("slip.confirmButton")}
                     </SubmitButton>
                   </ComponentAuthorizer>
                 </ResponsiveDialogFooter>
