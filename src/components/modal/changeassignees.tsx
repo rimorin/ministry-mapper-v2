@@ -43,7 +43,8 @@ const ChangeAssignees = NiceModal.create(
         ...holder,
         email: "",
         role: "",
-        maps: []
+        maps: [],
+        groups: []
       }))
     );
     const [isSaving, setIsSaving] = useState(false);

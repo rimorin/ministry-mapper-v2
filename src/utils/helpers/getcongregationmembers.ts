@@ -14,7 +14,34 @@ export interface CongregationMember {
   email: string;
   role: string;
   maps: MemberMap[];
+  // Names of the groups they are in, for narrowing the picker.
+  groups: string[];
 }
+
+export interface CongregationGroup {
+  id: string;
+  name: string;
+  // User ids.
+  members: string[];
+}
+
+// Group 2 before Group 10.
+export const byName = (a: string, b: string) =>
+  a.localeCompare(b, undefined, { numeric: true });
+
+export const getCongregationGroups = async (
+  congregation: string,
+  requestKey = `groups-${congregation}`
+): Promise<CongregationGroup[]> =>
+  (
+    await getList("groups", {
+      filter: `congregation="${congregation}"`,
+      fields: PB_FIELDS.GROUPS,
+      requestKey
+    })
+  )
+    .map(({ id, name, members }) => ({ id, name, members }))
+    .sort((a, b) => byName(a.name, b.name));
 
 // The names a link carries when it is called after its members.
 export const namesOf = (members: Array<{ name: string }>) =>
@@ -39,7 +66,7 @@ export const namesBesides = (typed: string, members: Array<{ name: string }>) =>
 const getCongregationMembers = async (
   congregation: string
 ): Promise<CongregationMember[]> => {
-  const [records, links] = await Promise.all([
+  const [records, links, groups] = await Promise.all([
     getList("roles", {
       filter: `congregation="${congregation}"`,
       expand: "user",
@@ -52,7 +79,10 @@ const getCongregationMembers = async (
       expand: "map",
       fields: PB_FIELDS.MEMBER_LINKS,
       requestKey: `member-links-${congregation}`
-    }).catch(() => [])
+    }).catch(() => []),
+    getCongregationGroups(congregation, `member-groups-${congregation}`).catch(
+      () => []
+    )
   ]);
 
   const held = new Map<string, MemberMap[]>();
@@ -79,7 +109,10 @@ const getCongregationMembers = async (
               name: user.name as string,
               email: (user.email as string) ?? "",
               role: record.role as string,
-              maps: held.get(record.user) ?? []
+              maps: held.get(record.user) ?? [],
+              groups: groups
+                .filter((group) => group.members.includes(record.user))
+                .map((group) => group.name)
             }
           ]
         : [];

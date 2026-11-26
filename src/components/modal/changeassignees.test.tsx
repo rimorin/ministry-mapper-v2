@@ -30,14 +30,16 @@ const roster = [
     name: "Sam Lee",
     email: "sam@alpha.test",
     role: "publisher",
-    maps: [{ link: "l1", map: "m1", name: "Blk 301" }]
+    maps: [{ link: "l1", map: "m1", name: "Blk 301" }],
+    groups: []
   },
   {
     id: "rita",
     name: "Rita Tan",
     email: "rita@alpha.test",
     role: "publisher",
-    maps: []
+    maps: [],
+    groups: []
   }
 ];
 

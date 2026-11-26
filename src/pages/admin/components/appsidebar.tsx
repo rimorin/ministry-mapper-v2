@@ -19,6 +19,7 @@ import {
   RotateCcw,
   Settings,
   SquarePen,
+  Tags,
   Trash2,
   User,
   UserPlus,
@@ -197,6 +198,8 @@ interface AppSidebarProps {
     onShowSettings: () => void;
     onShowOptions: () => void;
     onManageUsers: () => void;
+    // Present only where the publisher role is switched on.
+    onShowGroups?: () => void;
     onInviteUser: () => void;
     onGenerateReport: () => void;
   };
@@ -644,6 +647,23 @@ export function AppSidebar({
                                 {t("user.manageUsers", "Manage Users")}
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
+                            {onCongregationActions.onShowGroups && (
+                              <SidebarMenuSubItem>
+                                <SidebarMenuSubButton
+                                  render={
+                                    <button
+                                      type="button"
+                                      onClick={handleAction(
+                                        onCongregationActions.onShowGroups
+                                      )}
+                                    />
+                                  }
+                                >
+                                  <Tags className="size-3.5 shrink-0 text-muted-foreground" />
+                                  {t("groups.title", "Groups")}
+                                </SidebarMenuSubButton>
+                              </SidebarMenuSubItem>
+                            )}
                             <SidebarMenuSubItem>
                               <SidebarMenuSubButton
                                 render={
