@@ -74,9 +74,17 @@ describe("AssistantProposalCard", () => {
         name: "John Tan",
         email: "john@example.com",
         role: "publisher",
-        maps: []
+        maps: [],
+        groups: []
       },
-      { id: "u2", name: "Ong Mei Ling", email: "", role: "publisher", maps: [] }
+      {
+        id: "u2",
+        name: "Ong Mei Ling",
+        email: "",
+        role: "publisher",
+        maps: [],
+        groups: []
+      }
     ];
     const showLink = (state?: ProposalState, roster = members) =>
       render(
@@ -113,21 +121,24 @@ describe("AssistantProposalCard", () => {
           name: "John Tan",
           email: "john@example.com",
           role: "publisher",
-          maps: []
+          maps: [],
+          groups: []
         },
         {
           id: "u3",
           name: "John Tan",
           email: "jt@example.com",
           role: "publisher",
-          maps: []
+          maps: [],
+          groups: []
         },
         {
           id: "u2",
           name: "Ong Mei Ling",
           email: "",
           role: "publisher",
-          maps: []
+          maps: [],
+          groups: []
         }
       ];
       render(

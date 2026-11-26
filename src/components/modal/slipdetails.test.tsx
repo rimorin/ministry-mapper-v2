@@ -107,14 +107,16 @@ const roster = [
     maps: [
       { link: "l1", map: "m1", name: "Blk 301" },
       { link: "l2", map: "m2", name: "Blk 305" }
-    ]
+    ],
+    groups: []
   },
   {
     id: "user8",
     name: "Rita Reader",
     email: "rita@alpha.test",
     role: "publisher",
-    maps: []
+    maps: [],
+    groups: []
   }
 ];
 

@@ -28,9 +28,15 @@ describe("getCongregationMembers", () => {
     pb.getList.mockReset();
   });
 
-  const load = async (roles: unknown[], links: unknown[] = []) => {
+  const load = async (
+    roles: unknown[],
+    links: unknown[] = [],
+    groups: unknown[] = []
+  ) => {
     pb.getList.mockImplementation((collection: string) =>
-      Promise.resolve(collection === "roles" ? roles : links)
+      Promise.resolve(
+        ({ roles, groups } as Record<string, unknown[]>)[collection] ?? links
+      )
     );
     const { default: getCongregationMembers } =
       await import("./getcongregationmembers");
@@ -70,6 +76,22 @@ describe("getCongregationMembers", () => {
     ]);
   });
 
+  it("says which groups each member is in", async () => {
+    const members = await load(
+      [role("ann", "Ann"), role("dan", "Dan")],
+      [],
+      [
+        { id: "g1", name: "Group 3", members: ["ann", "dan"] },
+        { id: "g2", name: "Mandarin", members: ["ann"] }
+      ]
+    );
+
+    expect(members).toEqual([
+      expect.objectContaining({ name: "Ann", groups: ["Group 3", "Mandarin"] }),
+      expect.objectContaining({ name: "Dan", groups: ["Group 3"] })
+    ]);
+  });
+
   it("still lists the roster when the links cannot be read", async () => {
     pb.getList.mockImplementation((collection: string) =>
       collection === "roles"
@@ -80,7 +102,7 @@ describe("getCongregationMembers", () => {
       await import("./getcongregationmembers");
 
     expect(await getCongregationMembers("cong1")).toEqual([
-      expect.objectContaining({ name: "Ann", maps: [] })
+      expect.objectContaining({ name: "Ann", maps: [], groups: [] })
     ]);
   });
 });

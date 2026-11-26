@@ -94,6 +94,7 @@ const NewTerritoryCode = lazy(
 );
 const NewMap = lazy(() => import("../../components/modal/newmap"));
 const InviteUser = lazy(() => import("../../components/modal/inviteuser"));
+const Groups = lazy(() => import("../../components/modal/groups"));
 const GetProfile = lazy(() => import("../../components/modal/profile"));
 const GetAssignments = lazy(() => import("../../components/modal/assignments"));
 const ChangeTerritoryDetails = lazy(
@@ -515,6 +516,10 @@ function Admin({ user }: adminProps) {
     await getUsers();
   };
 
+  const handleShowGroups = () => {
+    showModal(Groups, { congregation: congregationCode });
+  };
+
   const handleInviteUser = () => {
     showModal(InviteUser, {
       uid: userId,
@@ -912,6 +917,7 @@ function Admin({ user }: adminProps) {
           onShowSettings: handleShowCongregationSettings,
           onShowOptions: handleShowCongregationOptions,
           onManageUsers: handleManageUsers,
+          onShowGroups: isPublisherRoleEnabled ? handleShowGroups : undefined,
           onInviteUser: handleInviteUser,
           onGenerateReport: handleGenerateReport
         }}

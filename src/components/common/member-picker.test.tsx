@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import userEvent from "@testing-library/user-event";
-import { render, screen, waitFor, within } from "@/utils/test";
+import { cleanup, render, screen, waitFor, within } from "@/utils/test";
 import MemberPicker from "./member-picker";
 import type { CongregationMember } from "../../utils/helpers/getcongregationmembers";
 
@@ -11,7 +11,14 @@ vi.mock("../../hooks/use-mobile", () => ({
 }));
 
 const member = (id: string, name: string, email: string) =>
-  ({ id, name, email, role: "publisher", maps: [] }) as CongregationMember;
+  ({
+    id,
+    name,
+    email,
+    role: "publisher",
+    maps: [],
+    groups: []
+  }) as CongregationMember;
 
 const members = [
   member("m1", "Mei Ling Tan", "meiling@example.test"),
@@ -32,6 +39,66 @@ describe("MemberPicker", () => {
       screen.getByRole("combobox", { name: /Search members/i })
     ).toBeInTheDocument();
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("leaves the chosen out of the field where the form lists them", () => {
+    render(
+      <MemberPicker
+        members={members}
+        value={[members[0]]}
+        onValueChange={vi.fn()}
+        roster
+      />
+    );
+
+    expect(
+      screen.getByRole("combobox", { name: /Search members/i })
+    ).toBeInTheDocument();
+    expect(screen.queryByText("Mei Ling Tan")).not.toBeInTheDocument();
+  });
+
+  it("lists people by name and email, not by map, when picking a group", async () => {
+    render(
+      <MemberPicker
+        members={members}
+        value={[]}
+        onValueChange={vi.fn()}
+        roster
+      />
+    );
+
+    await userEvent.click(
+      screen.getByRole("combobox", { name: /Search members/i })
+    );
+
+    expect(await screen.findByText("weijie@example.test")).toBeInTheDocument();
+    expect(screen.queryByText("Without a map")).not.toBeInTheDocument();
+    expect(screen.queryByText(/No map assigned/)).not.toBeInTheDocument();
+  });
+
+  it("offers the groups above the list on a wide screen", async () => {
+    render(
+      <MemberPicker
+        members={[
+          { ...members[0], groups: ["Group 3"] },
+          { ...members[1], groups: ["Group 5"] }
+        ]}
+        value={[]}
+        onValueChange={vi.fn()}
+      />
+    );
+
+    await userEvent.click(
+      screen.getByRole("combobox", { name: /Search members/i })
+    );
+    await userEvent.click(
+      await screen.findByRole("button", { name: "Group 5 1" })
+    );
+
+    await waitFor(() =>
+      expect(screen.queryByText("Mei Ling Tan")).not.toBeInTheDocument()
+    );
+    expect(screen.getByText("Wei Jie Ong")).toBeInTheDocument();
   });
 
   describe("on a phone", () => {
@@ -222,6 +289,137 @@ describe("MemberPicker", () => {
       expect(
         within(panel).getByRole("heading", { name: "Send to their account" })
       ).toBeInTheDocument();
+    });
+
+    describe("with groups", () => {
+      const grouped = [
+        { ...members[0], groups: ["Group 3"] },
+        { ...members[1], groups: ["Group 5"] },
+        {
+          ...member("m3", "Siti Rahman", "siti@example.test"),
+          groups: ["Group 3", "Mandarin"]
+        }
+      ];
+      const openGrouped = async (props: { roster?: boolean } = {}) => {
+        render(
+          <MemberPicker
+            members={grouped}
+            value={[]}
+            onValueChange={vi.fn()}
+            {...props}
+          />
+        );
+        await userEvent.click(
+          screen.getByRole("button", { name: /Search members/i })
+        );
+        return screen.findByRole("dialog");
+      };
+      const chip = (panel: HTMLElement, name: string) =>
+        within(panel).getByRole("button", { name: new RegExp(`^${name}`) });
+
+      beforeEach(() => {
+        localStorage.clear();
+      });
+
+      it("narrows the list to the group chosen", async () => {
+        const panel = await openGrouped();
+
+        await userEvent.click(chip(panel, "Group 3"));
+
+        expect(within(panel).getByText("Mei Ling Tan")).toBeInTheDocument();
+        expect(within(panel).getByText("Siti Rahman")).toBeInTheDocument();
+        expect(
+          within(panel).queryByText("Wei Jie Ong")
+        ).not.toBeInTheDocument();
+      });
+
+      it("counts in each group the people the search found", async () => {
+        const panel = await openGrouped();
+
+        await userEvent.type(within(panel).getByRole("combobox"), "tan");
+
+        expect(chip(panel, "All")).toHaveAccessibleName("All 1");
+        expect(chip(panel, "Group 3")).toHaveAccessibleName("Group 3 1");
+        expect(chip(panel, "Group 5")).toHaveAccessibleName("Group 5 0");
+      });
+
+      it("offers the other groups when the chosen one has no match", async () => {
+        const panel = await openGrouped();
+        await userEvent.click(chip(panel, "Group 3"));
+
+        await userEvent.type(within(panel).getByRole("combobox"), "wei");
+        expect(
+          within(panel).getByText("No one in Group 3 matches.")
+        ).toBeInTheDocument();
+        await userEvent.click(
+          within(panel).getByRole("button", { name: "Search all groups" })
+        );
+
+        expect(within(panel).getByText("Wei Jie Ong")).toBeInTheDocument();
+        expect(chip(panel, "All")).toHaveAttribute("aria-pressed", "true");
+      });
+
+      it("says which groups each person is in while none is chosen", async () => {
+        const panel = await openGrouped();
+
+        expect(
+          within(panel).getByText("No map assigned · Group 3, Mandarin")
+        ).toBeInTheDocument();
+      });
+
+      it("opens on the group last chosen", async () => {
+        const first = await openGrouped();
+        await userEvent.click(chip(first, "Group 5"));
+        cleanup();
+
+        const panel = await openGrouped();
+
+        expect(chip(panel, "Group 5")).toHaveAttribute("aria-pressed", "true");
+        expect(
+          within(panel).queryByText("Mei Ling Tan")
+        ).not.toBeInTheDocument();
+      });
+
+      it("starts each opening with an empty search", async () => {
+        const panel = await openGrouped();
+        await userEvent.type(within(panel).getByRole("combobox"), "tan");
+        await userEvent.click(
+          within(panel).getByRole("button", { name: /Continue/ })
+        );
+        await waitFor(() =>
+          expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+        );
+
+        await userEvent.click(
+          screen.getByRole("button", { name: /Search members/i })
+        );
+        const reopened = await screen.findByRole("dialog");
+
+        expect(within(reopened).getByRole("combobox")).toHaveValue("");
+        expect(chip(reopened, "All")).toHaveAccessibleName("All 3");
+      });
+
+      it("offers no groups where it picks a group's own members", async () => {
+        const panel = await openGrouped({ roster: true });
+
+        expect(
+          within(panel).queryByRole("group", { name: "Filter by group" })
+        ).not.toBeInTheDocument();
+      });
+
+      it("offers no groups where nobody is in one", async () => {
+        render(
+          <MemberPicker members={members} value={[]} onValueChange={vi.fn()} />
+        );
+        await userEvent.click(
+          screen.getByRole("button", { name: /Search members/i })
+        );
+        const panel = await screen.findByRole("dialog");
+
+        expect(
+          within(panel).queryByRole("group", { name: "Filter by group" })
+        ).not.toBeInTheDocument();
+      });
     });
 
     it("closes on Continue", async () => {

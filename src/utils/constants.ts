@@ -128,6 +128,7 @@ const PB_FIELDS = {
   CONGREGATION_MEMBERS:
     "id, user, role, expand.user.name, expand.user.email, expand.user.disabled, expand.user.verified",
   MEMBER_LINKS: "id, assignees, map, expand.map.description",
+  GROUPS: "id, name, members",
   ASSIGNMENT_HOLDERS: "id, assignees",
   TERRITORIES: "id, code, description, progress, coordinates",
   MAPS: "id, sequence, description, type, progress, coordinates, aggregates",

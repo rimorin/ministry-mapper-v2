@@ -8,7 +8,7 @@ import {
   SheetTitle
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
+import FilterChips from "@/components/common/filter-chips";
 import {
   InputGroup,
   InputGroupAddon,
@@ -43,11 +43,6 @@ const ROLE_FILTERS = [
   { code: USER_ACCESS_LEVELS.PUBLISHER.CODE, key: "publisher" },
   { code: USER_ACCESS_LEVELS.READ_ONLY.CODE, key: "readOnly" }
 ];
-
-// The role chosen is filled in, since the toggle's own pressed tint is too
-// faint to read as the filter in force.
-const chipClass =
-  "rounded-full px-3 data-[pressed]:border-primary data-[pressed]:bg-primary data-[pressed]:text-primary-foreground";
 
 const roleRank = (role: string) => {
   const rank = ROLE_FILTERS.findIndex((filter) => filter.code === role);
@@ -104,29 +99,24 @@ const UserList = ({
         </InputGroup>
         {/* With one role held there is nothing to narrow down. */}
         {roles.length > 1 && (
-          <div className="-mx-4 overflow-x-auto px-4 scrollbar-none">
-            <ToggleGroup
-              value={[role]}
-              onValueChange={(values) => setRole(values[0] ?? ALL_ROLES)}
-              size="sm"
-              variant="outline"
-              spacing={1.5}
-              aria-label={t("user.filterByRole", "Filter by role")}
-            >
-              <ToggleGroupItem value={ALL_ROLES} className={chipClass}>
-                {t("user.allRoles", "All")}
-                <span className="tabular-nums opacity-60">
-                  {matched.length}
-                </span>
-              </ToggleGroupItem>
-              {roles.map(({ code, key, count }) => (
-                <ToggleGroupItem key={code} value={code} className={chipClass}>
-                  {t(`user.roles.${key}`)}
-                  <span className="tabular-nums opacity-60">{count}</span>
-                </ToggleGroupItem>
-              ))}
-            </ToggleGroup>
-          </div>
+          <FilterChips
+            className="-mx-4 px-4"
+            chips={[
+              {
+                value: ALL_ROLES,
+                label: t("user.allRoles", "All"),
+                count: matched.length
+              },
+              ...roles.map(({ code, key, count }) => ({
+                value: code,
+                label: t(`user.roles.${key}`),
+                count
+              }))
+            ]}
+            value={role}
+            onValueChange={setRole}
+            aria-label={t("user.filterByRole", "Filter by role")}
+          />
         )}
       </div>
       <ScrollArea className="min-h-0 flex-1" withFade>
