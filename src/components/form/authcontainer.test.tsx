@@ -69,18 +69,6 @@ describe("AuthContainer", () => {
         "text-2xl"
       );
     });
-
-    it("should keep the same icon styling when iconColor is provided", () => {
-      render(<AuthContainer {...defaultProps} icon="🔒" iconColor="success" />);
-
-      expect(screen.getByText("🔒")).toHaveClass("bg-muted", "text-2xl");
-    });
-
-    it("should render custom icons inside the same wrapper", () => {
-      render(<AuthContainer {...defaultProps} icon="⚠️" iconColor="danger" />);
-
-      expect(screen.getByText("⚠️")).toHaveClass("rounded-full", "bg-muted");
-    });
   });
 
   describe("form attributes", () => {
@@ -180,7 +168,6 @@ describe("AuthContainer", () => {
           title="Register"
           subtitle="Create your account"
           icon="📝"
-          iconColor="secondary"
           noValidate={false}
           validated={true}
           onSubmit={handleSubmit}

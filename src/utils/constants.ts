@@ -1,4 +1,5 @@
 import release from "../../brand/release.json";
+
 const DESTINATION_PROXIMITY_THRESHOLD_METERS = 50;
 
 const DEFAULT_REPORT_ROLLING_DAYS = 30;
@@ -147,8 +148,9 @@ const OAUTH2_REDIRECT_PATH = "/auth/callback";
 // folder, so this, index.html and the manifest always agree.
 const BRAND_URL = `https://assets.ministry-mapper.com/${release.folder}`;
 
-const USER_GUIDE_URL = (import.meta.env.VITE_ABOUT_URL ||
-  "https://doc.ministry-mapper.com/user-guide") as string;
+const USER_GUIDE_URL =
+  import.meta.env.VITE_ABOUT_URL ||
+  "https://doc.ministry-mapper.com/user-guide";
 
 export {
   STATUS_CODES,
