@@ -61,7 +61,7 @@ const UpdateUser = NiceModal.create(
             <DialogDescription>
               {t(
                 "user.updateRoleDescription",
-                "Select the access level for this user."
+                "Choose this member's access level."
               )}
             </DialogDescription>
           </DialogHeader>

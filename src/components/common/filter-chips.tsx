@@ -2,7 +2,7 @@ import type { WheelEvent } from "react";
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { cn } from "@/lib/utils";
 
-export interface FilterChip {
+interface FilterChip {
   value: string;
   label: string;
   count: number;
@@ -13,21 +13,18 @@ interface FilterChipsProps {
   value: string;
   onValueChange: (value: string) => void;
   "aria-label": string;
-  // On the row, for its edges: it scrolls sideways rather than wrapping.
+  // Applied to the scrolling row.
   className?: string;
 }
 
-// A mouse wheel only scrolls up and down; turned sideways, it reaches the
-// chips past the edge.
+// Lets a mouse wheel scroll the row sideways.
 const scrollSideways = (event: WheelEvent<HTMLDivElement>) => {
   if (event.deltaX === 0) event.currentTarget.scrollLeft += event.deltaY;
 };
 
-// One chip at a time, each with how many it holds, in a single row that
-// scrolls, so a long list of groups never pushes down what it filters.
-// Pressing the chosen chip again goes back to the first, the "All" chip. The
-// toggles are told apart by position, since Base UI reads an empty value as
-// none.
+// One chip at a time, each with a count, in a row that scrolls rather than
+// wraps. Pressing the chosen chip again goes back to the first ("All").
+// Toggles are keyed by position, since Base UI reads an empty value as none.
 const FilterChips = ({
   chips,
   value,

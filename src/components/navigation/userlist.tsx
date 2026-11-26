@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Search, SearchX, UserPlus } from "lucide-react";
+import { useEffect, useState } from "react";
+import { ChevronRight, Search, SearchX, UserPlus } from "lucide-react";
 import ListPanel from "@/components/common/list-panel";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -25,9 +25,14 @@ import {
 } from "@/components/ui/empty";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import { UserListingProps } from "../../utils/interface";
+import {
+  getCongregationGroups,
+  type CongregationGroup
+} from "../../utils/helpers/getcongregationmembers";
 import UserRoleBadge from "./rolebadge";
 import GroupList from "./grouplist";
 import { useTranslation } from "react-i18next";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 const ALL_ROLES = "all";
@@ -50,14 +55,24 @@ const roleRank = (role: string) => {
 const UserList = ({
   handleSelect,
   users = [],
-  onInvite
-}: Pick<UserListingProps, "handleSelect" | "users"> & {
-  // People's Members tab ends with it, as Groups ends with "New group".
-  onInvite?: () => void;
-}) => {
+  people
+}: Pick<UserListingProps, "handleSelect" | "users" | "people">) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [role, setRole] = useState(ALL_ROLES);
+  const [groups, setGroups] = useState<CongregationGroup[]>([]);
+
+  // In People, rows show each person's groups, read again whenever the tab
+  // opens so a change made on the Groups tab shows.
+  const congregation = people?.congregation;
+  useEffect(() => {
+    if (!congregation) return;
+    getCongregationGroups(congregation, `people-groups-${congregation}`)
+      .then(setGroups)
+      .catch(() => {});
+  }, [congregation]);
+  const groupsOf = (userId: string) =>
+    groups.filter((group) => group.members.includes(userId));
 
   const needle = query.trim().toLowerCase();
   // By role, then by name: the staff stay together at the top however many
@@ -134,35 +149,62 @@ const UserList = ({
         ) : (
           <ItemGroup className="gap-0">
             {visible.map((element) => (
-              <Item
+              <div
                 key={`list-group-item-${element.roleId}`}
-                className="flex-nowrap rounded-none border-0 border-b border-border text-left last:border-b-0 hover:bg-accent hover:text-accent-foreground"
-                render={
-                  <button
-                    type="button"
-                    onClick={(e) => handleSelect?.(element.roleId, e)}
-                  />
-                }
+                role="listitem"
+                className="border-b last:border-b-0"
               >
-                <ItemContent className="min-w-0 gap-0">
-                  <ItemTitle className="block w-full truncate text-base font-semibold">
-                    {element.name}
-                  </ItemTitle>
-                  <ItemDescription className="line-clamp-1">
-                    {element.email}
-                  </ItemDescription>
-                </ItemContent>
-                <ItemActions className="shrink-0">
-                  <UserRoleBadge role={element.role.toString()} />
-                </ItemActions>
-              </Item>
+                <Item
+                  className="flex-nowrap rounded-none border-0 text-left hover:bg-accent hover:text-accent-foreground"
+                  render={
+                    <button
+                      type="button"
+                      onClick={(e) => handleSelect?.(element.roleId, e)}
+                    />
+                  }
+                >
+                  <ItemContent className="min-w-0 gap-0">
+                    <ItemTitle className="block w-full truncate text-base font-semibold">
+                      {element.name}
+                    </ItemTitle>
+                    <ItemDescription className="truncate">
+                      {element.email}
+                    </ItemDescription>
+                    {/* Their own line, so a long email never hides them. */}
+                    <span className="mt-1.5 flex flex-wrap gap-1 empty:hidden">
+                      {groupsOf(element.userId).map((group) => (
+                        <Badge
+                          key={group.id}
+                          variant="outline"
+                          className="font-normal text-muted-foreground"
+                        >
+                          {group.name}
+                        </Badge>
+                      ))}
+                    </span>
+                  </ItemContent>
+                  <ItemActions className="shrink-0">
+                    <UserRoleBadge role={element.role.toString()} />
+                    {people && (
+                      <ChevronRight
+                        className="size-4 text-muted-foreground"
+                        aria-hidden="true"
+                      />
+                    )}
+                  </ItemActions>
+                </Item>
+              </div>
             ))}
           </ItemGroup>
         )}
       </ScrollArea>
-      {onInvite && (
-        <div className="flex border-t px-4 py-3 sm:justify-end">
-          <Button type="button" className="w-full sm:w-auto" onClick={onInvite}>
+      {people && (
+        <div className="flex border-t px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:justify-end">
+          <Button
+            type="button"
+            className="w-full sm:w-auto"
+            onClick={people.onInvite}
+          >
             <UserPlus aria-hidden="true" />
             {t("user.invite", "Invite")}
           </Button>
@@ -202,7 +244,7 @@ const UserListing = ({
             <UserList
               handleSelect={handleSelect}
               users={users}
-              onInvite={people.onInvite}
+              people={people}
             />
           </TabsContent>
           <TabsContent value="groups" className="flex min-h-0 flex-col">

@@ -208,7 +208,7 @@ interface AppSidebarProps {
     onLogout: () => void;
   };
   pendingCount?: number;
-  // Where the publisher role is switched on, Manage Users and Invite User are
+  // Where the publisher role is switched on, Manage Members and Invite Member are
   // one People item; inviting is done from its list.
   peopleMenu?: boolean;
   // Off where the publisher role is switched off and the account holds no links.
@@ -647,7 +647,7 @@ export function AppSidebar({
                                 <Users className="size-3.5 shrink-0 text-muted-foreground" />
                                 {peopleMenu
                                   ? t("user.people", "People")
-                                  : t("user.manageUsers", "Manage Users")}
+                                  : t("user.manageUsers", "Manage Members")}
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                             {!peopleMenu && (
@@ -663,7 +663,7 @@ export function AppSidebar({
                                   }
                                 >
                                   <UserPlus className="size-3.5 shrink-0 text-muted-foreground" />
-                                  {t("user.inviteUser", "Invite User")}
+                                  {t("user.inviteUser", "Invite Member")}
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
                             )}

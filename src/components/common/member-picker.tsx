@@ -131,7 +131,7 @@ const useMemberCombobox = ({
     elsewhere:
       activeGroup !== ALL_GROUPS && found.length > 0 && !found.some(inGroup),
     // With no group chosen, each row says which ones its person is in.
-    onRows: groupNames.length > 0 && activeGroup === ALL_GROUPS
+    withGroups: groupNames.length > 0 && activeGroup === ALL_GROUPS
   };
 
   const recentMembers = recentIds.flatMap(
@@ -385,7 +385,7 @@ const MemberPopup = (props: MemberPickerProps) => {
         <MemberList
           members={members}
           onMap={onMap}
-          withGroups={groups.onRows}
+          withGroups={groups.withGroups}
           roster={roster}
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-1"
         />
@@ -500,7 +500,7 @@ const MemberSheet = (props: MemberPickerProps) => {
               <MemberList
                 members={members}
                 onMap={onMap}
-                withGroups={groups.onRows}
+                withGroups={groups.withGroups}
                 roster={roster}
                 roomy
                 className={cn(

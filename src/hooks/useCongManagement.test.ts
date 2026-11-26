@@ -138,7 +138,8 @@ describe("useCongManagement", () => {
             email: "user1@test.com",
             role: "admin",
             verified: true,
-            roleId: "role1"
+            roleId: "role1",
+            userId: "user1"
           }
         ],
         [
@@ -148,7 +149,8 @@ describe("useCongManagement", () => {
             email: "user2@test.com",
             role: "conductor",
             verified: true,
-            roleId: "role2"
+            roleId: "role2",
+            userId: "user2"
           }
         ]
       ]);
@@ -184,7 +186,8 @@ describe("useCongManagement", () => {
             email: "user1@test.com",
             role: "publisher",
             verified: true,
-            roleId: "role1"
+            roleId: "role1",
+            userId: "user1"
           }
         ]
       ]);
@@ -325,7 +328,8 @@ describe("useCongManagement", () => {
             email: "user1@test.com",
             role: "admin",
             verified: true,
-            roleId: "role1"
+            roleId: "role1",
+            userId: "user1"
           }
         ]
       ]);

@@ -94,10 +94,7 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
       async () => {
         if (!userId) {
           notifyWarning(
-            t(
-              "user.selectUserRequired",
-              "Please select a user from the results."
-            )
+            t("user.selectUserRequired", "Choose someone from the results.")
           );
           return;
         }
@@ -120,7 +117,7 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
           notifyWarning(
             t(
               "user.alreadyInCongregation",
-              "This user is already part of the congregation."
+              "They're already a member of this congregation."
             )
           );
           return;
@@ -141,7 +138,7 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
 
         const roleName = getRoleDisplayName(userRole);
         notifyWarning(
-          t("user.accessGranted", "Granted {{role}} access to user.", {
+          t("user.accessGranted", "Granted {{role}} access.", {
             role: roleName
           })
         );
@@ -206,18 +203,18 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
     <Dialog {...dialogProps}>
       <DialogContent {...contentProps}>
         <DialogHeader>
-          <DialogTitle>{t("user.inviteUser", "Invite User")}</DialogTitle>
+          <DialogTitle>{t("user.inviteUser", "Invite Member")}</DialogTitle>
           <DialogDescription>
             {t(
               "user.inviteDescription",
-              "Search for a user and assign their access level."
+              "Search for someone and choose their access level."
             )}
           </DialogDescription>
         </DialogHeader>
         <Separator />
         <form onSubmit={handleUserDetails} className="space-y-4">
           <div className="space-y-1.5">
-            <Label>{t("user.user", "User")}</Label>
+            <Label>{t("user.user", "Member")}</Label>
             <Combobox
               filter={null}
               items={comboboxItems}
@@ -238,7 +235,7 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
                 <ComboboxInput
                   placeholder={t(
                     "user.searchByNameOrEmail",
-                    "Search for user by name or email"
+                    "Search by name or email"
                   )}
                   required
                 />
