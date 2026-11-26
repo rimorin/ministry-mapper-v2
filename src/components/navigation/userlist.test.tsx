@@ -1,7 +1,19 @@
-import { describe, it, expect, vi } from "vitest";
+import { beforeEach, describe, it, expect, vi } from "vitest";
 import { render, screen, userEvent, waitFor } from "../../utils/test";
 import UserListing from "./userlist";
 import { userDetails } from "../../utils/interface";
+
+const groups = vi.hoisted(() => vi.fn());
+
+vi.mock(
+  "../../utils/helpers/getcongregationmembers",
+  async (importOriginal) => ({
+    ...(await importOriginal<
+      typeof import("../../utils/helpers/getcongregationmembers")
+    >()),
+    getCongregationGroups: groups
+  })
+);
 
 vi.mock("./grouplist", () => ({
   default: ({ congregation }: { congregation: string }) => (
@@ -14,6 +26,7 @@ const person = (name: string, role: string): userDetails => ({
   email: `${name.toLowerCase().replace(" ", ".")}@example.com`,
   role,
   roleId: `role-${name}`,
+  userId: `user-${name}`,
   verified: true
 });
 
@@ -43,10 +56,16 @@ const names = () =>
     .map((row) => row.querySelector("[data-slot=item-title]")?.textContent);
 
 describe("UserListing", () => {
+  beforeEach(() => {
+    groups.mockReset();
+    groups.mockResolvedValue([]);
+  });
+
   it("is a list of users, with no tabs, where the publisher role is off", () => {
     open();
 
-    expect(screen.getByText("Select User")).toBeInTheDocument();
+    expect(groups).not.toHaveBeenCalled();
+    expect(screen.getByText("Select Member")).toBeInTheDocument();
     expect(screen.queryByRole("tablist")).not.toBeInTheDocument();
     expect(
       screen.queryByRole("button", { name: "Invite" })
@@ -86,6 +105,18 @@ describe("UserListing", () => {
           screen.queryByRole("button", { name: "Invite" })
         ).not.toBeInTheDocument()
       );
+    });
+
+    it("says which groups each member is in", async () => {
+      groups.mockResolvedValue([
+        { id: "g1", name: "Group 3", members: ["user-Ann Admin"] },
+        { id: "g2", name: "Mandarin", members: ["user-Ann Admin"] }
+      ]);
+      openPeople();
+
+      expect(await screen.findByText("Group 3")).toBeInTheDocument();
+      expect(screen.getByText("Mandarin")).toBeInTheDocument();
+      expect(screen.getByText("ann.admin@example.com")).toBeInTheDocument();
     });
 
     it("invites from its own button", async () => {

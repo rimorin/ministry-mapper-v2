@@ -109,14 +109,14 @@ const GroupList = ({ congregation }: { congregation: string }) => {
                   className="border-b last:border-b-0"
                 >
                   <Item
-                    className="flex-nowrap rounded-none border-0 text-left hover:bg-accent"
+                    className="flex-nowrap rounded-none border-0 text-left hover:bg-accent hover:text-accent-foreground"
                     render={
                       <button type="button" onClick={() => void edit(group)} />
                     }
                   >
                     <ItemContent className="min-w-0 gap-0">
-                      <ItemTitle className="w-full text-base font-semibold">
-                        <span className="truncate">{group.name}</span>
+                      <ItemTitle className="block w-full truncate text-base font-semibold">
+                        {group.name}
                       </ItemTitle>
                       {people.length > 0 && (
                         <ItemDescription className="truncate">
@@ -145,7 +145,7 @@ const GroupList = ({ congregation }: { congregation: string }) => {
           </ItemGroup>
         </ScrollArea>
       )}
-      <div className="flex flex-col gap-2 border-t px-4 py-3 sm:flex-row sm:items-center sm:justify-end">
+      <div className="flex flex-col gap-2 border-t px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:flex-row sm:items-center sm:justify-end">
         {!!groups?.length && ungrouped.length > 0 && (
           <p className="text-center text-sm text-muted-foreground sm:mr-auto sm:text-left">
             {t("groups.ungrouped", "{{count}} people aren't in a group", {

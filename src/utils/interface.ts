@@ -308,6 +308,7 @@ export interface userDetails extends nameInterface {
   verified: boolean;
   role: string;
   roleId: string;
+  userId: string;
 }
 
 export type CongregationAccessObject = {

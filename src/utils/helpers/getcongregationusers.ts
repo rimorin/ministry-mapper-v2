@@ -23,7 +23,8 @@ const getCongregationUsers = async (
       verified: user.verified,
       email: user.email,
       role: key.role,
-      roleId: key.id
+      roleId: key.id,
+      userId: key.user
     });
   }
 
