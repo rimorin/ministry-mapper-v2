@@ -303,8 +303,9 @@ const MemberSheet = (props: MemberPickerProps) => {
                 <DrawerTitle className="text-lg font-semibold">
                   {t("slip.memberLabel", "Send to their account")}
                 </DrawerTitle>
+                {/* Not "Done": the form it returns to still has to be sent. */}
                 <Button type="button" onClick={() => setOpen(false)}>
-                  {t("common.done", "Done")}
+                  {t("common.continue", "Continue")}
                   {value.length > 0 && ` (${value.length})`}
                 </Button>
               </div>
@@ -348,9 +349,11 @@ const MemberSheet = (props: MemberPickerProps) => {
                 onMap={onMap}
                 roomy
                 className={cn(
-                  "min-h-0 flex-1 overflow-y-auto overscroll-contain border-t",
-                  // Ends above the keyboard, so the last people can be reached.
-                  "pb-[calc(var(--drawer-keyboard-inset,0px)+1rem)]"
+                  "min-h-0 flex-1 overflow-y-auto overscroll-contain border-t pb-4",
+                  // The list ends at the keyboard's top. Run on behind it, a
+                  // row picked there counts as in view, and iOS Safari pans
+                  // the whole page up to show it, taking the search with it.
+                  "mb-[var(--drawer-keyboard-inset,0px)]"
                 )}
               />
             </Combobox>
