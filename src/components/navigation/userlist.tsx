@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Search, SearchX, X } from "lucide-react";
+import { Search, SearchX, UserPlus, X } from "lucide-react";
 import {
   Sheet,
   SheetClose,
@@ -8,6 +8,7 @@ import {
   SheetTitle
 } from "@/components/ui/sheet";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import FilterChips from "@/components/common/filter-chips";
 import {
   InputGroup,
@@ -31,8 +32,10 @@ import {
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import { UserListingProps } from "../../utils/interface";
 import UserRoleBadge from "./rolebadge";
+import GroupList from "./grouplist";
 import { useTranslation } from "react-i18next";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const ALL_ROLES = "all";
 
@@ -53,8 +56,12 @@ const roleRank = (role: string) => {
 // the sheet opens: the sheet's content unmounts when it closes.
 const UserList = ({
   handleSelect,
-  users = []
-}: Pick<UserListingProps, "handleSelect" | "users">) => {
+  users = [],
+  onInvite
+}: Pick<UserListingProps, "handleSelect" | "users"> & {
+  // People's Members tab ends with it, as Groups ends with "New group".
+  onInvite?: () => void;
+}) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState("");
   const [role, setRole] = useState(ALL_ROLES);
@@ -160,6 +167,14 @@ const UserList = ({
           </ItemGroup>
         )}
       </ScrollArea>
+      {onInvite && (
+        <div className="flex border-t px-4 py-3 sm:justify-end">
+          <Button type="button" className="w-full sm:w-auto" onClick={onInvite}>
+            <UserPlus aria-hidden="true" />
+            {t("user.invite", "Invite")}
+          </Button>
+        </div>
+      )}
     </>
   );
 };
@@ -168,7 +183,8 @@ const UserListing = ({
   showListing,
   hideFunction,
   handleSelect,
-  users
+  users,
+  people
 }: UserListingProps) => {
   const { t } = useTranslation();
 
@@ -179,10 +195,10 @@ const UserListing = ({
         showCloseButton={false}
         className="h-[100dvh] gap-0 overflow-hidden p-0 sm:h-[85dvh] sm:rounded-t-2xl"
       >
-        <SheetHeader className="border-b px-4 py-3">
-          <div className="flex items-center justify-between gap-3">
-            <SheetTitle className="fluid-text font-bold text-left">
-              {t("user.selectUser")}
+        <SheetHeader className={cn("px-4 py-3", !people && "border-b")}>
+          <div className="flex items-center gap-3">
+            <SheetTitle className="fluid-text mr-auto font-bold text-left">
+              {people ? t("user.people", "People") : t("user.selectUser")}
             </SheetTitle>
             <SheetClose
               render={
@@ -197,7 +213,30 @@ const UserListing = ({
             </SheetClose>
           </div>
         </SheetHeader>
-        <UserList handleSelect={handleSelect} users={users} />
+        {people ? (
+          <Tabs defaultValue="members" className="min-h-0 flex-1 gap-0">
+            <TabsList className="mx-4 mb-1 w-auto sm:w-fit">
+              <TabsTrigger value="members">
+                {t("user.members", "Members")}
+              </TabsTrigger>
+              <TabsTrigger value="groups">
+                {t("groups.title", "Groups")}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="members" className="flex min-h-0 flex-col">
+              <UserList
+                handleSelect={handleSelect}
+                users={users}
+                onInvite={people.onInvite}
+              />
+            </TabsContent>
+            <TabsContent value="groups" className="flex min-h-0 flex-col">
+              <GroupList congregation={people.congregation} />
+            </TabsContent>
+          </Tabs>
+        ) : (
+          <UserList handleSelect={handleSelect} users={users} />
+        )}
       </SheetContent>
     </Sheet>
   );

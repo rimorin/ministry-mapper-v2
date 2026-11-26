@@ -255,6 +255,8 @@
   "user": {
     "selectUser": "Pilih Pengguna",
     "manageUsers": "Kelola Pengguna",
+    "people": "Orang",
+    "members": "Anggota",
     "inviteUser": "Undang Pengguna",
     "roles": {
       "readOnly": "Hanya Baca",

@@ -50,17 +50,21 @@ export default function useCongregationManagement({
     setShowUserListing((existingState) => !existingState);
   };
 
+  const loadUsers = async () =>
+    setCongregationUsers(await getCongregationUsers(congregationCode, userId));
+
   const getUsers = async () => {
     await runAction(
       async () => {
-        setCongregationUsers(
-          await getCongregationUsers(congregationCode, userId)
-        );
+        await loadUsers();
         toggleUserListing();
       },
       { setLoading: setIsShowingUserListing }
     );
   };
+
+  // After a change made with the list open, such as an invite.
+  const reloadUsers = () => runAction(loadUsers);
 
   const handleCongregationSelect = (newCongCode: string | null) => {
     const selectedCode = newCongCode as string;
@@ -98,6 +102,7 @@ export default function useCongregationManagement({
     toggleCongregationListing,
     toggleUserListing,
     getUsers,
+    reloadUsers,
     userAccessLevel,
     setUserAccessLevel,
     defaultExpiryHours,

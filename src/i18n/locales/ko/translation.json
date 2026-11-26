@@ -281,6 +281,8 @@
   "user": {
     "selectUser": "사용자 선택",
     "manageUsers": "사용자 관리",
+    "people": "구성원 관리",
+    "members": "구성원",
     "inviteUser": "사용자 초대",
     "profile": "프로필",
     "account": "계정",

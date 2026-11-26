@@ -19,7 +19,6 @@ import {
   RotateCcw,
   Settings,
   SquarePen,
-  Tags,
   Trash2,
   User,
   UserPlus,
@@ -198,8 +197,6 @@ interface AppSidebarProps {
     onShowSettings: () => void;
     onShowOptions: () => void;
     onManageUsers: () => void;
-    // Present only where the publisher role is switched on.
-    onShowGroups?: () => void;
     onInviteUser: () => void;
     onGenerateReport: () => void;
   };
@@ -211,6 +208,9 @@ interface AppSidebarProps {
     onLogout: () => void;
   };
   pendingCount?: number;
+  // Where the publisher role is switched on, Manage Users and Invite User are
+  // one People item; inviting is done from its list.
+  peopleMenu?: boolean;
   // Off where the publisher role is switched off and the account holds no links.
   showMyLinks?: boolean;
   isShowingMyLinks: boolean;
@@ -240,6 +240,7 @@ export function AppSidebar({
   onCreateTerritory,
   onTerritoryActions,
   onCongregationActions,
+  peopleMenu = false,
   showMyLinks = true,
   isShowingMyLinks,
   myLinksCount,
@@ -644,41 +645,28 @@ export function AppSidebar({
                                 }
                               >
                                 <Users className="size-3.5 shrink-0 text-muted-foreground" />
-                                {t("user.manageUsers", "Manage Users")}
+                                {peopleMenu
+                                  ? t("user.people", "People")
+                                  : t("user.manageUsers", "Manage Users")}
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
-                            {onCongregationActions.onShowGroups && (
+                            {!peopleMenu && (
                               <SidebarMenuSubItem>
                                 <SidebarMenuSubButton
                                   render={
                                     <button
                                       type="button"
                                       onClick={handleAction(
-                                        onCongregationActions.onShowGroups
+                                        onCongregationActions.onInviteUser
                                       )}
                                     />
                                   }
                                 >
-                                  <Tags className="size-3.5 shrink-0 text-muted-foreground" />
-                                  {t("groups.title", "Groups")}
+                                  <UserPlus className="size-3.5 shrink-0 text-muted-foreground" />
+                                  {t("user.inviteUser", "Invite User")}
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
                             )}
-                            <SidebarMenuSubItem>
-                              <SidebarMenuSubButton
-                                render={
-                                  <button
-                                    type="button"
-                                    onClick={handleAction(
-                                      onCongregationActions.onInviteUser
-                                    )}
-                                  />
-                                }
-                              >
-                                <UserPlus className="size-3.5 shrink-0 text-muted-foreground" />
-                                {t("user.inviteUser", "Invite User")}
-                              </SidebarMenuSubButton>
-                            </SidebarMenuSubItem>
                             <SidebarMenuSubItem>
                               <SidebarMenuSubButton
                                 render={
