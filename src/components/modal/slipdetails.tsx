@@ -316,7 +316,7 @@ const ConfirmSlipDetails = NiceModal.create(
                     </div>
                   )}
                 </div>
-                <ResponsiveDialogFooter>
+                <ResponsiveDialogFooter className="grid grid-cols-2 md:flex">
                   <Button variant="outline" type="button" onClick={modal.hide}>
                     {t("common.cancel", "Cancel")}
                   </Button>
@@ -421,7 +421,7 @@ const ConfirmSlipDetails = NiceModal.create(
                   )}
                 </div>
                 {assignees.length > 0 && existingWarning}
-                <ResponsiveDialogFooter>
+                <ResponsiveDialogFooter className="grid grid-cols-2 md:flex">
                   <Button variant="outline" type="button" onClick={modal.hide}>
                     {t("common.cancel", "Cancel")}
                   </Button>

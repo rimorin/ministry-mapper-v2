@@ -269,12 +269,12 @@ const EditGroup = NiceModal.create(
                 </FieldDescription>
               </Field>
             </FieldGroup>
-            <DialogFooter>
+            <DialogFooter className="grid grid-cols-2 sm:flex">
               {group.id && (
                 <Button
                   type="button"
                   variant="destructive"
-                  className="sm:mr-auto"
+                  className="order-last col-span-2 sm:order-none sm:mr-auto"
                   onClick={handleDelete}
                 >
                   {t("groups.delete", "Delete group")}

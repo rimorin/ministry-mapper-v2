@@ -310,7 +310,7 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
             />
           )}
           <Separator />
-          <DialogFooter>
+          <DialogFooter className="grid grid-cols-2 sm:flex">
             <Button variant="outline" type="button" onClick={modal.hide}>
               {t("common.cancel", "Cancel")}
             </Button>
