@@ -30,6 +30,7 @@ vi.mock("../utils/pocketbase", () => ({
 
 const mockProcessCongregationTerritories = vi.fn(() => new Map());
 const mockSetUserCongregationAccesses = vi.fn();
+const mockSetMemberships = vi.fn();
 const mockSetCongregationCode = vi.fn();
 const mockSetCongregationCodeCache = vi.fn();
 const mockSetCongregationName = vi.fn();
@@ -57,6 +58,7 @@ describe("useAdminData", () => {
       Record<string, string>
     >,
     setUserCongregationAccesses: mockSetUserCongregationAccesses,
+    setMemberships: mockSetMemberships,
     setCongregationCode: mockSetCongregationCode,
     setCongregationCodeCache: mockSetCongregationCodeCache,
     setCongregationName: mockSetCongregationName,
@@ -187,6 +189,30 @@ describe("useAdminData", () => {
       });
       // Cleared, so an account promoted while signed in leaves the publisher page.
       expect(mockSetIsPublisherOnly).toHaveBeenLastCalledWith(false);
+    });
+
+    it("should pass on every role, publisher included, for flag targeting", async () => {
+      vi.mocked(getList).mockResolvedValueOnce([
+        {
+          id: "role-1",
+          role: "conductor",
+          expand: { congregation: { id: "cong-1", name: "North" } }
+        },
+        {
+          id: "role-2",
+          role: "publisher",
+          expand: { congregation: { id: "cong-2", name: "South" } }
+        }
+      ] as any);
+
+      const { result } = renderHook(() => useAdminData(defaultProps));
+
+      await result.current.fetchData();
+
+      expect(mockSetMemberships).toHaveBeenCalledWith([
+        { code: "cong-1", access: "conductor", name: "North" },
+        { code: "cong-2", access: "publisher", name: "South" }
+      ]);
     });
 
     it("should reset isLoading to false when getList throws a network error", async () => {

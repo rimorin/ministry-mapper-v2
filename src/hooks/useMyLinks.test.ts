@@ -77,6 +77,22 @@ describe("useMyLinks", () => {
     expect(result.current.congregations).toEqual(["Alpha Congregation"]);
   });
 
+  it("carries the groups, keeping the same list while they are unchanged", async () => {
+    callFunctionMock.mockResolvedValue({
+      assignments: [],
+      groups: ["Group 3"]
+    });
+
+    const { result } = renderHook(() => useMyLinks());
+    await waitFor(() => expect(result.current.groups).toEqual(["Group 3"]));
+    const first = result.current.groups;
+
+    await act(async () => {
+      await result.current.refresh();
+    });
+    expect(result.current.groups).toBe(first);
+  });
+
   it("names no congregation for a backend that sends none", async () => {
     callFunctionMock.mockResolvedValueOnce({ assignments: [link] });
 

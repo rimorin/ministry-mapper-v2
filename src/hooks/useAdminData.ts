@@ -26,6 +26,10 @@ interface UseAdminDataProps {
   setUserCongregationAccesses: (
     accesses: Array<{ code: string; access: string; name: string }>
   ) => void;
+  // Every role the account holds, publisher included.
+  setMemberships: (
+    memberships: Array<{ code: string; access: string; name: string }>
+  ) => void;
   setCongregationCode: (code: string) => void;
   setCongregationCodeCache: (code: string) => void;
   setCongregationName: (name: string) => void;
@@ -58,6 +62,7 @@ export default function useAdminData({
   congregationCodeCache,
   congregationAccessRef,
   setUserCongregationAccesses,
+  setMemberships,
   setCongregationCode,
   setCongregationCodeCache,
   setCongregationName,
@@ -96,6 +101,14 @@ export default function useAdminData({
       if (!isAbortError(err)) setIsLoading(false);
       throw err;
     }
+    setMemberships(
+      userRoles.flatMap((record) => {
+        const cong = record.expand?.congregation;
+        return cong
+          ? [{ code: cong.id, access: record.role, name: cong.name }]
+          : [];
+      })
+    );
     // A publisher's role opens no congregation, so only staff roles reach the
     // shell; an account with nothing else gets the links given to it instead.
     const staffRoles = userRoles.filter((record) =>

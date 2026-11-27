@@ -17,6 +17,7 @@ const show = (congregations: string[]) =>
       myLinks={{
         links: [],
         congregations,
+        groups: [],
         isLoading: false,
         hasFailed: false,
         isStale: false,
