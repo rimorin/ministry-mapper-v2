@@ -34,6 +34,7 @@ import { USER_ACCESS_LEVELS, PB_FIELDS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import { UserModalProps, SelectProps } from "../../utils/interface";
 import UserRoleField from "../form/role";
+import usePublisherRoleEnabled from "../../hooks/usePublisherRoleEnabled";
 import {
   createData,
   getFirstItemOfList,
@@ -44,7 +45,13 @@ import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
   const { t } = useTranslation();
   const { notifyWarning, runAction } = useNotification();
-  const [userRole, setUserRole] = useState(USER_ACCESS_LEVELS.READ_ONLY.CODE);
+  // Most invites are publishers where the role is on, and it gives the least.
+  const isPublisherRoleEnabled = usePublisherRoleEnabled();
+  const [userRole, setUserRole] = useState(
+    isPublisherRoleEnabled
+      ? USER_ACCESS_LEVELS.PUBLISHER.CODE
+      : USER_ACCESS_LEVELS.READ_ONLY.CODE
+  );
   const [userId, setUserId] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [searchResults, setSearchResults] = React.useState<SelectProps[]>([]);
@@ -82,8 +89,6 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
       return t("user.roles.conductor", "Conductor");
     } else if (roleCode === USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE) {
       return t("user.roles.administrator", "Admin");
-    } else if (roleCode === USER_ACCESS_LEVELS.NO_ACCESS.CODE) {
-      return t("user.roles.noAccess", "No Access");
     }
     return "";
   };
@@ -165,7 +170,7 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
       if (controller.signal.aborted) return;
       const options: SelectProps[] = users.items.map((user: RecordModel) => ({
         label:
-          user.name && user.email ? `${user.name} - ${user.email}` : user.name,
+          user.name && user.email ? `${user.name} · ${user.email}` : user.name,
         value: user.id
       }));
       setSearchResults(options);
@@ -269,7 +274,6 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
             <UserRoleField
               role={userRole}
               handleRoleChange={(value) => setUserRole(value)}
-              isUpdate={false}
             />
           </div>
           <Separator />
