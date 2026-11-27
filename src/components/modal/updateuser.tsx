@@ -160,11 +160,11 @@ const UpdateUser = NiceModal.create(
                 />
               )}
               <Separator />
-              <DialogFooter>
+              <DialogFooter className="grid grid-cols-2 sm:flex">
                 <Button
                   variant="destructive"
                   type="button"
-                  className="sm:mr-auto"
+                  className="order-last col-span-2 sm:order-none sm:mr-auto"
                   onClick={handleRemove}
                 >
                   {t("user.removeFromCongregation", "Remove from congregation")}
