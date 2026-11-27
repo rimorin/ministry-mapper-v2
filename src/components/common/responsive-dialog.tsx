@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle
 } from "@/components/ui/dialog";
+import { Drawer as DrawerPrimitive } from "@base-ui/react/drawer";
 import { Drawer, DrawerContent, DrawerTitle } from "@/components/ui/drawer";
 import { getIsMobile } from "../../hooks/use-mobile";
 
@@ -33,7 +34,9 @@ const ResponsiveDialog = ({ children, ...props }: ResponsiveDialogProps) => {
     return (
       <SheetContext.Provider value={true}>
         <Drawer showSwipeHandle {...props}>
-          {children}
+          <DrawerPrimitive.VirtualKeyboardProvider>
+            {children}
+          </DrawerPrimitive.VirtualKeyboardProvider>
         </Drawer>
       </SheetContext.Provider>
     );
@@ -54,7 +57,8 @@ const ResponsiveDialogContent = ({
   if (isSheet) {
     // Dialog size classes (sm:max-w-*) are not forwarded — a bottom sheet is
     // always full-width. The inner div mirrors the dialog's p-6/gap-6 body so
-    // children render identically in both presentations.
+    // children render identically in both presentations. While a field is
+    // typed in, the keyboard provider pads it so the buttons clear the keyboard.
     return (
       <DrawerContent>
         <div className="flex min-h-0 flex-1 flex-col gap-6 overflow-y-auto p-6 pt-2">
