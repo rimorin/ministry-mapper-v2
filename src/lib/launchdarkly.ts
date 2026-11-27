@@ -3,7 +3,7 @@ import {
   type LDContext
 } from "launchdarkly-react-client-sdk";
 import * as Sentry from "@sentry/react";
-import { ACCESS_LEVEL_MAPPING } from "../utils/constants";
+import { ACCESS_LEVEL_MAPPING, STAFF_ROLES } from "../utils/constants";
 
 export interface CongregationAccess {
   code: string;
@@ -11,10 +11,10 @@ export interface CongregationAccess {
   name: string;
 }
 
-// Single shared key for all pre-login traffic. Anonymous contexts still count
-// toward MAU, so collapsing every visitor into one context keeps the global
-// (maintenance) flags billable as ~1 context instead of one-per-device.
-const ANONYMOUS_CONTEXT: LDContext = {
+// One shared key for all signed-out traffic, share-link visitors included.
+// LaunchDarkly advises a key per device, but each would be a billable MAU, and
+// signed-out pages only read global flags.
+export const ANONYMOUS_CONTEXT: LDContext = {
   kind: "user",
   key: "anonymous",
   anonymous: true
@@ -39,7 +39,7 @@ export const initLaunchDarkly = async () => {
       timeout: 1.5,
       options: {
         bootstrap: "localStorage",
-        privateAttributes: ["email"],
+        privateAttributes: ["email", "name"],
         application: {
           id: "ministry-mapper",
           version: import.meta.env.VITE_APP_VERSION
@@ -60,23 +60,29 @@ export const initLaunchDarkly = async () => {
 };
 
 /**
- * Builds a multi-context for an authenticated user: a primary `user` context
- * (the billable MAU) carrying role attributes, plus a non-billable
- * `congregation` context for the active congregation to enable group targeting.
- * Custom attributes don't affect context uniqueness, so roles are free to add.
+ * A signed-in account's multi-context: the `user` (the billable MAU) with its
+ * roles, congregations and groups, plus the `congregation` open in the staff
+ * shell. Attributes don't add MAU.
  */
 export const buildLaunchDarklyContext = (
   user: { id: string; name?: string; email?: string },
-  accesses: CongregationAccess[],
-  activeCongregationCode: string
+  memberships: CongregationAccess[],
+  activeCongregationCode: string,
+  groups: string[] = []
 ): LDContext => {
-  const roles = [...new Set(accesses.map((access) => access.access))];
-  const maxAccessLevel = accesses.reduce(
-    (max, access) => Math.max(max, ACCESS_LEVEL_MAPPING[access.access] ?? 0),
-    0
-  );
-  const active = accesses.find(
-    (access) => access.code === activeCongregationCode
+  const roles = [...new Set(memberships.map((access) => access.access))];
+  // Staff roles only: a publisher ranks with a conductor in the mapping, which
+  // would let "level 2 and up" rules reach publishers.
+  const maxAccessLevel = memberships
+    .filter((access) => STAFF_ROLES.includes(access.access))
+    .reduce(
+      (max, access) => Math.max(max, ACCESS_LEVEL_MAPPING[access.access] ?? 0),
+      0
+    );
+  const active = memberships.find(
+    (access) =>
+      access.code === activeCongregationCode &&
+      STAFF_ROLES.includes(access.access)
   );
 
   return {
@@ -86,7 +92,9 @@ export const buildLaunchDarklyContext = (
       name: user.name,
       email: user.email,
       roles,
-      maxAccessLevel
+      maxAccessLevel,
+      congregations: [...new Set(memberships.map((access) => access.code))],
+      groups
     },
     ...(active && {
       congregation: {

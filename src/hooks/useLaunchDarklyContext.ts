@@ -1,31 +1,66 @@
 import { useEffect } from "react";
 import { useLDClient } from "launchdarkly-react-client-sdk";
 import { getUser } from "../utils/pocketbase";
+import { STAFF_ROLES } from "../utils/constants";
+import { getCongregationGroups } from "../utils/helpers/getcongregationmembers";
 import {
   buildLaunchDarklyContext,
   type CongregationAccess
 } from "../lib/launchdarkly";
 
 /**
- * Identifies the logged-in user to LaunchDarkly as a multi-context (user +
- * active congregation) so flags can target by role, access level, or
- * congregation. Re-runs when the active congregation changes; no-op when LD is
- * disabled or the user/roles aren't ready yet.
+ * Identifies the signed-in account to LaunchDarkly, so flags can target by
+ * role, congregation or group. Staff wait for their groups in the open
+ * congregation; a publisher-only account uses the groups from its links.
  */
 const useLaunchDarklyContext = (
-  accesses: CongregationAccess[],
-  activeCongregationCode: string
+  memberships: CongregationAccess[],
+  activeCongregationCode: string,
+  publisherGroups: string[]
 ) => {
   const ldClient = useLDClient();
 
   useEffect(() => {
-    if (!ldClient || accesses.length === 0) return;
+    if (!ldClient || memberships.length === 0) return;
     const user = getUser();
     if (!user || typeof user === "string") return;
-    ldClient.identify(
-      buildLaunchDarklyContext(user, accesses, activeCongregationCode)
+    const identify = (groups: string[]) =>
+      ldClient.identify(
+        buildLaunchDarklyContext(
+          user,
+          memberships,
+          activeCongregationCode,
+          groups
+        )
+      );
+
+    const isStaffHere = memberships.some(
+      (access) =>
+        access.code === activeCongregationCode &&
+        STAFF_ROLES.includes(access.access)
     );
-  }, [ldClient, accesses, activeCongregationCode]);
+    if (!isStaffHere) {
+      identify(publisherGroups);
+      return;
+    }
+    let current = true;
+    getCongregationGroups(
+      activeCongregationCode,
+      `ld-groups-${activeCongregationCode}`
+    )
+      .then((groups) =>
+        groups
+          .filter((group) => group.members.includes(user.id))
+          .map((group) => group.name)
+      )
+      .catch(() => [])
+      .then((names) => {
+        if (current) identify(names);
+      });
+    return () => {
+      current = false;
+    };
+  }, [ldClient, memberships, activeCongregationCode, publisherGroups]);
 };
 
 export default useLaunchDarklyContext;

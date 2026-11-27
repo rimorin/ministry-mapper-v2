@@ -16,6 +16,7 @@ Summarised from Andrej Karpathy's guidelines (github.com/multica-ai/andrej-karpa
 - The React Compiler runs in Vite and Vitest. Don't add `useMemo`, `useCallback` or `React.memo` without a measured reason. `useRealtime.ts` uses React 19's `useEffectEvent`; don't "fix" it to `useCallback`.
 - No state library. State lives in page-level containers with logic extracted into hooks that receive setters as props (`src/hooks/useAdminData.ts`). Contexts are narrow and purpose-built.
 - First paint must not wait on LaunchDarkly: `src/lib/launchdarkly.ts` bounds init with a short timeout and falls back to flags off.
+- LaunchDarkly (`buildLaunchDarklyContext`): every signed-in account, publishers included, is a `user` keyed by its id with `roles`, `congregations` and `groups` (names); staff add the open `congregation`. `maxAccessLevel` counts staff roles only, as the mapping ranks a publisher with a conductor. Signed-out traffic, share-link visitors included, shares the key `anonymous` on purpose (a key per device would bill every phone that opens a link), so no rollouts or experiments on flags signed-out pages read. Sign-out identifies back to it.
 
 ## Backend access
 - Structural mutations go through backend routes via `callFunction(path, {method, body})`: `/map/add`, `/map/reset`, `/map/floor/add`, `/territory/delete`, `/address/add`, `/link/map`, `/report/generate`. `createData("maps", ...)` bypasses server logic. Check for an existing route or `src/utils/pocketbase.ts` helper before designing a mutation; never raw `fetch`.

@@ -34,7 +34,7 @@ export interface MyLink {
  * The unexpired links given to the signed-in account, across every
  * congregation. Follows them live and refetches when the tab comes back into
  * view: links are handed out and expire while the app sits in the background.
- * With them come the congregations the account is a publisher in.
+ * With them come the congregations and groups the account is a publisher in.
  * Every load announces the links it finds new (made for the account, or an
  * existing one it was added to). The map page mounts it too, only for the
  * announcement, so a second map is not missed while working the first.
@@ -44,6 +44,9 @@ export default function useMyLinks() {
   // The congregations the account is a publisher in, by name. A publisher may
   // read nothing of a congregation otherwise, so the route says it.
   const [congregations, setCongregations] = useState<string[]>([]);
+  // Its groups there, by name, for feature flags. Kept as the same list while
+  // unchanged, so a refresh doesn't identify the account to LaunchDarkly again.
+  const [groups, setGroups] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [hasFailed, setHasFailed] = useState(false);
   // Kept when a later refresh fails, so weak signal does not wipe the list.
@@ -67,12 +70,20 @@ export default function useMyLinks() {
       const response = (await callFunction("/assignments/mine", {
         method: "POST",
         requestKey: "my-links"
-      })) as { assignments?: MyLink[]; congregations?: string[] };
+      })) as {
+        assignments?: MyLink[];
+        congregations?: string[];
+        groups?: string[];
+      };
       const latest = response.assignments ?? [];
       const known = knownIds.current;
       knownIds.current = new Set(latest.map((link) => link.id));
       setLinks(latest);
       setCongregations(response.congregations ?? []);
+      const latestGroups = response.groups ?? [];
+      setGroups((current) =>
+        current.join("\n") === latestGroups.join("\n") ? current : latestGroups
+      );
       setHasFailed(false);
       setIsStale(false);
       setUpdatedAt(new Date());
@@ -136,6 +147,7 @@ export default function useMyLinks() {
   return {
     links,
     congregations,
+    groups,
     isLoading,
     hasFailed,
     isStale,

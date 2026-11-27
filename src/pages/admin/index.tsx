@@ -2,7 +2,7 @@ import "../../css/admin.css";
 
 import { useEffect, useRef, use, lazy, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useFlags } from "launchdarkly-react-client-sdk";
+import { useFlags, useLDClient } from "launchdarkly-react-client-sdk";
 import {
   adminProps,
   userDetails,
@@ -32,6 +32,10 @@ import { useModalManagement } from "../../hooks/useModalManagement";
 import useAdminData from "../../hooks/useAdminData";
 import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 import useLaunchDarklyContext from "../../hooks/useLaunchDarklyContext";
+import {
+  ANONYMOUS_CONTEXT,
+  type CongregationAccess
+} from "../../lib/launchdarkly";
 import useAnalyticsIdentity from "../../hooks/useAnalyticsIdentity";
 
 import TerritoryListing from "../../components/navigation/territorylist";
@@ -167,7 +171,8 @@ function Admin({ user }: adminProps) {
     generateReport
   } = useCongregationManagement({ userId });
 
-  useLaunchDarklyContext(userCongregationAccesses, congregationCode);
+  const [memberships, setMemberships] = useState<CongregationAccess[]>([]);
+  const ldClient = useLDClient();
   // Targeted per congregation; without the LaunchDarkly provider useFlags()
   // returns {} and the assistant stays hidden.
   const { enableAdminAssistant } = useFlags();
@@ -183,6 +188,7 @@ function Admin({ user }: adminProps) {
   useAnalyticsIdentity(userCongregationAccesses, congregationCode);
   // Fetched here once: the sidebar counts them and the panel lists them.
   const myLinks = useMyLinks();
+  useLaunchDarklyContext(memberships, congregationCode, myLinks.groups);
   // The account holds only the publisher role, so it gets its links, not the shell.
   const [isPublisherOnly, setIsPublisherOnly] = useState(false);
   // A staff account looking at the links given to it, in place of a territory.
@@ -250,6 +256,7 @@ function Admin({ user }: adminProps) {
     congregationCodeCache,
     congregationAccessRef: congregationAccess,
     setUserCongregationAccesses,
+    setMemberships,
     setCongregationCode,
     setCongregationCodeCache,
     setCongregationName,
@@ -270,6 +277,8 @@ function Admin({ user }: adminProps) {
 
   const logoutUser = () => {
     sessionStorage.removeItem(PUBLISHER_VIEW_KEY);
+    // So the next account on this device doesn't inherit these flags.
+    void ldClient?.identify(ANONYMOUS_CONTEXT);
     return cleanupSession();
   };
 
