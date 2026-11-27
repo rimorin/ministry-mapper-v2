@@ -37,3 +37,6 @@ git_shell.sh
 .nvmrc
 # Copilot CLI session database
 session.db
+
+# Claude Code worktrees (claude -w)
+.claude/worktrees/

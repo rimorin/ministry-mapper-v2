@@ -1,0 +1,3 @@
+# Gitignored files copied into worktrees made by `claude -w`
+.env
+.claude/settings.local.json
