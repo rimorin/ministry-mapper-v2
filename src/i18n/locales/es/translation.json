@@ -311,6 +311,7 @@
     "filterByRole": "Filtrar por rol",
     "searchNameOrEmail": "Buscar nombre o correo",
     "updateRoleDescription": "Elige el nivel de acceso de este miembro.",
+    "updateMemberDescription": "Elige el nivel de acceso y los grupos de este miembro.",
     "alreadyInCongregation": "Ya es miembro de esta congregación.",
     "profileAndNotifications": "Perfil y notificaciones"
   },
@@ -319,6 +320,7 @@
     "description": "Limita la lista de miembros a un grupo cuando envíes un mapa.",
     "empty": "Aún no hay grupos",
     "emptyDescription": "Añade tus grupos de predicación, un grupo de idioma o a quienes apoyan a la congregación.",
+    "noneYet": "Aún no hay grupos. Créalos en la pestaña Grupos.",
     "new": "Nuevo grupo",
     "namePlaceholder": "Grupo 3",
     "nameRequired": "Ponle un nombre al grupo.",

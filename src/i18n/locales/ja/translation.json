@@ -311,6 +311,7 @@
     "filterByRole": "役割で絞り込む",
     "searchNameOrEmail": "名前またはメールで検索",
     "updateRoleDescription": "このメンバーのアクセスレベルを選択してください。",
+    "updateMemberDescription": "このメンバーのアクセスレベルとグループを選択してください。",
     "alreadyInCongregation": "この人はすでにこの会衆のメンバーです。",
     "profileAndNotifications": "プロフィールと通知"
   },
@@ -319,6 +320,7 @@
     "description": "地図を送るとき、メンバーの一覧をグループで絞り込めます。",
     "empty": "グループはまだありません",
     "emptyDescription": "奉仕グループ、言語グループ、会衆を支援している人たちを追加しましょう。",
+    "noneYet": "グループはまだありません。グループタブで作成できます。",
     "new": "新しいグループ",
     "namePlaceholder": "グループ3",
     "nameRequired": "グループ名を入力してください。",

@@ -311,6 +311,7 @@
     "filterByRole": "按角色筛选",
     "searchNameOrEmail": "搜索姓名或邮箱",
     "updateRoleDescription": "选择此成员的访问级别。",
+    "updateMemberDescription": "选择此成员的访问级别和小组。",
     "alreadyInCongregation": "此人已是该会众的成员。",
     "profileAndNotifications": "个人资料与通知"
   },
@@ -319,6 +320,7 @@
     "description": "发送地图时，可按小组缩小成员列表。",
     "empty": "还没有小组",
     "emptyDescription": "添加传道小组、语言小组或来支援会众的人。",
+    "noneYet": "还没有小组。请在“小组”标签页中创建。",
     "new": "新建小组",
     "namePlaceholder": "第3小组",
     "nameRequired": "请为小组命名。",

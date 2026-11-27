@@ -311,6 +311,7 @@
     "filterByRole": "Tapis mengikut peranan",
     "searchNameOrEmail": "Cari nama atau e-mel",
     "updateRoleDescription": "Pilih tahap akses untuk ahli ini.",
+    "updateMemberDescription": "Pilih tahap akses dan kumpulan ahli ini.",
     "alreadyInCongregation": "Orang ini sudah menjadi ahli sidang ini.",
     "profileAndNotifications": "Profil & pemberitahuan"
   },
@@ -319,6 +320,7 @@
     "description": "Sempitkan senarai ahli kepada satu kumpulan apabila anda menghantar peta.",
     "empty": "Belum ada kumpulan",
     "emptyDescription": "Tambah kumpulan dinas, kumpulan bahasa atau mereka yang menyokong sidang.",
+    "noneYet": "Belum ada kumpulan. Buat di tab Kumpulan.",
     "new": "Kumpulan baharu",
     "namePlaceholder": "Kumpulan 3",
     "nameRequired": "Beri nama kumpulan ini.",

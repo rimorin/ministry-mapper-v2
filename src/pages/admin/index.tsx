@@ -368,7 +368,8 @@ function Admin({ user }: adminProps) {
       congregation: congregationCode,
       footerSaveAcl: userAccessLevel,
       name: details.name,
-      role: details.role
+      role: details.role,
+      userId: details.userId
     });
 
     setCongregationUsers((existingUsers) => {
