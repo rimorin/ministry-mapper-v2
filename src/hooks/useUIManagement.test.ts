@@ -8,23 +8,10 @@ describe("useUIManagement", () => {
       const { result } = renderHook(() => useUIState());
 
       expect(result.current.showBkTopButton).toBe(false);
-      expect(result.current.isUnauthorised).toBe(false);
       expect(result.current.showChangeAddressTerritory).toBe(false);
       expect(result.current.showLanguageSelector).toBe(false);
       expect(result.current.values).toEqual({});
       expect(result.current.isAssignmentLoading).toBe(false);
-    });
-  });
-
-  describe("unauthorized state", () => {
-    it("should update unauthorized state", () => {
-      const { result } = renderHook(() => useUIState());
-
-      act(() => {
-        result.current.setIsUnauthorised(true);
-      });
-
-      expect(result.current.isUnauthorised).toBe(true);
     });
   });
 

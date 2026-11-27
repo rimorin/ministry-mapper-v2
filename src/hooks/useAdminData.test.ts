@@ -40,8 +40,7 @@ const mockSetTerritories = vi.fn();
 const mockSetSelectedTerritory = vi.fn();
 const mockSetTerritoryCodeCache = vi.fn();
 const mockSetUserAccessLevel = vi.fn();
-const mockSetIsUnauthorised = vi.fn();
-const mockSetIsPublisherOnly = vi.fn();
+const mockSetAccount = vi.fn();
 const mockNotifyError = vi.fn();
 const mockNotifyWarning = vi.fn();
 const mockT = vi.fn((key: string, defaultValue: string) => defaultValue) as any;
@@ -68,8 +67,7 @@ describe("useAdminData", () => {
     setSelectedTerritory: mockSetSelectedTerritory,
     setTerritoryCodeCache: mockSetTerritoryCodeCache,
     setUserAccessLevel: mockSetUserAccessLevel,
-    setIsUnauthorised: mockSetIsUnauthorised,
-    setIsPublisherOnly: mockSetIsPublisherOnly,
+    setAccount: mockSetAccount,
     notifyError: mockNotifyError,
     notifyWarning: mockNotifyWarning,
     processCongregationTerritories: mockProcessCongregationTerritories,
@@ -143,7 +141,7 @@ describe("useAdminData", () => {
       await result.current.fetchData();
 
       await waitFor(() => {
-        expect(mockSetIsUnauthorised).toHaveBeenCalledWith(true);
+        expect(mockSetAccount).toHaveBeenCalledWith("unauthorised");
         expect(mockNotifyError).toHaveBeenCalledWith(
           expect.stringContaining("Unauthorised"),
           true
@@ -161,9 +159,9 @@ describe("useAdminData", () => {
       await result.current.fetchData();
 
       await waitFor(() => {
-        expect(mockSetIsPublisherOnly).toHaveBeenCalledWith(true);
+        expect(mockSetAccount).toHaveBeenCalledWith("publisher");
       });
-      expect(mockSetIsUnauthorised).not.toHaveBeenCalled();
+      expect(mockSetAccount).not.toHaveBeenCalledWith("unauthorised");
       expect(mockSetUserCongregationAccesses).not.toHaveBeenCalled();
       await waitFor(() => expect(result.current.isLoading).toBe(false));
     });
@@ -188,7 +186,7 @@ describe("useAdminData", () => {
         ]);
       });
       // Cleared, so an account promoted while signed in leaves the publisher page.
-      expect(mockSetIsPublisherOnly).toHaveBeenLastCalledWith(false);
+      expect(mockSetAccount).toHaveBeenLastCalledWith("staff");
     });
 
     it("should pass on every role, publisher included, for flag targeting", async () => {
@@ -227,6 +225,10 @@ describe("useAdminData", () => {
       await waitFor(() => {
         expect(result.current.isLoading).toBe(false);
       });
+      // An unknown account falls back to the shell; a known one stays put.
+      const settle = mockSetAccount.mock.calls.at(-1)?.[0];
+      expect(settle("loading")).toBe("staff");
+      expect(settle("publisher")).toBe("publisher");
     });
 
     it("should keep isLoading true when getList is aborted (prevents flash of GettingStarted)", async () => {

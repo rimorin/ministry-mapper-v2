@@ -2,7 +2,6 @@ import { useState } from "react";
 
 export default function useUIState() {
   const [showBkTopButton, setShowBkTopButton] = useState(false);
-  const [isUnauthorised, setIsUnauthorised] = useState<boolean>(false);
   const [showChangeAddressTerritory, setShowChangeAddressTerritory] =
     useState<boolean>(false);
   const [showLanguageSelector, setShowLanguageSelector] = useState(false);
@@ -21,8 +20,6 @@ export default function useUIState() {
   return {
     showBkTopButton,
     setShowBkTopButton,
-    isUnauthorised,
-    setIsUnauthorised,
     showChangeAddressTerritory,
     showLanguageSelector,
     values,
