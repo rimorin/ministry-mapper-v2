@@ -1,3 +1,9 @@
+## [2.13.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.13.0...v2.13.1) (2026-11-27)
+
+### Bug Fixes
+
+* keep a bottom sheet's buttons above the phone keyboard ([b87c854](https://github.com/rimorin/ministry-mapper-v2/commit/b87c8544f8ccd18829cefcaa81bd9cc637088103))
+
 ## [2.13.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.12.0...v2.13.0) (2026-11-27)
 
 ### Features
