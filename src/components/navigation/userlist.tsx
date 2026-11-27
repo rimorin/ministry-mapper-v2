@@ -61,7 +61,8 @@ const UserList = ({
   const [query, setQuery] = useState("");
   const [role, setRole] = useState(ALL_ROLES);
   const [groups, setGroups] = useState<CongregationGroup[]>([]);
-  // Bumped once a member's dialog is done with, to read the groups again.
+  // Bumped once a member's dialog or an invite is done with, to read the
+  // groups again.
   const [version, setVersion] = useState(0);
 
   // In People, rows show each person's groups, read again whenever the tab
@@ -208,7 +209,10 @@ const UserList = ({
           <Button
             type="button"
             className="w-full sm:w-auto"
-            onClick={people.onInvite}
+            onClick={async () => {
+              await people.onInvite();
+              setVersion((current) => current + 1);
+            }}
           >
             <UserPlus aria-hidden="true" />
             {t("user.invite", "Invite")}

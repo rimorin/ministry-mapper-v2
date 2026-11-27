@@ -339,7 +339,7 @@ export interface UserListingProps {
   users?: userDetails[];
   // Where the publisher role is switched on, the sheet is People: Members and
   // Groups tabs, and a button to invite someone.
-  people?: { congregation: string; onInvite: () => void };
+  people?: { congregation: string; onInvite: () => void | Promise<void> };
 }
 
 export interface UserRoleProps {

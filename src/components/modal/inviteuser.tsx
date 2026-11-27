@@ -34,17 +34,23 @@ import { USER_ACCESS_LEVELS, PB_FIELDS } from "../../utils/constants";
 import useNotification from "../../hooks/useNotification";
 import { UserModalProps, SelectProps } from "../../utils/interface";
 import UserRoleField from "../form/role";
+import GroupsField from "../form/groups";
 import usePublisherRoleEnabled from "../../hooks/usePublisherRoleEnabled";
 import {
   createData,
   getFirstItemOfList,
-  getPaginatedList
+  getPaginatedList,
+  updateDataById
 } from "../../utils/pocketbase";
+import {
+  getCongregationGroups,
+  type CongregationGroup
+} from "../../utils/helpers/getcongregationmembers";
 import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 
 const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
   const { t } = useTranslation();
-  const { notifyWarning, runAction } = useNotification();
+  const { notifyError, notifyWarning, runAction } = useNotification();
   // Most invites are publishers where the role is on, and it gives the least.
   const isPublisherRoleEnabled = usePublisherRoleEnabled();
   const [userRole, setUserRole] = useState(
@@ -52,6 +58,8 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
       ? USER_ACCESS_LEVELS.PUBLISHER.CODE
       : USER_ACCESS_LEVELS.READ_ONLY.CODE
   );
+  const [groups, setGroups] = useState<CongregationGroup[]>([]);
+  const [chosenGroups, setChosenGroups] = useState<string[]>([]);
   const [userId, setUserId] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const [searchResults, setSearchResults] = React.useState<SelectProps[]>([]);
@@ -64,6 +72,13 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
     null
   );
   const { modal, dialogProps, contentProps } = useBaseUiDialog();
+
+  React.useEffect(() => {
+    if (!isPublisherRoleEnabled || !congregation) return;
+    getCongregationGroups(congregation)
+      .then(setGroups)
+      .catch(() => {});
+  }, [isPublisherRoleEnabled, congregation]);
 
   React.useEffect(() => {
     return () => {
@@ -140,6 +155,17 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
           }
         );
         trackEvent(ANALYTICS_EVENTS.USER_INVITED, { role: userRole });
+        // They are a member by now, so a group that fails is only reported.
+        await Promise.all(
+          chosenGroups.map((group) =>
+            updateDataById(
+              "groups",
+              group,
+              { "members+": userId },
+              { requestKey: `group-member-${group}` }
+            )
+          )
+        ).catch(notifyError);
 
         const roleName = getRoleDisplayName(userRole);
         notifyWarning(
@@ -276,6 +302,13 @@ const InviteUser = NiceModal.create(({ uid, congregation }: UserModalProps) => {
               handleRoleChange={(value) => setUserRole(value)}
             />
           </div>
+          {groups.length > 0 && (
+            <GroupsField
+              groups={groups}
+              value={chosenGroups}
+              onValueChange={setChosenGroups}
+            />
+          )}
           <Separator />
           <DialogFooter>
             <Button variant="outline" type="button" onClick={modal.hide}>

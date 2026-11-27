@@ -139,13 +139,15 @@ describe("UserListing", () => {
       await waitFor(() => expect(groups).toHaveBeenCalledTimes(2));
     });
 
-    it("invites from its own button", async () => {
+    it("invites from its own button, then reads the groups again", async () => {
       const user = userEvent.setup();
-      const onInvite = openPeople();
+      const onInvite = openPeople(vi.fn().mockResolvedValue(undefined));
+      await waitFor(() => expect(groups).toHaveBeenCalledTimes(1));
 
       await user.click(screen.getByRole("button", { name: "Invite" }));
 
       expect(onInvite).toHaveBeenCalled();
+      await waitFor(() => expect(groups).toHaveBeenCalledTimes(2));
     });
   });
 

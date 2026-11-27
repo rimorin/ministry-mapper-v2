@@ -15,9 +15,6 @@ import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
-import { cn } from "@/lib/utils";
-import { chipClass } from "../common/filter-chips";
 import SubmitButton from "../common/submit-button";
 import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import useConfirm from "../../hooks/useConfirm";
@@ -25,6 +22,7 @@ import usePublisherRoleEnabled from "../../hooks/usePublisherRoleEnabled";
 import useNotification from "../../hooks/useNotification";
 import { UserModalProps } from "../../utils/interface";
 import UserRoleField from "../form/role";
+import GroupsField from "../form/groups";
 import { deleteDataById, updateDataById } from "../../utils/pocketbase";
 import {
   getCongregationGroups,
@@ -155,38 +153,11 @@ const UpdateUser = NiceModal.create(
                 )}
               />
               {withGroups && groups && (
-                <div className="space-y-1.5">
-                  <Label>{t("groups.title", "Groups")}</Label>
-                  {groups.length > 0 ? (
-                    <ToggleGroup
-                      multiple
-                      value={chosen}
-                      onValueChange={setChosen}
-                      size="sm"
-                      variant="outline"
-                      spacing={1.5}
-                      aria-label={t("groups.title", "Groups")}
-                      className="w-full flex-wrap"
-                    >
-                      {groups.map((group) => (
-                        <ToggleGroupItem
-                          key={group.id}
-                          value={group.id}
-                          className={cn(chipClass, "px-3")}
-                        >
-                          {group.name}
-                        </ToggleGroupItem>
-                      ))}
-                    </ToggleGroup>
-                  ) : (
-                    <p className="text-xs text-muted-foreground">
-                      {t(
-                        "groups.noneYet",
-                        "No groups yet. Make them on the Groups tab."
-                      )}
-                    </p>
-                  )}
-                </div>
+                <GroupsField
+                  groups={groups}
+                  value={chosen}
+                  onValueChange={setChosen}
+                />
               )}
               <Separator />
               <DialogFooter>
