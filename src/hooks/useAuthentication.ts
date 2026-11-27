@@ -27,13 +27,17 @@ export default function useAuthentication() {
   const notifyAuthError = (err: unknown) =>
     notifyError(mapPbAuthError(err, t) ?? err);
 
+  // runAction reports a failure itself, so this only says whether it sent.
   const handleOtpRequest = async (email: string) => {
+    let sent = false;
     await runAction(
       async () => {
         setOtpSessionId(await requestOTP(email));
+        sent = true;
       },
       { onError: notifyAuthError }
     );
+    return sent;
   };
 
   const loginInWithEmailAndPassword = async (
@@ -69,8 +73,9 @@ export default function useAuthentication() {
   };
 
   const handleResendOtp = async (email: string) => {
-    await handleOtpRequest(processEmail(email));
-    notifyInfo(t("auth.codeSent", "A new code is on its way."));
+    if (await handleOtpRequest(processEmail(email))) {
+      notifyInfo(t("auth.codeSent", "A new code is on its way."));
+    }
   };
 
   const handleOAuthSignIn = (provider: string) => {

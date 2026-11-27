@@ -82,9 +82,10 @@ const MyLinks = ({
 }: MyLinksProps) => {
   const { t, i18n } = useTranslation();
 
+  // With nothing kept to show, a failed refresh is a failed load.
   const view = isLoading
     ? "loading"
-    : hasFailed
+    : hasFailed || (isStale && links.length === 0)
       ? "failed"
       : links.length === 0
         ? "empty"
@@ -183,21 +184,19 @@ const MyLinks = ({
             {t("myLinks.description", "Tap a map to start working.")}
           </m.p>
           <div className="space-y-5">
-            {isStale && (
+            {isStale && updatedAt && (
               <p className="flex flex-wrap items-center gap-x-2 text-sm text-muted-foreground">
                 <span>
-                  {updatedAt
-                    ? t(
-                        "myLinks.stale",
-                        "Couldn't refresh. Showing your maps from {{time}}.",
-                        {
-                          time: updatedAt.toLocaleTimeString(i18n.language, {
-                            hour: "numeric",
-                            minute: "2-digit"
-                          })
-                        }
-                      )
-                    : t("myLinks.loadFailed", "Your maps could not be loaded.")}
+                  {t(
+                    "myLinks.stale",
+                    "Couldn't refresh. Showing your maps from {{time}}.",
+                    {
+                      time: updatedAt.toLocaleTimeString(i18n.language, {
+                        hour: "numeric",
+                        minute: "2-digit"
+                      })
+                    }
+                  )}
                 </span>
                 <Button
                   variant="link"
