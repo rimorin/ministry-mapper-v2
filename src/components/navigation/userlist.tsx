@@ -92,11 +92,12 @@ const UserList = ({
     );
   // Counted after the search, so each role says how many of the people found
   // hold it. Roles nobody holds are left out.
-  const roles = ROLE_FILTERS.map((filter) => ({
+  const roles = ROLE_FILTERS.filter((filter) =>
+    users.some((user) => user.role === filter.code)
+  ).map((filter) => ({
     ...filter,
-    count: matched.filter((user) => user.role === filter.code).length,
-    held: users.some((user) => user.role === filter.code)
-  })).filter((filter) => filter.held);
+    count: matched.filter((user) => user.role === filter.code).length
+  }));
   const visible =
     role === ALL_ROLES ? matched : matched.filter((user) => user.role === role);
 
@@ -164,7 +165,7 @@ const UserList = ({
                       type="button"
                       onClick={async (e) => {
                         await handleSelect?.(element.roleId, e);
-                        if (people) setVersion((current) => current + 1);
+                        setVersion((current) => current + 1);
                       }}
                     />
                   }

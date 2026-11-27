@@ -122,7 +122,6 @@ const UserManagementComponent = () => {
   const oobCode = searchParams.get("oobCode") || "";
 
   const {
-    isProcessing,
     isResetting,
     message,
     isSuccess,
@@ -142,7 +141,7 @@ const UserManagementComponent = () => {
 
   // The first render precedes the verify request; without this the
   // failure screen flashes.
-  if (isProcessing || (mode === MODE_VERIFY_EMAIL && !message)) {
+  if (mode === MODE_VERIFY_EMAIL && !message) {
     return <Loader />;
   }
 

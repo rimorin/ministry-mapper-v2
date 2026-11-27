@@ -35,7 +35,7 @@ describe("InvalidPage", () => {
   });
 
   it("covers both when the server did not say which", () => {
-    render(<InvalidPage />);
+    render(<InvalidPage reason="unknown" />);
 
     expect(
       screen.getByRole("heading", { name: "This map is no longer available" })

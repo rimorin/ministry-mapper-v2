@@ -10,7 +10,7 @@ import {
   ItemFooter,
   ItemTitle
 } from "@/components/ui/item";
-import { duration, fadeSlideUp } from "@/lib/motion";
+import { listItemPresence } from "@/lib/motion";
 import { BRAND_URL } from "../../utils/constants";
 import {
   canOfferInstall,
@@ -50,7 +50,6 @@ const StepNumber = ({ n }: { n: number }) => (
 
 // Shown once on a phone that has not added the app yet: without the link a
 // conductor used to send, the Home Screen is how the maps are found again.
-// Built like the map cards above it, with the how-to where they show expiry.
 const InstallCard = () => {
   const { t } = useTranslation();
   const canOffer = useSyncExternalStore(
@@ -88,10 +87,11 @@ const InstallCard = () => {
       {way && (
         <m.div
           key="install"
-          variants={fadeSlideUp}
+          variants={listItemPresence}
+          custom={0}
           initial="hidden"
           animate="show"
-          exit={{ opacity: 0, y: 8, transition: { duration: duration.fast } }}
+          exit="exit"
         >
           <Item
             variant="outline"

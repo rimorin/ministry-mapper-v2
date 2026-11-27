@@ -1336,7 +1336,9 @@ describe("useAssistant record proposals", () => {
       id,
       name,
       email: "",
-      openLinks: 0
+      role: "",
+      maps: [],
+      groups: []
     });
     membersMock.mockResolvedValue([
       member("u1", "John Tan"),
@@ -1416,7 +1418,7 @@ describe("useAssistant record proposals", () => {
 
   it("marks a share link out of date when an account has left", async () => {
     membersMock.mockResolvedValue([
-      { id: "u1", name: "John Tan", email: "", openLinks: 0 }
+      { id: "u1", name: "John Tan", email: "", role: "", maps: [], groups: [] }
     ]);
     const p = proposal({
       kind: "share_link",
@@ -1791,7 +1793,7 @@ describe("useAssistant assisting actions", () => {
   it("makes a quick link planned ahead with its accounts and no position", async () => {
     flag.publisherRole = true;
     membersMock.mockResolvedValue([
-      { id: "u1", name: "John Tan", email: "", openLinks: 0 }
+      { id: "u1", name: "John Tan", email: "", role: "", maps: [], groups: [] }
     ]);
     const p = proposal({
       kind: "quick_link",

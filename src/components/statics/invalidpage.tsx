@@ -10,10 +10,10 @@ import type { LinkEnd } from "../../hooks/useMapLink";
 import { getUser } from "../../utils/pocketbase";
 
 interface InvalidPageProps {
-  reason?: LinkEnd;
+  reason: LinkEnd;
 }
 
-const InvalidPage = ({ reason = "unknown" }: InvalidPageProps) => {
+const InvalidPage = ({ reason }: InvalidPageProps) => {
   const { t } = useTranslation();
 
   const { title, body } = {

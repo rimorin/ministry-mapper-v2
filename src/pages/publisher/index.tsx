@@ -40,12 +40,6 @@ const ThemeSettingsModal = lazy(
   () => import("../../components/modal/themesettings")
 );
 
-const THEME_LABELS = {
-  light: "theme.light",
-  dark: "theme.dark",
-  system: "theme.system"
-} as const;
-
 interface PublisherDashboardProps {
   userName: string;
   onLogout: () => void;
@@ -157,7 +151,13 @@ const PublisherDashboard = ({
                 <Palette />
                 {t("theme.theme", "Theme")}
                 <span className="ml-auto text-xs text-muted-foreground">
-                  {t(THEME_LABELS[theme])}
+                  {
+                    {
+                      light: t("theme.light", "Light"),
+                      dark: t("theme.dark", "Dark"),
+                      system: t("theme.system", "System")
+                    }[theme]
+                  }
                 </span>
               </DropdownMenuItem>
               <DropdownMenuItem
