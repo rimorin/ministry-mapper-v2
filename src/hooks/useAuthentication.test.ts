@@ -4,14 +4,17 @@ import useAuthentication from "./useAuthentication";
 import * as pocketbase from "../utils/pocketbase";
 import type { RecordModel, RecordAuthResponse } from "pocketbase";
 
-const { mockNotifyError } = vi.hoisted(() => ({ mockNotifyError: vi.fn() }));
+const { mockNotifyError, mockNotifyInfo } = vi.hoisted(() => ({
+  mockNotifyError: vi.fn(),
+  mockNotifyInfo: vi.fn()
+}));
 
 vi.mock("../utils/pocketbase");
 vi.mock("./useNotification", () => ({
   default: () => ({
     notifyError: mockNotifyError,
     notifyWarning: vi.fn(),
-    notifyInfo: vi.fn(),
+    notifyInfo: mockNotifyInfo,
     runAction: vi.fn().mockImplementation(
       async (
         fn: () => Promise<unknown>,
@@ -213,6 +216,21 @@ describe("useAuthentication", () => {
       await waitFor(() => {
         expect(result.current.otpSessionId).toBe("new-otp-session");
       });
+      expect(mockNotifyInfo).toHaveBeenCalledWith("A new code is on its way.");
+    });
+
+    it("says nothing was sent when the resend fails", async () => {
+      const error = new Error("Too many requests");
+      vi.spyOn(pocketbase, "requestOTP").mockRejectedValue(error);
+
+      const { result } = renderHook(() => useAuthentication());
+
+      await act(async () => {
+        await result.current.handleResendOtp("test@example.com");
+      });
+
+      expect(mockNotifyError).toHaveBeenCalled();
+      expect(mockNotifyInfo).not.toHaveBeenCalled();
     });
   });
 
