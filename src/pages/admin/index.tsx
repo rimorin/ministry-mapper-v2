@@ -29,7 +29,7 @@ import useRealtimeSubscription from "../../hooks/useRealtime";
 import usePublisherRoleEnabled from "../../hooks/usePublisherRoleEnabled";
 import useMyLinks from "../../hooks/useMyLinks";
 import { useModalManagement } from "../../hooks/useModalManagement";
-import useAdminData from "../../hooks/useAdminData";
+import useAdminData, { type AccountKind } from "../../hooks/useAdminData";
 import { ANALYTICS_EVENTS, trackEvent } from "../../utils/analytics";
 import useLaunchDarklyContext from "../../hooks/useLaunchDarklyContext";
 import {
@@ -189,8 +189,7 @@ function Admin({ user }: adminProps) {
   // Fetched here once: the sidebar counts them and the panel lists them.
   const myLinks = useMyLinks();
   useLaunchDarklyContext(memberships, congregationCode, myLinks.groups);
-  // The account holds only the publisher role, so it gets its links, not the shell.
-  const [isPublisherOnly, setIsPublisherOnly] = useState(false);
+  const [account, setAccount] = useState<AccountKind>("loading");
   // A staff account looking at the links given to it, in place of a territory.
   // Kept for the tab so coming back from a map lands on the links again, and
   // under the account's id so the next account to sign in here starts afresh.
@@ -227,8 +226,6 @@ function Admin({ user }: adminProps) {
   const {
     showBkTopButton,
     setShowBkTopButton,
-    isUnauthorised,
-    setIsUnauthorised,
     showChangeAddressTerritory,
     showLanguageSelector,
     values,
@@ -252,7 +249,7 @@ function Admin({ user }: adminProps) {
     setHasAnyMaps
   } = useAdminData({
     userId,
-    setIsPublisherOnly,
+    setAccount,
     congregationCodeCache,
     congregationAccessRef: congregationAccess,
     setUserCongregationAccesses,
@@ -266,7 +263,6 @@ function Admin({ user }: adminProps) {
     setSelectedTerritory,
     setTerritoryCodeCache,
     setUserAccessLevel,
-    setIsUnauthorised,
     notifyError,
     notifyWarning,
     processCongregationTerritories,
@@ -730,7 +726,7 @@ function Admin({ user }: adminProps) {
 
   // The publisher page follows nothing that would show a role being given.
   useOnTabFocus(() => {
-    if (isPublisherOnly) fetchData();
+    if (account === "publisher") fetchData();
   });
 
   useOnSSEReconnect(() => {
@@ -833,10 +829,10 @@ function Admin({ user }: adminProps) {
   );
   const { displayPendingCount } = smartSync;
 
-  if (isUnauthorised) {
+  if (account === "unauthorised") {
     return <UnauthorizedPage handleClick={logoutUser} />;
   }
-  if (isPublisherOnly) {
+  if (account === "publisher") {
     return (
       <PublisherDashboard
         userName={userName}
@@ -845,13 +841,14 @@ function Admin({ user }: adminProps) {
       />
     );
   }
+  if (account === "loading") {
+    return <Loader />;
+  }
   const isReadonly = userAccessLevel === USER_ACCESS_LEVELS.READ_ONLY.CODE;
 
   return (
     <SidebarProvider>
-      {/* Not before the roles load: until then this could be a publisher's
-          account, and these are the staff's release notes. */}
-      {!isLoading && <ReleaseNotifier />}
+      <ReleaseNotifier />
       <TerritoryListing
         showListing={showTerritoryListing}
         territories={congregationTerritoryList}

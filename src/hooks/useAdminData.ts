@@ -19,6 +19,9 @@ import { Policy } from "../utils/policies";
 import { territoryDetails } from "../utils/interface";
 import { sortByCode, sortBySequence } from "../utils/helpers/sorthelpers";
 
+// Unknown until the roles load, so nothing renders as staff by default.
+export type AccountKind = "loading" | "staff" | "publisher" | "unauthorised";
+
 interface UseAdminDataProps {
   userId: string;
   congregationCodeCache: string;
@@ -45,8 +48,7 @@ interface UseAdminDataProps {
   >;
   setTerritoryCodeCache: (code: string) => void;
   setUserAccessLevel: (level: string) => void;
-  setIsUnauthorised: (unauthorised: boolean) => void;
-  setIsPublisherOnly: (publisherOnly: boolean) => void;
+  setAccount: React.Dispatch<React.SetStateAction<AccountKind>>;
   notifyError: (message: string, silent?: boolean) => void;
   notifyWarning: (message: string) => void;
   processCongregationTerritories: (
@@ -72,8 +74,7 @@ export default function useAdminData({
   setSelectedTerritory,
   setTerritoryCodeCache,
   setUserAccessLevel,
-  setIsUnauthorised,
-  setIsPublisherOnly,
+  setAccount,
   notifyError,
   notifyWarning,
   processCongregationTerritories,
@@ -98,7 +99,11 @@ export default function useAdminData({
       });
     } catch (err) {
       // Don't clear loading on abort — a replacement fetch is already in flight
-      if (!isAbortError(err)) setIsLoading(false);
+      if (!isAbortError(err)) {
+        setIsLoading(false);
+        // A first load that fails falls back to the shell, as it always has.
+        setAccount((current) => (current === "loading" ? "staff" : current));
+      }
       throw err;
     }
     setMemberships(
@@ -117,15 +122,15 @@ export default function useAdminData({
     if (staffRoles.length === 0) {
       setIsLoading(false);
       if (userRoles.length > 0) {
-        setIsPublisherOnly(true);
+        setAccount("publisher");
         return;
       }
-      setIsUnauthorised(true);
+      setAccount("unauthorised");
       notifyError(`Unauthorised access by ${userEmail}`, true);
       return;
     }
     // A later load may find the account promoted out of the publisher page.
-    setIsPublisherOnly(false);
+    setAccount("staff");
     const congregationAccesses: Array<{
       code: string;
       access: string;
