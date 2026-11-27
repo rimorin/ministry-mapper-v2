@@ -1,3 +1,44 @@
+## [2.13.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.12.0...v2.13.0) (2026-11-27)
+
+### Features
+
+* change a member's groups from their dialog in People ([e978f4c](https://github.com/rimorin/ministry-mapper-v2/commit/e978f4ce912271199259365f94eefee21e87ee18))
+* choose a new member's groups when inviting them ([d509696](https://github.com/rimorin/ministry-mapper-v2/commit/d509696a1b1715d1ef9ec7f4df5cca6188cf6683))
+* gather members, invites and groups under People ([6e58a4d](https://github.com/rimorin/ministry-mapper-v2/commit/6e58a4dda0e85d34e49491d2162a61856d67b70a))
+* give a link to accounts and to people without one from separate boxes ([621cb14](https://github.com/rimorin/ministry-mapper-v2/commit/621cb1424603d0c1643740f6e5fd9e719c5dd4fc))
+* lead sign-in with Google and Apple and rebuild the account screens ([f39ee87](https://github.com/rimorin/ministry-mapper-v2/commit/f39ee87161c25aedeab2b89cedec43a379fde10d))
+* narrow the member picker by group, managed from a Groups screen ([1a6586b](https://github.com/rimorin/ministry-mapper-v2/commit/1a6586b6d44411a8e9ecc80c76c71cbe0c2b374c))
+* new logo, built from one drawing and served from the asset host ([e88d326](https://github.com/rimorin/ministry-mapper-v2/commit/e88d326588fdb97b9dfa6722c54764e006f20d52))
+* pick accounts from a phone-sized panel that shows who holds a map ([2def563](https://github.com/rimorin/ministry-mapper-v2/commit/2def56359833e0c19fa1ee2629b3701f83d5e63b))
+* say what happens next on every sign-up and password screen ([1ef530e](https://github.com/rimorin/ministry-mapper-v2/commit/1ef530e37e8cd9673a00d45ed246a31e4401a614))
+* search and filter by role when selecting a user ([779e950](https://github.com/rimorin/ministry-mapper-v2/commit/779e950c41ad29031bbb61e76a28ca64091016aa))
+* show a publisher's congregations under My Maps ([7962001](https://github.com/rimorin/ministry-mapper-v2/commit/7962001c55ef33761eb3b42a531ffef153e7246a))
+* show each member's groups in People and call accounts members ([2e26de8](https://github.com/rimorin/ministry-mapper-v2/commit/2e26de8f6c53a28dce8690da28388b460621a60d))
+* show the list panels as a centred dialog on wider screens ([f8e18e9](https://github.com/rimorin/ministry-mapper-v2/commit/f8e18e97242fb088641ec5140b88df10074b08bb))
+* show the logo without its tile inside the app ([6be0fc1](https://github.com/rimorin/ministry-mapper-v2/commit/6be0fc15954c583fbb4460074d3b7beccf22776e))
+* show what is left on each map in My Maps ([d4da1a1](https://github.com/rimorin/ministry-mapper-v2/commit/d4da1a1f64211d6387e9564cb08df49187597639))
+* smooth the publisher's first sign-in, ended maps and return visits ([6366d7c](https://github.com/rimorin/ministry-mapper-v2/commit/6366d7c810bd9eceb2923723a9ebe1776011e629))
+* start the assignment email switch off ([b2f52e1](https://github.com/rimorin/ministry-mapper-v2/commit/b2f52e134843771e22477d56ddfa31cf6b210bd4))
+* target flags by role, congregation and group, publishers included ([be14e11](https://github.com/rimorin/ministry-mapper-v2/commit/be14e112dd5952ef0c146fd4a12d48ea42d6d71a))
+* tidy the My Maps cards and the publisher's account menu ([2c667a2](https://github.com/rimorin/ministry-mapper-v2/commit/2c667a21158e21226acc3daa8174d771a85c04a7))
+
+### Bug Fixes
+
+* don't flash the staff sidebar before a publisher's page ([e53958c](https://github.com/rimorin/ministry-mapper-v2/commit/e53958cbd26795a5cf67b274858e80f2be873d9f))
+* escape text placed into map labels ([011f416](https://github.com/rimorin/ministry-mapper-v2/commit/011f416d8e982860246bdc029bd3e3034625a076))
+* even out release note pictures and explain an expired email link ([73baea1](https://github.com/rimorin/ministry-mapper-v2/commit/73baea1b8448730cccd60b7b61757f223227aa2f))
+* fit the member role dialog on phones and make removal its own action ([514424c](https://github.com/rimorin/ministry-mapper-v2/commit/514424c1327cb68099d9e660b35ed9d31c981364))
+* keep release notes away from publishers and first visits ([d24a4b0](https://github.com/rimorin/ministry-mapper-v2/commit/d24a4b0e42496ac677d77ce5e8d9d5e1f25a0529))
+* keep the member list from showing around the Done button ([cafdf07](https://github.com/rimorin/ministry-mapper-v2/commit/cafdf07e7a6ed49d0ed6973812997f943e29e99c))
+* keep the member search in view on phones and lead it into Confirm ([7d5ea1f](https://github.com/rimorin/ministry-mapper-v2/commit/7d5ea1f2a35ad0afb0b62638565002901a6baae2))
+* keep the sign-in button busy until the provider's page opens ([caf10c5](https://github.com/rimorin/ministry-mapper-v2/commit/caf10c5ffc74be26fb480b66fa550f9c2216c76d))
+* put Cancel and the main button side by side in dialogs on phones ([5c20a4d](https://github.com/rimorin/ministry-mapper-v2/commit/5c20a4db4bc64c2f93370fb6217861119c1d7f41))
+* say a conductor gives maps to publishers, not only as links ([5af310e](https://github.com/rimorin/ministry-mapper-v2/commit/5af310ecf1cdb61494e37060a3a324af758bc0f0))
+* say a resent code failed, and offer a retry when an empty My Maps fails to refresh ([53076d9](https://github.com/rimorin/ministry-mapper-v2/commit/53076d9cfcba4a98ddd1b499f5deab23bf8aa586))
+* send less address detail to error reports ([9eea837](https://github.com/rimorin/ministry-mapper-v2/commit/9eea837c20a2436415c179793c7dde595638433b))
+* show a tick beside members already picked ([989671e](https://github.com/rimorin/ministry-mapper-v2/commit/989671eb26a779a2ce89f64beefc16cd6515650e))
+* show only the count on the link dialog's Confirm button ([06c37d0](https://github.com/rimorin/ministry-mapper-v2/commit/06c37d08ff120acb54a32759d64d119d97741b83))
+
 ## [2.12.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.11.0...v2.12.0) (2026-11-21)
 
 ### Features
