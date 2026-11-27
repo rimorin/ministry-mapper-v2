@@ -13,7 +13,6 @@ const AppLogo = ({ className, label }: AppLogoProps) => (
   <img
     src={logo}
     alt={label ?? ""}
-    aria-hidden={label ? undefined : true}
     draggable={false}
     className={cn("aspect-square shrink-0", className)}
   />

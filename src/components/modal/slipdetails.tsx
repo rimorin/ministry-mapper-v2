@@ -93,11 +93,10 @@ const ConfirmSlipDetails = NiceModal.create(
     // The people typed in who have no account, and the names the link
     // carries: its members', then theirs.
     const others = namesBesides(name, assignees);
-    const publisherText = [namesOf(assignees), others]
+    const publisherText = [namesOf(assignees), ...others]
       .filter(Boolean)
       .join(", ");
-    const peopleCount =
-      assignees.length + (others ? others.split(", ").length : 0);
+    const peopleCount = assignees.length + others.length;
 
     const existingAssignmentRows = [
       LINK_TYPES.PERSONAL,
@@ -168,7 +167,7 @@ const ConfirmSlipDetails = NiceModal.create(
             // Members find the map under My Maps, so there is nothing to
             // send them. Anyone typed in beside them has no account to find
             // it under, and still needs the link.
-            if (!others) {
+            if (others.length === 0) {
               modal.hide();
               return;
             }
@@ -176,14 +175,14 @@ const ConfirmSlipDetails = NiceModal.create(
               linkId: linkRecord.id,
               message: assignmentMessage(
                 addressName,
-                others,
+                others.join(", "),
                 expiryHrs,
                 linkType
               ),
               linkType,
               expiryDate,
               given: namesOf(assignees),
-              others
+              others: others.join(", ")
             });
             return;
           }
@@ -411,7 +410,7 @@ const ConfirmSlipDetails = NiceModal.create(
                     // Someone has to be on the link.
                     required={assignees.length === 0}
                   />
-                  {assignees.length > 0 && others && (
+                  {assignees.length > 0 && others.length > 0 && (
                     <p className="mt-1.5 text-xs text-muted-foreground">
                       {t(
                         "slip.othersHint",

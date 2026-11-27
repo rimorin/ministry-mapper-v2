@@ -59,8 +59,7 @@ export const namesBesides = (typed: string, members: Array<{ name: string }>) =>
     .map((name) => name.trim())
     .filter(
       (name) => name && !members.some((member) => sameName(member.name, name))
-    )
-    .join(", ");
+    );
 
 // Accounts that cannot sign in are left out; the backend refuses them too.
 const getCongregationMembers = async (

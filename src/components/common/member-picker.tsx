@@ -33,19 +33,13 @@ import {
 import { cn } from "@/lib/utils";
 import FilterChips from "./filter-chips";
 import { getIsMobile } from "../../hooks/use-mobile";
-import { STAFF_ROLES } from "../../utils/constants";
+import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import { safeStorage } from "../../utils/safeStorage";
 import { resolveLocalized } from "../../utils/resolveLocalized";
 import {
   byName,
   type CongregationMember
 } from "../../utils/helpers/getcongregationmembers";
-
-const ROLE_LABELS: Record<string, string> = {
-  administrator: "user.roles.administrator",
-  conductor: "user.roles.conductor",
-  read_only: "user.roles.readOnly"
-};
 
 interface MemberGroup {
   value: string;
@@ -56,8 +50,7 @@ interface MemberPickerProps {
   members: CongregationMember[];
   value: CongregationMember[];
   onValueChange: (chosen: CongregationMember[]) => void;
-  // Members offered first, most recent first: the same few people are paired
-  // up again and again in one sitting.
+  // Offered first, most recent first.
   recentIds?: string[];
   // Off where the picker sits in a page that has its own focus to keep.
   autoFocus?: boolean;
@@ -238,6 +231,15 @@ const MemberList = ({
   withGroups?: boolean;
 }) => {
   const { t, i18n } = useTranslation();
+  // Staff only: a publisher's role says nothing a conductor needs here.
+  const roleLabels: Record<string, string> = {
+    [USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE]: t(
+      "user.roles.administrator",
+      "Admin"
+    ),
+    [USER_ACCESS_LEVELS.CONDUCTOR.CODE]: t("user.roles.conductor", "Conductor"),
+    [USER_ACCESS_LEVELS.READ_ONLY.CODE]: t("user.roles.readOnly", "Read Only")
+  };
   // An email is shown only to tell two people of one name apart.
   const names = members.map((member) => member.name);
   const isShared = (name: string) =>
@@ -274,9 +276,7 @@ const MemberList = ({
                     : [mapCount, mapNames].filter(Boolean).join(": ");
               const tag = isOnMap
                 ? t("slip.memberOnThisMap", "Already working this map")
-                : STAFF_ROLES.includes(member.role)
-                  ? t(ROLE_LABELS[member.role])
-                  : "";
+                : (roleLabels[member.role] ?? "");
               return (
                 // Not the registry item: its tick appears only once chosen and shifts the name.
                 // data-[selected], not shadcn's data-selected, which waits for ="true":
