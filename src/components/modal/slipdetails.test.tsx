@@ -200,7 +200,7 @@ describe("ConfirmSlipDetails", () => {
     // The share screen is skipped, so its warning moves to the form.
     expect(screen.getByText("Already assigned")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Confirm (2 people)" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm (2)" }));
     await waitFor(() =>
       expect(
         screen.queryByText("Confirm slip details for Sunset Towers")
@@ -237,7 +237,7 @@ describe("ConfirmSlipDetails", () => {
       screen.getByText("You will be given a link to send them.")
     ).toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: "Confirm (2 people)" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm (2)" }));
 
     // Sis Ong has no account to find the map under, so the link is offered.
     expect(await screen.findByText("Map link is ready")).toBeInTheDocument();
@@ -273,7 +273,7 @@ describe("ConfirmSlipDetails", () => {
       screen.queryByText("You will be given a link to send them.")
     ).toBeNull();
 
-    fireEvent.click(screen.getByRole("button", { name: "Confirm (1 person)" }));
+    fireEvent.click(screen.getByRole("button", { name: "Confirm (1)" }));
 
     await waitFor(() =>
       expect(createDataMock).toHaveBeenCalledWith(
