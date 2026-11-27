@@ -4,11 +4,7 @@ import { UserRoleProps } from "../../utils/interface";
 import { useTranslation } from "react-i18next";
 import usePublisherRoleEnabled from "../../hooks/usePublisherRoleEnabled";
 
-const UserRoleField = ({
-  handleRoleChange,
-  role,
-  isUpdate = true
-}: UserRoleProps) => {
+const UserRoleField = ({ handleRoleChange, role }: UserRoleProps) => {
   const { t } = useTranslation();
   const isPublisherRoleEnabled = usePublisherRoleEnabled();
   // Offered where the role is switched on, and kept for a person who already
@@ -16,19 +12,6 @@ const UserRoleField = ({
   const offersPublisher =
     isPublisherRoleEnabled || role === USER_ACCESS_LEVELS.PUBLISHER.CODE;
   const roleOptions = [
-    ...(isUpdate
-      ? [
-          {
-            id: "status-tb-0",
-            value: USER_ACCESS_LEVELS.NO_ACCESS.CODE,
-            label: t("user.roles.noAccess", "No Access"),
-            hint: t(
-              "user.roles.noAccessHint",
-              "Removes this person from the congregation."
-            )
-          }
-        ]
-      : []),
     ...(offersPublisher
       ? [
           {

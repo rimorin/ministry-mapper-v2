@@ -344,7 +344,6 @@ export interface UserListingProps {
 export interface UserRoleProps {
   handleRoleChange?: (value: string) => void;
   role?: string;
-  isUpdate?: boolean;
 }
 
 export interface UserModalProps

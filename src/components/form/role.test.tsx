@@ -19,27 +19,15 @@ describe("UserRoleField", () => {
     role: USER_ACCESS_LEVELS.CONDUCTOR.CODE
   };
 
-  it("renders all role buttons in update mode", () => {
-    render(<UserRoleField {...defaultProps} isUpdate={true} />);
+  it("offers the access levels, and not removal", () => {
+    render(<UserRoleField {...defaultProps} />);
 
-    expect(
-      screen.getByRole("button", { name: "No Access" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Read Only" })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: "Conductor" })
-    ).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Admin" })).toBeInTheDocument();
-  });
-
-  it("omits No Access in create mode", () => {
-    render(<UserRoleField {...defaultProps} isUpdate={false} />);
-
-    expect(
-      screen.queryByRole("button", { name: "No Access" })
-    ).not.toBeInTheDocument();
+    expect(screen.getAllByRole("button").map((b) => b.textContent)).toEqual([
+      "Publisher",
+      "Read Only",
+      "Conductor",
+      "Admin"
+    ]);
   });
 
   it("marks the active role as pressed", () => {
@@ -85,7 +73,7 @@ describe("UserRoleField", () => {
       "justify-center",
       "w-full"
     );
-    expect(screen.getAllByRole("button")).toHaveLength(5);
+    expect(screen.getAllByRole("button")).toHaveLength(4);
   });
 
   it("offers the publisher role and says what it is limited to", () => {
@@ -130,10 +118,6 @@ describe("UserRoleField", () => {
 
   it.each([
     [
-      USER_ACCESS_LEVELS.NO_ACCESS.CODE,
-      "Removes this person from the congregation."
-    ],
-    [
       USER_ACCESS_LEVELS.READ_ONLY.CODE,
       "Can view territories and maps, but cannot change anything."
     ],
@@ -149,18 +133,5 @@ describe("UserRoleField", () => {
     render(<UserRoleField {...defaultProps} role={role} />);
 
     expect(screen.getByText(hint)).toBeInTheDocument();
-  });
-
-  it("uses update mode by default", () => {
-    render(
-      <UserRoleField
-        handleRoleChange={defaultProps.handleRoleChange}
-        role={defaultProps.role}
-      />
-    );
-
-    expect(
-      screen.getByRole("button", { name: "No Access" })
-    ).toBeInTheDocument();
   });
 });
