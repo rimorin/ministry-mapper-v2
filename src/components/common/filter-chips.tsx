@@ -17,6 +17,11 @@ interface FilterChipsProps {
   className?: string;
 }
 
+// A chip filled in when pressed, since the toggle's own pressed tint is too
+// faint to read as chosen.
+export const chipClass =
+  "rounded-full data-[pressed]:border-primary data-[pressed]:bg-primary data-[pressed]:text-primary-foreground";
+
 // Lets a mouse wheel scroll the row sideways.
 const scrollSideways = (event: WheelEvent<HTMLDivElement>) => {
   if (event.deltaX === 0) event.currentTarget.scrollLeft += event.deltaY;
@@ -51,9 +56,7 @@ const FilterChips = ({
         <ToggleGroupItem
           key={chip.value}
           value={String(index)}
-          // Filled in, since the toggle's own pressed tint is too faint to
-          // read as the filter in force.
-          className="group/chip rounded-full pr-1.5 pl-3 data-[pressed]:border-primary data-[pressed]:bg-primary data-[pressed]:text-primary-foreground"
+          className={cn(chipClass, "group/chip pr-1.5 pl-3")}
         >
           {chip.label}{" "}
           {/* Its own pill, so a count never reads as part of "Group 2". */}

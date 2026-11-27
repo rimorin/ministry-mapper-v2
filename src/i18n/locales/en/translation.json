@@ -311,6 +311,7 @@
     "filterByRole": "Filter by role",
     "searchNameOrEmail": "Search name or email",
     "updateRoleDescription": "Choose this member's access level.",
+    "updateMemberDescription": "Choose this member's access level and groups.",
     "alreadyInCongregation": "They're already a member of this congregation.",
     "profileAndNotifications": "Profile & notifications"
   },
@@ -319,6 +320,7 @@
     "description": "Narrow the member list to a group when you send someone a map.",
     "empty": "No groups yet",
     "emptyDescription": "Add your field service groups, a language group or visitors supporting the congregation.",
+    "noneYet": "No groups yet. Make them on the Groups tab.",
     "new": "New group",
     "namePlaceholder": "Group 3",
     "nameRequired": "Give the group a name.",

@@ -119,6 +119,26 @@ describe("UserListing", () => {
       expect(screen.getByText("ann.admin@example.com")).toBeInTheDocument();
     });
 
+    it("reads the groups again once a member's dialog is done with", async () => {
+      const user = userEvent.setup();
+      render(
+        <UserListing
+          showListing
+          hideFunction={vi.fn()}
+          handleSelect={vi.fn().mockResolvedValue(undefined)}
+          users={users}
+          people={{ congregation: "cong1", onInvite: vi.fn() }}
+        />
+      );
+      await waitFor(() => expect(groups).toHaveBeenCalledTimes(1));
+
+      await user.click(
+        screen.getByRole("button", { name: /ann\.admin@example\.com/ })
+      );
+
+      await waitFor(() => expect(groups).toHaveBeenCalledTimes(2));
+    });
+
     it("invites from its own button", async () => {
       const user = userEvent.setup();
       const onInvite = openPeople();

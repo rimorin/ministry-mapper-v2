@@ -331,10 +331,11 @@ export interface CongregationListingProps {
 export interface UserListingProps {
   showListing: boolean;
   hideFunction: () => void;
+  // Settles once the member's dialog is done with, so the list can catch up.
   handleSelect?: (
     eventKey: string | null,
     e: React.SyntheticEvent<unknown>
-  ) => void;
+  ) => void | Promise<void>;
   users?: userDetails[];
   // Where the publisher role is switched on, the sheet is People: Members and
   // Groups tabs, and a button to invite someone.
@@ -351,6 +352,8 @@ export interface UserModalProps
   email?: string | null;
   uid: string;
   role?: string | undefined;
+  // The account, for the groups it is in; uid is its role.
+  userId?: string;
 }
 
 export interface SelectProps {

@@ -285,6 +285,7 @@
     "filterByRole": "Filter berdasarkan peran",
     "searchNameOrEmail": "Cari nama atau email",
     "updateRoleDescription": "Pilih tingkat akses anggota ini.",
+    "updateMemberDescription": "Pilih tingkat akses dan kelompok anggota ini.",
     "alreadyInCongregation": "Orang ini sudah menjadi anggota sidang ini.",
     "profileAndNotifications": "Profil & notifikasi"
   },
@@ -293,6 +294,7 @@
     "description": "Persempit daftar anggota ke satu kelompok saat Anda mengirim peta.",
     "empty": "Belum ada kelompok",
     "emptyDescription": "Tambahkan kelompok dinas, kelompok bahasa, atau orang yang mendukung sidang.",
+    "noneYet": "Belum ada kelompok. Buat di tab Kelompok.",
     "new": "Kelompok baru",
     "namePlaceholder": "Kelompok 3",
     "nameRequired": "Beri nama kelompok ini.",

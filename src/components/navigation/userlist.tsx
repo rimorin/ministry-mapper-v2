@@ -61,6 +61,8 @@ const UserList = ({
   const [query, setQuery] = useState("");
   const [role, setRole] = useState(ALL_ROLES);
   const [groups, setGroups] = useState<CongregationGroup[]>([]);
+  // Bumped once a member's dialog is done with, to read the groups again.
+  const [version, setVersion] = useState(0);
 
   // In People, rows show each person's groups, read again whenever the tab
   // opens so a change made on the Groups tab shows.
@@ -70,7 +72,7 @@ const UserList = ({
     getCongregationGroups(congregation, `people-groups-${congregation}`)
       .then(setGroups)
       .catch(() => {});
-  }, [congregation]);
+  }, [congregation, version]);
   const groupsOf = (userId: string) =>
     groups.filter((group) => group.members.includes(userId));
 
@@ -159,7 +161,10 @@ const UserList = ({
                   render={
                     <button
                       type="button"
-                      onClick={(e) => handleSelect?.(element.roleId, e)}
+                      onClick={async (e) => {
+                        await handleSelect?.(element.roleId, e);
+                        if (people) setVersion((current) => current + 1);
+                      }}
                     />
                   }
                 >
