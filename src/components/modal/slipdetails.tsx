@@ -431,13 +431,9 @@ const ConfirmSlipDetails = NiceModal.create(
                   >
                     <SubmitButton pending={isCreating}>
                       {assignees.length > 0
-                        ? t(
-                            "slip.confirmPeople",
-                            "Confirm ({{count}} people)",
-                            {
-                              count: peopleCount
-                            }
-                          )
+                        ? t("slip.confirmCount", "Confirm ({{count}})", {
+                            count: peopleCount
+                          })
                         : t("slip.confirmButton")}
                     </SubmitButton>
                   </ComponentAuthorizer>
