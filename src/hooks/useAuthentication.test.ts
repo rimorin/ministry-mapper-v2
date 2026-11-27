@@ -229,6 +229,41 @@ describe("useAuthentication", () => {
       expect(pocketbase.startOAuth2Flow).toHaveBeenCalledWith("google");
     });
 
+    it("frees the buttons when Back restores the page", async () => {
+      vi.spyOn(pocketbase, "startOAuth2Flow").mockResolvedValue(undefined);
+      const { result } = renderHook(() => useAuthentication());
+
+      await act(async () => {
+        result.current.handleOAuthSignIn("apple");
+      });
+      act(() => {
+        window.dispatchEvent(new Event("pageshow"));
+      });
+
+      expect(result.current.isOAuthLoading).toBe(false);
+    });
+
+    it("stays busy after the redirect, until a time limit", async () => {
+      vi.useFakeTimers();
+      try {
+        vi.spyOn(pocketbase, "startOAuth2Flow").mockResolvedValue(undefined);
+        const { result } = renderHook(() => useAuthentication());
+
+        await act(async () => {
+          result.current.handleOAuthSignIn("apple");
+        });
+        expect(result.current.isOAuthLoading).toBe(true);
+
+        act(() => {
+          vi.advanceTimersByTime(4_000);
+        });
+
+        expect(result.current.isOAuthLoading).toBe(false);
+      } finally {
+        vi.useRealTimers();
+      }
+    });
+
     it("should handle OAuth errors", async () => {
       const error = new Error("OAuth failed");
       vi.spyOn(pocketbase, "startOAuth2Flow").mockRejectedValue(error);
@@ -242,6 +277,7 @@ describe("useAuthentication", () => {
       await waitFor(() => {
         expect(result.current.isOAuthLoading).toBe(false);
       });
+      expect(mockNotifyError).toHaveBeenCalledWith(error);
     });
   });
 
