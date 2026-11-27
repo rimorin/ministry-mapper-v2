@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   authenticateEmailAndPassword,
@@ -9,6 +9,8 @@ import {
 import useNotification from "./useNotification";
 import { ANALYTICS_EVENTS, trackEvent } from "../utils/analytics";
 import { mapPbAuthError } from "../utils/helpers/pbErrors";
+
+const OAUTH_RELEASE_MS = 4_000;
 
 export default function useAuthentication() {
   const { t } = useTranslation();
@@ -73,10 +75,27 @@ export default function useAuthentication() {
 
   const handleOAuthSignIn = (provider: string) => {
     setOAuthProvider(provider);
+    setIsOAuthLoading(true);
     runAction(() => startOAuth2Flow(provider), {
-      setLoading: setIsOAuthLoading
+      onError: (err) => {
+        setIsOAuthLoading(false);
+        notifyError(err);
+      }
     });
   };
+
+  // Covers the wait for the provider's page. Closing Apple's sheet returns
+  // here without a reload or any event, and Back restores the page as it was.
+  useEffect(() => {
+    if (!isOAuthLoading) return;
+    const release = () => setIsOAuthLoading(false);
+    const timer = setTimeout(release, OAUTH_RELEASE_MS);
+    window.addEventListener("pageshow", release);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("pageshow", release);
+    };
+  }, [isOAuthLoading]);
 
   const clearOtpState = () => {
     setOtpSessionId("");
