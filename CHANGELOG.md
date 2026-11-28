@@ -1,3 +1,9 @@
+## [2.14.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.13.1...v2.14.0) (2026-11-28)
+
+### Features
+
+* load app updates on the next screen change or after a long break ([66d1b3e](https://github.com/rimorin/ministry-mapper-v2/commit/66d1b3eaa2aec0b1d9587cd73b9b9e363683cd0a))
+
 ## [2.13.1](https://github.com/rimorin/ministry-mapper-v2/compare/v2.13.0...v2.13.1) (2026-11-27)
 
 ### Bug Fixes
