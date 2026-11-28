@@ -512,13 +512,14 @@
     "othersLabel": "Others without an account",
     "othersPlaceholder": "Names, separated by commas",
     "othersHint": "You will be given a link to send them.",
-    "recentMembers": "Recently assigned",
     "givenTo": "Given to {{names}}",
-    "freeMembers": "Without a map",
     "busyMembers": "Working a map",
     "memberMapCount": "{{count}} maps",
     "memberOnThisMap": "Already working this map",
-    "memberNoMap": "No map assigned"
+    "justGiven": "{{name}} was just given {{maps}}.",
+    "confirmAnyway": "Confirm anyway",
+    "chosen": "Chosen",
+    "justGivenThisMap": "{{name}} was just given this map, so is no longer chosen."
   },
   "password": {
     "number": "Password must contain numbers.",

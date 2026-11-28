@@ -512,13 +512,14 @@
     "othersLabel": "アカウントのない人",
     "othersPlaceholder": "名前をカンマで区切って入力",
     "othersHint": "この人たちに送るリンクが表示されます。",
-    "recentMembers": "最近割り当てた人",
     "givenTo": "{{names}} に割り当てました",
-    "freeMembers": "地図なし",
     "busyMembers": "地図を担当中",
     "memberMapCount": "地図{{count}}件",
     "memberOnThisMap": "この地図を担当中",
-    "memberNoMap": "地図の割り当てなし"
+    "justGiven": "{{name}} に {{maps}} が割り当てられたばかりです。",
+    "confirmAnyway": "このまま確認",
+    "chosen": "選択済み",
+    "justGivenThisMap": "{{name}} にこの地図が割り当てられたばかりのため、選択を外しました。"
   },
   "password": {
     "number": "パスワードには数字を含める必要があります。",

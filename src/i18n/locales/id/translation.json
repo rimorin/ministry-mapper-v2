@@ -512,13 +512,14 @@
     "othersLabel": "Lainnya tanpa akun",
     "othersPlaceholder": "Nama, dipisahkan koma",
     "othersHint": "Anda akan mendapat tautan untuk dikirim kepada mereka.",
-    "recentMembers": "Baru ditugaskan",
     "givenTo": "Diberikan kepada {{names}}",
-    "freeMembers": "Belum ada peta",
     "busyMembers": "Sedang mengerjakan peta",
     "memberMapCount": "{{count}} peta",
     "memberOnThisMap": "Sudah mengerjakan peta ini",
-    "memberNoMap": "Belum ditugaskan peta"
+    "justGiven": "{{name}} baru saja diberi {{maps}}.",
+    "confirmAnyway": "Tetap konfirmasi",
+    "chosen": "Dipilih",
+    "justGivenThisMap": "{{name}} baru saja diberi peta ini, jadi tidak lagi dipilih."
   },
   "password": {
     "number": "Kata sandi harus mengandung angka.",

@@ -33,7 +33,6 @@ import {
 import { cn } from "@/lib/utils";
 import FilterChips from "./filter-chips";
 import { getIsMobile } from "../../hooks/use-mobile";
-import { USER_ACCESS_LEVELS } from "../../utils/constants";
 import { safeStorage } from "../../utils/safeStorage";
 import { resolveLocalized } from "../../utils/resolveLocalized";
 import {
@@ -50,8 +49,6 @@ interface MemberPickerProps {
   members: CongregationMember[];
   value: CongregationMember[];
   onValueChange: (chosen: CongregationMember[]) => void;
-  // Offered first, most recent first.
-  recentIds?: string[];
   // Off where the picker sits in a page that has its own focus to keep.
   autoFocus?: boolean;
   // Whoever holds this map on another link is not offered it again.
@@ -65,41 +62,66 @@ interface MemberPickerProps {
 }
 
 const ALL_GROUPS = "";
-// The group last looked in, on this device: a conductor mostly sends their own.
+// The groups last looked in, on this device: a conductor mostly sends their own.
 const GROUP_KEY = "memberPicker.group";
+
+// Stored as a JSON list; an older single group name is read as a list of one.
+const readGroups = (): string[] => {
+  const stored = safeStorage.get(GROUP_KEY);
+  if (!stored) return [];
+  try {
+    const parsed: unknown = JSON.parse(stored);
+    if (
+      Array.isArray(parsed) &&
+      parsed.every((name) => typeof name === "string")
+    ) {
+      return parsed;
+    }
+  } catch {
+    // An older single group name.
+  }
+  return [stored];
+};
+
+// Holds this map already, on a link other than the one being changed.
+const holdsMap = (
+  member: CongregationMember,
+  onMap: MemberPickerProps["onMap"]
+) =>
+  member.maps.some(
+    (held) => held.map === onMap?.map && held.link !== onMap.link
+  );
 
 const useMemberCombobox = ({
   members,
   value,
   onValueChange,
-  recentIds = [],
+  onMap,
   roster = false
 }: MemberPickerProps) => {
   const { t } = useTranslation();
   // Base UI's own matching: ignores case and accents.
   const { contains } = ComboboxPrimitive.useFilter();
   const [query, setQuery] = useState("");
-  const [chosenGroup, setChosenGroup] = useState(
-    () => safeStorage.get(GROUP_KEY) ?? ALL_GROUPS
-  );
+  const [chosenGroups, setChosenGroups] = useState(readGroups);
 
   const groupNames = roster
     ? []
     : [...new Set(members.flatMap((member) => member.groups))].sort(byName);
-  // A remembered group that is gone, or another congregation's, is All.
-  const activeGroup = groupNames.includes(chosenGroup)
-    ? chosenGroup
-    : ALL_GROUPS;
+  // Remembered groups that are gone, or another congregation's, are dropped;
+  // none left is All.
+  const activeGroups = chosenGroups.filter((name) => groupNames.includes(name));
   const inGroup = (member: CongregationMember) =>
-    activeGroup === ALL_GROUPS || member.groups.includes(activeGroup);
+    activeGroups.length === 0 ||
+    member.groups.some((name) => activeGroups.includes(name));
   const matches = (member: CongregationMember, search: string) =>
     contains(member.name, search) || contains(member.email, search);
-  // The search and the group apply together, as in the members list, and each
-  // chip counts the people the search found in it.
+  // The search and the groups apply together, as in the members list, and
+  // each chip counts the people the search found in it.
   const found = members.filter((member) => matches(member, query));
-  const chooseGroup = (next: string) => {
-    setChosenGroup(next);
-    safeStorage.set(GROUP_KEY, next);
+  const chooseGroups = (next: string[]) => {
+    setChosenGroups(next);
+    safeStorage.set(GROUP_KEY, JSON.stringify(next));
   };
   const groups = {
     chips:
@@ -118,36 +140,32 @@ const useMemberCombobox = ({
                 .length
             }))
           ],
-    value: activeGroup,
-    onValueChange: chooseGroup,
+    value: activeGroups,
+    onValueChange: chooseGroups,
     // Everyone the search found is in other groups.
     elsewhere:
-      activeGroup !== ALL_GROUPS && found.length > 0 && !found.some(inGroup),
-    // With no group chosen, each row says which ones its person is in.
-    withGroups: groupNames.length > 0 && activeGroup === ALL_GROUPS
+      activeGroups.length > 0 && found.length > 0 && !found.some(inGroup)
   };
 
-  const recentMembers = recentIds.flatMap(
-    (id) => members.find((member) => member.id === id && inGroup(member)) ?? []
-  );
-  const others = members.filter(
-    (member) => !recentIds.includes(member.id) && inGroup(member)
-  );
+  const shown = members.filter(inGroup);
+  const busy = shown.filter((member) => member.maps.length > 0);
+  const blocked = (member: CongregationMember) => holdsMap(member, onMap);
   const items: MemberGroup[] = (
     roster
       ? [{ value: "", items: members }]
       : [
+          // The free first and unlabelled: they are who a map usually goes to.
           {
-            value: t("slip.recentMembers", "Recently assigned"),
-            items: recentMembers
+            value: "",
+            items: shown.filter((member) => member.maps.length === 0)
           },
-          {
-            value: t("slip.freeMembers", "Without a map"),
-            items: others.filter((member) => member.maps.length === 0)
-          },
+          // Someone who cannot be picked comes last, after those who can.
           {
             value: t("slip.busyMembers", "Working a map"),
-            items: others.filter((member) => member.maps.length > 0)
+            items: [
+              ...busy.filter((member) => !blocked(member)),
+              ...busy.filter(blocked)
+            ]
           }
         ]
   ).filter((group) => group.items.length > 0);
@@ -186,6 +204,7 @@ const GroupChips = ({
   return (
     <div onMouseDown={keepFocus}>
       <FilterChips
+        multiple
         chips={groups.chips}
         value={groups.value}
         onValueChange={groups.onValueChange}
@@ -197,19 +216,22 @@ const GroupChips = ({
 };
 
 const NoMatch = ({ groups }: { groups: GroupFilter }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   if (!groups.elsewhere) return t("common.noResults", "No results found.");
   return (
     <span className="flex flex-col items-center gap-3">
       {t("groups.noneInGroup", "No one in {{group}} matches.", {
-        group: groups.value
+        // "Group 2 or Group 3", in chip order and the reader's language.
+        group: new Intl.ListFormat(i18n.resolvedLanguage ?? i18n.language, {
+          type: "disjunction"
+        }).format([...groups.value].sort(byName))
       })}
       <Button
         type="button"
         variant="outline"
         size="sm"
         onMouseDown={keepFocus}
-        onClick={() => groups.onValueChange(ALL_GROUPS)}
+        onClick={() => groups.onValueChange([])}
       >
         {t("groups.searchAll", "Search all groups")}
       </Button>
@@ -222,24 +244,12 @@ const MemberList = ({
   onMap,
   className,
   roomy = false,
-  withGroups = false,
   roster = false
 }: Pick<MemberPickerProps, "members" | "onMap" | "roster"> & {
   className?: string;
   roomy?: boolean;
-  // Each row also says which groups its person is in.
-  withGroups?: boolean;
 }) => {
   const { t, i18n } = useTranslation();
-  // Staff only: a publisher's role says nothing a conductor needs here.
-  const roleLabels: Record<string, string> = {
-    [USER_ACCESS_LEVELS.TERRITORY_SERVANT.CODE]: t(
-      "user.roles.administrator",
-      "Admin"
-    ),
-    [USER_ACCESS_LEVELS.CONDUCTOR.CODE]: t("user.roles.conductor", "Conductor"),
-    [USER_ACCESS_LEVELS.READ_ONLY.CODE]: t("user.roles.readOnly", "Read Only")
-  };
   // An email is shown only to tell two people of one name apart.
   const names = members.map((member) => member.name);
   const isShared = (name: string) =>
@@ -258,9 +268,7 @@ const MemberList = ({
           )}
           <ComboboxCollection>
             {(member: CongregationMember) => {
-              const isOnMap = member.maps.some(
-                (held) => held.map === onMap?.map && held.link !== onMap.link
-              );
+              const isOnMap = holdsMap(member, onMap);
               const mapNames = member.maps
                 .map((held) => resolveLocalized(held.name, i18n.language))
                 .filter(Boolean)
@@ -269,14 +277,20 @@ const MemberList = ({
                 count: member.maps.length
               });
               const holding =
-                member.maps.length === 0
-                  ? t("slip.memberNoMap", "No map assigned")
-                  : member.maps.length === 1
-                    ? mapNames || mapCount
-                    : [mapCount, mapNames].filter(Boolean).join(": ");
-              const tag = isOnMap
-                ? t("slip.memberOnThisMap", "Already working this map")
-                : (roleLabels[member.role] ?? "");
+                member.maps.length === 1
+                  ? mapNames || mapCount
+                  : [mapCount, mapNames].filter(Boolean).join(": ");
+              // Only what tells this row apart: the map held (the sections say
+              // who is free, the chips which group) and an email for a name
+              // two people share.
+              const detail = roster
+                ? member.email
+                : [
+                    isShared(member.name) && member.email,
+                    member.maps.length > 0 && holding
+                  ]
+                    .filter(Boolean)
+                    .join(" · ");
               return (
                 // Not the registry item: its tick appears only once chosen and shifts the name.
                 // data-[selected], not shadcn's data-selected, which waits for ="true":
@@ -301,23 +315,22 @@ const MemberList = ({
                       <ItemTitle className={cn("w-full", roomy && "text-base")}>
                         <span className="truncate">{member.name}</span>
                       </ItemTitle>
-                      <ItemDescription
-                        className={cn("truncate", !roomy && "text-xs")}
-                      >
-                        {roster
-                          ? member.email
-                          : [
-                              isShared(member.name) && member.email,
-                              holding,
-                              withGroups && member.groups.join(", ")
-                            ]
-                              .filter(Boolean)
-                              .join(" · ")}
-                      </ItemDescription>
+                      {detail && (
+                        <ItemDescription
+                          className={cn("truncate", !roomy && "text-xs")}
+                        >
+                          {detail}
+                        </ItemDescription>
+                      )}
                     </ItemContent>
-                    {tag && (
+                    {isOnMap && (
                       <ItemActions className="shrink-0">
-                        <Badge variant="outline">{tag}</Badge>
+                        <Badge variant="outline">
+                          {t(
+                            "slip.memberOnThisMap",
+                            "Already working this map"
+                          )}
+                        </Badge>
                       </ItemActions>
                     )}
                   </Item>
@@ -385,7 +398,6 @@ const MemberPopup = (props: MemberPickerProps) => {
         <MemberList
           members={members}
           onMap={onMap}
-          withGroups={groups.withGroups}
           roster={roster}
           className="min-h-0 flex-1 overflow-y-auto overscroll-contain pb-1"
         />
@@ -480,18 +492,24 @@ const MemberSheet = (props: MemberPickerProps) => {
                 {groups.chips.length > 0 && (
                   <GroupChips groups={groups} className="-mx-4 px-4" />
                 )}
+                {/* Labelled, so it does not read as a second row of filters. */}
                 {shown.length > 0 && (
-                  <ComboboxChips className="flex-nowrap overflow-x-auto p-0">
-                    {shown.map((member) => (
-                      <ComboboxChip
-                        key={member.id}
-                        aria-label={member.name}
-                        className="h-8 max-w-none shrink-0 rounded-md text-sm"
-                      >
-                        {member.name}
-                      </ComboboxChip>
-                    ))}
-                  </ComboboxChips>
+                  <div className="flex items-center gap-2">
+                    <span className="shrink-0 text-xs font-medium text-muted-foreground">
+                      {t("slip.chosen", "Chosen")}
+                    </span>
+                    <ComboboxChips className="min-w-0 flex-1 flex-nowrap overflow-x-auto p-0">
+                      {shown.map((member) => (
+                        <ComboboxChip
+                          key={member.id}
+                          aria-label={member.name}
+                          className="h-8 max-w-none shrink-0 rounded-md text-sm"
+                        >
+                          {member.name}
+                        </ComboboxChip>
+                      ))}
+                    </ComboboxChips>
+                  </div>
                 )}
               </div>
               <ComboboxEmpty className="py-10 text-center text-sm">
@@ -500,7 +518,6 @@ const MemberSheet = (props: MemberPickerProps) => {
               <MemberList
                 members={members}
                 onMap={onMap}
-                withGroups={groups.withGroups}
                 roster={roster}
                 roomy
                 className={cn(

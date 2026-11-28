@@ -23,22 +23,23 @@ import GenericInputField from "../form/input";
 import { ConfirmSlipDetailsModalProps } from "../../utils/interface";
 import useNotification from "../../hooks/useNotification";
 import useShareLink from "../../hooks/useShareLink";
-import useLocalStorage from "../../hooks/useLocalStorage";
 import assignmentMessage from "../../utils/helpers/assignmentmsg";
 import LinkTypeDescription from "../../utils/helpers/linkdesc";
 import LinkDateFormatter from "../../utils/helpers/linkdateformatter";
 import addHours from "../../utils/helpers/addhours";
 import { createData } from "../../utils/pocketbase";
 import ComponentAuthorizer from "../navigation/authorizer";
-import getCongregationMembers, {
+import {
   CongregationMember,
+  heldLinks,
+  loadCongregationMembers,
   namesBesides,
-  namesOf
+  namesOf,
+  newlyHeld
 } from "../../utils/helpers/getcongregationmembers";
+import { resolveLocalized } from "../../utils/resolveLocalized";
 
 const MAX_ASSIGNEE_NAMES = 3;
-const MAX_RECENT_MEMBERS = 6;
-const NO_RECENT_MEMBERS: string[] = [];
 
 const ConfirmSlipDetails = NiceModal.create(
   ({
@@ -49,7 +50,7 @@ const ConfirmSlipDetails = NiceModal.create(
     territoryName,
     existingLinks
   }: ConfirmSlipDetailsModalProps) => {
-    const { t } = useTranslation();
+    const { t, i18n } = useTranslation();
     const { notifyWarning, notifyError, notifySuccess, runAction } =
       useNotification();
     const { modal, dialogProps, contentProps } = useBaseUiDialog();
@@ -61,12 +62,18 @@ const ConfirmSlipDetails = NiceModal.create(
     const [isCreating, setIsCreating] = useState(false);
     const [members, setMembers] = useState<CongregationMember[]>([]);
     const [assignees, setAssignees] = useState<CongregationMember[]>([]);
-    // The members this conductor gave links to last, offered first: the same
-    // few people are paired up again and again in one sitting.
-    const [recentIds, setRecentIds] = useLocalStorage<string[]>(
-      `recentAssignees:${policy.congregation}`,
-      NO_RECENT_MEMBERS
+    // Maps the people picked were given by someone else while this dialog was
+    // open, found on Confirm.
+    const [justGiven, setJustGiven] = useState<ReturnType<typeof newlyHeld>>(
+      []
     );
+    // Who this dialog has seen on which link; null until a load brings the
+    // links, since a roster without them cannot say what is new.
+    const [seenLinks, setSeenLinks] = useState<Set<string> | null>(null);
+    const chooseAssignees = (next: CongregationMember[]) => {
+      setAssignees(next);
+      setJustGiven([]);
+    };
 
     const isPublisherRoleEnabled = usePublisherRoleEnabled();
 
@@ -74,8 +81,11 @@ const ConfirmSlipDetails = NiceModal.create(
     // only leaves the picker out, as the role being switched off does.
     useEffect(() => {
       if (!policy.congregation || !isPublisherRoleEnabled) return;
-      getCongregationMembers(policy.congregation)
-        .then(setMembers)
+      loadCongregationMembers(policy.congregation)
+        .then((loaded) => {
+          setMembers(loaded.members);
+          if (loaded.linksLoaded) setSeenLinks(heldLinks(loaded.members));
+        })
         .catch(() => {});
     }, [policy.congregation, isPublisherRoleEnabled]);
     const [createdLink, setCreatedLink] = useState<{
@@ -129,6 +139,34 @@ const ConfirmSlipDetails = NiceModal.create(
       }
       await runAction(
         async () => {
+          // The list may be minutes old: another conductor could have given
+          // these people a map since. Each Confirm checks again; a check that
+          // fails, or comes without the links, never stops the link.
+          if (assignees.length > 0) {
+            const fresh = await loadCongregationMembers(
+              policy.congregation,
+              "-check"
+            ).catch(() => null);
+            if (fresh?.linksLoaded) {
+              const given = seenLinks
+                ? newlyHeld(assignees, fresh.members, seenLinks)
+                : [];
+              setMembers(fresh.members);
+              setSeenLinks(heldLinks(fresh.members));
+              if (given.length > 0) {
+                // Given this very map: a second link to it would be a
+                // duplicate, so they come off the list of people chosen.
+                const takenOff = given
+                  .filter(({ maps }) => maps.some((held) => held.map === mapId))
+                  .map(({ id }) => id);
+                setAssignees((chosen) =>
+                  chosen.filter((member) => !takenOff.includes(member.id))
+                );
+                setJustGiven(given);
+                return;
+              }
+            }
+          }
           const linkType = isPersonalSlip
             ? LINK_TYPES.PERSONAL
             : LINK_TYPES.ASSIGNMENT;
@@ -152,13 +190,6 @@ const ConfirmSlipDetails = NiceModal.create(
             }
           );
           if (assignees.length > 0) {
-            const ids = assignees.map((member) => member.id);
-            setRecentIds((recent) =>
-              [...ids, ...recent.filter((id) => !ids.includes(id))].slice(
-                0,
-                MAX_RECENT_MEMBERS
-              )
-            );
             notifySuccess(
               t("slip.givenTo", "Given to {{names}}", {
                 names: namesOf(assignees)
@@ -368,8 +399,7 @@ const ConfirmSlipDetails = NiceModal.create(
                         <MemberPicker
                           members={members}
                           value={assignees}
-                          recentIds={recentIds}
-                          onValueChange={setAssignees}
+                          onValueChange={chooseAssignees}
                           onMap={{ map: mapId }}
                         />
                         {assignees.length > 0 && (
@@ -420,6 +450,41 @@ const ConfirmSlipDetails = NiceModal.create(
                   )}
                 </div>
                 {assignees.length > 0 && existingWarning}
+                {justGiven.length > 0 && (
+                  <div
+                    role="alert"
+                    className="space-y-1 rounded-md border border-warning/30 bg-warning/10 p-2 text-xs"
+                  >
+                    {justGiven.map(({ id, name: person, maps }) => (
+                      <p key={id} className="flex items-start gap-1.5">
+                        <TriangleAlert className="mt-0.5 size-3 shrink-0 text-warning" />
+                        {maps.some((held) => held.map === mapId)
+                          ? t(
+                              "slip.justGivenThisMap",
+                              "{{name}} was just given this map, so is no longer chosen.",
+                              { name: person }
+                            )
+                          : t(
+                              "slip.justGiven",
+                              "{{name}} was just given {{maps}}.",
+                              {
+                                name: person,
+                                maps:
+                                  maps
+                                    .map((held) =>
+                                      resolveLocalized(held.name, i18n.language)
+                                    )
+                                    .filter(Boolean)
+                                    .join(", ") ||
+                                  t("slip.memberMapCount", "{{count}} maps", {
+                                    count: maps.length
+                                  })
+                              }
+                            )}
+                      </p>
+                    ))}
+                  </div>
+                )}
                 <ResponsiveDialogFooter className="grid grid-cols-2 md:flex">
                   <Button variant="outline" type="button" onClick={modal.hide}>
                     {t("common.cancel", "Cancel")}
@@ -429,11 +494,15 @@ const ConfirmSlipDetails = NiceModal.create(
                     userPermission={policy.userRole}
                   >
                     <SubmitButton pending={isCreating}>
-                      {assignees.length > 0
-                        ? t("slip.confirmCount", "Confirm ({{count}})", {
-                            count: peopleCount
-                          })
-                        : t("slip.confirmButton")}
+                      {justGiven.some(({ id }) =>
+                        assignees.some((member) => member.id === id)
+                      )
+                        ? t("slip.confirmAnyway", "Confirm anyway")
+                        : assignees.length > 0
+                          ? t("slip.confirmCount", "Confirm ({{count}})", {
+                              count: peopleCount
+                            })
+                          : t("slip.confirmButton")}
                     </SubmitButton>
                   </ComponentAuthorizer>
                 </ResponsiveDialogFooter>

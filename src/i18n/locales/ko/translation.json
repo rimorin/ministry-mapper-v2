@@ -512,13 +512,14 @@
     "othersLabel": "계정이 없는 사람",
     "othersPlaceholder": "이름을 쉼표로 구분",
     "othersHint": "이들에게 보낼 링크가 제공됩니다.",
-    "recentMembers": "최근 배정",
     "givenTo": "{{names}}에게 배정됨",
-    "freeMembers": "지도 없음",
     "busyMembers": "지도 작업 중",
     "memberMapCount": "지도 {{count}}개",
     "memberOnThisMap": "이미 이 지도 작업 중",
-    "memberNoMap": "배정된 지도 없음"
+    "justGiven": "{{name}}에게 방금 {{maps}}이(가) 배정되었습니다.",
+    "confirmAnyway": "그래도 확인",
+    "chosen": "선택됨",
+    "justGivenThisMap": "{{name}}에게 방금 이 지도가 배정되어 선택에서 제외되었습니다."
   },
   "password": {
     "number": "비밀번호에는 숫자가 포함되어야 합니다.",

@@ -72,7 +72,7 @@ describe("MemberPicker", () => {
     );
 
     expect(await screen.findByText("weijie@example.test")).toBeInTheDocument();
-    expect(screen.queryByText("Without a map")).not.toBeInTheDocument();
+    expect(screen.queryByText("Working a map")).not.toBeInTheDocument();
     expect(screen.queryByText(/No map assigned/)).not.toBeInTheDocument();
   });
 
@@ -215,20 +215,32 @@ describe("MemberPicker", () => {
       }))
     });
 
-    it("lists who has no map before who is working one, and says what they hold", async () => {
+    it("lists who has no map first, then labels who is working one and what they hold", async () => {
       const panel = await openPanel([
         holding(members[0], "Blk 301", "Blk 305"),
         members[1]
       ]);
 
-      const groups = within(panel)
-        .getAllByText(/^(Without a map|Working a map)$/)
-        .map((node) => node.textContent);
-      expect(groups).toEqual(["Without a map", "Working a map"]);
-      expect(within(panel).getByText("No map assigned")).toBeInTheDocument();
+      const rows = within(panel)
+        .getAllByRole("option")
+        .map((row) => row.textContent);
+      expect(rows[0]).toMatch(/^Wei Jie Ong/);
+      expect(rows[1]).toMatch(/^Mei Ling Tan/);
+      expect(within(panel).getByText("Working a map")).toBeInTheDocument();
       expect(
         within(panel).getByText("2 maps: Blk 301, Blk 305")
       ).toBeInTheDocument();
+    });
+
+    // The sections say who is free and the chips which group, so a free
+    // person's row is the name alone.
+    it("shows only the name for someone without a map", async () => {
+      const panel = await openPanel([
+        { ...members[1], groups: ["Group 3", "Mandarin"] }
+      ]);
+
+      const row = within(panel).getByRole("option", { name: /Wei Jie Ong/ });
+      expect(row).toHaveTextContent(/^Wei Jie Ong$/);
     });
 
     it("shows an email only for people who share a name", async () => {
@@ -246,6 +258,38 @@ describe("MemberPicker", () => {
       expect(
         within(panel).queryByText(/weijie@example\.test/)
       ).not.toBeInTheDocument();
+    });
+
+    it("lists someone already on this map after the others in their section", async () => {
+      const panel = await openPanel(
+        [
+          holding(member("m0", "Aaron Lee", "aaron@example.test"), "Blk 301"),
+          holding(members[1], "Blk 305")
+        ],
+        { map: "map-Blk 301" }
+      );
+
+      const rows = within(panel)
+        .getAllByRole("option")
+        .map((row) => row.textContent);
+      expect(rows[0]).toMatch(/^Wei Jie Ong/);
+      expect(rows[1]).toMatch(/^Aaron Lee/);
+    });
+
+    it("labels the people chosen, apart from the group filters", async () => {
+      render(
+        <MemberPicker
+          members={members}
+          value={[members[0]]}
+          onValueChange={vi.fn()}
+        />
+      );
+      await userEvent.click(
+        screen.getByRole("button", { name: /Search members/i })
+      );
+      const panel = await screen.findByRole("dialog");
+
+      expect(within(panel).getByText("Chosen")).toBeInTheDocument();
     });
 
     it("does not offer someone who already holds this map on another link", async () => {
@@ -273,14 +317,14 @@ describe("MemberPicker", () => {
       ).not.toBeInTheDocument();
     });
 
-    it("says when the person is staff", async () => {
+    it("leaves out each person's role", async () => {
       const panel = await openPanel([
         { ...members[0], role: "conductor" },
-        members[1]
+        { ...members[1], role: "administrator" }
       ]);
 
-      expect(within(panel).getByText("Conductor")).toBeInTheDocument();
-      expect(within(panel).queryByText("Publisher")).not.toBeInTheDocument();
+      expect(within(panel).queryByText("Conductor")).not.toBeInTheDocument();
+      expect(within(panel).queryByText("Admin")).not.toBeInTheDocument();
     });
 
     it("names the task in the panel's heading", async () => {
@@ -333,6 +377,49 @@ describe("MemberPicker", () => {
         ).not.toBeInTheDocument();
       });
 
+      it("narrows the list to anyone in the groups chosen", async () => {
+        const panel = await openGrouped();
+
+        await userEvent.click(chip(panel, "Group 5"));
+        await userEvent.click(chip(panel, "Mandarin"));
+
+        expect(chip(panel, "Group 5")).toHaveAttribute("aria-pressed", "true");
+        expect(chip(panel, "Mandarin")).toHaveAttribute("aria-pressed", "true");
+        expect(chip(panel, "All")).toHaveAttribute("aria-pressed", "false");
+        expect(within(panel).getByText("Wei Jie Ong")).toBeInTheDocument();
+        expect(within(panel).getByText("Siti Rahman")).toBeInTheDocument();
+        expect(
+          within(panel).queryByText("Mei Ling Tan")
+        ).not.toBeInTheDocument();
+      });
+
+      it("goes back to everyone from All, or by letting go of the last group", async () => {
+        const panel = await openGrouped();
+        await userEvent.click(chip(panel, "Group 5"));
+        await userEvent.click(chip(panel, "Mandarin"));
+
+        await userEvent.click(chip(panel, "All"));
+        expect(chip(panel, "All")).toHaveAttribute("aria-pressed", "true");
+        expect(chip(panel, "Group 5")).toHaveAttribute("aria-pressed", "false");
+        expect(within(panel).getByText("Mei Ling Tan")).toBeInTheDocument();
+
+        await userEvent.click(chip(panel, "Group 5"));
+        await userEvent.click(chip(panel, "Group 5"));
+        expect(chip(panel, "All")).toHaveAttribute("aria-pressed", "true");
+      });
+
+      it("names every chosen group when none of them has a match", async () => {
+        const panel = await openGrouped();
+        await userEvent.click(chip(panel, "Group 3"));
+        await userEvent.click(chip(panel, "Mandarin"));
+
+        await userEvent.type(within(panel).getByRole("combobox"), "wei");
+
+        expect(
+          within(panel).getByText("No one in Group 3 or Mandarin matches.")
+        ).toBeInTheDocument();
+      });
+
       it("counts in each group the people the search found", async () => {
         const panel = await openGrouped();
 
@@ -359,22 +446,28 @@ describe("MemberPicker", () => {
         expect(chip(panel, "All")).toHaveAttribute("aria-pressed", "true");
       });
 
-      it("says which groups each person is in while none is chosen", async () => {
-        const panel = await openGrouped();
-
-        expect(
-          within(panel).getByText("No map assigned · Group 3, Mandarin")
-        ).toBeInTheDocument();
-      });
-
-      it("opens on the group last chosen", async () => {
+      it("opens on the groups last chosen", async () => {
         const first = await openGrouped();
         await userEvent.click(chip(first, "Group 5"));
+        await userEvent.click(chip(first, "Mandarin"));
         cleanup();
 
         const panel = await openGrouped();
 
         expect(chip(panel, "Group 5")).toHaveAttribute("aria-pressed", "true");
+        expect(chip(panel, "Mandarin")).toHaveAttribute("aria-pressed", "true");
+        expect(
+          within(panel).queryByText("Mei Ling Tan")
+        ).not.toBeInTheDocument();
+      });
+
+      it("keeps a single group remembered before several could be chosen", async () => {
+        localStorage.setItem("memberPicker.group", "Group 5");
+
+        const panel = await openGrouped();
+
+        expect(chip(panel, "Group 5")).toHaveAttribute("aria-pressed", "true");
+        expect(within(panel).getByText("Wei Jie Ong")).toBeInTheDocument();
         expect(
           within(panel).queryByText("Mei Ling Tan")
         ).not.toBeInTheDocument();
