@@ -44,6 +44,14 @@ Summarised from Andrej Karpathy's guidelines (github.com/multica-ai/andrej-karpa
 - Analytics (`src/utils/analytics.ts`) is fire-and-forget and swallows its own errors. Never await it or let it affect control flow.
 - Unused variables and parameters take a `_` prefix (ESLint `^_`). Don't drop a parameter that belongs to a public signature to silence the warning.
 
+## Infrastructure and services
+- Coolify runs one project, "Ministry Mapper", with a `staging` and a `production` environment. Each has Frontend Assets, Backend Engine, Litestream and Umami. The front end is `staging.ministry-mapper.com` (branch `staging`) and `ministry-mapper.com` (branch `master`); the backend is `staging-be.` and `be.ministry-mapper.com`.
+- Production deploys only from `release.yaml`: after semantic-release on `master` it POSTs the Coolify webhook. Railpack builds `build/` and nginx serves it. The production nginx keeps earlier builds' hashed `/assets/` for 30 days, so a phone on an older build can still load its lazy chunks. `index.html` and `sw.js` are never cached. Check that config in Coolify before changing the build output folder or asset paths.
+- Cloudflare: DNS and CDN for `ministry-mapper.com`; R2 holds the brand files (`assets.ministry-mapper.com`, see `.claude/rules/brand.md`) and, in a separate bucket, the PocketBase backups Litestream writes.
+- Sentry project `ministry-mapper-fe` (the backend's is `ministry-mapper-be`). `instrument.js` sets the environment from `VITE_SYSTEM_ENVIRONMENT`, the release from the version, tracing off and a restrictive `dataCollection`. The build uploads source maps through `sentryVitePlugin` (`SENTRY_*` build env).
+- Other services: LaunchDarkly client flags (above), self-hosted Umami analytics (`VITE_UMAMI_*`), and Geoapify for address search and walking routes (`VITE_GEOAPIFY_API_KEY`).
+- Look things up instead of guessing: the Coolify MCP (deployments, logs, env key names; every change asks first) and the Sentry MCP (issues per project). Both repos are public, so keep server IPs, tokens and env values out of commits, PRs and docs.
+
 ## Logo and icons
 - To change the logo, run `npm run brand -- path/to/new.svg` (or `npm run brand` to rebuild from the current one); never do its steps by hand, and never overwrite or delete a published R2 folder. The full pipeline and its rules are in `.claude/rules/brand.md`; read it before touching `brand/`, the R2 bucket or the icons.
 
