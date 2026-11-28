@@ -9,7 +9,10 @@ case "$file" in
   *) exit 0 ;;
 esac
 [ -f "$file" ] || exit 0
-cd "${CLAUDE_PROJECT_DIR:-$(dirname "$0")/../..}" || exit 0
+# Run from the checkout that holds the file, so a worktree under
+# .claude/worktrees/ isn't treated as an ignored path of the main checkout.
+root=$(git -C "$(dirname "$file")" rev-parse --show-toplevel 2>/dev/null) || root="${CLAUDE_PROJECT_DIR:-$(dirname "$0")/../..}"
+cd "$root" || exit 0
 
 if ! out=$(npx prettier --write --log-level warn "$file" 2>&1); then
   echo "prettier failed for $file:" >&2
