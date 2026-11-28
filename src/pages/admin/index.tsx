@@ -23,6 +23,7 @@ import useNotification from "../../hooks/useNotification";
 import useConfirm from "../../hooks/useConfirm";
 import useTerritoryManagement from "../../hooks/useTerritoryManagement";
 import useMapManagement from "../../hooks/useMapManagement";
+import useUpdateOnScreenChange from "../../hooks/useUpdateOnScreenChange";
 import useCongregationManagement from "../../hooks/useCongManagement";
 import useUIState from "../../hooks/useUIManagement";
 import useRealtimeSubscription from "../../hooks/useRealtime";
@@ -222,6 +223,12 @@ function Admin({ user }: adminProps) {
     updateTerritoryCode,
     updateTerritoryName
   } = useTerritoryManagement();
+
+  // The admin shell stays on one address, so its own views count as screens.
+  // Each is kept in storage, so a reload reopens the view chosen.
+  useUpdateOnScreenChange(
+    `${showPublisherView}|${territoryCodeCache}|${isMapView}`
+  );
 
   const {
     showBkTopButton,

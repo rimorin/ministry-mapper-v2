@@ -176,8 +176,10 @@ fs.writeFileSync(
 );
 
 // Regenerated every build so running clients can detect staleness against
-// their compiled-in VITE_APP_VERSION (see src/utils/versionCheck.ts).
+// their compiled-in VITE_APP_VERSION (see src/utils/versionCheck.ts). An
+// optional package.json "minVersion" makes older clients reload at once.
+const { version, minVersion } = packageJson;
 fs.writeFileSync(
   path.join(__dirname, "../public/version.json"),
-  JSON.stringify({ version: packageJson.version }, null, 2)
+  JSON.stringify(minVersion ? { version, minVersion } : { version }, null, 2)
 );

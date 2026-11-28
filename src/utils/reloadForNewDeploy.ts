@@ -42,11 +42,17 @@ const dropCachedApp = async () => {
 //      page. Drop it and its cache, then reload, as a hard refresh would.
 //   3. Still failing: stop.
 //
+// dropFirst skips the plain reload, for a build below the served minimum
+// version: there the cached app itself has to go.
+//
 // The attempts are counted in sessionStorage, which survives a reload. The
 // count must not be cleared when a page starts: the failing file is often
 // loaded only after the page is up, so a count cleared at start never passes
 // 1 and the page reloads for as long as the file keeps failing.
-export const recoverFromStaleDeploy = (now = Date.now()) => {
+export const recoverFromStaleDeploy = ({
+  dropFirst = false,
+  now = Date.now()
+} = {}) => {
   // Offline, a reload brings nothing new, and dropping the cache would take
   // away the only copy of the app.
   if (!navigator.onLine) return false;
@@ -67,12 +73,14 @@ export const recoverFromStaleDeploy = (now = Date.now()) => {
     // Without storage the attempts cannot be counted, so none is made.
     return false;
   }
-  if (attempts === 0) {
+  if (attempts === 0 && !dropFirst) {
     reloadForNewDeploy();
-  } else {
-    // Says how often a plain reload is not enough.
-    Sentry.captureMessage("Dropped the cached app after a stale deploy");
-    void dropCachedApp().finally(reloadForNewDeploy);
+    return true;
   }
+  // Says how often a plain reload is not enough.
+  if (!dropFirst) {
+    Sentry.captureMessage("Dropped the cached app after a stale deploy");
+  }
+  void dropCachedApp().finally(reloadForNewDeploy);
   return true;
 };
