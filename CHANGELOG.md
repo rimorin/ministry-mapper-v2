@@ -1,3 +1,9 @@
+## [2.15.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.14.0...v2.15.0) (2026-11-28)
+
+### Features
+
+* filter the member picker by several groups and simplify its rows ([914c449](https://github.com/rimorin/ministry-mapper-v2/commit/914c4491a46f0ea3329b6ddada3a652c8e205445))
+
 ## [2.14.0](https://github.com/rimorin/ministry-mapper-v2/compare/v2.13.1...v2.14.0) (2026-11-28)
 
 ### Features
