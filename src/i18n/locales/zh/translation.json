@@ -512,13 +512,14 @@
     "othersLabel": "没有账户的其他人",
     "othersPlaceholder": "姓名，用逗号分隔",
     "othersHint": "你会得到一个链接发送给他们。",
-    "recentMembers": "最近分配",
     "givenTo": "已分配给 {{names}}",
-    "freeMembers": "未分配地图",
     "busyMembers": "正在处理地图",
     "memberMapCount": "{{count}} 张地图",
     "memberOnThisMap": "已在处理此地图",
-    "memberNoMap": "尚未分配地图"
+    "justGiven": "{{name}} 刚被分配了 {{maps}}。",
+    "confirmAnyway": "仍然确认",
+    "chosen": "已选",
+    "justGivenThisMap": "{{name}} 刚被分配了此地图，因此已取消选择。"
   },
   "password": {
     "number": "密码必须包含数字。",

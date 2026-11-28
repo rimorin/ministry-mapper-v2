@@ -512,13 +512,14 @@
     "othersLabel": "Otros sin cuenta",
     "othersPlaceholder": "Nombres, separados por comas",
     "othersHint": "Recibirás un enlace para enviárselo.",
-    "recentMembers": "Asignados recientemente",
     "givenTo": "Asignado a {{names}}",
-    "freeMembers": "Sin mapa",
     "busyMembers": "Trabajando un mapa",
     "memberMapCount": "{{count}} mapas",
     "memberOnThisMap": "Ya trabaja este mapa",
-    "memberNoMap": "Sin mapa asignado"
+    "justGiven": "A {{name}} se le acaba de asignar {{maps}}.",
+    "confirmAnyway": "Confirmar de todos modos",
+    "chosen": "Elegidos",
+    "justGivenThisMap": "A {{name}} se le acaba de asignar este mapa, así que ya no está elegido."
   },
   "password": {
     "number": "La contraseña debe contener números.",

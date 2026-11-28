@@ -17,7 +17,7 @@ import type { LinkSession, Policy } from "../../utils/policies";
 const link = (publisherName: string, linkType: string) =>
   ({ publisherName, linkType }) as LinkSession;
 
-const { createDataMock, membersMock, flag } = vi.hoisted(() => ({
+const { createDataMock, membersMock, linksLoaded, flag } = vi.hoisted(() => ({
   flag: { publisherRole: true },
   createDataMock: vi.fn(() => Promise.resolve({ id: "mocklink" })),
   membersMock: vi.fn(() =>
@@ -30,7 +30,9 @@ const { createDataMock, membersMock, flag } = vi.hoisted(() => ({
         maps: unknown[];
       }[]
     )
-  )
+  ),
+  // Whether each load brings who holds which map; true unless a test says.
+  linksLoaded: vi.fn(() => true)
 }));
 
 vi.mock("../../hooks/usePublisherRoleEnabled", () => ({
@@ -43,7 +45,11 @@ vi.mock(
     ...(await importOriginal<
       typeof import("../../utils/helpers/getcongregationmembers")
     >()),
-    default: membersMock
+    default: membersMock,
+    loadCongregationMembers: async () => ({
+      members: await membersMock(),
+      linksLoaded: linksLoaded()
+    })
   })
 );
 
@@ -215,10 +221,128 @@ describe("ConfirmSlipDetails", () => {
       }),
       expect.anything()
     );
-    expect(JSON.parse(localStorage.getItem("recentAssignees:cong1")!)).toEqual([
-      "user9",
-      "user8"
+  });
+
+  // Another conductor may give the same people a map while this dialog is open.
+  it("says who was given a map since the list loaded, and confirms on the second tap", async () => {
+    const given = [
+      roster[0],
+      { ...roster[1], maps: [{ link: "l9", map: "m9", name: "Blk 412" }] }
+    ];
+    membersMock
+      .mockResolvedValueOnce(roster)
+      .mockResolvedValueOnce(given)
+      .mockResolvedValueOnce(given);
+    render(<></>);
+    show();
+
+    const picker = await screen.findByPlaceholderText("Search members");
+    await waitFor(() => expect(picker).toHaveFocus());
+    await userEvent.type(picker, "Rita{Enter}");
+    fireEvent.click(screen.getByRole("button", { name: "Confirm (1)" }));
+
+    expect(
+      await screen.findByText("Rita Reader was just given Blk 412.")
+    ).toBeInTheDocument();
+    expect(createDataMock).not.toHaveBeenCalled();
+
+    // Checked again: nothing new since the warning, so it goes ahead.
+    fireEvent.click(screen.getByRole("button", { name: "Confirm anyway" }));
+    await waitFor(() => expect(createDataMock).toHaveBeenCalledTimes(1));
+    expect(membersMock).toHaveBeenCalledTimes(3);
+  });
+
+  it("takes someone off who was just given this same map", async () => {
+    membersMock.mockResolvedValueOnce(roster).mockResolvedValueOnce([
+      roster[0],
+      {
+        ...roster[1],
+        maps: [{ link: "l9", map: "map1", name: "Sunset Towers" }]
+      }
     ]);
+    render(<></>);
+    show();
+
+    const picker = await screen.findByPlaceholderText("Search members");
+    await waitFor(() => expect(picker).toHaveFocus());
+    await userEvent.type(picker, "Rita{Enter}");
+    fireEvent.click(screen.getByRole("button", { name: "Confirm (1)" }));
+
+    expect(
+      await screen.findByText(
+        "Rita Reader was just given this map, so is no longer chosen."
+      )
+    ).toBeInTheDocument();
+    // With nobody left, the name box is required again, so the form cannot
+    // make a link for no one.
+    expect(screen.getByRole("button", { name: "Confirm" })).toBeInTheDocument();
+    expect(
+      screen.getByPlaceholderText("Names, separated by commas")
+    ).toBeRequired();
+    expect(createDataMock).not.toHaveBeenCalled();
+  });
+
+  // Change members can put someone on a link that was already open.
+  it("counts being added to a link that already existed as new", async () => {
+    const existing = { link: "l1", map: "m1", name: "Blk 301" };
+    membersMock
+      .mockResolvedValueOnce([
+        { ...roster[0], maps: [existing] },
+        { ...roster[1], maps: [] }
+      ])
+      .mockResolvedValueOnce([
+        { ...roster[0], maps: [existing] },
+        { ...roster[1], maps: [existing] }
+      ]);
+    render(<></>);
+    show();
+
+    const picker = await screen.findByPlaceholderText("Search members");
+    await waitFor(() => expect(picker).toHaveFocus());
+    await userEvent.type(picker, "Rita{Enter}");
+    fireEvent.click(screen.getByRole("button", { name: "Confirm (1)" }));
+
+    expect(
+      await screen.findByText("Rita Reader was just given Blk 301.")
+    ).toBeInTheDocument();
+    expect(createDataMock).not.toHaveBeenCalled();
+  });
+
+  // A first load without the links cannot say what is new.
+  it("says nothing new when the dialog opened without knowing who holds what", async () => {
+    linksLoaded.mockReturnValueOnce(false);
+    membersMock
+      .mockResolvedValueOnce(roster)
+      .mockResolvedValueOnce([
+        roster[0],
+        { ...roster[1], maps: [{ link: "l3", map: "m3", name: "Blk 301" }] }
+      ]);
+    render(<></>);
+    show();
+
+    const picker = await screen.findByPlaceholderText("Search members");
+    await waitFor(() => expect(picker).toHaveFocus());
+    await userEvent.type(picker, "Rita{Enter}");
+    fireEvent.click(screen.getByRole("button", { name: "Confirm (1)" }));
+
+    await waitFor(() => expect(createDataMock).toHaveBeenCalledTimes(1));
+    expect(screen.queryByText(/was just given/)).not.toBeInTheDocument();
+  });
+
+  it("goes ahead when the check fails", async () => {
+    membersMock
+      .mockResolvedValueOnce(roster)
+      .mockRejectedValueOnce(new Error("offline"));
+    render(<></>);
+    show();
+
+    const picker = await screen.findByPlaceholderText("Search members");
+    await waitFor(() => expect(picker).toHaveFocus());
+    await userEvent.type(picker, "Rita{Enter}");
+    fireEvent.click(screen.getByRole("button", { name: "Confirm (1)" }));
+
+    await waitFor(() => expect(createDataMock).toHaveBeenCalledTimes(1));
+    expect(screen.queryByText(/was just given/)).not.toBeInTheDocument();
   });
 
   it("puts people without an account on the link too, and offers the link to send them", async () => {
@@ -332,8 +456,7 @@ describe("ConfirmSlipDetails", () => {
     expect(screen.getByText("Sam Publisher")).toBeInTheDocument();
   });
 
-  it("offers recently chosen members first and shows who holds a map", async () => {
-    localStorage.setItem("recentAssignees:cong1", JSON.stringify(["user8"]));
+  it("lists who is free first and shows who holds a map", async () => {
     membersMock.mockResolvedValueOnce(roster);
     render(<></>);
     show();
@@ -345,7 +468,7 @@ describe("ConfirmSlipDetails", () => {
       expect.stringContaining("Rita Reader"),
       expect.stringContaining("Sam Publisher")
     ]);
-    expect(screen.getByText("Recently assigned")).toBeInTheDocument();
+    expect(screen.getByText("Working a map")).toBeInTheDocument();
     expect(screen.getByText("2 maps: Blk 301, Blk 305")).toBeInTheDocument();
     expect(screen.queryByText(/sam@alpha\.test/)).not.toBeInTheDocument();
   });
