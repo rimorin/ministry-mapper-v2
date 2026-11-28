@@ -50,7 +50,8 @@ Summarised from Andrej Karpathy's guidelines (github.com/multica-ai/andrej-karpa
 ## Tests and CI
 - `npm test` runs everything once; `npm run test:hooks` and `npm run test:components` are scoped. Tests are colocated (`useX.test.ts` beside `useX.ts`). The test patterns load from `.claude/rules/` when you edit a test file.
 - CI (`checks.yaml`, PRs to master and staging): prettier check, lint, test, build; all must pass. Pre-commit lint-staged runs `prettier --write` and `eslint --fix --max-warnings 0`, so a warning blocks a commit locally. A PostToolUse hook (`.claude/hooks/web-check.sh`) runs `prettier --write` on each edited `.ts`/`.tsx`/`.css`/`.json` file, then `eslint --max-warnings 0` on TypeScript, and sends failures back to Claude.
-- Parallel work: `claude -w <name>` starts a session in a git worktree under `.claude/worktrees/`; `.worktreeinclude` copies `.env` and the local Claude settings in. Run `npm ci` in a new worktree before tests or the dev server.
+- Before pushing or opening a PR, run the `verify` skill (type check, lint, tests, browser check through the Playwright MCP in `.mcp.json`), then the `code-review` skill at medium on the branch, and fix what it confirms.
+- Parallel work: `claude -w <name>` starts a session in a git worktree under `.claude/worktrees/`; `.worktreeinclude` copies `.env` and the local Claude settings in. Run `npm ci` in a new worktree before tests or the dev server; Vite takes the next free port after 3000 when another worktree holds it.
 - Commits to master run semantic-release: `fix:` is a patch, `feat:` a minor, `feat!:`/`fix!:` a major. The release commit carries `[skip ci]`, then a Coolify webhook deploys.
 
 ## Conventions
